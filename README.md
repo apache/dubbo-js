@@ -1,4 +1,5 @@
 node-dubbo
 ==========
 
-使用node的tcp方式连接dubbo的tcp服务，实现web版的dubbo的console
+人还是需要有个梦想的，万一实现了呢？
+
