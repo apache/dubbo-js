@@ -1,0 +1,24 @@
+{
+  "name": "node-jsonrpc-dubbo",
+  "version": "1.0.0",
+  "description": "node -> jsonrpc -> dubbo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://git.dev.qianmi.com/OF730/node-jsonrpc-dubbo.git"
+  },
+  "keywords": [
+    "node",
+    "dubbo",
+    "jsonrpc"
+  ],
+  "author": "hufeng",
+  "license": "ISC",
+  "dependencies": {
+    "node-json-rpc": "0.0.1",
+    "node-zookeeper-client": "^0.2.2"
+  }
+}
