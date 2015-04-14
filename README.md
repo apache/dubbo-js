@@ -1,6 +1,6 @@
 # node-jsonrpc-dubbo
 
-终于在祖朋和文武的努力下，我们的dubbo可以暴露jsonrpc协议了。
+终于在祖鹏和文武的努力下，我们的dubbo可以暴露jsonrpc协议了。
 
 这对于我们web端的小伙伴来说，真是喜大普奔的事情。必须鼎力支持。
 
