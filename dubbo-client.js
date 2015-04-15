@@ -46,16 +46,16 @@ DubboClient.prototype.getProvider = function(provider) {
    * @returns {Function}
    */
   var rpcMethod = function (meta, methodName) {
-    return function(param) {
+    return function() {
+      var params = Array.prototype.slice.call(arguments);
+
       return new Promise(function (resolve, reject) {
         new rpc.Client(meta).call({
           'jsonrpc': '2.0',
           "method": methodName,
-          "param": param,
+          "params": params,
           "id": 1
         }, function (err, res) {
-          console.log(err, res);
-          console.log(res);
           return err ? reject(err) : resolve(res);
         });
       });
