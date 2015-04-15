@@ -23,3 +23,15 @@
 4. 获取注册中心的信息，然后本地缓存配置信息，然后订阅zk的更新，如果有更新重新生成缓存文件
 
 5. 一个服务可能有多个提供者(集群)，现在先随机调度到其中一个。
+
+
+
+## To be continue
+
+1. 按需缓存provider的元数据，而不是一下子全sync到client端
+
+2. provider的调用支持version, group
+
+3. 接收zookeeper的更新通知，刷新本地provider缓存
+
+4. 写入consumer信息
