@@ -19,6 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "node-json-rpc": "0.0.1",
-    "node-zookeeper-client": "^0.2.2"
+    "node-zookeeper-client": "^0.2.2",
+    "promise": "^7.0.0"
   }
 }
