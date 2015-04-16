@@ -94,7 +94,10 @@ function ZooKeeperRegistry(url, config) {
  * 如果没有找到任何provider对应的元数据，返回error，否则先根据随机算法，找到其中一个发送请求
  *
  */
-ZooKeeperRegistry.prototype.getProviderMeta = function(provider) {
+ZooKeeperRegistry.prototype.getProviderMeta = function(provider, group, version) {
+  group = group || '';
+  version = version || '';
+
   var meta = function(resolve, reject) {
     var meta = providerCache[provider];
 
@@ -102,9 +105,16 @@ ZooKeeperRegistry.prototype.getProviderMeta = function(provider) {
     if (typeof(meta) === 'undefined') {
       reject(new Error('Oops, 没有任何' + provider + '信息'));
     } else {
-      //随机找到其中一个提供者
+      //如果传递了group和version那需要对prover的元信息进行过滤
+      meta = meta.filter(function(v) {
+        return v.group === group && v.version === version;
+      });
       var len = meta.length;
-      return resolve(meta[Math.floor(Math.random() * len)]);
+      if (len) { //随机找到其中一个提供者
+        return resolve(meta[Math.floor(Math.random() * len)]);
+      } else {
+        reject(new Error(':(, Not found ' + provider + ', version: ' + version + ' , group: ' + group));
+      }
     }
 
   };
@@ -140,13 +150,18 @@ ZooKeeperRegistry.prototype.getProviderMeta = function(provider) {
  */
 function parseJSONRPC(url) {
   var rpc = parse(url);
-  var methods = (querystring.parse(url)['methods'] || '').split(',');
+  var query = querystring.parse(url);
+  var methods = (query['methods'] || '').split(',');
+  var version = query.version || '';
+  var group = query.group || '';
 
   return {
     host: rpc.hostname,
     port: rpc.port,
     path: rpc.pathname,
-    methods: methods
+    methods: methods,
+    version: version,
+    group: group
   }
 }
 

@@ -36,7 +36,7 @@ function DubboClient(url, config) {
 /**
  * 获取provider的对象
  */
-DubboClient.prototype.getProvider = function(provider) {
+DubboClient.prototype.getProvider = function(provider, group, version) {
 
   /**
    * 封装rpc方法
@@ -108,7 +108,7 @@ DubboClient.prototype.getProvider = function(provider) {
   var self = this;
   return new Promise(function(resolve, reject) {
     self.registry
-        .getProviderMeta(provider)
+        .getProviderMeta(provider, group, version)
         .then(
           success(resolve, reject),
           fail(reject)
