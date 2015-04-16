@@ -1,7 +1,7 @@
 /**
  * 封装Dubbo cleint， 通过json-rpc调用远程的dubbo服务
  */
-
+"use strict";
 var Promise = require('promise');
 var rpc = require('node-json-rpc');
 var ZookeeperRegistry = require('./zookeeper-registry');
