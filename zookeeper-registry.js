@@ -178,21 +178,12 @@ function syncProviders(client) {
    */
   var syncDubbo = function(client) {
 
-    /**
-     * 订阅zookeep的更新推送
-     */
-    var subscribe = function(event) {
-      console.log(event);
-      console.log('Got watcher event：%s', event);
-      //TODO refresh provider cache
-    };
-
 
     /**
      * callback is hell, promise duang.
      */
     return new Promise(function(resolve, reject) {
-      client.getChildren('/dubbo', subscribe,
+      client.getChildren('/dubbo',
         function syncDubboCallback(err, children, stat) {
           if (err) {
             console.log('failed to list children of %s due to :%s.', path, err);
@@ -204,6 +195,29 @@ function syncProviders(client) {
         }
       );
     });
+  };
+
+
+  /**
+   * 订阅zookeep的更新推送
+   */
+  var subscribe = function(event) {
+    console.log('Got watcher event：%s', event);
+
+    //refresh provider cache
+    var path = event.path;
+    //remove /dubbo and /providers, only providerName
+    var providerPath = path.split('/')[2];
+
+    if (providerCache[providerPath]) {
+      syncJSONRPCProvider(client, path).then(function(cache) {
+        if (cache) {
+          Object.keys(cache).forEach(function(v) {
+            providerCache[v] = cache[v];
+          });
+        }
+      });
+    }
   };
 
 
@@ -220,7 +234,7 @@ function syncProviders(client) {
      * promise 再一次 duang.
      */
     return new Promise(function(resolve, reject) {
-      client.getChildren(path,
+      client.getChildren(path, subscribe,
         function(err, children, stat) {
           if (err) {
             console.log('failed to list children of %s due to :%s.', path, err);
