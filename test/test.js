@@ -38,12 +38,14 @@ client
 
 //
 ////test pc
-//dubboClient
-//  .getProvider('com.qianmi.pc.api.brand.BrandQueryProvider')
-//  .then(function(provider) {
-//    provider.list({
-//      chainMasterId: 'A854899'
-//    }).then(function(res) {
-//      console.log(res);
-//    });
-//  });
+setTimeout(function () {
+  client
+    .getProvider('com.qianmi.pc.api.brand.BrandQueryProvider')
+    .then(function (provider) {
+      provider.list({
+        chainMasterId: 'A854899'
+      }).then(function (res) {
+        console.log(res);
+      });
+    });
+}, 20000);
