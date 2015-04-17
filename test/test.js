@@ -1,7 +1,4 @@
-var dubboClient = require('../index');
-var client = dubboClient.registry('172.19.65.33:2181');
-
-
+var client = require('./dubbo-client');
 
 //简单的调用一个接口
 client
