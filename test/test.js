@@ -1,9 +1,10 @@
-var DubboClient = require('./index');
+var dubboClient = require('../index');
+var client = dubboClient.registry('172.19.65.33:2181');
 
-var dubboClient = DubboClient('172.19.65.33:2181');
+
 
 //简单的调用一个接口
-dubboClient
+client
   .getProvider('com.ofpay.demo.api.UserProvider')
   .then(
     function success(userProvider) {
@@ -24,18 +25,18 @@ dubboClient
 );
 
 //添加group，和version的支持
-dubboClient
-  .getProvider('com.ofpay.demo.api.UserProvider', 'test', '2.0')
+client
+  .getProvider('com.ofpay.demo.api.UserProvider', 'test1', '2.1')
   .then(
-    function success(userProvider) {
-      userProvider.queryAll().then(function(res) {
-        console.log(res);
-      })
-    },
-    function fail(err) {
-      console.log(err);
-    }
-  );
+  function success(userProvider) {
+    userProvider.queryAll().then(function (res) {
+      console.log(res);
+    })
+  },
+  function fail(err) {
+    console.log(err);
+  }
+);
 
 
 //

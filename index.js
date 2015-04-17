@@ -1,1 +1,1 @@
-module.exports = require('./dubbo-client');
+module.exports = require('./lib/dubbo-client');

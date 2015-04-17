@@ -18,8 +18,12 @@
   "author": "hufeng",
   "license": "ISC",
   "dependencies": {
+    "ip": "^0.3.2",
     "node-json-rpc": "0.0.1",
     "node-zookeeper-client": "^0.2.2",
     "promise": "^7.0.0"
+  },
+  "devDependencies": {
+    "babel": "^5.1.10"
   }
 }
