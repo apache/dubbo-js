@@ -1,51 +1,19 @@
 var client = require('./dubbo-client');
 
+
+var provider = 'com.ofpay.demo.api.UserProvider';
+
 //简单的调用一个接口
-client
-  .getProvider('com.ofpay.demo.api.UserProvider')
-  .then(
-    function success(userProvider) {
-      userProvider
-        .queryAll()
-        .then(
-          function success(res) {
-            console.log(res);
-          },
-          function fail(err) {
-            console.log(err)
-          }
-        );
-    },
-    function fail(err) {
-      console.log(err);
-    }
-);
-
-//添加group，和version的支持
-client
-  .getProvider('com.ofpay.demo.api.UserProvider', 'test1', '2.1')
-  .then(
-  function success(userProvider) {
-    userProvider.queryAll().then(function (res) {
-      console.log(res);
-    })
-  },
-  function fail(err) {
-    console.log(err);
-  }
-);
+client.getProvider(provider, function(err, userProvider) {
+  err
+    ? console.log(err)
+    : userProvider.queryAll(function(err, data) {console.log(err, data);});
+});
 
 
-//
-////test pc
-setTimeout(function () {
-  client
-    .getProvider('com.qianmi.pc.api.brand.BrandQueryProvider')
-    .then(function (provider) {
-      provider.list({
-        chainMasterId: 'A854899'
-      }).then(function (res) {
-        console.log(res);
-      });
-    });
-}, 20000);
+//group version support
+client.getProvider(provider, 'test1', '2.1', function (err, userProvider) {
+  err
+    ? console.log(err)
+    : userProvider.queryAll(function(err, data) {console.log(err, data);});
+});

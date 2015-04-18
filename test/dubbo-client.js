@@ -1,16 +1,16 @@
 /**
  * Created by bee1314 on 4/17/15.
  */
-var dubboClient = require('../index');
+var DubboClient = require('../index');
 
 
 
 //simple
-//var client = module.exports = dubboClient.registry('172.19.65.33:2181');
+//var client = module.exports = DubboClient('172.19.65.33:2181');
 
 
 //full
-var client2 = module.exports = dubboClient.registry('172.19.65.33:2181', {
+var client2 = module.exports = DubboClient('172.19.65.33:2181', {
   zk: {
     sessionTimeout: 30000,
     spinDelay : 1000,
