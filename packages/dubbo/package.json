@@ -1,0 +1,14 @@
+{
+  "name": "@qianmi/dubbo",
+  "version": "1.0.0",
+  "main": "./lib/index.js",
+  "types": "./lib/typings/index.d.ts",
+  "license": "MIT",
+  "dependencies": {
+    "hessian.js": "2.5.0",
+    "ip": "1.1.5",
+    "js-to-java": "2.4.0",
+    "node-zookeeper-client": "0.2.2",
+    "debug": "3.1.0"
+  }
+}

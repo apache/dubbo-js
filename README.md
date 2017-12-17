@@ -1,67 +1,90 @@
-# node-jsonrpc-dubbo
+## dubbo
 
-终于在祖鹏和文武的努力下，我们的dubbo可以暴露jsonrpc协议了。
+nodejs 使用原生的 dubbo 协议打通了 dubbo 的 rpc 方法调用 .
 
-这对于我们web端的小伙伴来说，真是喜大普奔的事情。必须鼎力支持。
+感谢阿里的 hessian.js 和 js-to-java 两大模块
 
+## Getting Started
 
-从此开启web端快速进化之旅，无论是当红炸子鸡nodejs，还是沉稳健壮大python，亦或者Golang，从此八仙过海，
-各显神通。
+```shell
+TODO 很快发布npm模块
+```
 
+## How to Usage?
 
-当然我们现在要先解决nodejs的问题。
+```typescript
+import {Dubbo, java, TDubboCallResult} from 'dubbo';
 
-## TODO List
+//定义dubbo方法类型接口
+//方便代码自动提示
+interface IDemoService {
+  sayHello(name: string): TDubboCallResult<string>;
 
-1. node可以连接zookkeeper，根据/dubbo的path，获取所有的provider，然后进入provider，获取真正的提供者url eg.
-   path=/dubbo/com.ofpay.demo.api.UserProvider/providers,
-   
-2. 根据提供者的信息，过滤出jsonrpc://协议的provider，解析url，获取host:port/path method param
+  echo(): TDubboCallResult<string>;
 
-3. 通过jsonrpc去调用method
+  test(): TDubboCallResult<void>;
 
-4. 获取注册中心的信息，然后本地缓存配置信息，然后订阅zk的更新，如果有更新重新生成缓存文件
+  getUserInfo(): TDubboCallResult<{
+    status: string;
+    info: {id: number; name: string};
+  }>;
+}
 
-5. 一个服务可能有多个提供者(集群)，现在先随机调度到其中一个。
-
-
-
-## To be continue
-
-1. 按需缓存provider的元数据，而不是一下子全sync到client端
-
-2. provider的调用支持version, group
-
-3. 接收zookeeper的更新通知，刷新本地provider缓存
-
-4. 写入consumer信息
-
-
-## usage
-
-更符合node的使用方式和思维习惯
-
-
-```javascript
-
-var client = require('./dubbo-client');
-
-
-var provider = 'com.ofpay.demo.api.UserProvider';
-
-//简单的调用一个接口
-client.getProvider(provider, function(err, userProvider) {
-  err
-    ? console.log(err)
-    : userProvider.queryAll(function(err, data) {console.log(err, data);});
+//创建dubbo对象
+const dubbo = new Dubbo({
+  application: {name: 'dubbo-directly-test'},
+  //zookeeper address
+  register: 'localhost:2181',
+  dubboVersion: '2.0.0',
+  interfaces: ['com.alibaba.dubbo.demo.DemoService'],
 });
 
+//代理本地对象->dubbo对象
+const demoService = dubbo.proxyService<IDemoService>({
+  dubboInterface: 'com.alibaba.dubbo.demo.DemoService',
+  version: '0.0.0',
+  methods: {
+    sayHello(name) {
+      //仅仅做参数hessian化转换
+      return [java.String(name)];
+    },
 
-//group version support
-client.getProvider(provider, 'test1', '2.1', function (err, userProvider) {
-  err
-    ? console.log(err)
-    : userProvider.queryAll(function(err, data) {console.log(err, data);});
+    echo() {},
+
+    test() {},
+
+    getUserInfo() {
+      //仅仅做参数hessian化转换
+      return [
+        java.combine('com.alibaba.dubbo.demo.UserRequest', {
+          id: 1,
+          name: 'nodejs',
+          email: 'node@qianmi.com',
+        }),
+      ];
+    },
+  },
 });
 
+const result1 = await demoService.sayHello('node');
+//print {err: null, res:'hello node from dubbo service'}
+const res = await demoService.echo();
+//print {err: null, res: 'pang'}
+
+const res = await demoService.getUserInfo();
+//status: 'ok', info: { id: '1', name: 'test' }
+```
+
+## as developer
+
+```sh
+brew install zookeeper
+brew services start zookeeper
+
+#运行java/dubbo-simple下面的例子
+
+yarn run test
+
+# 全链路日志跟踪
+DEBUG=dubbo* yarn run test
 ```
