@@ -88,3 +88,6 @@ yarn run test
 # 全链路日志跟踪
 DEBUG=dubbo* yarn run test
 ```
+
+![log](https://raw.githubusercontent.com/hufeng/dubbo.js/master/screenshot/1.jpg)
+![log](https://raw.githubusercontent.com/hufeng/dubbo.js/master/screenshot/2.jpg)
