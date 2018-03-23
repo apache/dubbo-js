@@ -7,7 +7,7 @@ nodejs 使用原生的 dubbo 协议打通了 dubbo 的 rpc 方法调用 .
 ## Getting Started
 
 ```shell
-TODO 很快发布npm模块
+npm install dubbo2.js
 ```
 
 ## How to Usage?
