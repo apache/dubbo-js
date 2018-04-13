@@ -1,6 +1,6 @@
 ## dubbo2.js
 
-![love dubbo]()
+![love dubbo](https://raw.githubusercontent.com/QianmiOpen/dubbo2.js/master/resources/dubbo-love.png)
 
 多年期盼，一朝梦圆！
 
@@ -107,7 +107,7 @@ yarn run test
 DEBUG=dubbo* yarn run test
 ```
 
-![dubbo-flow](http://git.dev.qianmi.com/QMFE/dubbo2.js/raw/master/resources/dubbo2-flow.png)
+![dubbo-flow](https://raw.githubusercontent.com/QianmiOpen/dubbo2.js/master/resources/dubbo2-flow.png)
 
 ## API
 
