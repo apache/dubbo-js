@@ -1,6 +1,7 @@
-import * as debug from 'debug';
-import HeartBeat from './heartbeat';
+import debug from 'debug';
 import {convertBinaryNum} from './binary';
+import HeartBeat from './heartbeat';
+import {IObservable, TDecodeBuffSubscriber} from './types';
 
 const noop = () => {};
 const MAGIC_HIGH = 0xda;
@@ -8,17 +9,31 @@ const MAGIC_LOW = 0xbb;
 const HEADER_LENGTH = 16;
 const log = debug('dubbo:decode-buffer');
 
-export default class DecodeBuffer {
-  constructor(pid: number) {
+/**
+ * 在并发的tcp数据传输中，会出现少包，粘包的现象
+ * 好在tcp的传输是可以保证顺序的
+ * 我们需要抽取一个buff来统一处理这些数据
+ */
+export default class DecodeBuffer
+  implements IObservable<TDecodeBuffSubscriber> {
+  /**
+   * 初始化一个DecodeBuffer
+   * @param pid socket-worker的pid
+   */
+  private constructor(pid: number) {
     log('new DecodeBuffer');
     this._pid = pid;
     this._buffer = Buffer.alloc(0);
-    this._onDataCB = noop;
+    this._subscriber = noop;
   }
 
-  private _pid: number;
+  private readonly _pid: number;
   private _buffer: Buffer;
-  private _onDataCB: Function;
+  private _subscriber: Function;
+
+  static from(pid: number) {
+    return new DecodeBuffer(pid);
+  }
 
   receive(data: Buffer) {
     //concat bytes
@@ -30,7 +45,35 @@ export default class DecodeBuffer {
       const magicHigh = this._buffer[0];
       const magicLow = this._buffer[1];
 
-      //TODO 如果不是magichight magiclow 做个容错
+      //如果不是magichight magiclow 做个容错
+      if (magicHigh != MAGIC_HIGH || magicLow != MAGIC_LOW) {
+        log(this._buffer);
+
+        log(
+          `receive server data error, buffer[0] is 0xda ${magicHigh ==
+            0xda} buffer[1] is 0xbb ${magicLow == 0xbb}`,
+        );
+
+        const magicHighIndex = this._buffer.indexOf(magicHigh);
+        const magicLowIndex = this._buffer.indexOf(magicLow);
+        log(`magicHigh index#${magicHighIndex}`);
+        log(`magicLow index#${magicLowIndex}`);
+
+        //没有找到magicHigh或者magicLow
+        if (magicHighIndex === -1 || magicLowIndex === -1) {
+          return;
+        }
+
+        if (
+          magicHighIndex !== -1 &&
+          magicLowIndex !== -1 &&
+          magicLowIndex - magicHighIndex === 1
+        ) {
+          this._buffer = this._buffer.slice(magicHighIndex);
+          bufferLength = this._buffer.length;
+        }
+        return;
+      }
 
       if (magicHigh === MAGIC_HIGH && magicLow === MAGIC_LOW) {
         //数据量还不够头部的长度
@@ -68,13 +111,13 @@ export default class DecodeBuffer {
         const dataBuffer = this._buffer.slice(0, HEADER_LENGTH + bodyLength);
         this._buffer = this._buffer.slice(HEADER_LENGTH + bodyLength);
         bufferLength = this._buffer.length;
-        this._onDataCB(dataBuffer);
+        this._subscriber(dataBuffer);
       }
     }
   }
 
-  onData = cb => {
-    this._onDataCB = cb;
+  subscribe(subscriber: TDecodeBuffSubscriber) {
+    this._subscriber = subscriber;
     return this;
-  };
+  }
 }

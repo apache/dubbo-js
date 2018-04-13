@@ -2,4 +2,5 @@
 **/__mocks__/**
 src
 tsconfig.json
+tsconfig-es6.json
 node_modules

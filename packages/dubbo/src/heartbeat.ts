@@ -1,4 +1,4 @@
-import * as debug from 'debug';
+import debug from 'debug';
 
 const log = debug('dubbo:heartbeat');
 
@@ -7,11 +7,11 @@ const log = debug('dubbo:heartbeat');
 //encodeRequest
 
 //header length
-const DUBBO_HEDER_LENGTH = 16;
+const DUBBO_HEADER_LENGTH = 16;
 // magic header.
 const DUBBO_MAGIC_HEADER = 0xdabb;
 // message flag.
-const FLAG_REQUST = 0x80;
+const FLAG_REQEUST = 0x80;
 const FLAG_TWOWAY = 0x40;
 const FLAG_EVENT = 0x20;
 
@@ -22,7 +22,7 @@ export default class HeartBeat {
   static encode(): Buffer {
     log('encode heartbeat');
 
-    const buffer = Buffer.alloc(DUBBO_HEDER_LENGTH + 1);
+    const buffer = Buffer.alloc(DUBBO_HEADER_LENGTH + 1);
 
     //magic header
     buffer[0] = DUBBO_MAGIC_HEADER >>> 8;
@@ -30,7 +30,7 @@ export default class HeartBeat {
 
     // set request and serialization flag.
     buffer[2] =
-      FLAG_REQUST |
+      FLAG_REQEUST |
       HESSIAN2_SERIALIZATION_CONTENT_ID |
       FLAG_TWOWAY |
       FLAG_EVENT;

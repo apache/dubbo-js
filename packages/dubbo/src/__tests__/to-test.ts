@@ -1,7 +1,6 @@
-import {to} from '../to';
-import * as fs from 'fs';
+import fs from 'fs';
 import {promisify} from 'util';
-import {setTimeout} from 'timers';
+import {to} from '../to';
 
 it('test resolve', async () => {
   const test = (): Promise<string> => {
@@ -25,13 +24,6 @@ it('test reject', async () => {
   const {res, err} = await to(test());
   expect(res).toEqual(null);
   expect(err.message).toEqual('I am wrong.');
-});
-
-it('test setTimeout async', async () => {
-  const setTimeoutPromisify = promisify(setTimeout);
-  const {res, err} = await to(setTimeoutPromisify(50));
-  expect(res).toEqual(null);
-  expect(err).toEqual(null);
 });
 
 it('test fs.exists async', async () => {

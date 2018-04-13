@@ -1,92 +1,54 @@
-import * as debug from 'debug';
+import debug from 'debug';
 import queue from './queue';
-import {ZkClient} from './zookeeper';
+import serverAgent, {ServerAgent} from './server-agent';
 import {IZkClientProps} from './types';
-import SocketAgent from './socket-agent';
+import {ZkClient} from './zookeeper';
+import {ScheduleError, SocketError, ZookeeperTimeoutError} from './err';
+import Context from './context';
+import {msg, MSG_TYPE} from './msg';
 
 const log = debug('dubbo:scheduler');
 
 enum SCHEDULE_STATUS {
+  //等待状态
   PADDING,
+  //失败状态
   FAILED,
+  //OK状态
   READY,
 }
 
+/**
+ * 调度器
+ * 1. 初始化zookeeper和socket-agent
+ * 2. 接受所有的socket-worker的事件
+ * 3. 处理用户的请求
+ * 4. 接受zookeeper的变化，更新Server-agent
+ */
 export default class Scheduler {
   constructor(props: IZkClientProps) {
-    log(`new Scheduler, with ${JSON.stringify(props, null, 2)}`);
-    //subscribe invoke queue
+    log(`new Scheduler, with %O`, props);
+    this._status = SCHEDULE_STATUS.PADDING;
+    //监听队列
     queue.subscribe(this._handleQueueSubscribe);
-
-    this._init(props).catch(err => {
-      log(`init failed.`);
-      log(err);
-      //TODO 告警
+    //初始化ZkClient
+    this._zkClient = ZkClient.from(props).subscribe({
+      onData: this._handleZkClientOnData,
+      onError: this._handleZkClientError,
     });
   }
 
   private _status: number;
   private _zkClient: ZkClient;
-  private _socketAgent: SocketAgent;
+  private _serverAgent: ServerAgent;
 
   static from(props) {
     return new Scheduler(props);
   }
 
-  private async _init(props) {
-    this._status = SCHEDULE_STATUS.PADDING;
-
-    //创建zk
-    this._zkClient = ZkClient.from(props).subscribe(this._subscribeZkUpdate);
-
-    //获取provider信息
-    const err = await this._zkClient.getProviderAndAgentList();
-    if (err) {
-      log(err);
-      //所有的queue中的全做失败处理
-      queue.allFailed(err);
-      this._status = SCHEDULE_STATUS.FAILED;
-      return err;
-    }
-
-    const agentList = this._zkClient.agentList;
-    log(`get agent list:=>`);
-    log(agentList);
-
-    const providerMap = this._zkClient.providerMap;
-    log(`get providerMap =>`);
-    log(providerMap);
-    //如果负载为空，也就是没有任何provider提供服务
-    if (agentList.size === 0) {
-      //所有的queue中的全做失败处理
-      queue.allFailed(new Error('Can not find any agent'));
-      this._status = SCHEDULE_STATUS.FAILED;
-      return;
-    }
-
-    log(`dubbo agent number: ${agentList.size}`);
-    this._socketAgent = SocketAgent.from(agentList)
-      .onConnect(this._onConnect)
-      .onData(this._onData)
-      .onClose(this._onClose);
-    this._status = SCHEDULE_STATUS.READY;
-  }
-
-  private _subscribeZkUpdate = (addAgentSet: Set<string>) => {
-    log(`subcribe=> add dubbo agent number: ${addAgentSet.size}`);
-    if (!this._socketAgent) {
-      log('create new socketAgent');
-      this._socketAgent = SocketAgent.from(addAgentSet)
-        .onConnect(this._onConnect)
-        .onData(this._onData)
-        .onClose(this._onClose);
-    } else {
-      log('add more socketAgent');
-      this._socketAgent.addMoreAgent(addAgentSet);
-    }
-    this._status = SCHEDULE_STATUS.READY;
-  };
-
+  /**
+   * 处理队列请求
+   */
   private _handleQueueSubscribe = requestId => {
     log(
       `handle requestId ${requestId}, status: ${SCHEDULE_STATUS[this._status]}`,
@@ -96,63 +58,133 @@ export default class Scheduler {
         log('scheduler was padding');
         break;
       case SCHEDULE_STATUS.FAILED:
-        log('scheduler was failed');
-        queue.failed(
-          requestId,
-          new Error('Schedule error, Zk Could not connect'),
-        );
+        this._scheduleFailed(requestId);
         break;
       case SCHEDULE_STATUS.READY:
         log('scheduler was ready');
-        const dubboInterface = queue.getInterface(requestId);
-        const agentHostList = this._zkClient.getAgentHostList(dubboInterface);
-        log('agentHostList->', agentHostList);
+        const ctx = queue.requestQueue.get(requestId);
+        //获取负载列表
+        const agentHostList = this._zkClient.getAgentHostList(ctx);
+        log('agentHostList-> %O', agentHostList);
         //如果没有提供者
-        if (agentHostList.length === 0) {
-          queue.failed(
-            requestId,
-            new Error(`Could not find any ${dubboInterface} providers`),
-          );
-        } else {
-          if (this._socketAgent.hasAvaliableSocketAgent(agentHostList)) {
-            const socketPool = this._socketAgent.getAvaliableSocketAgent(
-              agentHostList,
-            );
-            const node = socketPool.worker;
-            const providers = this._zkClient.providerMap.get(dubboInterface);
-
-            queue.consume(
-              requestId,
-              node,
-              providers[`${node.host}:${node.port}`],
-            );
-          }
+        if (Scheduler._isNotFoundAgent(ctx, agentHostList)) {
+          return;
         }
+        //发起dubbo的调用
+        this._dubboInvoke(ctx, agentHostList);
         break;
       default:
         break;
     }
   };
 
+  /**
+   * 处理zookeeper的数据
+   */
+  private _handleZkClientOnData = (agentSet: Set<string>) => {
+    //获取负载列表
+    log(`get agent list:=> %O`, agentSet);
+
+    //如果负载为空，也就是没有任何provider提供服务
+    if (agentSet.size === 0) {
+      //所有的queue中的全做失败处理
+      queue.allFailed(new ScheduleError('Can not find any agent'));
+      this._status = SCHEDULE_STATUS.FAILED;
+      return;
+    }
+
+    //初始化serverAgent
+    this._serverAgent = serverAgent.from(agentSet).subscribe({
+      onConnect: this._onConnect,
+      onData: this._onData,
+      onClose: this._onClose,
+    });
+  };
+
+  /**
+   * 处理zookeeper的错误
+   */
+  private _handleZkClientError = err => {
+    log(err);
+    //说明zookeeper连接不上
+    if (err instanceof ZookeeperTimeoutError) {
+      this._status = SCHEDULE_STATUS.FAILED;
+    }
+  };
+
+  /**
+   * 处理schedule的failed状态
+   */
+  private _scheduleFailed = (requestId: number) => {
+    log('scheduler was failed');
+    queue.failed(
+      requestId,
+      new ScheduleError('Schedule error, Zk Could not connect'),
+    );
+  };
+
+  /**
+   * 判断是不是当前调用接口的agentHost是不是为kong，如果为空失败处理
+   * @param ctx
+   * @param agentHost
+   */
+  private static _isNotFoundAgent(ctx: Context, agentHost: Array<string>) {
+    const isNotFound = agentHost.length === 0;
+
+    if (isNotFound) {
+      const {requestId, dubboInterface, version, group} = ctx;
+
+      if (agentHost.length === 0) {
+        log(
+          `Could not find any agentHost with ${dubboInterface}#${version}#${group}`,
+        );
+        queue.failed(
+          requestId,
+          new ScheduleError(
+            `Could not find any ${dubboInterface} providers with version#${version} group#${group}, May be you should check dubbo object's interfaces :)`,
+          ),
+        );
+      }
+    }
+
+    return isNotFound;
+  }
+
+  /**
+   * 发起dubbo调用
+   * @param ctx
+   * @param agentHostList
+   */
+  private _dubboInvoke(ctx: Context, agentHostList: Array<string>) {
+    const node = this._serverAgent.getAvailableSocketAgent(agentHostList)
+      .worker;
+
+    ctx.invokeHost = node.host;
+    ctx.invokePort = node.port;
+
+    const providerProps = this._zkClient.getProviderProps(ctx);
+    queue.consume(ctx.requestId, node, providerProps);
+  }
+
+  /**
+   * 响应ServerAgent的connect事件
+   */
   private _onConnect = ({pid, host, port}) => {
     log(`scheduler receive SocketWorker connect pid#${pid} ${host}:${port}`);
     const agentHost = `${host}:${port}`;
-    const {scheduleQueue} = queue;
+    this._status = SCHEDULE_STATUS.READY;
 
-    for (let requestId of scheduleQueue.keys()) {
-      if (queue.isNotSchedule(requestId)) {
-        const dubboInterface = queue.getInterface(requestId);
-        const agentHostList = this._zkClient.getAgentHostList(dubboInterface);
+    for (let ctx of queue.requestQueue.values()) {
+      if (ctx.isNotScheduled) {
+        const agentHostList = this._zkClient.getAgentHostList(ctx);
+        log('agentHostList-> %O', agentHostList);
+
+        if (Scheduler._isNotFoundAgent(ctx, agentHostList)) {
+          return;
+        }
+
         if (agentHostList.indexOf(agentHost) != -1) {
-          const node = this._socketAgent.getAvaliableSocketAgent(agentHostList)
-            .worker;
-          log(`SocketWorker#${node.pid} =invoked=> ${requestId}`);
-          const providers = this._zkClient.providerMap.get(dubboInterface);
-          queue.consume(
-            requestId,
-            node,
-            providers[`${node.host}:${node.port}`],
-          );
+          this._dubboInvoke(ctx, agentHostList);
         }
       }
     }
@@ -169,20 +201,26 @@ export default class Scheduler {
     }
   };
 
+  /**
+   * 处理某一个SocketWorker被关闭的状态
+   */
   private _onClose = ({pid}) => {
     log(`SocketWorker#${pid} was close`);
-    this._socketAgent.clearClosedPool();
+
+    //通知外部
+    msg.emit(
+      MSG_TYPE.SYS_ERR,
+      new SocketError(`SocketWorker#${pid} was close`),
+    );
 
     //查询之前哪些接口的方法被pid调用
-    const {invokeQueue, scheduleQueue} = queue;
-    if (invokeQueue.size == 0) {
-      log(`current invoke-queue is empty`);
-      return;
-    }
-
-    for (let [requestId, _pid] of scheduleQueue) {
-      if (_pid === pid) {
-        queue.failed(requestId, new Error(`SocketWorker#${pid} had closed.`));
+    const {requestQueue} = queue;
+    for (let [requestId, ctx] of requestQueue) {
+      if (ctx.pid === pid) {
+        queue.failed(
+          requestId,
+          new SocketError(`SocketWorker#${pid} had closed.`),
+        );
       }
     }
   };

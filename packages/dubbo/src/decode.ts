@@ -1,7 +1,8 @@
-import * as Hessian from 'hessian.js';
-import * as debug from 'debug';
+import debug from 'debug';
+import Hessian from 'hessian.js';
 import {convertBinaryNum} from './binary';
-import {IDubboRespose} from './types';
+import {IDubboResponse} from './types';
+import {DubboDecodeError} from './err';
 
 const log = debug('dubbo:hessian:DecoderV2');
 
@@ -29,7 +30,7 @@ enum DUBBO_RESPONSE_BODY_FLAG {
 }
 
 //com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec.encodeResponse/decode
-export function decode<T>(bytes: Buffer): IDubboRespose<T> {
+export function decode<T>(bytes: Buffer): IDubboResponse<T> {
   let res = null;
   let err = null;
 
@@ -45,7 +46,6 @@ export function decode<T>(bytes: Buffer): IDubboRespose<T> {
   requestIdBuff[7] = bytes[11];
 
   const requestId = convertBinaryNum(requestIdBuff, 8);
-
   log(`decode parse requestId: ${requestId}`);
 
   // const typeId = bytes[2];
@@ -61,7 +61,7 @@ export function decode<T>(bytes: Buffer): IDubboRespose<T> {
 
   if (status != DUBBO_RESPONSE_STATUS.OK) {
     return {
-      err: new Error(bytes.slice(HEADER_LENGTH).toString()),
+      err: new DubboDecodeError(bytes.slice(HEADER_LENGTH).toString()),
       res: null,
       requestId,
     };
@@ -88,11 +88,16 @@ export function decode<T>(bytes: Buffer): IDubboRespose<T> {
       break;
     case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION:
       const exception = body.read();
-      err = exception instanceof Error ? exception : new Error(exception);
+      err =
+        exception instanceof Error
+          ? exception
+          : new DubboDecodeError(exception);
       res = null;
       break;
     default:
-      err = new Error(`Unknown result flag, expect '0' '1' '2', get  ${flag})`);
+      err = new DubboDecodeError(
+        `Unknown result flag, expect '0' '1' '2', get  ${flag})`,
+      );
       res = null;
   }
 

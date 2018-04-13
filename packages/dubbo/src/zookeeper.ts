@@ -1,10 +1,18 @@
-import * as url from 'url';
-import * as qs from 'querystring';
-import * as ip from 'ip';
-import * as zookeeper from 'node-zookeeper-client';
-import * as debug from 'debug';
-import {IZkClientProps, IProviderProps} from './types';
+import debug from 'debug';
+import ip from 'ip';
+import zookeeper from 'node-zookeeper-client';
+import qs from 'querystring';
+import url from 'url';
 import {to} from './to';
+import {
+  IProviderProps,
+  IZkClientProps,
+  IObservable,
+  IZookeeperSubscriber,
+} from './types';
+import {ZookeeperDisconnectedError, ZookeeperTimeoutError} from './err';
+import Context from './context';
+import {msg, MSG_TYPE} from './msg';
 
 const log = debug('dubbo:zookeeper');
 const noop = () => {};
@@ -12,52 +20,40 @@ const noop = () => {};
 export type TAgentHostPort = string;
 export type TDubboInterface = string;
 
-export class ZkClient {
+export class ZkClient implements IObservable<IZookeeperSubscriber> {
   constructor(props: IZkClientProps) {
-    log(`init props ${JSON.stringify(props, null, 2)}`);
-
+    log(`init props %O`, props);
     this._props = props;
     this._props.zkRoot = this._props.zkRoot || 'dubbo';
-    this._isClientConnected = false;
-    this._agentSet = new Set();
+    this._agentMap = new Map();
     this._providerMap = new Map();
-    this._updateCB = noop;
+    this._subscriber = {
+      onData: noop,
+      onError: noop,
+    };
+    this._init().then(() => log('init providerMap and agentSet'));
   }
 
-  private _props: IZkClientProps;
+  private readonly _props: IZkClientProps;
   private _client: zookeeper.Client;
-  private _isClientConnected: boolean;
-  private _updateCB: Function;
-  private _agentSet: Set<TAgentHostPort>;
-  private _providerMap: Map<TDubboInterface, {string: IProviderProps}>;
+  private _subscriber: IZookeeperSubscriber;
+  private _agentMap: Map<TDubboInterface, Array<TAgentHostPort>>;
+  private readonly _providerMap: Map<TDubboInterface, Array<IProviderProps>>;
 
   static from(props: IZkClientProps) {
     return new ZkClient(props);
   }
 
-  async getProviderAndAgentList(): Promise<Error | null> {
-    const {zkRoot} = this._props;
+  async _init(): Promise<null> {
+    const {zkRoot, application: {name}, interfaces} = this._props;
 
     //等待连接zookeeper
-    if (!this._isClientConnected) {
-      const {err} = await to(this._connect());
-      if (err) {
-        log(`connect zk error ${err}`);
-        this._isClientConnected = false;
-        return err;
-      }
+    const {err} = await to(this._connect());
+    if (err) {
+      log(`connect zk error ${err}`);
+      this._subscriber.onError(err);
+      return;
     }
-
-    //已经连上
-    this._isClientConnected = true;
-
-    const {interfaces} = this._props;
-    if (typeof interfaces === 'undefined' || interfaces.length === 0) {
-      log(`zk props could not find any interfaces`);
-      return new Error(`zk props could not find any interfaces`);
-    }
-
-    const {application: {name}} = this._props;
 
     //获取所有provider
     for (let inf of interfaces) {
@@ -66,98 +62,88 @@ export class ZkClient {
       const providerMetaList = providers.map(ZkClient.parseUrl);
 
       for (let providerProp of providerMetaList) {
-        const {host, port} = providerProp;
+        const {host, port, dubboVersion, version} = providerProp;
         const agentHost = `${host}:${port}`;
-        this._agentSet.add(agentHost);
 
         if (this._providerMap.get(inf)) {
-          this._providerMap.get(inf)[agentHost] = providerPath;
+          this._agentMap.get(inf).push(agentHost);
+          this._providerMap.get(inf).push(providerProp);
         } else {
-          const obj = Object.create(null);
-          obj[agentHost] = providerProp;
-          this._providerMap.set(inf, obj);
+          this._agentMap.set(inf, [agentHost]);
+          this._providerMap.set(inf, [providerProp]);
         }
 
         //写入consume信息
-        this._createConsumer(name, inf, providerProp.dubboVersion);
+        this._createConsumer({
+          host: host,
+          port: port,
+          name: name,
+          dubboInterface: inf,
+          dubboVersion: dubboVersion,
+          version: version,
+        }).then(() => log('create Consumer finish'));
       }
     }
+
+    log('current agentSet: %O', this.agentSet);
+    this._subscriber.onData(this.agentSet);
   }
 
-  queryAgentKeybyInterface(dubboInterface: string) {
-    return this._providerMap.get(dubboInterface);
-  }
-
-  get agentList() {
-    return this._agentSet;
+  get agentSet() {
+    const set = new Set();
+    for (let agentList of this._agentMap.values()) {
+      for (let agentHostPort of agentList) {
+        set.add(agentHostPort);
+      }
+    }
+    return set;
   }
 
   get providerMap() {
     return this._providerMap;
   }
 
-  getAgentHostList(dubboInterface: string) {
-    return Object.keys(this._providerMap.get(dubboInterface));
+  getAgentHostList(ctx: Context) {
+    const {dubboInterface, version, group} = ctx;
+    return (this._providerMap.get(dubboInterface) || [])
+      .filter(providerProps => {
+        const isSameVersion = providerProps.version === version;
+        //如果Group不为null，确保group和接口的group一致
+        //如果Group为null，就默认匹配， 不检查group
+        const isSameGroup = group ? group === providerProps.group : true;
+
+        return isSameGroup && isSameVersion;
+      })
+      .map(({host, port}) => `${host}:${port}`);
   }
 
-  subscribe(cb: Function) {
-    this._updateCB = cb;
+  getProviderProps(ctx: Context) {
+    let {dubboInterface, version, group, invokeHost, invokePort} = ctx;
+    const providerList = this._providerMap.get(dubboInterface);
+    for (let providerMeta of providerList) {
+      const isSameHost = providerMeta.host === invokeHost;
+      const isSamePort = providerMeta.port === invokePort;
+      const isSameVersion = providerMeta.version === version;
+      //如果Group不为null，确保group和接口的group一致
+      //如果Group为null，就默认匹配， 不检查group
+      const isSameGroup = group ? group === providerMeta.group : true;
+
+      if (isSameHost && isSamePort && isSameVersion && isSameGroup) {
+        log('getProviderProps=-> %O', providerMeta);
+        return providerMeta;
+      }
+    }
+  }
+
+  subscribe(subscriber: IZookeeperSubscriber) {
+    this._subscriber = subscriber;
     return this;
-  }
-
-  /**
-   * connect zookeeper
-   * @returns {Promise<Error>}
-   */
-  private _connect(): Promise<Error | null> {
-    return new Promise((resolve, reject) => {
-      const {register} = this._props;
-
-      log(`conncecting zkserver ${register}`);
-      this._client = zookeeper.createClient(register, {
-        retries: 3,
-        sessionTimeout: 10 * 1000,
-      });
-
-      //超时检测
-      const {retries, sessionTimeout} = (this._client as any).options;
-      const timeId = setTimeout(() => {
-        log(`can not connect zk ${register}， time out`);
-        this._client.close();
-        reject(new Error('connect zkserver timeout'));
-      }, retries * sessionTimeout);
-
-      //connected
-      this._client.once('connected', () => {
-        log(`connected to zkserver ${register}`);
-        clearTimeout(timeId);
-        this._isClientConnected = true;
-        resolve(null);
-      });
-
-      //the connection between client and server is dropped.
-      this._client.once('disconnected', () => {
-        log(`zk ${register} had disconnected`);
-        this._isClientConnected = false;
-        clearTimeout(timeId);
-        reject(new Error('zkserver had disconnected'));
-      });
-
-      //The client session is expired
-      this._client.once('expired', () => {
-        this._isClientConnected = false;
-        log(`zk ${register} had expired`);
-        reject(new Error('zkserver had expired'));
-      });
-
-      //connect
-      this._client.connect();
-    });
   }
 
   /**
    * 获取所有的provider列表
    * @param {string} providerPath
+   * @param dubboInterface
    * @returns {Promise<Array<string>>}
    * @private
    */
@@ -181,69 +167,98 @@ export class ZkClient {
       .filter(child => child.startsWith('dubbo://'));
   }
 
-  private _watch(providerPath: string, dubboInterface: string) {
-    return async (e: zookeeper.Event) => {
-      log(`trigger watch ${providerPath}`);
+  //========================zookeeper helper=========================
+  /**
+   * connect zookeeper
+   * @returns {Promise<Error>}
+   */
+  private _connect(): Promise<Error | null> {
+    return new Promise((resolve, reject) => {
+      const {register} = this._props;
 
-      const providers =
-        (await this._getProviderList(providerPath, dubboInterface)) || [];
-
-      const providerList = providers.map(ZkClient.parseUrl);
-      const agentList = providerList.map(({host, port, dubboVersion}) => {
-        this._createConsumer(
-          this._props.application.name,
-          dubboInterface,
-          dubboVersion,
-        );
-        return `${host}:${port}`;
+      log(`connecting zkserver ${register}`);
+      this._client = zookeeper.createClient(register, {
+        retries: 3,
+        sessionTimeout: 10 * 1000,
       });
 
-      const addAgentSet = new Set();
+      //超时检测
+      //node-zookeeper-client,有个bug，当连不上zk时会无限重连
+      //手动做一个超时检测
+      const {retries, sessionTimeout} = (this._client as any).options;
+      const timeId = setTimeout(() => {
+        log(`Could not connect zk ${register}， time out`);
+        this._client.close();
+        const err = new ZookeeperTimeoutError(
+          `ZooKeeper was connected ${register} time out. `,
+        );
+        reject(err);
 
-      for (let provider of providerList) {
-        const {host, port} = provider;
-        const agentHost = `${host}:${port}`;
+        //通知外部，比如对接钉钉机器人
+        msg.emit(MSG_TYPE.SYS_ERR, err);
+      }, retries * sessionTimeout);
 
-        //如果新增的负载
-        if (!this._agentSet.has(agentHost)) {
-          log('add new agent->', agentHost);
+      //connected
+      this._client.once('connected', () => {
+        log(`connected to zkserver ${register}`);
+        clearTimeout(timeId);
+        resolve(null);
 
-          addAgentSet.add(agentHost);
-          this._agentSet.add(agentHost);
+        //通知外部，比如对接钉钉机器人
+        msg.emit(MSG_TYPE.SYS_READY);
+      });
 
-          if (this._providerMap.get(dubboInterface)) {
-            this._providerMap.get(dubboInterface)[agentHost] = providerPath;
-          } else {
-            const obj = Object.create(null);
-            obj[agentHost] = provider;
-            this._providerMap.set(dubboInterface, obj);
-          }
-        }
-      }
+      //the connection between client and server is dropped.
+      this._client.once('disconnected', () => {
+        log(`zk ${register} had disconnected`);
+        const err = new ZookeeperDisconnectedError(
+          'ZooKeeper was disconnected.',
+        );
+        this._subscriber.onError(err);
+        //通知外部，比如对接钉钉机器人
+        msg.emit(MSG_TYPE.SYS_ERR, err);
+        clearTimeout(timeId);
+      });
 
-      //delete list
-      for (let agentHost of this._agentSet) {
-        if (agentList.indexOf(agentHost) === -1) {
-          //delete
-          log('delete->', agentHost);
-          this._agentSet.delete(agentHost);
-          const providerMap = this._providerMap.get(dubboInterface);
-          if (providerMap) {
-            delete providerMap[agentHost];
-          }
-        }
-      }
+      //connect
+      this._client.connect();
+    });
+  }
 
-      log('add agent->');
-      log(addAgentSet);
-      log(`providerMap->`);
-      log(this._providerMap);
-      log('agentSet->');
-      log(this._agentSet);
+  private _watch(providerPath: string, dubboInterface: string) {
+    //@ts-ignore
+    return async (e: zookeeper.Event) => {
+      log(`trigger watch ${providerPath}, type: %s`, e.getName());
+      const providers =
+        (await this._getProviderList(providerPath, dubboInterface)) || [];
+      const providerList = providers.map(ZkClient.parseUrl);
+      log(
+        'update dubboInterface % providerList %O',
+        dubboInterface,
+        providerList,
+      );
+      //update providerMap
+      this.providerMap.set(dubboInterface, providerList);
+      log(`update current providerMap-> %O`, this._providerMap);
 
-      if (addAgentSet.size !== 0) {
-        this._updateCB(addAgentSet);
-      }
+      //当前的agentList
+      const agentSet = providerList.map(
+        ({host, port, dubboVersion, version}) => {
+          this._createConsumer({
+            host: host,
+            port: port,
+            name: this._props.application.name,
+            dubboInterface: dubboInterface,
+            dubboVersion: dubboVersion,
+            version: version,
+          }).then(() => log('create consumer finish'));
+          return `${host}:${port}`;
+        },
+      );
+
+      this._agentMap.set(dubboInterface, agentSet);
+      log('current agentSet: %O', this.agentSet);
+      this._subscriber.onData(this.agentSet);
     };
   }
 
@@ -269,42 +284,52 @@ export class ZkClient {
     });
   };
 
-  private async _createConsumer(
-    name: string,
-    dubboInterface: string,
-    dubboVersion: string,
-  ) {
+  /**
+   * com.alibaba.dubbo.registry.zookeeper.ZookeeperRegistry
+   */
+  private async _createConsumer(params: {
+    host: string;
+    port: number;
+    name: string;
+    dubboInterface: string;
+    dubboVersion: string;
+    version: string;
+  }) {
+    let {host, port, name, dubboInterface, dubboVersion, version} = params;
     const queryParams = {
+      host,
+      port,
       interface: dubboInterface,
       application: name,
-      category: 'consumer',
+      category: 'consumers',
       dubbo: dubboVersion,
       method: '',
       revision: '',
-      version: '',
+      version: version,
       side: 'consumer',
       check: 'false',
-      timestamp: new Date().getTime(),
+      timestamp: Date.now(),
     };
 
     const consumerRoot = `/dubbo/${dubboInterface}/consumers`;
     const err = await this._createRootConsumer(consumerRoot);
     if (err) {
-      log(err);
+      log('create root consumer %o', err);
+      return;
     }
 
     const consumerUrl =
       consumerRoot +
       '/' +
       encodeURIComponent(
-        `consumer://${ip.address()}/${dubboInterface}?${encodeURIComponent(
-          qs.stringify(queryParams),
+        `consumer://${ip.address()}/${dubboInterface}?${qs.stringify(
+          queryParams,
         )}`,
       );
-    log(`check consumer url: ${consumerUrl}`);
-    const exisits = await to(this._exists(consumerUrl));
-    if (exisits.err || exisits.res) {
-      log('创建consumer失败或者consumer已经存在');
+
+    const exist = await to(this._exists(consumerUrl));
+    if (exist.err || exist.res) {
+      log(`check consumer url: ${consumerUrl}失败或者consumer已经存在`);
       return;
     }
 
@@ -313,17 +338,22 @@ export class ZkClient {
     );
 
     if (create.err) {
-      log('创建consumer失败');
+      log(
+        `check consumer url: ${decodeURIComponent(
+          consumerUrl,
+        )}创建consumer失败 %o`,
+        create.err,
+      );
       return;
     }
-    log(`create successfully consumer url: ${consumerUrl}`);
+
+    log(`create successfully consumer url: ${decodeURIComponent(consumerUrl)}`);
   }
 
   private async _createRootConsumer(consumer: string) {
     const {res, err} = await to(this._exists(consumer));
     if (err) {
-      log(`consumer exisit ${consumer}`);
-      log(err);
+      log(`consumer exisit ${consumer} %o`, err);
       return err;
     }
 
@@ -384,6 +414,7 @@ export class ZkClient {
       host: rpc.hostname,
       port: parseInt(rpc.port),
       timeout: query.timeout ? parseInt(query.timeout as string) : 0,
+      path: rpc.pathname.substring(1),
       dubboVersion: query.dubbo || '',
       version: query.version || '',
       group: query.group || '',

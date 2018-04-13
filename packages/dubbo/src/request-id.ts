@@ -1,8 +1,9 @@
 let uniqueId = 0;
 
-/**
- * 生成uuid
- */
-export function uuid() {
-  return ++uniqueId;
+export function id() {
+  uniqueId = ++uniqueId;
+  if (uniqueId === Number.MAX_SAFE_INTEGER) {
+    uniqueId = 0;
+  }
+  return uniqueId;
 }

@@ -1,7 +1,8 @@
-import * as Hessian from 'hessian.js';
-import * as debug from 'debug';
-import {IDubboEncoderProps} from './types';
+import debug from 'debug';
+import Hessian from 'hessian.js';
 import {binaryNum} from './binary';
+import Context from './context';
+import {DubboEncodeError} from './err';
 
 const log = debug('dubbo:hessian:encoderV2');
 
@@ -10,11 +11,11 @@ const log = debug('dubbo:hessian:encoderV2');
 //encodeRequest
 
 //header length
-const DUBBO_HEDER_LENGTH = 16;
+const DUBBO_HEADER_LENGTH = 16;
 // magic header.
 const DUBBO_MAGIC_HEADER = 0xdabb;
 // message flag.
-const FLAG_REQUST = 0x80;
+const FLAG_REQEUST = 0x80;
 const FLAG_TWOWAY = 0x40;
 
 //com.alibaba.dubbo.common.serialize.support.hessian.Hessian2Serialization中定义
@@ -25,18 +26,19 @@ const HESSIAN2_SERIALIZATION_CONTENT_ID = 2;
 const DUBBO_DEFAULT_PAY_LOAD = 8 * 1024 * 1024; // 8M
 
 export default class DubboEncoder {
-  constructor(props: IDubboEncoderProps) {
-    this.props = props;
-    log(`dubbo encode param ${JSON.stringify(this.props, null, 2)}`);
+  constructor(ctx: Context) {
+    const {request, uuid} = ctx;
+    log('dubbo encode param request:%O, uuid:%s', request, uuid);
+
+    this._ctx = ctx;
   }
 
-  props: IDubboEncoderProps;
+  private readonly _ctx: Context;
 
   encode() {
     const body = this.encodeBody();
     const head = this.encodeHead(body.length);
     log(`encode body length: ${body.length} bytes`);
-
     return Buffer.concat([head, body]);
   }
 
@@ -51,7 +53,7 @@ export default class DubboEncoder {
    */
   private encodeHead(payload: number) {
     //header
-    const header = Buffer.alloc(DUBBO_HEDER_LENGTH);
+    const header = Buffer.alloc(DUBBO_HEADER_LENGTH);
 
     //set magic number
     //magic high
@@ -60,14 +62,14 @@ export default class DubboEncoder {
     header[1] = DUBBO_MAGIC_HEADER & 0xff;
 
     // set request and serialization flag.
-    header[2] = FLAG_REQUST | HESSIAN2_SERIALIZATION_CONTENT_ID | FLAG_TWOWAY;
+    header[2] = FLAG_REQEUST | HESSIAN2_SERIALIZATION_CONTENT_ID | FLAG_TWOWAY;
 
     //requestId
     this.setRequestId(header);
 
     //check body length
     if (payload > 0 && payload > DUBBO_DEFAULT_PAY_LOAD) {
-      throw new Error(
+      throw new DubboEncodeError(
         `Data length too large: ${payload}, max payload: ${DUBBO_DEFAULT_PAY_LOAD}`,
       );
     }
@@ -83,7 +85,7 @@ export default class DubboEncoder {
   }
 
   private setRequestId(header) {
-    const requestId = this.props.requestId;
+    const {requestId} = this._ctx;
     log(`encode header requestId: ${requestId}`);
     const buffer = binaryNum(requestId, 8);
     header[4] = buffer[0];
@@ -106,7 +108,7 @@ export default class DubboEncoder {
       version,
       methodName,
       methodArgs,
-    } = this.props;
+    } = this._ctx;
 
     //dubbo version
     encoder.write(dubboVersion);
@@ -177,20 +179,23 @@ export default class DubboEncoder {
   }
 
   private getAttachments() {
-    const {dubboInterface, group, timeout, version} = this.props;
+    const {path, dubboInterface, group, timeout, version, uuid} = this._ctx;
 
     let attachments = {
       $class: 'java.util.HashMap',
       $: {
         interface: dubboInterface,
-        path: dubboInterface,
-        version: '0.0.0',
+        path: path,
+        version: version || '0.0.0',
       },
     };
 
-    group && (attachments['group'] = group);
-    timeout && (attachments['timeout'] = timeout);
-    version && (attachments['version'] = version);
+    group && (attachments['$']['group'] = group);
+    timeout && (attachments['$']['timeout'] = timeout);
+
+    log(`trace uuid-> ${uuid}`);
+    //全链路跟踪
+    uuid && (attachments['$']['QM_UUID'] = uuid);
 
     return attachments;
   }

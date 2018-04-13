@@ -1,53 +1,58 @@
-import * as net from 'net';
-import * as debug from 'debug';
+import debug from 'debug';
+import net from 'net';
+import Context from './context';
+import {decode} from './decode';
+import DecodeBuffer from './decode-buffer';
+import DubboEncoder from './encode';
 import HeartBeat from './heartbeat';
 import {SOCKET_STATUS} from './socket-status';
-import DubboEncoder from './encode';
-import {decode} from './decode';
-import {IDubboEncoderProps} from './types';
-import DecodeBuffer from './decode-buffer';
+import statistics from './statistics';
+import {IObservable, ISocketSubscriber} from './types';
 
-let uuid = 0;
+let pid = 0;
 const noop = () => {};
-const log = debug('dubbo:socket-worker');
 const HEART_BEAT = 180 * 1000;
+const log = debug('dubbo:socket-worker');
 
-export default class SocketWorker {
+/**
+ * 具体处理tcp底层通信的模块
+ * 1 负责socket的创建和通信
+ * 2.负责dubbo的序列化和反序列化
+ * 3.心跳的处理，保证通道的连接状态
+ */
+export default class SocketWorker implements IObservable<ISocketSubscriber> {
   constructor(host: string, port: number) {
-    this._pid = ++uuid;
-    this._host = host;
-    this._port = port;
+    this.pid = ++pid;
+    statistics['pid#' + this.pid] = 0;
+
+    this.host = host;
+    this.port = port;
     this._isSending = false;
-    this._retry = 0;
     this._status = SOCKET_STATUS.PADDING;
-    this._buff = new DecodeBuffer(this._pid).onData(this._onDecodeData);
 
-    this._onConnectCB = noop;
-    this._onCloseCB = noop;
-    this._onDataCB = noop;
+    log('create SocketWorker#%d addr: $s', pid, host + ':' + port);
 
-    log(
-      `new SocketWorker#${this._pid} =connecting=> ${this._host}:${this._port}`,
+    this._subscriber = {
+      onConnect: noop,
+      onData: noop,
+      onClose: noop,
+    };
+
+    this._decodeBuff = DecodeBuffer.from(pid).subscribe(
+      this._onSubscribeDecodeBuff,
     );
-
-    this._socket = new net.Socket();
-    this._socket.connect(port, host, this._onConnected);
-    this._socket.on('data', this._onData);
-    this._socket.on('error', this._onError);
-    this._socket.on('close', this._onClose);
+    this._initSocket();
   }
 
-  private _pid: number;
-  private _retry: number;
-  private _host: string;
-  private _port: number;
+  public readonly pid: number;
+  public readonly host: string;
+  public readonly port: number;
+
   private _socket: net.Socket;
   private _isSending: boolean;
   private _status: number;
-  private _buff: DecodeBuffer;
-  private _onConnectCB: Function;
-  private _onCloseCB: Function;
-  private _onDataCB: Function;
+  private _decodeBuff: DecodeBuffer;
+  private _subscriber: ISocketSubscriber;
   private _heartBeatTimer: NodeJS.Timer;
 
   static from(url: string) {
@@ -55,16 +60,32 @@ export default class SocketWorker {
     return new SocketWorker(host, parseInt(port));
   }
 
+  private _initSocket() {
+    log(`SocketWorker#${this.pid} =connecting=> ${this.host}:${this.port}`);
+
+    this._socket = new net.Socket();
+    this._socket.connect(this.port, this.host, this._onConnected);
+    this._socket.on('data', this._onData);
+    this._socket.on('error', this._onError);
+    this._socket.on('close', this._onClose);
+  }
+
+  private _onSubscribeDecodeBuff = (data: Buffer) => {
+    //反序列化dubbo
+    const json = decode(data);
+    log(`SocketWorker#${this.pid} <=received=> dubbo result %O`, json);
+    this._subscriber.onData(json);
+  };
+
   private _onConnected = () => {
-    log(`SocketWorker#${this._pid} <=connected=> ${this._host}:${this._port}`);
+    log(`SocketWorker#${this.pid} <=connected=> ${this.host}:${this.port}`);
     this._status = SOCKET_STATUS.CONNECTED;
-    this._socket.setNoDelay(true);
 
     //通知外部连接成功
-    this._onConnectCB({
-      pid: this._pid,
-      host: this._host,
-      port: this._port,
+    this._subscriber.onConnect({
+      pid: this.pid,
+      host: this.host,
+      port: this.port,
     });
 
     //心跳
@@ -78,71 +99,36 @@ export default class SocketWorker {
   };
 
   private _onData = data => {
-    log(
-      `SocketWorker#${this._pid}  =receive data=> ${this._host}:${this._port}`,
-    );
-
-    this._buff.receive(data);
-  };
-
-  private _onDecodeData = (data: Buffer) => {
-    //反序列化dubbo
-    const json = decode(data);
-    log(
-      `SocketWorker#${this._pid} <=received=> dubbo result: ${JSON.stringify(
-        json,
-        null,
-        2,
-      )}`,
-    );
-    this._onDataCB(json);
+    log(`SocketWorker#${this.pid}  =receive data=> ${this.host}:${this.port}`);
+    this._decodeBuff.receive(data);
   };
 
   private _onError = error => {
-    log(
-      `SocketWorker#${this._pid} <=occur error=> ${this._host}:${this._port}`,
-    );
+    log(`SocketWorker#${this.pid} <=occur error=> ${this.host}:${this.port}`);
+
     log(error);
     clearInterval(this._heartBeatTimer);
   };
 
   private _onClose = () => {
-    log(`SocketWorker#${this._pid} <=closed=> ${this._host}:${this._port}`);
+    log(`SocketWorker#${this.pid} <=closed=> ${this.host}:${this.port}`);
+
     this._status = SOCKET_STATUS.CLOSED;
-    this._onCloseCB({
-      pid: this._pid,
-      host: this._host,
-      port: this._port,
+    this._subscriber.onClose({
+      pid: this.pid,
+      host: this.host,
+      port: this.port,
     });
     clearInterval(this._heartBeatTimer);
-    this._retry++;
   };
 
-  /**
-   * 通知外部连接成功
-   */
-  onConnect(cb: Function) {
-    this._onConnectCB = cb;
-    return this;
-  }
-
-  /**
-   * 通知外部不可用
-   */
-  onClose(cb) {
-    this._onCloseCB = cb;
-    return this;
-  }
-
-  onData(cb) {
-    this._onDataCB = cb;
-    return this;
-  }
-
-  write(data: IDubboEncoderProps) {
+  write(ctx: Context) {
     if (this.status === SOCKET_STATUS.CONNECTED) {
+      log(`SocketWorker#${this.pid} =invoked=> ${ctx.requestId}`);
+      statistics['pid#' + this.pid] = ++statistics['pid#' + this.pid];
       this._isSending = true;
-      const encoder = new DubboEncoder(data);
+      ctx.pid = this.pid;
+      const encoder = new DubboEncoder(ctx);
       this._socket.write(encoder.encode());
       this._isSending = false;
     }
@@ -152,15 +138,8 @@ export default class SocketWorker {
     return this._status;
   }
 
-  get pid() {
-    return this._pid;
-  }
-
-  get host() {
-    return this._host;
-  }
-
-  get port() {
-    return this._port;
+  subscribe(subscriber: ISocketSubscriber) {
+    this._subscriber = subscriber;
+    return this;
   }
 }

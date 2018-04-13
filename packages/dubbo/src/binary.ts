@@ -1,7 +1,7 @@
 /**
- * 生成二进制的buffer
- * @param num
- * @param byteLength
+ * 将num转换为二进制的buff，不够的长度补0
+ * @param num 要转换的数据
+ * @param byteLength 生成的字节数量
  */
 export function binaryNum(num: number, byteLength: number) {
   const str = num.toString(2);
@@ -19,7 +19,7 @@ export function binaryNum(num: number, byteLength: number) {
 }
 
 /**
- * 解析buffer还原为uuid
+ * 解析buffer还原为数字
  * @param binNum
  * @param byteLength
  */

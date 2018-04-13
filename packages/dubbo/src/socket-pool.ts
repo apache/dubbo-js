@@ -1,24 +1,32 @@
-import * as debug from 'debug';
+import debug from 'debug';
 import SocketNode from './socket-worker';
 import {SOCKET_STATUS} from './socket-status';
 import SocketWorker from './socket-worker';
+import config from './config';
+import {IObservable, ISocketSubscriber} from './types';
 
-const MAX_POOL_SIZE = 4;
 const noop = () => {};
 const log = debug('dubbo:socket-pool');
 
-export default class SocketPool {
+/**
+ * Socket池容器，默认初始化4个socket
+ */
+export default class SocketPool implements IObservable<ISocketSubscriber> {
   constructor(props: {url: string; poolSize: number}) {
     log(`new SocketPool with ${JSON.stringify(props, null, 2)}`);
+
     this._socketPool = [];
     this._isInitEnd = false;
 
     this._url = props.url;
-    this._poolSize = props.poolSize < 0 ? MAX_POOL_SIZE : props.poolSize;
+    this._poolSize =
+      props.poolSize < 0 ? config.dubboSocketPool : props.poolSize;
 
-    this._onConnect = noop;
-    this._onClose = noop;
-    this._onData = noop;
+    this._subscriber = {
+      onConnect: noop,
+      onData: noop,
+      onClose: noop,
+    };
 
     process.nextTick(() => {
       this._init();
@@ -26,14 +34,12 @@ export default class SocketPool {
   }
 
   private _url: string;
-  private _poolSize: number;
+  private readonly _poolSize: number;
   private _isInitEnd: boolean;
   private _socketPool: Array<SocketNode>;
-  private _onConnect: Function;
-  private _onClose: Function;
-  private _onData: Function;
+  private _subscriber: ISocketSubscriber;
 
-  static from(url: string, poolSize: number = MAX_POOL_SIZE) {
+  static from(url: string, poolSize: number = config.dubboSocketPool) {
     return new SocketPool({
       url,
       poolSize,
@@ -43,30 +49,12 @@ export default class SocketPool {
   private _init = () => {
     for (let i = 0; i < this._poolSize; i++) {
       this._socketPool.push(
-        SocketWorker.from(this._url)
-          .onConnect(this._onConnect)
-          .onData(this._onData)
-          .onClose(this._onClose),
+        SocketWorker.from(this._url).subscribe(this._subscriber),
       );
     }
 
     this._isInitEnd = true;
   };
-
-  onConnect(cb: Function) {
-    this._onConnect = cb;
-    return this;
-  }
-
-  onData(cb: Function) {
-    this._onData = cb;
-    return this;
-  }
-
-  onClose(cb: Function) {
-    this._onClose = cb;
-    return this;
-  }
 
   get isAllClose() {
     return (
@@ -94,5 +82,10 @@ export default class SocketPool {
     }
 
     return worker[Math.floor(Math.random() * worker.length)];
+  }
+
+  subscribe(subscriber: ISocketSubscriber) {
+    this._subscriber = subscriber;
+    return this;
   }
 }
