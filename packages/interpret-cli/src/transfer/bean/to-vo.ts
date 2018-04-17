@@ -4,17 +4,16 @@ import {
   MethodDeclarationStructure,
   ParameterDeclarationStructure,
   PropertyDeclarationStructure,
-  TypeParameterDeclarationStructure
-} from "ts-simple-ast";
-import debug from "debug";
-import {toField} from "./to-field";
-import {IntepretHandle} from "../../handle";
-import {jType2Ts} from "../../util/type-parse";
-import {IJClass} from "../../typings";
-import {fields2CtrContent, getCtorParaStr} from "./util/transfer";
+  TypeParameterDeclarationStructure,
+} from 'ts-simple-ast';
+import debug from 'debug';
+import {toField} from './to-field';
+import {IntepretHandle} from '../../handle';
+import {jType2Ts} from '../../util/type-parse';
+import {IJClass} from '../../typings';
+import {fields2CtrContent, getCtorParaStr} from './util/transfer';
 
 const log = debug('j2t:core:toBeanClass');
-
 
 /**
  * java接口转换为ts接口ast
@@ -49,28 +48,26 @@ export async function toBeanClass(
     }
 
     if (
-      filedType.startsWith("com.qianmi") ||
-      filedType.startsWith("java.lang") ||
-      filedType.startsWith("java.util") ||
-      filedType.startsWith("java.math")
+      filedType.startsWith('com.qianmi') ||
+      filedType.startsWith('java.lang') ||
+      filedType.startsWith('java.util') ||
+      filedType.startsWith('java.math')
     ) {
       let field = await toField(
         fieldName,
         typeDef.fields[fieldName],
-        intepretHandle
+        intepretHandle,
       );
       properties.push(field);
       ctorParams.push({name: field.name, type: field.type});
-
 
       let filedItem = typeDef.fields[fieldName];
       fileds.push({
         name: fieldName,
         type: await jType2Ts(filedItem, intepretHandle),
-        filedAst: filedItem
+        filedAst: filedItem,
       });
     }
-
   }
   //添加构造函数入参interface
   //1.2 生成方法;;

@@ -6,14 +6,14 @@
  * @company qianmi.com
  * @Date    2018/1/4
  **/
-import debug from "debug";
-import {join, parse} from "path";
-import {Request} from "./request";
-import {ensureDir} from "fs-extra";
-import {IToImportParam, toImport} from "./transfer/to-import";
-import {toTypescript} from "./transfer/to-typescript";
-import {default as Ast, SourceFile} from "ts-simple-ast";
-import {IGetTypeInfo, IJClass, ITypeSearch} from "./typings";
+import debug from 'debug';
+import {join, parse} from 'path';
+import {Request} from './request';
+import {ensureDir} from 'fs-extra';
+import {IToImportParam, toImport} from './transfer/to-import';
+import {toTypescript} from './transfer/to-typescript';
+import {default as Ast, SourceFile} from 'ts-simple-ast';
+import {IGetTypeInfo, IJClass, ITypeSearch} from './typings';
 
 const log = debug('j2t:core:inteprethandle');
 const ast = new Ast();
@@ -26,9 +26,9 @@ export class IntepretHandle implements ITypeSearch {
     this.classPath = classPath;
     this.request = interpreterRequest;
     log(
-      "Start translating :%s, outputDir:%s",
+      'Start translating :%s, outputDir:%s',
       classPath,
-      interpreterRequest.outputDir
+      interpreterRequest.outputDir,
     );
   }
 
@@ -43,7 +43,7 @@ export class IntepretHandle implements ITypeSearch {
   get to(): string {
     return join(
       this.request.outputDir,
-      this.classPath.split(".").join("/") + ".ts"
+      this.classPath.split('.').join('/') + '.ts',
     );
   }
 
@@ -75,7 +75,6 @@ export class IntepretHandle implements ITypeSearch {
   };
 
   public isTypeParam = typeName => {
-
     for (let typeParamItem of this.astJava.typeParams) {
       if (typeParamItem.name === typeName) {
         return true;
@@ -92,7 +91,7 @@ export class IntepretHandle implements ITypeSearch {
    * @returns {Promise<void>}
    */
   public async addDenpend(classPath: string) {
-    if (!await this.request.hasAst(classPath)) {
+    if (!(await this.request.hasAst(classPath))) {
       log(`No class ast found:${classPath}`);
       return;
     }
@@ -107,7 +106,7 @@ export class IntepretHandle implements ITypeSearch {
         try {
           await new IntepretHandle(classPath, this.request).work();
         } catch (err) {
-          console.error("Error in translating file::", classPath, err.stack);
+          console.error('Error in translating file::', classPath, err.stack);
           throw err;
         }
       }
@@ -116,12 +115,16 @@ export class IntepretHandle implements ITypeSearch {
         this.sourceFile.addImport(
           toImport(
             Object.assign({}, this.getTypeInfo(classPath) as IToImportParam, {
-              packagePath: this.getTypeInfo(this.classPath).packagePath
-            })
-          )
+              packagePath: this.getTypeInfo(this.classPath).packagePath,
+            }),
+          ),
         );
       } catch (err) {
-        console.error(`Error in adding dependencies :add ${classPath} in ${this.classPath},error:${err}`);
+        console.error(
+          `Error in adding dependencies :add ${classPath} in ${
+            this.classPath
+          },error:${err}`,
+        );
       }
     }
   }

@@ -1,12 +1,12 @@
-import {to} from "./to";
-import {readJson} from "fs-extra";
-import {isAbsolute, join} from "path";
-import {IConfig} from "./typings";
-
+import {to} from './to';
+import {readJson} from 'fs-extra';
+import {isAbsolute, join} from 'path';
+import {IConfig} from './typings';
 
 export default class Config {
-
-  static fromConfigPath(configPath: string): Promise<{ err: Error; res: IConfig }> {
+  static fromConfigPath(
+    configPath: string,
+  ): Promise<{err: Error; res: IConfig}> {
     return to<IConfig>(
       readJson(configPath).then(config => {
         // Relative path to absolute path

@@ -1,7 +1,10 @@
-import {VariableDeclarationType, VariableStatementStructure} from "ts-simple-ast";
-import debug from "debug";
-import {IntepretHandle} from "../../handle";
-import {IJClass} from "../../typings";
+import {
+  VariableDeclarationType,
+  VariableStatementStructure,
+} from 'ts-simple-ast';
+import debug from 'debug';
+import {IntepretHandle} from '../../handle';
+import {IJClass} from '../../typings';
 
 const log = debug('j2t:core:toWrapperClass');
 
@@ -22,12 +25,12 @@ function toTypeWrapper(
   typeDef: IJClass,
   intepretHandle: IntepretHandle,
 ): VariableStatementStructure {
-
   let typeName = intepretHandle.getTypeInfo(typeDef.name).className;
-  let _methods = [], bodys = [];
+  let _methods = [],
+    bodys = [];
   for (let methodName in typeDef.methods) {
     if (typeDef.methods[methodName].isOverride) {
-      methodName = methodName.substring(0, methodName.lastIndexOf("@override"));
+      methodName = methodName.substring(0, methodName.lastIndexOf('@override'));
     }
 
     if (_methods.indexOf(methodName) !== -1) {
@@ -45,9 +48,7 @@ function toTypeWrapper(
     declarations: [
       {
         name: typeName + 'Wrapper',
-        initializer: `{${bodys.join(
-          ',',
-        )}}`,
+        initializer: `{${bodys.join(',')}}`,
       },
     ],
   };

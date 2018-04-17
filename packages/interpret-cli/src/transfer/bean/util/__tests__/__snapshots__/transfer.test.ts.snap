@@ -22,7 +22,7 @@ exports[`map<string,List<string>>转换方法 map类型转换生成 1`] = `
 `;
 
 exports[`基础转换生成 枚举类型 1`] = `
-"java.enum(
+"java['enum'](
                   'com.qianmi.yxtc.enums.BusiTypeEnum',
                   BusiTypeEnum[item]
                 )"

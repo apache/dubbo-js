@@ -7,8 +7,8 @@
  * @Date    2017/12/9
  **/
 
-import debug from "debug";
-import {IJFieldPropers, ITypePropers, ITypeSearch} from "../typings";
+import debug from 'debug';
+import {IJFieldPropers, ITypePropers, ITypeSearch} from '../typings';
 
 const log = debug('j2t:core:ast-parse-util');
 
@@ -22,7 +22,7 @@ const log = debug('j2t:core:ast-parse-util');
  */
 const javaType2JSMap = {
   'java.lang.String': 'string',
-  "java.lang.Object": "Object",
+  'java.lang.Object': 'Object',
   'java.lang.Integer': 'number',
   'java.lang.int': 'number',
   'java.lang.short': 'number',
@@ -45,7 +45,7 @@ const javaType2JSMap = {
   'java.util.Set': 'Array',
   'java.util.LinkedHashSet': 'Array',
   'java.util.List': 'Array',
-  "java.util.Collection": "Array",
+  'java.util.Collection': 'Array',
   'java.util.Date': 'Date',
   'java.util.Map': '{[name: ${nameType}]: ${value}}',
   'java.util.HashMap': '{[name: ${nameType}]: ${value}}',
@@ -63,9 +63,8 @@ const javaType2JSMap = {
  */
 export async function jType2Ts(
   typePropers: ITypePropers,
-  typeOptions: ITypeSearch
+  typeOptions: ITypeSearch,
 ): Promise<string> {
-
   let result = '';
   //是否是类泛型的定义
   if (typeOptions.isTypeParam(typePropers.name)) {
@@ -73,8 +72,11 @@ export async function jType2Ts(
   } else if (typePropers.isArray) {
     let subType = await jType2Ts(typePropers.elementType, typeOptions);
     return `${subType}[]`;
-  } else if (typePropers.name === "java.util.Map" && typePropers.typeArgs.length === 0) {
-    return "{[name: any]: any}";
+  } else if (
+    typePropers.name === 'java.util.Map' &&
+    typePropers.typeArgs.length === 0
+  ) {
+    return '{[name: any]: any}';
   } else if (typePropers.typeArgs && typePropers.typeArgs.length > 0) {
     //泛型处理
     let type = await classPath2TypeName(typePropers.name, typeOptions);
@@ -104,7 +106,7 @@ export async function jType2Ts(
         if (!subItem.isWildcard) {
           subTypes.push(await jType2Ts(subItem.type, typeOptions));
         } else {
-          subTypes.push("any");
+          subTypes.push('any');
         }
       }
       result = `${type}<${subTypes.join(',')}>`;
@@ -132,7 +134,7 @@ export async function jType2Ts(
  */
 export async function classPath2TypeName(
   classPath: string,
-  typeOptions: ITypeSearch
+  typeOptions: ITypeSearch,
 ): Promise<string> {
   let result = javaType2JSMap[classPath];
   if (result) {

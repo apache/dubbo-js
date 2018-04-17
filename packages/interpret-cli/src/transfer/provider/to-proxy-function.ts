@@ -4,11 +4,11 @@ import {FunctionDeclarationStructure} from 'ts-simple-ast';
 const log = debug('j2t:core:toBeanClass');
 
 export function toProxyFunc({
-                              typeName,
-                              typePath,
-                              version,
-                              group,
-                            }: {
+  typeName,
+  typePath,
+  version,
+  group,
+}: {
   typeName: string;
   typePath: string;
   version: string;

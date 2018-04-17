@@ -35,7 +35,6 @@ export interface ITypeSearch {
   getTypeInfo: IGetTypeInfo;
 }
 
-
 export interface IGetTypeInfo {
   (classPath: string): TypeInfoI;
 }
@@ -43,7 +42,6 @@ export interface IGetTypeInfo {
 export interface isTypeParam {
   (typeParamName: string): boolean;
 }
-
 
 export interface ITypeParameterItem {
   name: string;
@@ -67,7 +65,6 @@ export interface IAddDenpend {
   (classPath: string): Promise<void>;
 }
 
-
 /**
  * 类型属性信息
  */
@@ -86,8 +83,7 @@ export type typePath = string;
 /**
  * java字段属性;
  */
-export interface IJFieldPropers extends ITypePropers {
-}
+export interface IJFieldPropers extends ITypePropers {}
 
 /**
  *
@@ -103,7 +99,7 @@ export interface IJFieldPropers extends ITypePropers {
  */
 export interface ITypeArg {
   isWildcard: boolean;
-  type: ITypePropers
+  type: ITypePropers;
 }
 
 /**
@@ -111,24 +107,22 @@ export interface ITypeArg {
  */
 export interface ITypeParam {
   name: string;
-  types: ITypePropers[]
+  types: ITypePropers[];
 }
-
 
 /**
  * 方法属性
  */
 export interface IJMethodPropers {
-  formalParams: string[];//变量名称;
-  params: ITypePropers[];//变量类型
+  formalParams: string[]; //变量名称;
+  params: ITypePropers[]; //变量类型
   isOverride: boolean;
   ret: ITypePropers;
   typeParams: ITypeParam[];
 }
 
-
 export interface IJMethod {
-  [methodName: string]: IJMethodPropers
+  [methodName: string]: IJMethodPropers;
 }
 
 export interface IJClass {
@@ -139,7 +133,7 @@ export interface IJClass {
   isInterface: boolean;
   methods: IJMethod;
   typeParams: ITypeParam[];
-  values?: string[] | number[];//枚举类型首个值;
+  values?: string[] | number[]; //枚举类型首个值;
   name: typePath;
 }
 

@@ -7,14 +7,14 @@
  * @Date    2017/12/13
  **/
 
-import debug from "debug";
-import {toEnum} from "./bean/to-enum";
-import {toBeanClass} from "./bean/to-vo";
-import {SourceFile} from "ts-simple-ast";
-import {IntepretHandle} from "../handle";
-import {toInterface} from "./provider/to-interface";
-import {toProxyFunc} from "./provider/to-proxy-function";
-import {toWrapperClass} from "./provider/to-wrapper-class";
+import debug from 'debug';
+import {toEnum} from './bean/to-enum';
+import {toBeanClass} from './bean/to-vo';
+import {SourceFile} from 'ts-simple-ast';
+import {IntepretHandle} from '../handle';
+import {toInterface} from './provider/to-interface';
+import {toProxyFunc} from './provider/to-proxy-function';
+import {toWrapperClass} from './provider/to-wrapper-class';
 
 const log = debug('j2t:core:toTypewcript');
 
@@ -27,14 +27,16 @@ const log = debug('j2t:core:toTypewcript');
 export async function toTypescript(
   intepretHandle: IntepretHandle,
 ): Promise<SourceFile> {
-  log("调用转换方法 toTypescript::", intepretHandle.classPath);
+  log('调用转换方法 toTypescript::', intepretHandle.classPath);
   let {
     sourceFile,
     astJava,
-    request: {config: {dubboVersion, dubboGroup}}
+    request: {
+      config: {dubboVersion, dubboGroup},
+    },
   } = intepretHandle;
 
-  let lastPointIndex = astJava.name.lastIndexOf(".") + 1;
+  let lastPointIndex = astJava.name.lastIndexOf('.') + 1;
   let typeInfo = {
     classPath: astJava.name,
     packagePath: astJava.name.substring(0, lastPointIndex),
@@ -51,7 +53,6 @@ export async function toTypescript(
       sourceFile.addEnum(toEnum(astJava.name, astJava, intepretHandle));
     } else {
       if (typeInfo.isProvider) {
-
         sourceFile.addInterface(await toInterface(astJava, intepretHandle));
         sourceFile.addVariableStatement(
           toWrapperClass(astJava, intepretHandle),
@@ -63,7 +64,7 @@ export async function toTypescript(
         sourceFile.addFunction(
           toProxyFunc({
             typeName: intepretHandle.classPath.substring(
-              intepretHandle.classPath.lastIndexOf(".") + 1
+              intepretHandle.classPath.lastIndexOf('.') + 1,
             ),
             typePath: intepretHandle.classPath,
             version: dubboVersion,
@@ -80,13 +81,13 @@ export async function toTypescript(
     }
 
     sourceFile.addImport({
-      moduleSpecifier: "interpret-util",
-      defaultImport: "{argumentMap}"
+      moduleSpecifier: 'interpret-util',
+      defaultImport: '{argumentMap}',
     });
   } catch (err) {
     console.error(
       `为${intepretHandle.classPath},${JSON.stringify(typeInfo)} 添加内容出错,`,
-      err
+      err,
     );
   }
 

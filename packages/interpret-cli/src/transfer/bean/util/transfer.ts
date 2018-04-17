@@ -1,10 +1,10 @@
-import debug from "debug";
-import {IntepretHandle} from "../../../handle";
-import {jType2Ts} from "../../../util/type-parse";
-import {IJClass, IJFieldPropers, ITypeSearch} from "../../../typings";
-import {TypeParameterDeclarationStructure} from "ts-simple-ast";
+import debug from 'debug';
+import {IntepretHandle} from '../../../handle';
+import {jType2Ts} from '../../../util/type-parse';
+import {IJClass, IJFieldPropers, ITypeSearch} from '../../../typings';
+import {TypeParameterDeclarationStructure} from 'ts-simple-ast';
 
-const log = debug("j2t:core:toBeanClass:transfer");
+const log = debug('j2t:core:toBeanClass:transfer');
 
 /**
  * @desc
@@ -21,12 +21,12 @@ interface IFiled {
 
 export function getCtorParaStr(
   className: string,
-  typeParameters: TypeParameterDeclarationStructure[] = []
+  typeParameters: TypeParameterDeclarationStructure[] = [],
 ) {
   if (typeParameters.length === 0) {
-    return "I" + className;
+    return 'I' + className;
   } else {
-    return `I${className}<${typeParameters.map(({name}) => name).join(",")}>`;
+    return `I${className}<${typeParameters.map(({name}) => name).join(',')}>`;
   }
 }
 
@@ -40,12 +40,13 @@ export function getCtorParaStr(
 export async function fields2CtrContent(
   fileds: IFiled[],
   typeOption: ITypeSearch,
-  typeDef: IJClass
+  typeDef: IJClass,
 ): Promise<{
   initContent: string;
   fieldTrans: Array<string>;
 }> {
-  let initContent = "", fieldTrans = [];
+  let initContent = '',
+    fieldTrans = [];
 
   for (var i = 0, iLen = fileds.length; i < iLen; i++) {
     var {name, filedAst} = fileds[i];
@@ -55,22 +56,22 @@ export async function fields2CtrContent(
       if (typeOption.hasAst(firstDTypeClassPath)) {
         fieldTrans.push(`${name}:java.array("${firstDTypeClassPath}",(this.${name}||[]).map(paramItem=>{
           return ${j2Jtj(typeOption, {
-          paramRefName: "paramItem",
-          classPath: firstDTypeClassPath
-        })}
+            paramRefName: 'paramItem',
+            classPath: firstDTypeClassPath,
+          })}
           }))`);
-      } else if (firstDTypeClassPath.startsWith("java.lang")) {
+      } else if (firstDTypeClassPath.startsWith('java.lang')) {
         fieldTrans.push(`${name}:java.array.${firstDTypeClassPath.replace(
-          "java.lang.",
-          ""
+          'java.lang.',
+          '',
         )}((this.${name}||[]).map(paramItem=>{
           return ${j2Jtj(typeOption, {
-          paramRefName: "paramItem",
-          classPath: firstDTypeClassPath
-        })}
+            paramRefName: 'paramItem',
+            classPath: firstDTypeClassPath,
+          })}
           }))`);
       } else {
-        throw new Error("数组下未支持类型;;");
+        throw new Error('数组下未支持类型;;');
       }
     } else if (filedAst.typeArgs && filedAst.typeArgs.length > 0) {
       let isWildcard = false;
@@ -88,51 +89,51 @@ export async function fields2CtrContent(
 
       if (
         [
-          "java.util.List",
-          "java.util.Collection",
-          "java.util.Set",
-          "java.util.LinkedHashSet"
+          'java.util.List',
+          'java.util.Collection',
+          'java.util.Set',
+          'java.util.LinkedHashSet',
         ].includes(filedAst.name)
       ) {
         if (
-          ["java.util.HashMap", "java.util.Map"].includes(
-            filedAst.typeArgs[0].type.name
+          ['java.util.HashMap', 'java.util.Map'].includes(
+            filedAst.typeArgs[0].type.name,
           )
         ) {
           let forEachStr = `(this.${name}||[])`;
-          if (filedAst.name === "Set") {
+          if (filedAst.name === 'Set') {
             forEachStr = `[... this.${name}]`;
           }
 
           fieldTrans.push(`${name}:java.${filedAst.name.substring(
-            filedAst.name.lastIndexOf(".") + 1
+            filedAst.name.lastIndexOf('.') + 1,
           )}(${forEachStr}.map(paramItem=>{
               ${mapParseContent(
-            "paramItemMapTransfer",
-            "paramItem",
-            filedAst.typeArgs[0].type,
-            typeOption
-          )}
+                'paramItemMapTransfer',
+                'paramItem',
+                filedAst.typeArgs[0].type,
+                typeOption,
+              )}
                return paramItemMapTransfer;
           }))`);
         } else {
           //List', 'Set泛型的处理 List<string> List<request>
           let forEachStr = `(this.${name}||[])`;
-          if (filedAst.name === "Set") {
+          if (filedAst.name === 'Set') {
             forEachStr = `[... this.${name}]`;
           }
 
           fieldTrans.push(`${name}:java.${filedAst.name.substring(
-            filedAst.name.lastIndexOf(".") + 1
+            filedAst.name.lastIndexOf('.') + 1,
           )}(${forEachStr}.map(paramItem=>{
           return ${j2Jtj(typeOption, {
-            paramRefName: "paramItem",
-            classPath: filedAst.typeArgs[0].type.name
+            paramRefName: 'paramItem',
+            classPath: filedAst.typeArgs[0].type.name,
           })}
           }))`);
         }
       } else if (
-        ["java.util.HashMap", "java.util.Map"].includes(filedAst.name)
+        ['java.util.HashMap', 'java.util.Map'].includes(filedAst.name)
       ) {
         let keyType, valType;
 
@@ -145,10 +146,10 @@ export async function fields2CtrContent(
           for(let mapKey  in this.${name}){
               ${name}MapTransfer.set(${j2Jtj(typeOption, {
             paramRefName: `mapKey`,
-            classPath: filedAst.typeArgs[0].type.name
+            classPath: filedAst.typeArgs[0].type.name,
           })}, ${j2Jtj(typeOption, {
             paramRefName: `this.${name}[mapKey]`,
-            classPath: filedAst.typeArgs[1].type.name
+            classPath: filedAst.typeArgs[1].type.name,
           })});
           };
           `;
@@ -157,36 +158,36 @@ export async function fields2CtrContent(
 
           if (
             [
-              "java.util.List",
-              "java.util.Collection",
-              "java.util.Set",
-              "java.util.LinkedHashSet"
+              'java.util.List',
+              'java.util.Collection',
+              'java.util.Set',
+              'java.util.LinkedHashSet',
             ].includes(filedAst.typeArgs[1].type.name)
           ) {
             initContent += `let ${name}MapTransfer = new Map();
           for(let mapKey  in this.${name}) {
               ${name}MapTransfer.set(${j2Jtj(typeOption, {
               paramRefName: `mapKey`,
-              classPath: filedAst.typeArgs[0].type.name
+              classPath: filedAst.typeArgs[0].type.name,
             })}, java.List(this.${name}[mapKey].map(paramItem=>{
                     return ${j2Jtj(typeOption, {
-              paramRefName: "paramItem",
-              classPath:
-              filedAst.typeArgs[1].type.typeArgs[0].type.name
-            })}}))
+                      paramRefName: 'paramItem',
+                      classPath:
+                        filedAst.typeArgs[1].type.typeArgs[0].type.name,
+                    })}}))
              );
           };
           `;
           } else {
-            throw new Error("泛型层级过深暂不支持;");
+            throw new Error('泛型层级过深暂不支持;');
           }
         } else {
-          throw new Error("泛型层级过深暂不支持;");
+          throw new Error('泛型层级过深暂不支持;');
         }
 
         fieldTrans.push(
           `${name}:java.${filedAst.name.substring(
-            filedAst.name.lastIndexOf(".") + 1
+            filedAst.name.lastIndexOf('.') + 1,
           )}(${name}MapTransfer)`,
         );
       } else {
@@ -196,7 +197,7 @@ export async function fields2CtrContent(
       fieldTrans.push(
         `${name}:${j2Jtj(typeOption, {
           classPath: filedAst.name,
-          paramRefName: `this.${name}`
+          paramRefName: `this.${name}`,
         })}`,
       );
     }
@@ -216,16 +217,16 @@ export function mapParseContent(
   resultMapName: string,
   mapValName: string,
   fieldPropers: IJFieldPropers,
-  typeOption: ITypeSearch
+  typeOption: ITypeSearch,
 ) {
   let initContent = `let ${resultMapName} = new Map();
           for(let mapKey  in ${mapValName}){
               ${resultMapName}.set(${j2Jtj(typeOption, {
     paramRefName: `mapKey`,
-    classPath: fieldPropers.typeArgs[0].type.name
+    classPath: fieldPropers.typeArgs[0].type.name,
   })}, ${j2Jtj(typeOption, {
     paramRefName: `${mapValName}[mapKey]`,
-    classPath: fieldPropers.typeArgs[1].type.name
+    classPath: fieldPropers.typeArgs[1].type.name,
   })});
           };
           `;
@@ -244,7 +245,7 @@ export function j2Jtj(
   typeOptions: ITypeSearch,
   {
     paramRefName,
-    classPath
+    classPath,
   }: {
     paramRefName: string;
     classPath: string;
@@ -259,38 +260,32 @@ export function j2Jtj(
       return `java['enum'](
                   '${classPath}',
                   ${classPath.substring(
-        classPath.lastIndexOf(".") + 1
-      )}[${paramRefName}]
+                    classPath.lastIndexOf('.') + 1,
+                  )}[${paramRefName}]
                 )`;
-    } else if (
-      isClass
-    ) {
+    } else if (isClass) {
       log(`添加对象转换(__fields2java)${classPath}`);
       //引入类并且不是枚举类型
       return `${paramRefName}.__fields2java()`;
     } else {
-      throw new Error(
-        "不可能出现这种的,classPathStr:" +
-        classPath +
-        isClass
-      );
+      throw new Error('不可能出现这种的,classPathStr:' + classPath + isClass);
     }
   } else if (typeOptions.isTypeParam(classPath)) {
     return `${paramRefName}['__fields2java']?${paramRefName}['__fields2java']():${paramRefName}`;
-  } else if (classPath === "java.math.BigDecimal") {
-    log("处理java BigDecimal类型,param %j,schema %j");
+  } else if (classPath === 'java.math.BigDecimal') {
+    log('处理java BigDecimal类型,param %j,schema %j');
     return `java.BigDecimal(${paramRefName}.value)`;
-  } else if (classPath === "java.util.Date") {
+  } else if (classPath === 'java.util.Date') {
     return `${paramRefName}`; //时间类型 js2java可以直接识别;
-  } else if (classPath === "java.lang.Object") {
+  } else if (classPath === 'java.lang.Object') {
     return `${paramRefName}['__fields2java']?${paramRefName}['__fields2java']():${paramRefName}`;
-  } else if (classPath.startsWith("java.lang.")) {
+  } else if (classPath.startsWith('java.lang.')) {
     return `java.${classPath.substring(
-      classPath.lastIndexOf(".") + 1
+      classPath.lastIndexOf('.') + 1,
     )}(${paramRefName})`;
   } else {
     throw new Error(
-      `生成js-to-java代码出错:${paramRefName},${classPath}, ${classPath}`
+      `生成js-to-java代码出错:${paramRefName},${classPath}, ${classPath}`,
     );
   }
 }

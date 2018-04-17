@@ -1,28 +1,28 @@
 #!/usr/bin/env node
-import klaw from "klaw";
-import {to} from "./to";
-import debug from "debug";
-import {extra} from "./ext";
-import Config from "./config";
-import program from "commander";
-import prettier from "prettier";
-import {Request} from "./request";
-import {readFile, writeFile} from "fs-extra";
+import klaw from 'klaw';
+import {to} from './to';
+import debug from 'debug';
+import {extra} from './ext';
+import Config from './config';
+import program from 'commander';
+import prettier from 'prettier';
+import {Request} from './request';
+import {readFile, writeFile} from 'fs-extra';
 
 const log = debug('j2t:cli');
 
 program
   .version('0.0.1')
-  .usage("-c dubbo.json")
+  .usage('-c dubbo.json')
   .option('-c, --config [value]', 'specify interpret Config ')
   .parse(process.argv);
 
 (async () => {
   const {res: dubboConfig, err: configErr} = await Config.fromConfigPath(
-    program.config
+    program.config,
   );
   if (configErr) {
-    console.error("Error reading configuration file");
+    console.error('Error reading configuration file');
     console.log(configErr);
     log(configErr);
     return;
@@ -30,19 +30,19 @@ program
 
   const {res: extInfo, err: extError} = await to(extra(dubboConfig));
   if (extError) {
-    console.error("Failed to extract ast from java class");
+    console.error('Failed to extract ast from java class');
     console.log(extError);
     log(extError);
     return;
   }
 
   //setup jar ast path
-  console.log("read jar ast file", extInfo.jarInfo);
+  console.log('read jar ast file', extInfo.jarInfo);
   dubboConfig.jarInfo = extInfo.jarInfo;
   log(`parse config->${JSON.stringify(dubboConfig, null, 2)}`);
   await new Request(dubboConfig).work();
   await formatSourceDir(dubboConfig.output);
-  console.log("Translation completed");
+  console.log('Translation completed');
 })();
 
 /**
@@ -71,7 +71,9 @@ async function formatSourceDir(srcDir): Promise<void> {
             log(`Format the source code successfully:${item.path}`);
           } catch (err) {
             log(`Failed to format the source code:${item.path} ${err}`);
-            console.warn(`Failed to format the source code:${item.path} ${err}`);
+            console.warn(
+              `Failed to format the source code:${item.path} ${err}`,
+            );
             reject(err);
           }
         }
@@ -82,11 +84,10 @@ async function formatSourceDir(srcDir): Promise<void> {
   });
 }
 
-process.on("uncaughtException", (err) => {
+process.on('uncaughtException', err => {
   console.log(err);
 });
 
-process.on("unhandledRejection", (err) => {
+process.on('unhandledRejection', err => {
   console.log(err);
 });
-

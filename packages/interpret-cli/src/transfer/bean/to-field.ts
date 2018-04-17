@@ -1,8 +1,8 @@
-import debug from "debug";
-import {IntepretHandle} from "../../handle";
-import {IJFieldPropers} from "../../typings";
-import {jType2Ts} from "../../util/type-parse";
-import {PropertySignatureStructure} from "ts-simple-ast";
+import debug from 'debug';
+import {IntepretHandle} from '../../handle';
+import {IJFieldPropers} from '../../typings';
+import {jType2Ts} from '../../util/type-parse';
+import {PropertySignatureStructure} from 'ts-simple-ast';
 
 const log = debug('j2t:core:toField');
 
@@ -17,7 +17,6 @@ export async function toField(
   fieldProps: IJFieldPropers,
   intepretHandle: IntepretHandle,
 ): Promise<PropertySignatureStructure> {
-
   log('转换 为属性:%o', fieldProps);
 
   let type = await jType2Ts(fieldProps, intepretHandle);
@@ -27,6 +26,3 @@ export async function toField(
     type,
   };
 }
-
-
-

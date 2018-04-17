@@ -1,7 +1,7 @@
-import debug from "debug";
-import {EnumDeclarationStructure} from "ts-simple-ast";
-import {IntepretHandle} from "../../handle";
-import {IJClass} from "../../typings";
+import debug from 'debug';
+import {EnumDeclarationStructure} from 'ts-simple-ast';
+import {IntepretHandle} from '../../handle';
+import {IJClass} from '../../typings';
 
 const log = debug('j2t:core:toField');
 
@@ -25,13 +25,13 @@ export function toEnum(
       let initializer = `"${fieldsKey}"`,
         values = intepretHandle.astJava.values || [];
 
-      if (typeof values[fieldIndex] === "number") {
+      if (typeof values[fieldIndex] === 'number') {
         initializer = `${values[fieldIndex]}`;
       }
 
       members.push({
         name: fieldsKey,
-        initializer
+        initializer,
       });
       fieldIndex++;
     } else {
@@ -40,11 +40,11 @@ export function toEnum(
   }
 
   console.warn(
-    "warning:调用转换方法 toEnum::",
+    'warning:调用转换方法 toEnum::',
     className,
-    "参数数量:",
+    '参数数量:',
     paramNmu,
-    " 联系相关接口开发人员,尽量不要使用枚举类型"
+    ' 联系相关接口开发人员,尽量不要使用枚举类型',
   );
   return {
     isExported: true,

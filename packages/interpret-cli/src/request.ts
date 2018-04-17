@@ -1,7 +1,7 @@
-import debug from "debug";
-import {readJson} from "fs-extra";
-import {IntepretHandle} from "./handle";
-import {IConfig, IJarInfo, IJClass, TypeInfoI} from "./typings";
+import debug from 'debug';
+import {readJson} from 'fs-extra';
+import {IntepretHandle} from './handle';
+import {IConfig, IJarInfo, IJClass, TypeInfoI} from './typings';
 
 const log = debug('j2t:core:application');
 
@@ -12,9 +12,8 @@ const log = debug('j2t:core:application');
  *
  */
 export class Request {
-
   constructor(config: IConfig) {
-    log("Request init");
+    log('Request init');
     this.config = config;
   }
 
@@ -35,21 +34,17 @@ export class Request {
   }
 
   public async work() {
-    log("read jar config", this.config.jarInfo);
+    log('read jar config', this.config.jarInfo);
     this.jarInfo = await readJson(this.config.jarInfo);
     await this.interpret();
   }
 
   public async interpret() {
-    for (let providerPath of  this.jarInfo.providers) {
-      log("start transaction for provider::", providerPath);
-      await new IntepretHandle(
-        providerPath,
-        this
-      ).work();
+    for (let providerPath of this.jarInfo.providers) {
+      log('start transaction for provider::', providerPath);
+      await new IntepretHandle(providerPath, this).work();
     }
   }
-
 
   public getAst(classPath: string): IJClass {
     if (this.jarInfo.classes[classPath]) {
@@ -68,19 +63,19 @@ export class Request {
   }
 
   registerTypeInfo(typeInfoItem: TypeInfoI) {
-    let key = "";
+    let key = '';
     if (typeInfoItem.classPath) {
       key = typeInfoItem.classPath;
     }
 
     if (this.typeInfo.has(key)) {
-      log("update class typeInfo:%o", typeInfoItem);
+      log('update class typeInfo:%o', typeInfoItem);
       this.typeInfo.set(key, {
         ...this.typeInfo.get(key),
-        ...typeInfoItem
+        ...typeInfoItem,
       });
     } else {
-      log("register one class typeInfo:%o", typeInfoItem);
+      log('register one class typeInfo:%o', typeInfoItem);
       this.typeInfo.set(key, typeInfoItem);
     }
   }

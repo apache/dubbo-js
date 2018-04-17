@@ -1,8 +1,8 @@
-import debug from "debug";
-import {IntepretHandle} from "../handle";
-import {IJMethodPropers} from "../typings";
-import {jType2Ts} from "../util/type-parse";
-import {MethodSignatureStructure} from "ts-simple-ast";
+import debug from 'debug';
+import {IntepretHandle} from '../handle';
+import {IJMethodPropers} from '../typings';
+import {jType2Ts} from '../util/type-parse';
+import {MethodSignatureStructure} from 'ts-simple-ast';
 
 const log = debug('j2t:core:toMethod');
 
@@ -25,7 +25,7 @@ export async function toMethod(
       let name =
         (methodDef.formalParams && methodDef.formalParams[i]) ||
         paramItem.elementType.name.substring(
-          paramItem.elementType.name.lastIndexOf(".") + 1
+          paramItem.elementType.name.lastIndexOf('.') + 1,
         ) + i;
       parameters.push({
         name,
@@ -35,7 +35,7 @@ export async function toMethod(
       let type = await jType2Ts(paramItem, intepretHandle);
       let name =
         (methodDef.formalParams && methodDef.formalParams[i]) ||
-        paramItem.name.substring(paramItem.name.lastIndexOf(".") + 1) + i;
+        paramItem.name.substring(paramItem.name.lastIndexOf('.') + 1) + i;
       parameters.push({
         name,
         type,
