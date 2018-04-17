@@ -2,36 +2,36 @@
 
 ![love dubbo](https://raw.githubusercontent.com/QianmiOpen/dubbo2.js/master/resources/dubbo-love.png)
 
-多年期盼，一朝梦圆！
+多年期盼，一朝梦圆！ We love dubbo 👏
 
-感谢 js-to-java,hessian.js 两大核心模块
+感谢 js-to-java,hessian.js 两大核心模块, 感谢苏千和死马老师。
 
-我们终于用 nodejs 使用原生的 dubbo (dubbo head + hessian body) 协议打通了 dubbo 的 rpc 方法调用 .
+nodejs 使用原生的 dubbo (dubbo head + hessian body) 协议打通了 dubbo 的 rpc 方法调用 .
 
 ## Features
 
 1.  Support zookeeper as register center
 
-2.  TCP Dubbo Native protocal （Dubbo Header + Hessian Body）
+2.  TCP Dubbo Native protocol （Dubbo Header + Hessian Body）
 
-3.  Socket Pool (SocketAgent -> SocketPool -> SocketWorker)
+3.  Socket Pool (ServerAgent -> SocketPool -> SocketWorker)
 
 4.  Support Directly Dubbo (const Dubbo = DirectlyDubbo({..}))
 
-5.  middleware
+5.  Middleware, Easy to extend.
 
-6.  tracing
+6.  Tracing
 
 ## Getting Started
 
 ```shell
-yarn add dubbo2.js
+yarn add dubbo2.js # or npm install dubbo2.js --save
 ```
 
 ## How to Usage?
 
 ```typescript
-import {Dubbo, java, TDubboCallResult} from 'dubbo';
+import {Dubbo, java, TDubboCallResult} from 'dubbo2.js';
 
 //定义dubbo方法类型接口
 //方便代码自动提示
@@ -84,13 +84,16 @@ const demoService = dubbo.proxyService<IDemoService>({
   },
 });
 
-const result1 = await demoService.sayHello('node');
-//print {err: null, res:'hello node from dubbo service'}
-const res = await demoService.echo();
-//print {err: null, res: 'pang'}
+//main method
+(async () => {
+  const result1 = await demoService.sayHello('node');
+  //print {err: null, res:'hello node from dubbo service'}
+  const res = await demoService.echo();
+  //print {err: null, res: 'pang'}
 
-const res = await demoService.getUserInfo();
-//status: 'ok', info: { id: '1', name: 'test' }
+  const res = await demoService.getUserInfo();
+  //status: 'ok', info: { id: '1', name: 'test' }
+})();
 ```
 
 ## as developer
@@ -111,13 +114,12 @@ DEBUG=dubbo* yarn run test
 
 ## API
 
-创建 Dubbo 对象
+### create dubbo object
 
 ```javascript
 const dubbo = new Dubbo({
   dubboVersion          //当前dubbo的版本 (string类型); 必传
   application           //记录应用的名称，zookeeper的调用时候写入consumer 类型：({name: string};) 可选
-  enableHeartBeat       //是否启用心跳机制 默认true 可选 类型 boolean
   dubboInvokeTimeout    //设置dubbo调用超时时间默认10s 可选 类型number
   dubboSocketPool       //设置dubbo创建socket的pool大小，默认4 可选 类型number
   register              //设置zookeeper注册中心地址 必填 类型string
@@ -129,13 +131,13 @@ const dubbo = new Dubbo({
 const dubbo = Dubbo.from({
   dubboVersion          //当前dubbo的版本 (string类型); 必传
   application           //记录应用的名称，zookeeper的调用时候写入consumer 类型：({name: string};) 可选
-  enableHeartBeat       //是否启用心跳机制 默认true 可选 类型 boolean
   dubboInvokeTimeout    //设置dubbo调用超时时间默认10s 可选 类型number
   dubboSocketPool       //设置dubbo创建socket的pool大小，默认4 可选 类型number
   register              //设置zookeeper注册中心地址 必填 类型string
   zkRoot                //zk的默认根路径，默认/dubbo 类型string
   interfaces            //设置zk监听的接口名称 类型 Array<string> 必填
 })
+
 
 //dubbo的代理服务
 const demoSerivce = Dubbo.proxService({
@@ -169,7 +171,7 @@ dubbo.use(async (ctx, next) => {
   const startTime = Date.now();
   await next();
   const endTime = Date.now();
-  console.log(endTime - startTime);
+  console.log('invoke cost time->', endTime - startTime);
 });
 ```
 

@@ -1,16 +1,15 @@
 {
   "name": "dubbo2.js",
-  "version": "1.0.0-rc.12",
+  "version": "1.0.0",
   "main": "./es7/index.js",
   "types": "./es7/typings/index.d.ts",
-  "author": "hufeng@qianmi.com",
-  "license": "MIT",
+  "license": "Apache Licence 2.0",
   "engines": {
     "node": ">=6.0.0"
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/QianmiOpen/dubbo2.js.git"
   },
   "dependencies": {
     "debug": "3.1.0",
