@@ -18,7 +18,6 @@ const log = debug('dubbo:socket-worker');
  * 具体处理tcp底层通信的模块
  * 1 负责socket的创建和通信
  * 2.负责dubbo的序列化和反序列化
- * 3.心跳的处理，保证通道的连接状态
  */
 export default class SocketWorker implements IObservable<ISocketSubscriber> {
   constructor(host: string, port: number) {
