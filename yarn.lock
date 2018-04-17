@@ -14,6 +14,12 @@
   version "1.1.0"
   resolved "http://registry.npm.taobao.org/@types/events/download/@types/events-1.1.0.tgz#93b1be91f63c184450385272c47b6496fd028e02"
 
+"@types/fs-extra@^4.0.5":
+  version "4.0.8"
+  resolved "http://registry.npm.qianmi.com/@types/fs-extra/download/@types/fs-extra-4.0.8.tgz#6957ddaf9173195199cb96da3db44c74700463d2"
+  dependencies:
+    "@types/node" "*"
+
 "@types/ip@0.0.30":
   version "0.0.30"
   resolved "https://registry.yarnpkg.com/@types/ip/-/ip-0.0.30.tgz#60c3309ce1cecdd7293245bbffc201ecb6f8c344"
@@ -25,6 +31,12 @@
 "@types/js-to-java@2.4.0":
   version "2.4.0"
   resolved "http://registry.npm.taobao.org/@types/js-to-java/download/@types/js-to-java-2.4.0.tgz#d040564f62177937957329f5626cb7a40acf97f3"
+
+"@types/klaw@^2.1.1":
+  version "2.1.1"
+  resolved "http://registry.npm.qianmi.com/@types/klaw/download/@types/klaw-2.1.1.tgz#8cfe201e95de97e5cfc7c31ecc4941aa12ab1b2e"
+  dependencies:
+    "@types/node" "*"
 
 "@types/koa-compose@3.2.2":
   version "3.2.2"
@@ -685,6 +697,10 @@ co@~3.0.6:
   version "3.0.6"
   resolved "http://registry.npm.taobao.org/co/download/co-3.0.6.tgz#1445f226c5eb956138e68c9ac30167ea7d2e6bda"
 
+code-block-writer@^6.2.0:
+  version "6.14.0"
+  resolved "http://registry.npm.qianmi.com/code-block-writer/download/code-block-writer-6.14.0.tgz#0245ee31aebcd21a82316ce2061d5fbe9550de6f"
+
 code-point-at@^1.0.0:
   version "1.1.0"
   resolved "http://registry.npm.taobao.org/code-point-at/download/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
@@ -715,6 +731,10 @@ combined-stream@^1.0.5, combined-stream@~1.0.5:
 command-join@^2.0.0:
   version "2.0.0"
   resolved "http://registry.npm.taobao.org/command-join/download/command-join-2.0.0.tgz#52e8b984f4872d952ff1bdc8b98397d27c7144cf"
+
+commander@^2.12.2:
+  version "2.15.1"
+  resolved "http://registry.npm.qianmi.com/commander/download/commander-2.15.1.tgz#df46e867d0fc2aec66a34662b406a9ccafff5b0f"
 
 commander@^2.9.0:
   version "2.12.2"
@@ -1543,7 +1563,7 @@ got@^6.7.1:
     unzip-response "^2.0.1"
     url-parse-lax "^1.0.0"
 
-graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6:
+graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9:
   version "4.1.11"
   resolved "http://registry.npm.taobao.org/graceful-fs/download/graceful-fs-4.1.11.tgz#0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658"
 
@@ -2277,6 +2297,10 @@ js-to-java@2.4.0:
   version "2.4.0"
   resolved "http://registry.npm.taobao.org/js-to-java/download/js-to-java-2.4.0.tgz#b275f2ddfeb2f71e6bd0c41cb74573187f201a50"
 
+js-to-java@^2.4.0:
+  version "2.5.0"
+  resolved "http://registry.npm.qianmi.com/js-to-java/download/js-to-java-2.5.0.tgz#3b78aa2c0d889c0208f099dbbfdef1ec1cf9d022"
+
 js-tokens@^3.0.0, js-tokens@^3.0.2:
   version "3.0.2"
   resolved "http://registry.npm.taobao.org/js-tokens/download/js-tokens-3.0.2.tgz#9866df395102130e38f7f996bceb65443209c25b"
@@ -2380,6 +2404,12 @@ kind-of@^4.0.0:
   resolved "http://registry.npm.taobao.org/kind-of/download/kind-of-4.0.0.tgz#20813df3d712928b207378691a45066fae72dd57"
   dependencies:
     is-buffer "^1.1.5"
+
+klaw@^2.1.1:
+  version "2.1.1"
+  resolved "http://registry.npm.qianmi.com/klaw/download/klaw-2.1.1.tgz#42b76894701169cc910fd0d19ce677b5fb378af1"
+  dependencies:
+    graceful-fs "^4.1.9"
 
 koa-compose@4.0.0:
   version "4.0.0"
@@ -2883,7 +2913,7 @@ oauth-sign@~0.8.1, oauth-sign@~0.8.2:
   version "0.8.2"
   resolved "http://registry.npm.taobao.org/oauth-sign/download/oauth-sign-0.8.2.tgz#46a6ab7f0aead8deae9ec0565780b7d4efeb9d43"
 
-object-assign@^4.0.1, object-assign@^4.1.0:
+object-assign@^4.0.1, object-assign@^4.1.0, object-assign@^4.1.1:
   version "4.1.1"
   resolved "http://registry.npm.taobao.org/object-assign/download/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
 
@@ -3116,6 +3146,10 @@ prepend-http@^1.0.1:
 preserve@^0.2.0:
   version "0.2.0"
   resolved "http://registry.npm.taobao.org/preserve/download/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
+
+prettier@^1.10.2:
+  version "1.12.1"
+  resolved "http://registry.npm.qianmi.com/prettier/download/prettier-1.12.1.tgz#c1ad20e803e7749faf905a409d2367e06bbe7325"
 
 pretty-format@^21.2.1:
   version "21.2.1"
@@ -3953,6 +3987,16 @@ ts-jest@^21.2.2:
     source-map-support "^0.5.0"
     yargs "^10.0.3"
 
+ts-simple-ast@^1.3.0:
+  version "1.3.0"
+  resolved "http://registry.npm.qianmi.com/ts-simple-ast/download/ts-simple-ast-1.3.0.tgz#88ecd8e2b28668c22fc48ec219dd8cce78187c70"
+  dependencies:
+    code-block-writer "^6.2.0"
+    globby "^6.1.0"
+    minimatch "^3.0.4"
+    object-assign "^4.1.1"
+    typescript "2.6.1"
+
 tsscmp@~1.0.0:
   version "1.0.5"
   resolved "http://registry.npm.taobao.org/tsscmp/download/tsscmp-1.0.5.tgz#7dc4a33af71581ab4337da91d85ca5427ebd9a97"
@@ -3980,6 +4024,14 @@ type-check@~0.3.2:
 typedarray@^0.0.6:
   version "0.0.6"
   resolved "http://registry.npm.taobao.org/typedarray/download/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
+
+typescript@2.6.1:
+  version "2.6.1"
+  resolved "http://registry.npm.qianmi.com/typescript/download/typescript-2.6.1.tgz#ef39cdea27abac0b500242d6726ab90e0c846631"
+
+typescript@^2.6.1:
+  version "2.8.1"
+  resolved "http://registry.npm.qianmi.com/typescript/download/typescript-2.8.1.tgz#6160e4f8f195d5ba81d4876f9c0cc1fbc0820624"
 
 typescript@^2.7.2:
   version "2.7.2"
