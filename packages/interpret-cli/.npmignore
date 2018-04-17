@@ -1,0 +1,9 @@
+**/__tests__/**
+**/__mocks__/**
+src
+tsconfig.json
+node_modules
+*.log
+output
+temp
+demo
