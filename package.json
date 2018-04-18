@@ -4,7 +4,8 @@
   "scripts": {
     "compile:interpret":
       "yarn run clean:interpret && tsc -p packages/interpret-cli/tsconfig.json",
-    "clean:interpret": "rm -rf packages/interpret-cli/lib"
+    "clean:interpret": "rm -rf packages/interpret-cli/lib",
+    "test": "jest --watch -u"
   },
   "devDependencies": {
     "lerna": "^2.5.1",

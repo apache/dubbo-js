@@ -1,3 +1,19 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import debug from 'debug';
 import net from 'net';
 import Context from './context';
@@ -18,7 +34,6 @@ const log = debug('dubbo:socket-worker');
  * 具体处理tcp底层通信的模块
  * 1 负责socket的创建和通信
  * 2.负责dubbo的序列化和反序列化
- * 3.心跳的处理，保证通道的连接状态
  */
 export default class SocketWorker implements IObservable<ISocketSubscriber> {
   constructor(host: string, port: number) {
