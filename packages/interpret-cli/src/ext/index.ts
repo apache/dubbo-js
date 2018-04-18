@@ -34,7 +34,6 @@ export async function extra(extraParam: IDubboExtInfo): Promise<IExtraResult> {
       extraParam.entry,
       extraParam.entryJarPath,
       extraParam.libDirPath,
-      extraParam.jrtPath,
     ]);
 
     let err: string = '';

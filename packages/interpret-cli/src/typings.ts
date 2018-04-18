@@ -31,8 +31,6 @@ export interface IDubboExtInfo {
   entryJarPath: string;
   //指定jar包依赖的包目录
   libDirPath: string;
-  //jrt目录
-  jrtPath: string;
 }
 
 export interface IConfig extends IDubboConfigInfo, IDubboExtInfo {
