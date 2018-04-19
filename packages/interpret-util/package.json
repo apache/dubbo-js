@@ -15,7 +15,8 @@
   "engines": {
     "node": ">=8.0.0"
   },
-  "license": "ISC",
+  "types": "./lib/typings/index.d.ts",
+  "license": "Apache Licence 2.0",
   "dependencies": {
     "debug": "3.1.0",
     "js-to-java": "^2.4.0"

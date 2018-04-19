@@ -1,8 +1,8 @@
-import * as java from 'js-to-java';
+import java from 'js-to-java';
 
 export interface ITypeRequest {
-  bigDecimal?: { value: string };
-  map?: { [name: string]: string };
+  bigDecimal?: {value: string};
+  map?: {[name: string]: string};
 }
 
 export class TypeRequest {
@@ -11,8 +11,8 @@ export class TypeRequest {
     this.map = params.map;
   }
 
-  bigDecimal?: { value: string };
-  map?: { [name: string]: string };
+  bigDecimal?: {value: string};
+  map?: {[name: string]: string};
 
   __fields2java() {
     let mapMapTransfer = new Map();

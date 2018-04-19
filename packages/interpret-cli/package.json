@@ -10,13 +10,10 @@
     "typescript",
     "ts-simple-ast"
   ],
-  "scripts": {
-    "demo": "ts-node ./src/cli.ts -c ./demo/dubbo.json"
-  },
   "engines": {
     "node": ">=8.0.0"
   },
-  "license": "ISC",
+  "license": "Apache Licence 2.0",
   "dependencies": {
     "commander": "^2.12.2",
     "debug": "3.1.0",

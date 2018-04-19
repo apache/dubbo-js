@@ -1,8 +1,8 @@
-import * as java from 'js-to-java';
+import java from 'js-to-java';
 
 export interface IUserResponse {
   status?: string;
-  info?: { [name: string]: string };
+  info?: {[name: string]: string};
 }
 
 export class UserResponse {
@@ -12,7 +12,7 @@ export class UserResponse {
   }
 
   status?: string;
-  info?: { [name: string]: string };
+  info?: {[name: string]: string};
 
   __fields2java() {
     let infoMapTransfer = new Map();

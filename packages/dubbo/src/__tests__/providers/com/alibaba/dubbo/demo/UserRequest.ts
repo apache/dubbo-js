@@ -1,4 +1,4 @@
-import * as java from 'js-to-java';
+import java from 'js-to-java';
 
 export interface IUserRequest {
   name?: string;

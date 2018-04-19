@@ -8,12 +8,26 @@ clean-dubbo:
 	rm -rf ./packages/dubbo/es7
 	@echo "clean dubbo successfully 👌\n"
 
-test-dubbo: build-demo
-	./node_modules/.bin/jest --testPathPattern packages/dubbo/src/__tests__ --verbose --watch 
+build-interpret-util:clean-interpret-util,build-demo-api
+	tsc --project ./packages/interpret-util/tsconfig.json
+	@echo "compile interpret-util successfully 👌\n"
 
-build-demo: demo-api-build
-	ts-node ./packages/interpret-cli/src/cli.ts interpret -c dubbo.json
+clean-interpret-util:
+	rm -rf ./packages/interpret-util/lib
+	@echo "clean interpret-util successfully 👌\n"
 
-demo-api-build:
+build-demo-api:clean-demo-api
 	cd ./java/dubbo-demo/dubbo-demo-api && mvn package
 	cd ./java/dubbo-demo/dubbo-demo-api && mvn install dependency:copy-dependencies
+	@echo "build demo-api successfully 👌\n"
+
+clean-demo-api:
+	cd ./java/dubbo-demo/dubbo-demo-api && mvn clean
+	@echo "clean demo-api successfully 👌\n"
+
+
+interpret-jar:build-demo-api
+	ts-node ./packages/interpret-cli/src/cli.ts interpret -c dubbo.json
+
+test-dubbo: interpret-jar
+	./node_modules/.bin/jest --testPathPattern packages/dubbo/src/__tests__ --verbose --watch
