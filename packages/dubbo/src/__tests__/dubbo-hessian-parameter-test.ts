@@ -15,28 +15,15 @@
  * limitations under the License.
  */
 import java from 'js-to-java';
-import log4js from 'log4js';
 import {Dubbo} from '../dubbo';
-import {TDubboCallResult} from '../types';
+import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
 
-interface IDemoService {
-  sayHello(name: string): TDubboCallResult<string>;
-
-  echo(): TDubboCallResult<string>;
-
-  test(): TDubboCallResult<void>;
-
-  getUserInfo(): TDubboCallResult<{
-    status: string;
-    info: {id: number; name: string};
-  }>;
-}
 
 const dubbo = new Dubbo({
   application: {name: '@qianmi/node-dubbo'},
   register: 'localhost:2181',
   dubboVersion: '2.0.0',
-  interfaces: ['com.alibaba.dubbo.demo.DemoService'],
+  interfaces: ['com.alibaba.dubbo.demo.DemoProvider'],
 });
 
 //use middleware
@@ -53,18 +40,11 @@ dubbo.use(async function test(ctx, next) {
   );
 });
 
-const demoService = dubbo.proxyService<IDemoService>({
-  dubboInterface: 'com.alibaba.dubbo.demo.DemoService',
-  version: '1.0.0',
-  methods: {
-    sayHello(name) {
-      return [name];
-    },
-  },
-});
+const demoService = DemoProvider(dubbo);
 
 describe('dubbo hessian parameter check test suite', () => {
   it('test sayHello', async () => {
+    //@ts-ignore
     const {res, err} = await demoService.sayHello('node');
     expect(res).toEqual(null);
     expect(err != null).toEqual(true);

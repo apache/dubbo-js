@@ -14,22 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import DirectlyDubbo from '../directly-dubbo';
 import java from 'js-to-java';
-import {TDubboCallResult} from '../types';
+import DirectlyDubbo from '../directly-dubbo';
+import {UserRequest} from "./providers/com/alibaba/dubbo/demo/UserRequest";
+import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
 
-interface IDemoService {
-  sayHello(name: string): TDubboCallResult<string>;
-
-  echo(): TDubboCallResult<string>;
-
-  test(): TDubboCallResult<void>;
-
-  getUserInfo(): TDubboCallResult<{
-    status: string;
-    info: {id: number; name: string};
-  }>;
-}
 
 const dubbo = DirectlyDubbo.from({
   dubboAddress: 'localhost:20880',
@@ -37,33 +26,12 @@ const dubbo = DirectlyDubbo.from({
   dubboInvokeTimeout: 10,
 });
 
-const demoService = dubbo.proxyService<IDemoService>({
-  dubboInterface: 'com.alibaba.dubbo.demo.DemoService',
-  version: '1.0.0',
-  methods: {
-    sayHello(name) {
-      return [java.String(name)];
-    },
-
-    echo() {},
-
-    test() {},
-
-    getUserInfo() {
-      return [
-        java.combine('com.alibaba.dubbo.demo.UserRequest', {
-          id: 1,
-          name: 'nodejs',
-          email: 'node@qianmi.com',
-        }),
-      ];
-    },
-  },
-});
+const demoService = DemoProvider(dubbo);
 
 describe('demoService', () => {
   it('test sayHello', async () => {
-    const {res, err} = await demoService.sayHello('node');
+    //@ts-ignore
+    const {res, err} = await demoService.sayHello(java.String('node'));
     expect(err).toEqual(null);
     expect(res.includes('Hello node, response form provider')).toEqual(true);
   });
@@ -77,7 +45,10 @@ describe('demoService', () => {
   });
 
   it('test getUserInfo', async () => {
-    const res = await demoService.getUserInfo();
+    const res = await demoService.getUserInfo(new UserRequest({
+      id: 1,
+      name: 'nodejs',
+      email: 'node@qianmi.com',}));
     expect(res).toEqual({
       err: null,
       res: {status: 'ok', info: {id: '1', name: 'test'}},

@@ -12,5 +12,6 @@ export function BasicTypeProvider(dubbo: Dubbo): IBasicTypeProvider {
   return dubbo.proxyService<IBasicTypeProvider>({
     dubboInterface: 'com.alibaba.dubbo.demo.BasicTypeProvider',
     methods: BasicTypeProviderWrapper,
+    version:"2.0.0"
   });
 }

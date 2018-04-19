@@ -25,9 +25,8 @@ clean-demo-api:
 	cd ./java/dubbo-demo/dubbo-demo-api && mvn clean
 	@echo "clean demo-api successfully 👌\n"
 
-
 interpret-jar:build-demo-api
 	ts-node ./packages/interpret-cli/src/cli.ts interpret -c dubbo.json
 
-test-dubbo: interpret-jar
+test-dubbo:
 	./node_modules/.bin/jest --testPathPattern packages/dubbo/src/__tests__ --verbose --watch

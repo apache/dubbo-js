@@ -61,6 +61,7 @@ const demoService = DemoProvider(dubbo);
 
 describe('demoService', () => {
   it('test sayHello', async () => {
+    await dubbo.ready();
     // @ts-ignore
     const {res, err} = await demoService.sayHello(java.String('node'));
     expect(err).toEqual(null);
