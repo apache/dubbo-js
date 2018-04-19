@@ -81,7 +81,7 @@ export async function toTypescript(
         sourceFile.addClass(await toBeanClass(astJava, intepretHandle));
         sourceFile.addImport({
           moduleSpecifier: 'js-to-java',
-          defaultImport: '* as java',
+          defaultImport: 'java',
         });
       }
     }
