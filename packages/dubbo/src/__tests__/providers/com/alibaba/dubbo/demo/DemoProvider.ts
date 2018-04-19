@@ -5,11 +5,8 @@ import {argumentMap} from 'interpret-util';
 
 export interface IDemoProvider {
   sayHello(String0: string): TDubboCallResult<string>;
-
   test(): TDubboCallResult<void>;
-
   echo(): TDubboCallResult<string>;
-
   getUserInfo(UserRequest0: UserRequest): TDubboCallResult<UserResponse>;
 }
 
