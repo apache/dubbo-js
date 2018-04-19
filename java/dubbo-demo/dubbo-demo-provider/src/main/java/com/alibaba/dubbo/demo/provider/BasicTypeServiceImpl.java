@@ -1,11 +1,9 @@
 package com.alibaba.dubbo.demo.provider;
 
-import com.alibaba.dubbo.demo.BasicTypeService;
+import com.alibaba.dubbo.demo.BasicTypeProvider;
 import com.alibaba.dubbo.demo.TypeRequest;
 
-import java.util.Map;
-
-public class BasicTypeServiceImpl implements BasicTypeService{
+public class BasicTypeServiceImpl implements BasicTypeProvider {
     @Override
     public TypeRequest testBasicType(TypeRequest request) {
         return request;

@@ -38,9 +38,6 @@ export async function toTypescript(
   let {
     sourceFile,
     astJava,
-    request: {
-      config: {dubboVersion, dubboGroup},
-    },
   } = intepretHandle;
 
   let lastPointIndex = astJava.name.lastIndexOf('.') + 1;
@@ -68,14 +65,16 @@ export async function toTypescript(
           moduleSpecifier: 'dubbo2.js',
           defaultImport: '{TDubboCallResult,Dubbo}',
         });
+        sourceFile.addImport({
+          moduleSpecifier: 'interpret-util',
+          defaultImport: '{argumentMap}',
+        });
         sourceFile.addFunction(
           toProxyFunc({
             typeName: intepretHandle.classPath.substring(
               intepretHandle.classPath.lastIndexOf('.') + 1,
             ),
             typePath: intepretHandle.classPath,
-            version: dubboVersion,
-            group: dubboGroup,
           }),
         );
       } else {
@@ -87,10 +86,6 @@ export async function toTypescript(
       }
     }
 
-    sourceFile.addImport({
-      moduleSpecifier: 'interpret-util',
-      defaultImport: '{argumentMap}',
-    });
   } catch (err) {
     console.error(
       `为${intepretHandle.classPath},${JSON.stringify(typeInfo)} 添加内容出错,`,

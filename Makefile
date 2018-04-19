@@ -8,5 +8,12 @@ clean-dubbo:
 	rm -rf ./packages/dubbo/es7
 	@echo "clean dubbo successfully 👌\n"
 
-test-dubbo:
+test-dubbo: build-demo
 	./node_modules/.bin/jest --testPathPattern packages/dubbo/src/__tests__ --verbose --watch 
+
+build-demo: demo-api-build
+	ts-node ./packages/interpret-cli/src/cli.ts interpret -c dubbo.json
+
+demo-api-build:
+	cd ./java/dubbo-demo/dubbo-demo-api && mvn package
+	cd ./java/dubbo-demo/dubbo-demo-api && mvn install dependency:copy-dependencies

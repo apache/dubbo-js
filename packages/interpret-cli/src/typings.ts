@@ -14,10 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export interface IDubboConfigInfo {
-  dubboVersion: string;
-  dubboGroup?: string;
-}
 
 export interface IExtraResult {
   jarDir: string;
@@ -33,7 +29,7 @@ export interface IDubboExtInfo {
   libDirPath: string;
 }
 
-export interface IConfig extends IDubboConfigInfo, IDubboExtInfo {
+export interface IConfig extends IDubboExtInfo {
   output: string;
   jarInfo?: string;
 }

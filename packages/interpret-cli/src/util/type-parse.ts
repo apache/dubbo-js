@@ -74,6 +74,10 @@ export async function jType2Ts(
 ): Promise<string> {
   let result = '';
   //是否是类泛型的定义
+  if (!typePropers) {
+    throw new Error('typePropers为空');
+  }
+
   if (typeOptions.isTypeParam(typePropers.name)) {
     return typePropers.name;
   } else if (typePropers.isArray) {

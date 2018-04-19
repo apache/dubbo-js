@@ -1,6 +1,6 @@
 package com.alibaba.dubbo.demo;
 
-public interface BasicTypeService {
+public interface BasicTypeProvider {
     TypeRequest testBasicType(TypeRequest request);
 
 }
