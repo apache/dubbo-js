@@ -8,7 +8,7 @@ clean-dubbo:
 	rm -rf ./packages/dubbo/es7
 	@echo "clean dubbo successfully 👌\n"
 
-test-dubbo:
+test-dubbo: build-demo
 	./node_modules/.bin/jest --testPathPattern packages/dubbo/src/__tests__ --verbose --watch 
 
 build-demo: demo-api-build
