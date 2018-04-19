@@ -38,9 +38,6 @@ export async function toTypescript(
   let {
     sourceFile,
     astJava,
-    request: {
-      config: {dubboVersion, dubboGroup},
-    },
   } = intepretHandle;
 
   let lastPointIndex = astJava.name.lastIndexOf('.') + 1;
@@ -74,8 +71,6 @@ export async function toTypescript(
               intepretHandle.classPath.lastIndexOf('.') + 1,
             ),
             typePath: intepretHandle.classPath,
-            version: dubboVersion,
-            group: dubboGroup,
           }),
         );
       } else {

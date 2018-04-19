@@ -1,6 +1,5 @@
 {
   "output": "./packages/dubbo/src/__tests__/providers",
-  "dubboVersion": "2.0.0",
   "entry": "com.alibaba.dubbo.demo",
   "entryJarPath": "./java/dubbo-demo/dubbo-demo-api/target/dubbo-demo-api-2.5.7.jar",
   "libDirPath": "./java/dubbo-demo/dubbo-demo-api/target/dependency/"
