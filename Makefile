@@ -10,3 +10,10 @@ clean-dubbo:
 
 test-dubbo:
 	./node_modules/.bin/jest --testPathPattern packages/dubbo/src/__tests__ --verbose --watch 
+
+build-demo: demo-api-build
+	interpret -c dubbo.json
+
+demo-api-build:
+	cd ./java/dubbo-demo/dubbo-demo-api && mvn package
+	cd ./java/dubbo-demo/dubbo-demo-api && mvn install dependency:copy-dependencies
