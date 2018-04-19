@@ -21,9 +21,9 @@ export interface IObservable<T> {
 export type TDecodeBuffSubscriber = (data: Buffer) => void;
 
 export interface IDubboSubscriber {
-  onReady: () => void;
-  onSysError: (err: Error) => void;
-  onStatistics: (statInfo) => void;
+  onReady?: () => void;
+  onSysError?: (err: Error) => void;
+  onStatistics?: (statInfo) => void;
 }
 
 export interface IZookeeperSubscriber {
