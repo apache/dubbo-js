@@ -10,8 +10,6 @@ export const ErrorProviderWrapper = {errorTest: argumentMap};
 export function ErrorProvider(dubbo: Dubbo): IErrorProvider {
   return dubbo.proxyService<IErrorProvider>({
     dubboInterface: 'com.alibaba.dubbo.demo.ErrorProvider',
-    version: '2.0.0',
-
     methods: ErrorProviderWrapper,
   });
 }

@@ -65,6 +65,10 @@ export async function toTypescript(
           moduleSpecifier: 'dubbo2.js',
           defaultImport: '{TDubboCallResult,Dubbo}',
         });
+        sourceFile.addImport({
+          moduleSpecifier: 'interpret-util',
+          defaultImport: '{argumentMap}',
+        });
         sourceFile.addFunction(
           toProxyFunc({
             typeName: intepretHandle.classPath.substring(
@@ -82,10 +86,6 @@ export async function toTypescript(
       }
     }
 
-    sourceFile.addImport({
-      moduleSpecifier: 'interpret-util',
-      defaultImport: '{argumentMap}',
-    });
   } catch (err) {
     console.error(
       `为${intepretHandle.classPath},${JSON.stringify(typeInfo)} 添加内容出错,`,

@@ -20,8 +20,6 @@ export const DemoProviderWrapper = {
 export function DemoProvider(dubbo: Dubbo): IDemoProvider {
   return dubbo.proxyService<IDemoProvider>({
     dubboInterface: 'com.alibaba.dubbo.demo.DemoProvider',
-    version: '2.0.0',
-
     methods: DemoProviderWrapper,
   });
 }

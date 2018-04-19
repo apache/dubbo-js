@@ -12,7 +12,7 @@ test-dubbo:
 	./node_modules/.bin/jest --testPathPattern packages/dubbo/src/__tests__ --verbose --watch 
 
 build-demo: demo-api-build
-	interpret -c dubbo.json
+	ts-node ./packages/interpret-cli/src/cli.ts interpret -c dubbo.json
 
 demo-api-build:
 	cd ./java/dubbo-demo/dubbo-demo-api && mvn package

@@ -1,5 +1,4 @@
 import * as java from 'js-to-java';
-import {argumentMap} from 'interpret-util';
 
 export interface IUserRequest {
   name?: string;
