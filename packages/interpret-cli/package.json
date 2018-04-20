@@ -1,6 +1,6 @@
 {
   "name": "interpret-dubbo2js",
-  "version": "0.0.6",
+  "version": "0.0.9",
   "description": "interpret java-jar file to typescript files",
   "bin": {
     "interpret": "./lib/cli.js"

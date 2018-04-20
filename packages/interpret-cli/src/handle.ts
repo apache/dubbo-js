@@ -104,6 +104,11 @@ export class IntepretHandle implements ITypeSearch {
       return;
     }
 
+    if(classPath=== this.classPath) {
+      log(`ignore self reference:${this.classPath}`);
+      return;
+    }
+
     log(`Adding dependencies ${this.classPath}`);
 
     if (!this.dependencies.includes(classPath)) {

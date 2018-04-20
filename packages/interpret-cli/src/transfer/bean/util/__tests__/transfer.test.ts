@@ -143,6 +143,41 @@ describe('基础转换生成', () => {
   });
 });
 
+
+describe('集合显示问题 ', () => {
+  it('java.util.Collection', async () => {
+    let {fieldTrans, initContent} = await fields2CtrContent(
+      [
+        {
+          name: 'skuIds',
+          filedAst: typeDef.fields.skuIds,
+        },
+      ],
+      typeOptions,
+      typeDef,
+    );
+    expect(initContent).toMatchSnapshot();
+    expect(fieldTrans.join(',')).toMatchSnapshot();
+  });
+});
+
+describe('数组显示问题 string[]', () => {
+  it('string[]', async () => {
+    let {fieldTrans, initContent} = await fields2CtrContent(
+      [
+        {
+          name: 'PARSED_IDS',
+          filedAst: typeDef.fields.PARSED_IDS,
+        },
+      ],
+      typeOptions,
+      typeDef,
+    );
+    expect(initContent).toMatchSnapshot();
+    expect(fieldTrans.join(',')).toMatchSnapshot();
+  });
+});
+
 describe('map<string,List<string>>转换方法', () => {
   it('map类型转换生成', async () => {
     let {fieldTrans, initContent} = await fields2CtrContent(
@@ -179,6 +214,25 @@ describe('map<string,List<string>>转换方法', () => {
 
 const typeDef = {
   fields: {
+    skuIds: {
+      name: 'java.util.Collection',
+      typeArgs: [
+        {
+          isWildcard: false,
+          type: {
+            name: 'java.lang.String',
+            typeArgs: [],
+          },
+        },
+      ],
+    },
+    PARSED_IDS: {
+      elementType: {
+        name: 'java.lang.String',
+        typeArgs: [],
+      },
+      isArray: true,
+    },
     cats: {
       isArray: false,
       name: 'java.util.List',

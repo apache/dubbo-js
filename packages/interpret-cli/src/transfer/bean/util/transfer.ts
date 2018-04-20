@@ -77,10 +77,7 @@ export async function fields2CtrContent(
           })}
           }))`);
       } else if (firstDTypeClassPath.startsWith('java.lang')) {
-        fieldTrans.push(`${name}:java.array.${firstDTypeClassPath.replace(
-          'java.lang.',
-          '',
-        )}((this.${name}||[]).map(paramItem=>{
+        fieldTrans.push(`${name}:java.array('${firstDTypeClassPath}',(this.${name}||[]).map(paramItem=>{
           return ${j2Jtj(typeOption, {
             paramRefName: 'paramItem',
             classPath: firstDTypeClassPath,
@@ -139,7 +136,9 @@ export async function fields2CtrContent(
             forEachStr = `[... this.${name}]`;
           }
 
-          fieldTrans.push(`${name}:java.${filedAst.name.substring(
+          let _classNam=filedAst.name!=='java.util.Collection'?filedAst.name:"java.util.List";
+
+          fieldTrans.push(`${name}:java.${_classNam.substring(
             filedAst.name.lastIndexOf('.') + 1,
           )}(${forEachStr}.map(paramItem=>{
           return ${j2Jtj(typeOption, {
@@ -171,7 +170,6 @@ export async function fields2CtrContent(
           `;
         } else if (filedAst.typeArgs[1].type.typeArgs.length === 1) {
           //二级 Map<string,List<Request>>   Map<string,List<string>>  Map<string,List<Object>>
-
           if (
             [
               'java.util.List',

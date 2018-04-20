@@ -27,3 +27,19 @@ exports[`基础转换生成 枚举类型 1`] = `
                   BusiTypeEnum[item]
                 )"
 `;
+
+exports[`数组显示问题 string[] string[] 1`] = `""`;
+
+exports[`数组显示问题 string[] string[] 2`] = `
+"PARSED_IDS:java.array('java.lang.String',(this.PARSED_IDS||[]).map(paramItem=>{
+          return java.String(paramItem)
+          }))"
+`;
+
+exports[`集合显示问题  java.util.Collection 1`] = `""`;
+
+exports[`集合显示问题  java.util.Collection 2`] = `
+"skuIds:java.List((this.skuIds||[]).map(paramItem=>{
+          return java.String(paramItem)
+          }))"
+`;

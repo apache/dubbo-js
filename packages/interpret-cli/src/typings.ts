@@ -79,7 +79,7 @@ export interface IAddDenpend {
  * 类型属性信息
  */
 export interface ITypePropers {
-  isArray: boolean;
+  isArray?: boolean;
   elementType?: ITypePropers;
   name?: typePath;
   typeArgs?: ITypeArg[];
