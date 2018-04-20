@@ -1,0 +1,12 @@
+{
+  "name": "dubbo-invoker",
+  "version": "1.0.0",
+  "description": "dubbo2.js invoke context, set version, group and so on.",
+  "keywords": ["dubbo2.js", "middleware", "invoke context"],
+  "main": "./lib/index.js",
+  "types": "./lib/typings/index.d.ts",
+  "dependencies": {
+    "debug": "3.1.0"
+  },
+  "license": "Apache Licence 2.0"
+}

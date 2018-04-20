@@ -14,10 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import java from 'js-to-java';
-import Dubbo from './dubbo';
-import DirectlyDubbo from './directly-dubbo';
-import Context from './context';
-import {TDubboCallResult} from './types';
+import {Context} from 'dubbo2.js';
 
-export {Dubbo, DirectlyDubbo, java, TDubboCallResult, Context};
+export type TPredictFunction = (ctx: Context) => boolean;
+
+export interface IDubboInvokeParam {
+  group?: string;
+  version?: string;
+  timeout?: number;
+}
+
+export interface IRule {
+  condition: string | RegExp | TPredictFunction;
+  invokeParam: IDubboInvokeParam;
+}

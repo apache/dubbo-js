@@ -1,0 +1,6 @@
+**/__tests__/**
+**/__mocks__/**
+src
+tsconfig.json
+node_modules
+Makefile

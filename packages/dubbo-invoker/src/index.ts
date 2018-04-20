@@ -14,10 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import java from 'js-to-java';
-import Dubbo from './dubbo';
-import DirectlyDubbo from './directly-dubbo';
-import Context from './context';
-import {TDubboCallResult} from './types';
+import {Context} from 'dubbo2.js';
+import matcher, {Matcher} from './matcher';
 
-export {Dubbo, DirectlyDubbo, java, TDubboCallResult, Context};
+function dubboInvoker(matcher: Matcher) {
+  return async function dubboMiddlewareInvoker(ctx: Context, next) {
+    const {version, group, timeout} = matcher.invokeParam(ctx);
+    ctx.version = version;
+    ctx.group = group;
+    ctx.timeout = timeout;
+    await next();
+  };
+}
+
+export {matcher, dubboInvoker};

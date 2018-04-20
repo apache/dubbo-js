@@ -52,7 +52,7 @@ process.on('unhandledRejection', (reason, p) => {
  * 8. 通过zone-context可以实现dubbo调用的全链路跟踪
  * 9. 集中消息管理
  */
-export class Dubbo implements IObservable<IDubboSubscriber> {
+export default class Dubbo implements IObservable<IDubboSubscriber> {
   constructor(props: IDubboProps) {
     this._props = props;
     this._middleware = [];

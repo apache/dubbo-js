@@ -14,10 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import java from 'js-to-java';
-import {Dubbo} from '../dubbo';
+import {Dubbo, java} from 'dubbo2.js';
 import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
-
 
 const dubbo = new Dubbo({
   application: {name: '@qianmi/node-dubbo'},

@@ -11,6 +11,5 @@ export function ErrorProvider(dubbo: Dubbo): IErrorProvider {
   return dubbo.proxyService<IErrorProvider>({
     dubboInterface: 'com.alibaba.dubbo.demo.ErrorProvider',
     methods: ErrorProviderWrapper,
-    version:"1.0.0"
   });
 }

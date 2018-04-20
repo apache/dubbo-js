@@ -72,8 +72,8 @@ export default class DirectlyDubbo {
 
   private readonly _props: IDirectlyDubboProps;
   private readonly _socketWorker: SocketWorker;
-  private _socketStatus: SOCKET_STATUS;
   private readonly _queue: Map<number, Context>;
+  private _socketStatus: SOCKET_STATUS;
 
   static from(props: IDirectlyDubboProps) {
     return new DirectlyDubbo(props);

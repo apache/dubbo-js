@@ -14,10 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import java from 'js-to-java';
-import {Dubbo} from '../dubbo';
+import {java, Dubbo} from 'dubbo2.js';
 import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
-import {UserRequest} from "./providers/com/alibaba/dubbo/demo/UserRequest";
+import {UserRequest} from './providers/com/alibaba/dubbo/demo/UserRequest';
 
 const dubbo = new Dubbo({
   application: {name: '@qianmi/node-dubbo'},
@@ -43,7 +42,6 @@ dubbo.use(async function test(ctx, next) {
 
 const demoService = DemoProvider(dubbo);
 
-
 describe('dubbo timeout test suite', () => {
   it('test echo timeout', async () => {
     const {res, err} = await demoService.echo();
@@ -61,11 +59,13 @@ describe('dubbo timeout test suite', () => {
   });
 
   it('test getUserInfo', async () => {
-    const {res, err} = await demoService.getUserInfo(new UserRequest({
-      id: 1,
-      name: 'nodejs',
-      email: 'node@qianmi.com',
-    }));
+    const {res, err} = await demoService.getUserInfo(
+      new UserRequest({
+        id: 1,
+        name: 'nodejs',
+        email: 'node@qianmi.com',
+      }),
+    );
     expect(res).toEqual(null);
     expect(err != null).toEqual(true);
     expect(err.message).toMatch(/remote invoke timeout/);
