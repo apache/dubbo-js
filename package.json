@@ -2,9 +2,6 @@
   "private": true,
   "workspaces": ["packages/*"],
   "scripts": {
-    "compile:interpret":
-      "yarn run clean:interpret && tsc -p packages/interpret-cli/tsconfig.json",
-    "clean:interpret": "rm -rf packages/interpret-cli/lib",
     "test": "jest --watch -u"
   },
   "devDependencies": {
@@ -28,6 +25,12 @@
     "transform": {
       "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
+    "testPathIgnorePatterns": [
+      "<rootDir>/node_modules",
+      "<rootDir>/packages/dubbo/src/__tests__/providers",
+      "<rootDir>/examples",
+      "<rootDir>/java"
+    ],
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json"]
   },

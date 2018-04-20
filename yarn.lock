@@ -14,12 +14,6 @@
   version "1.1.0"
   resolved "http://registry.npm.taobao.org/@types/events/download/@types/events-1.1.0.tgz#93b1be91f63c184450385272c47b6496fd028e02"
 
-"@types/fs-extra@^4.0.5":
-  version "4.0.8"
-  resolved "http://registry.npm.qianmi.com/@types/fs-extra/download/@types/fs-extra-4.0.8.tgz#6957ddaf9173195199cb96da3db44c74700463d2"
-  dependencies:
-    "@types/node" "*"
-
 "@types/ip@0.0.30":
   version "0.0.30"
   resolved "https://registry.yarnpkg.com/@types/ip/-/ip-0.0.30.tgz#60c3309ce1cecdd7293245bbffc201ecb6f8c344"
@@ -31,12 +25,6 @@
 "@types/js-to-java@2.4.0":
   version "2.4.0"
   resolved "http://registry.npm.taobao.org/@types/js-to-java/download/@types/js-to-java-2.4.0.tgz#d040564f62177937957329f5626cb7a40acf97f3"
-
-"@types/klaw@^2.1.1":
-  version "2.1.1"
-  resolved "http://registry.npm.qianmi.com/@types/klaw/download/@types/klaw-2.1.1.tgz#8cfe201e95de97e5cfc7c31ecc4941aa12ab1b2e"
-  dependencies:
-    "@types/node" "*"
 
 "@types/koa-compose@3.2.2":
   version "3.2.2"
@@ -4028,10 +4016,6 @@ typedarray@^0.0.6:
 typescript@2.6.1:
   version "2.6.1"
   resolved "http://registry.npm.qianmi.com/typescript/download/typescript-2.6.1.tgz#ef39cdea27abac0b500242d6726ab90e0c846631"
-
-typescript@^2.6.1:
-  version "2.8.1"
-  resolved "http://registry.npm.qianmi.com/typescript/download/typescript-2.8.1.tgz#6160e4f8f195d5ba81d4876f9c0cc1fbc0820624"
 
 typescript@^2.7.2:
   version "2.7.2"

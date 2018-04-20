@@ -14,11 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import java from 'js-to-java';
-import DirectlyDubbo from '../directly-dubbo';
-import {UserRequest} from "./providers/com/alibaba/dubbo/demo/UserRequest";
-import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
-
+import {DirectlyDubbo, java} from 'dubbo2.js';
+import {
+  DemoProvider,
+  DemoProviderWrapper,
+  IDemoProvider,
+} from './providers/com/alibaba/dubbo/demo/DemoProvider';
+import {UserRequest} from './providers/com/alibaba/dubbo/demo/UserRequest';
 
 const dubbo = DirectlyDubbo.from({
   dubboAddress: 'localhost:20880',
@@ -26,7 +28,11 @@ const dubbo = DirectlyDubbo.from({
   dubboInvokeTimeout: 10,
 });
 
-const demoService = DemoProvider(dubbo);
+const demoService = dubbo.proxyService<IDemoProvider>({
+  dubboInterface: 'com.alibaba.dubbo.demo.DemoProvider',
+  methods: DemoProviderWrapper,
+  version: '1.0.0',
+});
 
 describe('demoService', () => {
   it('test sayHello', async () => {
@@ -45,10 +51,13 @@ describe('demoService', () => {
   });
 
   it('test getUserInfo', async () => {
-    const res = await demoService.getUserInfo(new UserRequest({
-      id: 1,
-      name: 'nodejs',
-      email: 'node@qianmi.com',}));
+    const res = await demoService.getUserInfo(
+      new UserRequest({
+        id: 1,
+        name: 'nodejs',
+        email: 'node@qianmi.com',
+      }),
+    );
     expect(res).toEqual({
       err: null,
       res: {status: 'ok', info: {id: '1', name: 'test'}},

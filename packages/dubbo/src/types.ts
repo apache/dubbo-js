@@ -49,10 +49,10 @@ export interface IDirectlyDubboProps {
 
 export interface IInvokeParam {
   dubboInterface: string;
-  version: string;
   methods: {[methodName: string]: Function};
-  timeout?: number;
   group?: string;
+  version?: string;
+  timeout?: number;
 }
 export interface IDubboProps {
   dubboVersion: string;

@@ -14,14 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import java from 'js-to-java';
-import {Dubbo} from '../dubbo';
-
+import {Dubbo, java} from 'dubbo2.js';
 import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
 import {BasicTypeProvider} from './providers/com/alibaba/dubbo/demo/BasicTypeProvider';
 import {ErrorProvider} from './providers/com/alibaba/dubbo/demo/ErrorProvider';
 import {UserRequest} from './providers/com/alibaba/dubbo/demo/UserRequest';
 import {TypeRequest} from './providers/com/alibaba/dubbo/demo/TypeRequest';
+import {dubboInvoker, matcher} from 'dubbo-invoker';
 
 const dubbo = new Dubbo({
   application: {name: '@qianmi/node-dubbo'},
@@ -39,11 +38,25 @@ dubbo.use(async function test(ctx, next) {
   const startTime = Date.now();
   await next();
   const endTime = Date.now();
-  const {request: {dubboInterface, methodName}} = ctx;
+  const {
+    request: {dubboInterface, methodName},
+  } = ctx;
   console.log(
     `invoke ${dubboInterface}#${methodName} costTime: ${endTime - startTime}`,
   );
 });
+
+//dubbo-invoker set version
+dubbo.use(
+  dubboInvoker(
+    matcher
+      .match('com.alibaba.dubbo.demo.BasicTypeProvider', {
+        version: '2.0.0',
+      })
+      .match('com.alibaba.dubbo.demo.DemoProvider', {version: '1.0.0'})
+      .match('com.alibaba.dubbo.demo.ErrorProvider', {version: '1.0.0'}),
+  ),
+);
 
 dubbo.subscribe({
   onReady() {

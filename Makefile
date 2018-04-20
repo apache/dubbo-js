@@ -1,3 +1,5 @@
+default: build-interpret-util build-dubbo
+
 build-dubbo: clean-dubbo 
 	tsc --project ./packages/dubbo/tsconfig.json
 	tsc --project ./packages/dubbo/tsconfig-es6.json
@@ -8,7 +10,7 @@ clean-dubbo:
 	rm -rf ./packages/dubbo/es7
 	@echo "clean dubbo successfully 👌\n"
 
-build-interpret-util:clean-interpret-util,build-demo-api
+build-interpret-util:clean-interpret-util
 	tsc --project ./packages/interpret-util/tsconfig.json
 	@echo "compile interpret-util successfully 👌\n"
 
@@ -28,5 +30,3 @@ clean-demo-api:
 interpret-jar:build-demo-api
 	ts-node ./packages/interpret-cli/src/cli.ts interpret -c dubbo.json
 
-test-dubbo:
-	./node_modules/.bin/jest --testPathPattern packages/dubbo/src/__tests__ --verbose --watch
