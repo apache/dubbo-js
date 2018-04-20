@@ -1,5 +1,5 @@
-import {TDubboCallResult, Dubbo} from 'dubbo2.js';
 import {argumentMap} from 'interpret-util';
+import {TDubboCallResult, Dubbo} from 'dubbo2.js';
 
 export interface IErrorProvider {
   errorTest(): TDubboCallResult<void>;
@@ -11,6 +11,5 @@ export function ErrorProvider(dubbo: Dubbo): IErrorProvider {
   return dubbo.proxyService<IErrorProvider>({
     dubboInterface: 'com.alibaba.dubbo.demo.ErrorProvider',
     methods: ErrorProviderWrapper,
-    version:"1.0.0"
   });
 }
