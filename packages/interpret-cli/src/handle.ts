@@ -69,7 +69,7 @@ export class IntepretHandle implements ITypeSearch {
    * @returns {Promise<void>}
    */
   private async prepare() {
-    ast.addSourceFileFromText(this.to, '');
+    ast.addSourceFileFromText(this.to, '//generate by interpret-cli dubbo2.js');
     this.sourceFile = ast.getSourceFile(this.to);
     await ensureDir(parse(this.to).dir);
   }
@@ -104,7 +104,7 @@ export class IntepretHandle implements ITypeSearch {
       return;
     }
 
-    if(classPath=== this.classPath) {
+    if (classPath === this.classPath) {
       log(`ignore self reference:${this.classPath}`);
       return;
     }

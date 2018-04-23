@@ -136,7 +136,10 @@ export async function fields2CtrContent(
             forEachStr = `[... this.${name}]`;
           }
 
-          let _classNam=filedAst.name!=='java.util.Collection'?filedAst.name:"java.util.List";
+          let _classNam =
+            filedAst.name !== 'java.util.Collection'
+              ? filedAst.name
+              : 'java.util.List';
 
           fieldTrans.push(`${name}:java.${_classNam.substring(
             filedAst.name.lastIndexOf('.') + 1,

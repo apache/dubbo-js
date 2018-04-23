@@ -18,7 +18,7 @@ import {join} from 'path';
 import {spawn} from 'child_process';
 import {IDubboExtInfo, IExtraResult} from '../typings';
 
-const startFlag = 'Output at: ';
+const startFlag = 'Output at:';
 
 /**
  * 根据配置信息从jar class文件中提取ast信息
@@ -43,8 +43,7 @@ export async function extra(extraParam: IDubboExtInfo): Promise<IExtraResult> {
       console.log(output);
       if (output.includes(startFlag)) {
         let beginIndex = output.indexOf(startFlag) + startFlag.length;
-        let endIndex = output.indexOf('\n', beginIndex);
-        jarDir = output.substring(beginIndex, endIndex);
+        jarDir = output.substring(beginIndex).trim();
       }
     });
 

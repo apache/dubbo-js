@@ -35,10 +35,7 @@ export async function toTypescript(
   intepretHandle: IntepretHandle,
 ): Promise<SourceFile> {
   log('调用转换方法 toTypescript::', intepretHandle.classPath);
-  let {
-    sourceFile,
-    astJava,
-  } = intepretHandle;
+  let {sourceFile, astJava} = intepretHandle;
 
   let lastPointIndex = astJava.name.lastIndexOf('.') + 1;
   let typeInfo = {
@@ -81,7 +78,6 @@ export async function toTypescript(
         });
       }
     }
-
   } catch (err) {
     console.error(
       `为${intepretHandle.classPath},${JSON.stringify(typeInfo)} 添加内容出错,`,
