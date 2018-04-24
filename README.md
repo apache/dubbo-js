@@ -4,7 +4,7 @@
 
 多年期盼，一朝梦圆！ We love dubbo 👏
 
-感谢 js-to-java,hessian.js 两大核心模块, 感谢苏千和死马老师。
+感谢 [js-to-java](https://github.com/node-modules/js-to-java),[hessian.js](https://github.com/node-modules/hessian.js) 两大核心模块, 感谢[fengmk2](https://github.com/fengmk2)和[dead-horse](https://github.com/dead-horse)老师。
 
 nodejs 使用原生的 dubbo (dubbo head + hessian body) 协议打通了 dubbo 的 rpc 方法调用 .
 
