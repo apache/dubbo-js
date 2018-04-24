@@ -254,7 +254,7 @@ dubbo.use(
 
 我们坚定的认为开发体验同用户的体验同等重要，我们做了一些创新，一些很酷的实践。
 
-为了是node和dubbo的调用像java调用dubbo一样简单透明，我们设计和实现了traslator.
+为了使node和dubbo之间的调用像java调用dubbo一样简单透明，我们设计和实现了translator.
 
 通过分析java的jar包中的bytecode提取dubbo调用的接口信息，自动生成typescript类型定义文件
 以及调用的代码。
