@@ -65,10 +65,6 @@ export async function toTypescript(
           moduleSpecifier: 'dubbo2.js',
           defaultImport: '{TDubboCallResult,Dubbo}',
         });
-        sourceFile.addImport({
-          moduleSpecifier: 'interpret-util',
-          defaultImport: '{argumentMap}',
-        });
         sourceFile.addFunction(
           toProxyFunc({
             typeName: intepretHandle.classPath.substring(

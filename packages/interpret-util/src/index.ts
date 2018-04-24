@@ -54,3 +54,25 @@ function minusRedundancy(itemParam: any) {
     }
   }
 }
+
+export type JavaString=Object;
+export type JavaBoolean=Object;
+export type Javaboolean=Object;
+export type JavaInteger=Object;
+export type Javaint=Object;
+export type JavaShort=Object;
+export type Javashort=Object;
+export type Javabyte=Object;
+export type JavaByte=Object;
+export type JavaLong=Object;
+export type Javalong=Object;
+export type Javadouble=Object;
+export type JavaDouble=Object;
+export type Javafloat=Object;
+export type JavaFloat=Object;
+export type Javachar=Object;
+export type Javachars=Object;
+export type JavaList=Object;
+export type JavaSet=Object;
+export type JavaHashMap=Object;
+export type JavaMap=Object;

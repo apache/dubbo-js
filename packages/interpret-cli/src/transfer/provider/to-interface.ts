@@ -51,6 +51,8 @@ export async function toInterface(
 
   log('添加过滤方法:: %j', filtersMethodNames);
 
+  //add extra javaType declare;
+  let extraImport: string[] = ['argumentMap'];
   for (let methodName in typeDef.methods) {
     if (filtersMethodNames.includes(methodName)) {
       continue;
@@ -60,10 +62,41 @@ export async function toInterface(
       methodName = methodName.substring(0, methodName.lastIndexOf('@override'));
     }
 
-    methods.push(
-      await toMethod(methodName, typeDef.methods[methodName], intepretHandle),
+    let methodItem = await toMethod(
+      methodName,
+      typeDef.methods[methodName],
+      intepretHandle,
     );
+
+    //如果是基本类型, 生成typescript的类型与js-to-java类型相对应 javaXXX;
+    let methodDef = typeDef.methods[methodName];
+
+    for (var i = 0, iLen = methodDef.params.length; i < iLen; i++) {
+      var paramItem = methodDef.params[i];
+      if (paramItem.isArray) {
+        if (TypeMap[paramItem.elementType.name]) {
+          methodItem.parameters[i].type =
+            TypeMap[paramItem.elementType.name] + '[]';
+          if (!extraImport.includes(TypeMap[paramItem.elementType.name])) {
+            extraImport.push(TypeMap[paramItem.elementType.name]);
+          }
+        }
+      } else {
+        if (TypeMap[paramItem.name]) {
+          methodItem.parameters[i].type = TypeMap[paramItem.name];
+          if (!extraImport.includes(TypeMap[paramItem.name])) {
+            extraImport.push(TypeMap[paramItem.name]);
+          }
+        }
+      }
+    }
+    methods.push(methodItem);
   }
+
+  intepretHandle.sourceFile.addImport({
+    moduleSpecifier: 'interpret-util',
+    defaultImport: `{${extraImport.join(',')}}`,
+  });
 
   log('转换 名称::%s 属性 :%j  方法:%j', typeDef.name, properties, methods);
 
@@ -89,3 +122,27 @@ export function genePropsGetSet(propsNames: string[]) {
   });
   return filtersMethodNames;
 }
+
+const TypeMap = {
+  'java.lang.Boolean': 'JavaBoolean',
+  boolean: 'JavaBoolean',
+  'java.lang.Integer': 'JavaInteger',
+  int: 'Javaint',
+  short: 'Javashort',
+  'java.lang.Short': 'JavaShort',
+  byte: 'Javabyte',
+  'java.lang.Byte': 'JavaByte',
+  long: 'Javalong',
+  'java.lang.Long': 'JavaLong',
+  double: 'Javadouble',
+  'java.lang.Double': 'JavaDouble',
+  float: 'Javafloat',
+  'java.lang.Float': 'JavaFloat',
+  'java.lang.String': 'JavaString',
+  char: 'Javachar',
+  'java.lang.Character': 'bbbbb',
+  'java.util.List': 'JavaList',
+  'java.util.Set': 'JavaSet',
+  'java.util.HashMap': 'JavaHashMap',
+  'java.util.Map': 'JavaMap',
+};
