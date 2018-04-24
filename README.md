@@ -185,7 +185,7 @@ const dubbo = Dubbo.from(/*...*/);
 
 dubbo.subcribe({
   onReady: () => {
-    //dubbo was ready.
+    //dubbo was ready.
     //TODO for example logger
   },
   onSysError: err => {
