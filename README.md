@@ -178,15 +178,15 @@ app.beforeStart(async () => {
 });
 ```
 
-## dubbo subscriber
+## dubbo's subscriber
 
 ```javascript
 const dubbo = Dubbo.from(/*...*/);
 
 dubbo.subcribe({
   onReady: () => {
-    //dubbo初始化成功
-    //TODO
+    //dubbo was ready.
+    //TODO for example logger
   },
   onSysError: err => {
     //dubbo occur error
