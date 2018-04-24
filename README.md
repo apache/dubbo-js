@@ -161,6 +161,44 @@ const demoSerivce = Dubbo.proxService({
 })
 ```
 
+## dubbo was ready?
+
+```javascript
+const dubbo = Dubbo.from(/*...*/);
+
+(async () => {
+  await dubbo.ready();
+  //TODO dubbo was ready
+})();
+
+//egg.js
+app.beforeStart(async () => {
+  await dubbo.ready();
+  app.logger.info('dubbo was ready...');
+});
+```
+
+## dubbo subscriber
+
+```javascript
+const dubbo = Dubbo.from(/*...*/);
+
+dubbo.subcribe({
+  onReady: () => {
+    //dubbo初始化成功
+    //TODO
+  },
+  onSysError: err => {
+    //dubbo occur error
+    //TODO dingTalkRobot.send('error')
+  },
+  onStatistics: stat => {
+    //get invoke time statistics info
+    //in order to know load whether balance
+  },
+});
+```
+
 ## middleware
 
 通过对调用链路的抽象使用和 koa 相同的 middleware 机制，方便自定义拦截器，比如 logger，
@@ -173,6 +211,43 @@ dubbo.use(async (ctx, next) => {
   const endTime = Date.now();
   console.log('invoke cost time->', endTime - startTime);
 });
+```
+
+## dubbo-invoker
+
+在 dubbo 的接口调用中，需要设置一些动态的参数如，version, group, timeout, retry 等常常
+
+这些参数需要在 consumer 调用方才精确设定值，之前是在 interpret 翻译生成 ts 的代码里面进行设置这个不够灵活，所以这里面我就抽象一个 dubbo-invoker 作为设置参数的 middleware
+
+```javascript
+import {dubboInvoker, matcher} from 'dubbo-invoker';
+
+//init
+const dubbo = Dubbo.from(/*....*/);
+//set params
+dubbo.use(
+  dubboInvoke(
+    matcher
+      //精确匹配接口
+      .match('com.alibaba.demo.UserProvider', {
+        version: '1.0.0',
+        group: 'user',
+      })
+      //正则匹配
+      .match(/$com.alibaba.dubbo/, {
+        version: '2.0.0',
+        group: '',
+      })
+      //match thunk
+      match((ctx) => {
+        //computed....
+        return true
+      }, {
+        version: '3.0.0'
+      })
+      .,
+  ),
+);
 ```
 
 ## Performance
