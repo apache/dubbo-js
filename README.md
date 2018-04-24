@@ -250,6 +250,76 @@ dubbo.use(
 );
 ```
 
+## Cool.
+
+我们坚定的认为开发体验同用户的体验同等重要，我们做了一些创新，一些很酷的实践。
+
+为了是node和dubbo的调用像java调用dubbo一样简单透明，我们设计和实现了traslator.
+
+通过分析java的jar包中的bytecode提取dubbo调用的接口信息，自动生成typescript类型定义文件
+以及调用的代码。
+
+在packages/dubbo/src/__tests__/provider就是根据java目录下的demo翻译而来。
+
+我们希望整个dubbo调用的代码都可以无缝生成。
+
+
+## Translator
+
+<img src="http://oss-hz.qianmi.com/x-site/dev/doc/dong/video2deal/xsite/interpret/鹦鹉.png" width = "100" alt="图片名称" align=center />
+
+
+ Seamlessly connect to dubbo2.js to enhance the development experience!
+
+## TODO
+
+> remarks are not synchronized;
+
+## Getting Started
+
+
+### step1:Translating jar to typescript
+
+1. `npm install interpret-dubbo2js -g`
+2. `interpret -c dubbo.json`
+
+dubbo.json:
+
+```json
+{
+  "output": "./src",
+  "dubboVersion": "1.0",
+  "entry":"com.qianmi",
+  "entryJarPath":"${jarPath}",
+  "libDirPath":"${denpendJarDir}"
+}
+```
+
+
+***Tip*** 生成的代码可以发npm包供其他业务线使用或直接在项目中引用
+
+### step2:Use the provider
+
+```
+import {D2pMarketingQueryProvider} from '@qianmi/d2p-cart-api/lib/com/qianmi/cloudshop/api/marketing/d2p/D2pMarketingQueryProvider';
+const dubbo = new Dubbo({
+    application: {name: 'd2p-visitor-bff'},
+    dubboInvokeTimeout: 10,
+    //zookeeper address
+    register: app.config.zookeeper,
+    dubboVersion: '2.4.13',
+    logger: app.logger as ILogger,
+    interfaces: [
+      'com.qianmi.cloudshop.api.marketing.d2p.D2pMarketingQueryProvider'
+    ],
+  });
+let D2pMarketingQuery =  D2pMarketingQueryProvider(dubbo);
+
+```
+
+
+***Tip***  `npm install interpret-util dubbo2.js`;
+
 ## Performance
 
 ```text
