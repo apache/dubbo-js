@@ -49,6 +49,10 @@ export async function toTypescript(
   };
   intepretHandle.request.registerTypeInfo(typeInfo);
 
+  if(astJava.isAbstract) {
+    console.warn('抽象类型要注意了.classPath:',typeInfo.classPath);
+  }
+
   try {
     if (astJava.isEnum) {
       sourceFile.addEnum(toEnum(astJava.name, astJava, intepretHandle));

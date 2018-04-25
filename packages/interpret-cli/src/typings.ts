@@ -141,6 +141,7 @@ export interface IJClass {
   };
   isEnum: boolean;
   isInterface: boolean;
+  isAbstract?: boolean;
   methods: IJMethod;
   typeParams: ITypeParam[];
   values?: string[] | number[]; //枚举类型首个值;
