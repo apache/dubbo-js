@@ -1,10 +1,10 @@
 ## dubbo2.js
 
-![love dubbo](https://raw.githubusercontent.com/QianmiOpen/dubbo2.js/master/resources/dubbo-love.png)
+![love dubbo](https://raw.githubusercontent.com/dubbo/dubbo2.js/master/resources/dubbo-love.png)
 
 多年期盼，一朝梦圆！ We love dubbo 👏
 
-感谢 js-to-java,hessian.js 两大核心模块, 感谢苏千和死马老师。
+感谢 [js-to-java](https://github.com/node-modules/js-to-java),[hessian.js](https://github.com/node-modules/hessian.js) 两大核心模块, 感谢[fengmk2](https://github.com/fengmk2)和[dead-horse](https://github.com/dead-horse)老师。
 
 nodejs 使用原生的 dubbo (dubbo head + hessian body) 协议打通了 dubbo 的 rpc 方法调用 .
 
@@ -110,7 +110,7 @@ yarn run test
 DEBUG=dubbo* yarn run test
 ```
 
-![dubbo-flow](https://raw.githubusercontent.com/QianmiOpen/dubbo2.js/master/resources/dubbo2-flow.png)
+![dubbo-flow](https://raw.githubusercontent.com/dubbo/dubbo2.js/master/resources/dubbo2-flow.png)
 
 ## API
 
@@ -161,6 +161,44 @@ const demoSerivce = Dubbo.proxService({
 })
 ```
 
+## dubbo was ready?
+
+```javascript
+const dubbo = Dubbo.from(/*...*/);
+
+(async () => {
+  await dubbo.ready();
+  //TODO dubbo was ready
+})();
+
+//egg.js
+app.beforeStart(async () => {
+  await dubbo.ready();
+  app.logger.info('dubbo was ready...');
+});
+```
+
+## dubbo's subscriber
+
+```javascript
+const dubbo = Dubbo.from(/*...*/);
+
+dubbo.subcribe({
+  onReady: () => {
+    //dubbo was ready.
+    //TODO for example logger
+  },
+  onSysError: err => {
+    //dubbo occur error
+    //TODO dingTalkRobot.send('error')
+  },
+  onStatistics: stat => {
+    //get invoke time statistics info
+    //in order to know load whether balance
+  },
+});
+```
+
 ## middleware
 
 通过对调用链路的抽象使用和 koa 相同的 middleware 机制，方便自定义拦截器，比如 logger，
@@ -174,6 +212,113 @@ dubbo.use(async (ctx, next) => {
   console.log('invoke cost time->', endTime - startTime);
 });
 ```
+
+## dubbo-invoker
+
+在 dubbo 的接口调用中，需要设置一些动态的参数如，version, group, timeout, retry 等常常
+
+这些参数需要在 consumer 调用方才精确设定值，之前是在 interpret 翻译生成 ts 的代码里面进行设置这个不够灵活，所以这里面我就抽象一个 dubbo-invoker 作为设置参数的 middleware
+
+```javascript
+import {dubboInvoker, matcher} from 'dubbo-invoker';
+
+//init
+const dubbo = Dubbo.from(/*....*/);
+//set params
+dubbo.use(
+  dubboInvoke(
+    matcher
+      //精确匹配接口
+      .match('com.alibaba.demo.UserProvider', {
+        version: '1.0.0',
+        group: 'user',
+      })
+      //正则匹配
+      .match(/$com.alibaba.dubbo/, {
+        version: '2.0.0',
+        group: '',
+      })
+      //match thunk
+      match((ctx) => {
+        //computed....
+        return true
+      }, {
+        version: '3.0.0'
+      })
+      .,
+  ),
+);
+```
+
+## Cool.
+
+我们坚定的认为开发体验同用户的体验同等重要，我们做了一些创新，一些很酷的实践。
+
+为了使node和dubbo之间的调用像java调用dubbo一样简单透明，我们设计和实现了translator.
+
+通过分析java的jar包中的bytecode提取dubbo调用的接口信息，自动生成typescript类型定义文件
+以及调用的代码。
+
+在packages/dubbo/src/__tests__/provider就是根据java目录下的demo翻译而来。
+
+我们希望整个dubbo调用的代码都可以无缝生成。
+
+
+## Translator
+
+<img src="http://oss-hz.qianmi.com/x-site/dev/doc/dong/video2deal/xsite/interpret/鹦鹉.png" width = "100" alt="图片名称" align=center />
+
+
+ Seamlessly connect to dubbo2.js to enhance the development experience!
+
+## TODO
+
+> remarks are not synchronized;
+
+## Getting Started
+
+
+### step1:Translating jar to typescript
+
+1. `npm install interpret-dubbo2js -g`
+2. `interpret -c dubbo.json`
+
+dubbo.json:
+
+```json
+{
+  "output": "./src",
+  "dubboVersion": "1.0",
+  "entry":"com.qianmi",
+  "entryJarPath":"${jarPath}",
+  "libDirPath":"${denpendJarDir}"
+}
+```
+
+
+***Tip*** 生成的代码可以发npm包供其他业务线使用或直接在项目中引用
+
+### step2:Use the provider
+
+```
+import {D2pMarketingQueryProvider} from '@qianmi/d2p-cart-api/lib/com/qianmi/cloudshop/api/marketing/d2p/D2pMarketingQueryProvider';
+const dubbo = new Dubbo({
+    application: {name: 'd2p-visitor-bff'},
+    dubboInvokeTimeout: 10,
+    //zookeeper address
+    register: app.config.zookeeper,
+    dubboVersion: '2.4.13',
+    logger: app.logger as ILogger,
+    interfaces: [
+      'com.qianmi.cloudshop.api.marketing.d2p.D2pMarketingQueryProvider'
+    ],
+  });
+let D2pMarketingQuery =  D2pMarketingQueryProvider(dubbo);
+
+```
+
+
+***Tip***  `npm install interpret-util dubbo2.js`;
 
 ## Performance
 
