@@ -43,14 +43,15 @@ export async function toTypescript(
     packagePath: astJava.name.substring(0, lastPointIndex),
     className: astJava.name.substring(lastPointIndex),
     isEnum: astJava.isEnum,
+    isAbstract: astJava.isAbstract,
     isInterface: astJava.isInterface,
     isClass: !astJava.isEnum && !astJava.isInterface,
     isProvider: astJava.name.endsWith('Provider'),
   };
   intepretHandle.request.registerTypeInfo(typeInfo);
 
-  if(astJava.isAbstract) {
-    console.warn('抽象类型要注意了.classPath:',typeInfo.classPath);
+  if(astJava.isAbstract  && !typeInfo.isProvider) {
+    console.warn('warning 抽象类型要注意了.classPath:',typeInfo.classPath);
   }
 
   try {
