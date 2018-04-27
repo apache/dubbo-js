@@ -20,7 +20,7 @@ import {IJFieldPropers, ITypePropers, ITypeSearch} from '../typings';
 const log = debug('j2t:core:ast-parse-util');
 
 /**
- * jaav 类型映射到TS中的值;;
+ * java 类型映射到TS中的值;;
  * @type {{String: string; Integer: string; Integer: string}}
  *
  * eg:
