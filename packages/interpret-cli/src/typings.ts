@@ -71,8 +71,13 @@ export interface IHasAst {
   (classPath: string): boolean;
 }
 
+export interface IDependItem{
+  classPath:string;
+  name:string;
+  importName:string;
+}
 export interface IAddDenpend {
-  (classPath: string): Promise<void>;
+  (classPath: string): Promise<IDependItem>;
 }
 
 /**

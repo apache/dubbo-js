@@ -21,7 +21,7 @@ import {ensureDir} from 'fs-extra';
 import {IToImportParam, toImport} from './transfer/to-import';
 import {toTypescript} from './transfer/to-typescript';
 import {default as Ast, SourceFile} from 'ts-simple-ast';
-import {IGetTypeInfo, IJClass, ITypeSearch} from './typings';
+import { IDependItem, IGetTypeInfo, IJClass, ITypeSearch } from "./typings";
 
 const log = debug('j2t:core:inteprethandle');
 const ast = new Ast();
@@ -46,7 +46,8 @@ export class IntepretHandle implements ITypeSearch {
 
   public sourceFile: SourceFile;
 
-  private dependencies: string[] = [];
+  private dependencies: IDependItem[] = [];
+
 
   get to(): string {
     return join(
@@ -98,7 +99,7 @@ export class IntepretHandle implements ITypeSearch {
    * @param className
    * @returns {Promise<void>}
    */
-  public async addDenpend(classPath: string) {
+  public async addDenpend(classPath: string) :Promise<IDependItem>{
     if (!(await this.request.hasAst(classPath))) {
       log(`No class ast found:${classPath}`);
       return;
@@ -106,14 +107,20 @@ export class IntepretHandle implements ITypeSearch {
 
     if (classPath === this.classPath) {
       log(`ignore self reference:${this.classPath}`);
-      return;
+      let className  = this.getTypeInfo(classPath).className;
+      return {
+        classPath,
+        name:className,
+        importName:className
+      };
     }
 
     log(`Adding dependencies ${this.classPath}`);
 
-    if (!this.dependencies.includes(classPath)) {
-      this.dependencies.push(classPath);
 
+    let dependItem = this.getDependItem(classPath);
+
+    if (!dependItem) {
       if (!this.request.isRecorded(classPath)) {
         this.request.record(classPath);
         try {
@@ -124,24 +131,68 @@ export class IntepretHandle implements ITypeSearch {
         }
       }
 
+      dependItem =  this.createDependItem(classPath);
+      this.dependencies.push(dependItem);
       try {
         this.sourceFile.addImport(
-          toImport(
-            Object.assign({}, this.getTypeInfo(classPath) as IToImportParam, {
-              packagePath: this.getTypeInfo(this.classPath).packagePath,
-            }),
+          toImport({
+              className:dependItem.name!=dependItem.importName?`${dependItem.name} as ${dependItem.importName}`:dependItem.name,
+              classPath,
+              packagePath:this.getTypeInfo(this.classPath).packagePath,
+            }
           ),
         );
       } catch (err) {
         console.error(
           `Error in adding dependencies :add ${classPath} in ${
             this.classPath
-          },error:${err}`,
-        );
+          }`
+        )
+        console.error(err);
       }
+      return dependItem;
+    }else{
+      return dependItem;
     }
   }
 
+
+  private getDependItem(classPath:string):IDependItem |null {
+
+    for (let dependItem of this.dependencies) {
+      if(dependItem.classPath===classPath){
+        return dependItem;
+      }
+    }
+    return null;
+  }
+
+  private createDependItem (classPath:string) :IDependItem{
+
+    let name  =this.getTypeInfo(classPath).className;
+    let importName =name;
+    let index=0;
+    while(this.isDependNameExist(importName)) {
+      importName +=index;
+    }
+
+    return  {
+      classPath,
+      name,
+      importName:importName
+    };
+  }
+
+  private isDependNameExist(importName){
+    let isExist =false;
+    for (let dependItem of this.dependencies) {
+      if(dependItem.importName===importName){
+        isExist=true;
+      }
+    }
+
+    return isExist;
+  }
   /**
    *
    * @returns {Promise<void>}

@@ -151,8 +151,13 @@ export async function classPath2TypeName(
   if (result) {
     return result;
   } else if (typeOptions.hasAst(classPath)) {
-    await typeOptions.addDenpend(classPath);
-    return typeOptions.getTypeInfo(classPath).className;
+    let denpendItem = await typeOptions.addDenpend(classPath);
+    if(denpendItem){
+      return denpendItem.importName;
+    }else{
+      console.warn('warning: not find class Type for :'+classPath);
+      return "";
+    }
   } else {
     throw new Error(`未找到类${classPath},在typescript中的信息; `);
   }

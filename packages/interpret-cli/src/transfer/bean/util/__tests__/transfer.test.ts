@@ -62,7 +62,11 @@ let typeOptions = {
     return enums.includes(classPath) || beans.includes(classPath);
   },
   addDenpend: async (classPath: string) => {
-    return;
+    return {
+      classPath:"",
+      name:"",
+      importName:"",
+    };
   },
   getTypeInfo: (classPath: string) => {
     if (typeInfo.has(classPath)) {

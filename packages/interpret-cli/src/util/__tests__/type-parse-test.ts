@@ -26,7 +26,11 @@ describe('基本类型转换', () => {
       return false;
     },
     addDenpend: async (classPath: string) => {
-      return;
+      return {
+        classPath:"",
+        name:"",
+        importName:"",
+      };
     },
     hasAst: (classPath: string) => {
       return beans.includes(classPath);

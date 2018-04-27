@@ -57,13 +57,15 @@ export async function toInterface(
     if (filtersMethodNames.includes(methodName)) {
       continue;
     }
+    let _methodName =methodName;
 
     if (typeDef.methods[methodName].isOverride) {
-      methodName = methodName.substring(0, methodName.lastIndexOf('@override'));
+      console.log('文件是override类型::',typeDef.name,methodName);
+      _methodName = methodName.substring(0, methodName.lastIndexOf('@override'));
     }
 
     let methodItem = await toMethod(
-      methodName,
+      _methodName,
       typeDef.methods[methodName],
       intepretHandle,
     );
