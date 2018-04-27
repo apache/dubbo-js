@@ -35,7 +35,7 @@ dubbo.json:
 
 ### step2:Use the provider
 
-```
+```typescript
 import {D2pMarketingQueryProvider} from '@qianmi/d2p-cart-api/lib/com/qianmi/cloudshop/api/marketing/d2p/D2pMarketingQueryProvider';
 const dubbo = new Dubbo({
     application: {name: 'd2p-visitor-bff'},
