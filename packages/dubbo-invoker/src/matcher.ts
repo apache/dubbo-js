@@ -76,10 +76,7 @@ export class Matcher {
     }
 
     log('oops, %s can not find any match rule', dubboInterface);
-    return {
-      version: '',
-      group: '',
-    };
+    return null;
   }
 }
 

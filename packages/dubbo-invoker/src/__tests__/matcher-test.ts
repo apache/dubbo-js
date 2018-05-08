@@ -59,10 +59,7 @@ describe('matcher test suite', () => {
       dubboInterface: 'com.alibaba.dubbo.demo.GoodsProvider',
     } as Context);
 
-    expect(param2).toEqual({
-      version: '',
-      group: '',
-    });
+    expect(param2).toEqual(null);
   });
 
   it('test RegExp match', () => {
@@ -86,9 +83,6 @@ describe('matcher test suite', () => {
       dubboInterface: 'com.dubbo.demo.ShoppingCart',
     } as Context);
 
-    expect(param).toEqual({
-      version: '',
-      group: '',
-    });
+    expect(param).toEqual(null);
   });
 });
