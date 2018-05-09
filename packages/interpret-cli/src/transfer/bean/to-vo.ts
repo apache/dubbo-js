@@ -67,7 +67,8 @@ export async function toBeanClass(
       filedType.startsWith('com.qianmi') ||
       filedType.startsWith('java.lang') ||
       filedType.startsWith('java.util') ||
-      filedType.startsWith('java.math')
+      filedType.startsWith('java.math') ||
+      intepretHandle.isTypeParam(filedType)
     ) {
       let field = await toField(
         fieldName,
