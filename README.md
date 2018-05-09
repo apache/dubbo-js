@@ -234,7 +234,7 @@ dubbo.use(
         group: 'user',
       })
       //正则匹配
-      .match(/$com.alibaba.dubbo/, {
+      .match(/^com.alibaba.dubbo/, {
         version: '2.0.0',
         group: '',
       })
@@ -254,22 +254,19 @@ dubbo.use(
 
 我们坚定的认为开发体验同用户的体验同等重要，我们做了一些创新，一些很酷的实践。
 
-为了使node和dubbo之间的调用像java调用dubbo一样简单透明，我们设计和实现了translator.
+为了使 node 和 dubbo 之间的调用像 java 调用 dubbo 一样简单透明，我们设计和实现了 translator.
 
-通过分析java的jar包中的bytecode提取dubbo调用的接口信息，自动生成typescript类型定义文件
-以及调用的代码。
+通过分析 java 的 jar 包中的 bytecode 提取 dubbo 调用的接口信息，自动生成 typescript 类型定义文件以及调用的代码。
 
-在packages/dubbo/src/__tests__/provider就是根据java目录下的demo翻译而来。
+在 packages/dubbo/src/**tests**/provider 就是根据 java 目录下的 demo 翻译而来。
 
-我们希望整个dubbo调用的代码都可以无缝生成。
-
+我们希望整个 dubbo 调用的代码都可以无缝生成。
 
 ## Translator
 
 <img src="http://oss-hz.qianmi.com/x-site/dev/doc/dong/video2deal/xsite/interpret/鹦鹉.png" width = "100" alt="图片名称" align=center />
 
-
- Seamlessly connect to dubbo2.js to enhance the development experience!
+Seamlessly connect to dubbo2.js to enhance the development experience!
 
 ## TODO
 
@@ -277,11 +274,10 @@ dubbo.use(
 
 ## Getting Started
 
-
 ### step1:Translating jar to typescript
 
-1. `npm install interpret-dubbo2js -g`
-2. `interpret -c dubbo.json`
+1.  `npm install interpret-dubbo2js -g`
+2.  `interpret -c dubbo.json`
 
 dubbo.json:
 
@@ -289,14 +285,13 @@ dubbo.json:
 {
   "output": "./src",
   "dubboVersion": "1.0",
-  "entry":"com.qianmi",
-  "entryJarPath":"${jarPath}",
-  "libDirPath":"${denpendJarDir}"
+  "entry": "com.qianmi",
+  "entryJarPath": "${jarPath}",
+  "libDirPath": "${denpendJarDir}"
 }
 ```
 
-
-***Tip*** 生成的代码可以发npm包供其他业务线使用或直接在项目中引用
+**_Tip_** 生成的代码可以发 npm 包供其他业务线使用或直接在项目中引用
 
 ### step2:Use the provider
 
@@ -314,11 +309,9 @@ const dubbo = new Dubbo({
     ],
   });
 let D2pMarketingQuery =  D2pMarketingQueryProvider(dubbo);
-
 ```
 
-
-***Tip***  `npm install interpret-util dubbo2.js`;
+**_Tip_** `npm install interpret-util dubbo2.js`;
 
 ## Performance
 
