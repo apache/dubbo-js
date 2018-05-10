@@ -22,6 +22,8 @@ nodejs 使用原生的 dubbo (dubbo head + hessian body) 协议打通了 dubbo �
 
 6.  Tracing
 
+7.  supported Dubbox
+
 ## Getting Started
 
 ```shell
@@ -119,6 +121,7 @@ DEBUG=dubbo* yarn run test
 ```javascript
 const dubbo = new Dubbo({
   dubboVersion          //当前dubbo的版本 (string类型); 必传
+  isSupportedDubbox     //是不是支持dubbox (boolean类型); 可选，默认false
   application           //记录应用的名称，zookeeper的调用时候写入consumer 类型：({name: string};) 可选
   dubboInvokeTimeout    //设置dubbo调用超时时间默认10s 可选 类型number
   dubboSocketPool       //设置dubbo创建socket的pool大小，默认4 可选 类型number
@@ -130,6 +133,7 @@ const dubbo = new Dubbo({
 // Or
 const dubbo = Dubbo.from({
   dubboVersion          //当前dubbo的版本 (string类型); 必传
+  isSupportedDubbox     //是不是支持dubbox (boolean类型); 可选，默认false
   application           //记录应用的名称，zookeeper的调用时候写入consumer 类型：({name: string};) 可选
   dubboInvokeTimeout    //设置dubbo调用超时时间默认10s 可选 类型number
   dubboSocketPool       //设置dubbo创建socket的pool大小，默认4 可选 类型number
