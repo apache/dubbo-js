@@ -2,6 +2,7 @@
 # Logs
 logs
 *.log
+*.iml
 
 # Runtime data
 pids

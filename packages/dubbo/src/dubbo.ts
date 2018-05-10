@@ -125,7 +125,7 @@ export default class Dubbo implements IObservable<IDubboSubscriber> {
    * 代理dubbo的服务
    */
   proxyService = <T>(provider: IDubboProvider): T => {
-    const {dubboVersion, application} = this._props;
+    const {dubboVersion, application, isSupportedDubbox} = this._props;
     const {dubboInterface, methods, version, timeout, group} = provider;
     const proxyObj = Object.create(null);
 
@@ -135,6 +135,7 @@ export default class Dubbo implements IObservable<IDubboSubscriber> {
         //创建dubbo调用的上下文
         const ctx = Context.create();
         ctx.application = application;
+        ctx.isSupportedDubbox = isSupportedDubbox;
 
         const method = methods[name];
         ctx.methodName = name;

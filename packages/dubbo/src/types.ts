@@ -55,6 +55,7 @@ export interface IInvokeParam {
   timeout?: number;
 }
 export interface IDubboProps {
+  isSupportedDubbox?: boolean;
   dubboVersion: string;
   application?: {name: string};
   enableHeartBeat?: boolean;

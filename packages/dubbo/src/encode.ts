@@ -138,6 +138,11 @@ export default class DubboEncoder {
     encoder.write(version);
     //method name
     encoder.write(methodName);
+
+    //兼容
+    if (this._ctx.isSupportedDubbox) {
+      encoder.write(-1);
+    }
     //parameter types
     encoder.write(DubboEncoder.getParameterTypes(methodArgs));
 

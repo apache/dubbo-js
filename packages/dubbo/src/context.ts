@@ -30,6 +30,7 @@ export default class Context<T = any> {
     this._timeoutId = null;
     this._uuid = '';
     this._pid = NO_PID;
+    this._isSupportedDubbox = false;
 
     this._request = {
       requestId: id(),
@@ -50,6 +51,11 @@ export default class Context<T = any> {
    * dubbo设置的application
    */
   private readonly _application: {name: string};
+
+  /**
+   * 是否支持dubbox,不希望通过版本2.8x来判断，不够语义化
+   */
+  private _isSupportedDubbox: boolean;
 
   /**
    * 当前promise的resolve
@@ -282,5 +288,14 @@ export default class Context<T = any> {
    */
   get isNotScheduled() {
     return this._pid === NO_PID;
+  }
+
+  //======================isSupportedDubbox================
+  set isSupportedDubbox(isSupportedDubbox: boolean) {
+    this._isSupportedDubbox = isSupportedDubbox;
+  }
+
+  get isSupportedDubbox() {
+    return this._isSupportedDubbox;
   }
 }
