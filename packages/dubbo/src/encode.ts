@@ -44,7 +44,11 @@ const DUBBO_DEFAULT_PAY_LOAD = 8 * 1024 * 1024; // 8M
 export default class DubboEncoder {
   constructor(ctx: Context) {
     const {request, uuid} = ctx;
-    log('dubbo encode param request:%O, uuid:%s', request, uuid);
+    log(
+      'dubbo encode param request:%s, uuid:%s',
+      JSON.stringify(request),
+      uuid,
+    );
 
     this._ctx = ctx;
   }
