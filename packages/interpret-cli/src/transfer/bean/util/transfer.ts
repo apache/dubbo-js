@@ -140,15 +140,16 @@ export async function fields2CtrContent(
             filedAst.name !== 'java.util.Collection'
               ? filedAst.name
               : 'java.util.List';
-
-          fieldTrans.push(`${name}:java.${_classNam.substring(
+          fieldTrans.push(`${name}:this.${name}?java.${_classNam.substring(
             filedAst.name.lastIndexOf('.') + 1,
           )}(${forEachStr}.map(paramItem=>{
           return ${j2Jtj(typeOption, {
             paramRefName: 'paramItem',
             classPath: filedAst.typeArgs[0].type.name,
           })}
-          }))`);
+          }))
+          :null
+          `);
         }
       } else if (
         ['java.util.HashMap', 'java.util.Map'].includes(filedAst.name)
@@ -283,7 +284,7 @@ export function j2Jtj(
     } else if (isClass) {
       log(`添加对象转换(__fields2java)${classPath}`);
       //引入类并且不是枚举类型
-      return `${paramRefName}.__fields2java()`;
+      return `${paramRefName}?${paramRefName}.__fields2java():null`;
     } else {
       throw new Error('不可能出现这种的,classPathStr:' + classPath + isClass);
     }

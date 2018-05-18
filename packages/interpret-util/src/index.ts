@@ -51,6 +51,8 @@ function minusRedundancy(itemParam: any) {
     if (itemParam.$[_key] === null || itemParam.$[_key] === undefined) {
       delete itemParam.$[_key];
       log("删除 key %s from %j ", itemParam, _key);
+    } else {
+      paramEnhance(itemParam.$[_key])
     }
   }
 }
