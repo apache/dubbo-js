@@ -39,7 +39,9 @@ exports[`数组显示问题 string[] string[] 2`] = `
 exports[`集合显示问题  java.util.Collection 1`] = `""`;
 
 exports[`集合显示问题  java.util.Collection 2`] = `
-"skuIds:java.List((this.skuIds||[]).map(paramItem=>{
+"skuIds:this.skuIds?java.List((this.skuIds||[]).map(paramItem=>{
           return java.String(paramItem)
-          }))"
+          }))
+          :null
+          "
 `;
