@@ -117,7 +117,7 @@ describe('基础转换生成', () => {
       paramRefName: 'item',
       classPath: 'com.qianmi.yxtc.domain.PayMethodInfo',
     });
-    expect(content).toEqual('item.__fields2java()');
+    expect(content).toEqual('item?item.__fields2java():null');
   });
 
   it('泛型对象类型', async () => {
