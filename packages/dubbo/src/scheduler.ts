@@ -140,7 +140,7 @@ export default class Scheduler {
   };
 
   /**
-   * 判断是不是当前调用接口的agentHost是不是为kong，如果为空失败处理
+   * 判断是不是当前调用接口的agentHost是不是为空，如果为空失败处理
    * @param ctx
    * @param agentHost
    */
