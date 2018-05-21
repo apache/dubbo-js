@@ -426,9 +426,8 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
    * &methods=getUser,queryAll,queryUser,isLimit&owner=wenwu&pid=61578&side=provider&timestamp=1428904600188
    */
   private static parseUrl(dubboUrl): IProviderProps {
-    const rpcUrl = decodeURIComponent(dubboUrl);
-    const rpc = url.parse(rpcUrl);
-    const query = qs.parse(rpcUrl);
+    const rpc = url.parse(dubboUrl);
+    const query = qs.parse(dubboUrl);
 
     return {
       host: rpc.hostname,
