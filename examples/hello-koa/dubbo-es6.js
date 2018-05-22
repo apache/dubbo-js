@@ -5,14 +5,14 @@ const dubbo = new Dubbo({
   register: 'localhost:2181',
   dubboVersion: '2.0.0',
   interfaces: [
-    'com.alibaba.dubbo.demo.DemoService',
-    'com.alibaba.dubbo.demo.BasicTypeService',
-    'com.alibaba.dubbo.demo.ErrorService',
+    'com.alibaba.dubbo.demo.DemoProvider',
+    'com.alibaba.dubbo.demo.BasicTypeProvider',
+    'com.alibaba.dubbo.demo.ErrorProvider',
   ],
 });
 
 const demoService = dubbo.proxyService({
-  dubboInterface: 'com.alibaba.dubbo.demo.DemoService',
+  dubboInterface: 'com.alibaba.dubbo.demo.DemoProvider',
   version: '1.0.0',
   methods: {
     sayHello(name) {
@@ -36,7 +36,7 @@ const demoService = dubbo.proxyService({
 });
 
 const basicTypeService = dubbo.proxyService({
-  dubboInterface: 'com.alibaba.dubbo.demo.BasicTypeService',
+  dubboInterface: 'com.alibaba.dubbo.demo.BasicTypeProvider',
   version: '2.0.0',
   methods: {
     testBasicType() {
@@ -51,7 +51,7 @@ const basicTypeService = dubbo.proxyService({
 });
 
 const errorService = dubbo.proxyService({
-  dubboInterface: 'com.alibaba.dubbo.demo.ErrorService',
+  dubboInterface: 'com.alibaba.dubbo.demo.ErrorProvider',
   version: '1.0.0',
   methods: {
     errorTest() {

@@ -32,6 +32,8 @@ enum SCHEDULE_STATUS {
   FAILED,
   //OK状态
   READY,
+  //没有可用socket agent
+  NO_AVAILIABLE_SOCKET_AGENT,
 }
 
 /**
@@ -74,7 +76,10 @@ export default class Scheduler {
         log('scheduler was padding');
         break;
       case SCHEDULE_STATUS.FAILED:
-        this._scheduleFailed(requestId);
+        this._scheduleFailed(
+          requestId,
+          new ScheduleError('Schedule error, Zk Could not connect'),
+        );
         break;
       case SCHEDULE_STATUS.READY:
         log('scheduler was ready');
@@ -131,12 +136,9 @@ export default class Scheduler {
   /**
    * 处理schedule的failed状态
    */
-  private _scheduleFailed = (requestId: number) => {
-    log('scheduler was failed');
-    queue.failed(
-      requestId,
-      new ScheduleError('Schedule error, Zk Could not connect'),
-    );
+  private _scheduleFailed = (requestId: number, err: Error) => {
+    log('scheduler was failed, err: %s', err);
+    queue.failed(requestId, err);
   };
 
   /**
@@ -172,6 +174,14 @@ export default class Scheduler {
    * @param agentHostList
    */
   private _dubboInvoke(ctx: Context, agentHostList: Array<string>) {
+    if (!this._serverAgent.hasAvailableSocketAgent(agentHostList)) {
+      this._scheduleFailed(
+        ctx.requestId,
+        new ScheduleError('Could not find any availiable socekt agent'),
+      );
+      return;
+    }
+
     const node = this._serverAgent.getAvailableSocketAgent(agentHostList)
       .worker;
 
