@@ -256,7 +256,7 @@ export default class Context<T = any> {
 
   //===========timeout setter&&getter=================
   set timeoutId(timeId: NodeJS.Timer) {
-    log('requestId#%d set timeoutId: %O', this._request.requestId, timeId);
+    log('requestId#%d set timeoutId: %O', this._request.requestId);
     this._timeoutId = timeId;
   }
 

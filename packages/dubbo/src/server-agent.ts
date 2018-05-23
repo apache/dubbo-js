@@ -79,12 +79,12 @@ export class ServerAgent implements IObservable<ISocketSubscriber> {
     agentHostPorts: Array<TAgentHostPort>,
   ): Array<SocketPool> {
     let availableList = [];
-    agentHostPorts.forEach(agentHostPort => {
+    for (let agentHostPort of agentHostPorts) {
       const socketPool = this._serverAgentMap.get(agentHostPort);
       if (socketPool && socketPool.hasAvaliableNodes) {
         availableList.push(socketPool);
       }
-    });
+    }
     return availableList;
   }
 

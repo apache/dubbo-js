@@ -1,3 +1,8 @@
+/**
+ * https://github.com/dangdangdotcom/dubbox.git
+ * run: com.alibaba.dubbo.demo.provider.DemoProvider
+ */
+
 import {Dubbo, java, TDubboCallResult} from '../index';
 
 const dubbo = Dubbo.from({
@@ -24,6 +29,7 @@ describe('add dubbox test suite', () => {
       },
     }) as {hello(name: string): TDubboCallResult<string>};
     const {res, err} = await helloService.hello('node');
+    console.log(res);
     expect(err).toBeNull();
     expect(res != null).toEqual(true);
   });

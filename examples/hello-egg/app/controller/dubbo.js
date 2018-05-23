@@ -4,11 +4,11 @@ const dubbo = new Dubbo({
   application: {name: 'dubbo-node-consumer'},
   register: 'localhost:2181',
   dubboVersion: '2.0.0',
-  interfaces: ['com.alibaba.dubbo.demo.DemoService'],
+  interfaces: ['com.alibaba.dubbo.demo.DemoProvider'],
 });
 
 const demoService = dubbo.proxyService({
-  dubboInterface: 'com.alibaba.dubbo.demo.DemoService',
+  dubboInterface: 'com.alibaba.dubbo.demo.DemoProvider',
   version: '1.0.0',
   methods: {
     sayHello(name) {
