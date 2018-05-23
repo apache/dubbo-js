@@ -18,7 +18,7 @@ import debug from 'debug';
 import compose from 'koa-compose';
 import config from './config';
 import Context from './context';
-import {msg, MSG_TYPE} from './msg';
+import {MSG_TYPE, msg} from './msg';
 import queue from './queue';
 import Scheduler from './scheduler';
 import {to} from './to';
@@ -78,6 +78,9 @@ export default class Dubbo implements IObservable<IDubboSubscriber> {
     }
 
     //初始化config
+    //全局超时时间(最大熔断时间)类似<dubbo:consumer timeout="sometime"/>
+    //对应consumer客户端来说，用户设置了接口级别的超时时间，就使用接口级别的
+    //如果用户没有设置用户级别，默认就是最大超时时间
     config.dubboInvokeTimeout = dubboInvokeTimeout || config.dubboInvokeTimeout;
     config.dubboSocketPool = dubboSocketPool || config.dubboSocketPool;
 
@@ -125,7 +128,7 @@ export default class Dubbo implements IObservable<IDubboSubscriber> {
    * 代理dubbo的服务
    */
   proxyService = <T>(provider: IDubboProvider): T => {
-    const {dubboVersion, application, isSupportedDubbox} = this._props;
+    const {application, isSupportedDubbox} = this._props;
     const {dubboInterface, methods, version, timeout, group} = provider;
     const proxyObj = Object.create(null);
 
@@ -142,10 +145,9 @@ export default class Dubbo implements IObservable<IDubboSubscriber> {
         ctx.methodArgs = method.call(provider, ...args) || [];
 
         ctx.dubboInterface = dubboInterface;
-        ctx.dubboVersion = dubboVersion;
         ctx.version = version;
         ctx.timeout = timeout;
-        ctx.group = group;
+        ctx.group = group || '';
 
         const middleware = [
           ...this._middleware,

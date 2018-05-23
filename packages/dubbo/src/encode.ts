@@ -43,14 +43,11 @@ const DUBBO_DEFAULT_PAY_LOAD = 8 * 1024 * 1024; // 8M
 
 export default class DubboEncoder {
   constructor(ctx: Context) {
-    const {request, uuid} = ctx;
-    log(
-      'dubbo encode param request:%s, uuid:%s',
-      JSON.stringify(request),
-      uuid,
-    );
-
     this._ctx = ctx;
+    log(
+      'dubbo encode param request:%s',
+      JSON.stringify(this._ctx.request, null, 2),
+    );
   }
 
   private readonly _ctx: Context;
@@ -139,7 +136,7 @@ export default class DubboEncoder {
     //method name
     encoder.write(methodName);
 
-    //兼容
+    //supported dubbox
     if (this._ctx.isSupportedDubbox) {
       encoder.write(-1);
     }
@@ -204,23 +201,40 @@ export default class DubboEncoder {
   }
 
   private getAttachments() {
-    const {path, dubboInterface, group, timeout, version, uuid} = this._ctx;
+    const {
+      requestId,
+      path,
+      dubboInterface,
+      group,
+      timeout,
+      version,
+      uuid,
+      application: {name},
+    } = this._ctx;
+
+    const map = {
+      path: path,
+      interface: dubboInterface,
+      version: version || '0.0.0',
+    };
+
+    group && (map['group'] = group);
+    timeout && (map['timeout'] = timeout);
+    //全链路跟踪
+    log(`trace uuid-> ${uuid}`);
+    uuid && (map['QM_UUID'] = uuid);
+    name && (map['application'] = name);
 
     let attachments = {
       $class: 'java.util.HashMap',
-      $: {
-        interface: dubboInterface,
-        path: path,
-        version: version || '0.0.0',
-      },
+      $: map,
     };
 
-    group && (attachments['$']['group'] = group);
-    timeout && (attachments['$']['timeout'] = timeout);
-
-    log(`trace uuid-> ${uuid}`);
-    //全链路跟踪
-    uuid && (attachments['$']['QM_UUID'] = uuid);
+    log(
+      'request#%d attachment %s',
+      requestId,
+      JSON.stringify(attachments, null, 2),
+    );
 
     return attachments;
   }

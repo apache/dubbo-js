@@ -17,11 +17,12 @@
 import debug from 'debug';
 import config from './config';
 import Context from './context';
+import DubboUrl from './dubbo-url';
+import {DubboMethodParamHessianTypeError, DubboTimeoutError} from './err';
+import {MSG_TYPE, msg} from './msg';
 import SocketWorker from './socket-worker';
 import statistics from './statistics';
-import {IProviderProps, TRequestId, IObservable} from './types';
-import {DubboMethodParamHessianTypeError, DubboTimeoutError} from './err';
-import {msg, MSG_TYPE} from './msg';
+import {IObservable, TRequestId} from './types';
 
 const log = debug('dubbo:queue');
 const noop = () => {};
@@ -147,11 +148,7 @@ export class Queue implements IObservable<TQueueObserver> {
     this._clear(requestId);
   }
 
-  consume(
-    requestId: TRequestId,
-    node: SocketWorker,
-    providerMeta: IProviderProps,
-  ) {
+  consume(requestId: TRequestId, node: SocketWorker, providerMeta: DubboUrl) {
     const ctx = this._requestQueue.get(requestId);
     if (!ctx) {
       return;
@@ -161,8 +158,7 @@ export class Queue implements IObservable<TQueueObserver> {
     log(`staring schedule ${requestId}#${dubboInterface}#${version}`);
 
     //merge dubboVersion timeout group
-    request.dubboVersion = request.dubboVersion || providerMeta.dubboVersion;
-    request.timeout = request.timeout || providerMeta.timeout;
+    request.dubboVersion = providerMeta.dubboVersion;
     request.group = request.group || providerMeta.group;
     request.path = providerMeta.path;
     node.write(ctx);
@@ -220,12 +216,14 @@ export class Queue implements IObservable<TQueueObserver> {
    * @param ctx
    */
   private _checkTimeout(ctx: Context) {
-    const timeout = config.dubboInvokeTimeout * 1000;
+    //先获取上下文设置的超时时间，如果没有设置就获取最大超时时间
+    const timeout = (ctx.timeout || config.dubboInvokeTimeout) * 1000;
+    log('check timeout: ctx.timeout-> %d @timeout: %d', ctx.timeout, timeout);
+
     ctx.timeoutId = setTimeout(() => {
       statistics.timeoutErrCount++;
       const {requestId, dubboInterface, methodName} = ctx.request;
 
-      log('timeout->', timeout);
       log(`err: ${dubboInterface}#${methodName} remote invoke timeout`);
 
       this.failed(

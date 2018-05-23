@@ -14,21 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import debug from 'debug';
 import ip from 'ip';
 import zookeeper from 'node-zookeeper-client';
 import qs from 'querystring';
-import url from 'url';
-import {to} from './to';
-import {
-  IProviderProps,
-  IZkClientProps,
-  IObservable,
-  IZookeeperSubscriber,
-} from './types';
-import {ZookeeperDisconnectedError, ZookeeperTimeoutError} from './err';
 import Context from './context';
-import {msg, MSG_TYPE} from './msg';
+import DubboUrl from './dubbo-url';
+import {ZookeeperDisconnectedError, ZookeeperTimeoutError} from './err';
+import {MSG_TYPE, msg} from './msg';
+import {to} from './to';
+import {IObservable, IZkClientProps, IZookeeperSubscriber} from './types';
 
 const log = debug('dubbo:zookeeper');
 const noop = () => {};
@@ -54,7 +50,7 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
   private _client: zookeeper.Client;
   private _subscriber: IZookeeperSubscriber;
   private _agentMap: Map<TDubboInterface, Array<TAgentHostPort>>;
-  private readonly _providerMap: Map<TDubboInterface, Array<IProviderProps>>;
+  private readonly _providerMap: Map<TDubboInterface, Array<DubboUrl>>;
 
   static from(props: IZkClientProps) {
     return new ZkClient(props);
@@ -79,7 +75,7 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
     for (let inf of interfaces) {
       const providerPath = `/${zkRoot}/${inf}/providers`;
       const providers = (await this._getProviderList(providerPath, inf)) || [];
-      const providerMetaList = providers.map(ZkClient.parseUrl);
+      const providerMetaList = providers.map(DubboUrl.from);
 
       for (let providerProp of providerMetaList) {
         const {host, port, dubboVersion, version} = providerProp;
@@ -149,7 +145,7 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
       const isSameGroup = group ? group === providerMeta.group : true;
 
       if (isSameHost && isSamePort && isSameVersion && isSameGroup) {
-        log('getProviderProps=-> %O', providerMeta);
+        log('getProviderProps=-> %s', providerMeta);
         return providerMeta;
       }
     }
@@ -251,7 +247,7 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
       log(`trigger watch ${providerPath}, type: %s`, e.getName());
       const providers =
         (await this._getProviderList(providerPath, dubboInterface)) || [];
-      const providerList = providers.map(ZkClient.parseUrl);
+      const providerList = providers.map(DubboUrl.from);
       log(
         'update dubboInterface % providerList %O',
         dubboInterface,
@@ -412,31 +408,4 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
       });
     });
   };
-
-  /**
-   *
-   * 解析dubbo的url，获取host，port，path
-   *
-   * @param dubboUrl dubbo的url
-   *
-   * 例如：
-   * dubbo://192.168.2.1:38080/com.ofpay.demo.api.UserProvider?anyhost=true
-   * &application=demo-provider&default.timeout=10000&dubbo=2.4.10
-   * &environment=product&interface=com.ofpay.demo.api.UserProvider
-   * &methods=getUser,queryAll,queryUser,isLimit&owner=wenwu&pid=61578&side=provider&timestamp=1428904600188
-   */
-  private static parseUrl(dubboUrl): IProviderProps {
-    const rpc = url.parse(dubboUrl);
-    const query = qs.parse(dubboUrl);
-
-    return {
-      host: rpc.hostname,
-      port: parseInt(rpc.port),
-      timeout: query.timeout ? parseInt(query.timeout as string) : 0,
-      path: rpc.pathname.substring(1),
-      dubboVersion: query.dubbo || '',
-      version: query.version || '',
-      group: query.group || '',
-    } as any;
-  }
 }

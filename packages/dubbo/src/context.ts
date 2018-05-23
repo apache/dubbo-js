@@ -189,7 +189,7 @@ export default class Context<T = any> {
   }
 
   set group(group: string) {
-    log('requestId#%d set group: %d', this._request.requestId, group);
+    log('requestId#%d set group: %s', this._request.requestId, group);
     this._request.group = group;
   }
 
@@ -256,7 +256,7 @@ export default class Context<T = any> {
 
   //===========timeout setter&&getter=================
   set timeoutId(timeId: NodeJS.Timer) {
-    log('requestId#%d set timeoutId: %O', this._request.requestId);
+    log('requestId#%d set timeoutId', this._request.requestId);
     this._timeoutId = timeId;
   }
 

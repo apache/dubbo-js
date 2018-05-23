@@ -56,7 +56,6 @@ export interface IInvokeParam {
 }
 export interface IDubboProps {
   isSupportedDubbox?: boolean;
-  dubboVersion: string;
   application?: {name: string};
   enableHeartBeat?: boolean;
   /**
@@ -123,5 +122,15 @@ export interface IContextRequestParam {
   methodArgs: Array<IHessianType>;
   version: string;
   timeout: number;
+  group: string;
+}
+
+export interface IQueryObj {
+  application: string;
+  dubbo: string;
+  interface: string;
+  path: string;
+  methods: string;
+  version: string;
   group: string;
 }
