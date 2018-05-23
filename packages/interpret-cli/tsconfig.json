@@ -6,8 +6,8 @@
     "declaration": false
   },
   "exclude": [
-    "*/__tests__/**",
-    "*/temp/**",
+    "**/__tests__/**/*",
+    "temp/**",
     "demo/**"
   ]
 }
