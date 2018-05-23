@@ -104,7 +104,7 @@ const demoService = dubbo.proxyService<IDemoService>({
 brew install zookeeper
 brew services start zookeeper
 
-#运行java/dubbo-simple下面的例子
+#运行java/dubbo-demo-provider下面的例子
 
 yarn run test
 
@@ -120,7 +120,6 @@ DEBUG=dubbo* yarn run test
 
 ```javascript
 const dubbo = new Dubbo({
-  dubboVersion          //当前dubbo的版本 (string类型); 必传
   isSupportedDubbox     //是不是支持dubbox (boolean类型); 可选，默认false
   application           //记录应用的名称，zookeeper的调用时候写入consumer 类型：({name: string};) 可选
   dubboInvokeTimeout    //设置dubbo调用超时时间默认10s 可选 类型number
@@ -132,7 +131,6 @@ const dubbo = new Dubbo({
 
 // Or
 const dubbo = Dubbo.from({
-  dubboVersion          //当前dubbo的版本 (string类型); 必传
   isSupportedDubbox     //是不是支持dubbox (boolean类型); 可选，默认false
   application           //记录应用的名称，zookeeper的调用时候写入consumer 类型：({name: string};) 可选
   dubboInvokeTimeout    //设置dubbo调用超时时间默认10s 可选 类型number
@@ -163,6 +161,30 @@ const demoSerivce = Dubbo.proxService({
     }
   },
 })
+```
+
+### connect dubbo directly
+
+```typescript
+import {DirectlyDubbo, java} from 'dubbo2.js';
+import {
+  DemoProvider,
+  DemoProviderWrapper,
+  IDemoProvider,
+} from './providers/com/alibaba/dubbo/demo/DemoProvider';
+import {UserRequest} from './providers/com/alibaba/dubbo/demo/UserRequest';
+
+const dubbo = DirectlyDubbo.from({
+  dubboAddress: 'localhost:20880',
+  dubboVersion: '2.0.0',
+  dubboInvokeTimeout: 10,
+});
+
+const demoService = dubbo.proxyService<IDemoProvider>({
+  dubboInterface: 'com.alibaba.dubbo.demo.DemoProvider',
+  methods: DemoProviderWrapper,
+  version: '1.0.0',
+});
 ```
 
 ## dubbo was ready?
