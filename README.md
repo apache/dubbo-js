@@ -288,13 +288,6 @@ dubbo.use(
 
 我们希望整个 dubbo 调用的代码都可以无缝生成。
 
-
-***职责***
-1. 翻译Interface代码,生成node端可调用代码;
-2. 自动将参数转换为hessian.js能识别的对象;
-3. 接口方法及参数类型提示;
-
-
 [translator详细介绍](./packages/interpret-cli)
 
 ## Performance
