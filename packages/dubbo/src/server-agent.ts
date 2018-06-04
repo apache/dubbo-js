@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 import debug from 'debug';
-import SocketPool from './socket-pool';
-import {TAgentHostPort} from './zookeeper';
-import {ISocketSubscriber, IObservable} from './types';
-import {msg, MSG_TYPE} from './msg';
 import {SocketError} from './err';
+import {MSG_TYPE, msg} from './msg';
+import SocketPool from './socket-pool';
+import {IObservable, ISocketSubscriber} from './types';
+import {TAgentHostPort} from './zookeeper';
 
 const noop = () => {};
 const log = debug('dubbo:server-agent');

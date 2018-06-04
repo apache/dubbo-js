@@ -11,13 +11,13 @@ const dubbo = new Dubbo({
   ],
 });
 
-dubbo.use(async function costTime(ctx, next) {
-  console.log('before dubbo cost middleware');
-  const startTime = Date.now();
-  await next();
-  const endTime = Date.now();
-  console.log('end makecostTime->', endTime - startTime);
-});
+// dubbo.use(async function costTime(ctx, next) {
+//   console.log('before dubbo cost middleware');
+//   const startTime = Date.now();
+//   await next();
+//   const endTime = Date.now();
+//   console.log('end makecostTime->', endTime - startTime);
+// });
 
 const demoProvider = dubbo.proxyService({
   dubboInterface: 'com.alibaba.dubbo.demo.DemoProvider',

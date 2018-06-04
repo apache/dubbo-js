@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import debug from 'debug';
 import config from './config';
 import Context from './context';
@@ -22,12 +23,11 @@ import {DubboMethodParamHessianTypeError, DubboTimeoutError} from './err';
 import {MSG_TYPE, msg} from './msg';
 import SocketWorker from './socket-worker';
 import statistics from './statistics';
-import {IObservable, TRequestId} from './types';
+import {IObservable, TQueueObserver, TRequestId} from './types';
 
-const log = debug('dubbo:queue');
 const noop = () => {};
-
-export type TQueueObserver = Function;
+const log = debug('dubbo:queue');
+const isDev = process.env.NODE_ENV != 'production';
 
 /**
  * Node的异步特性就会让我们在思考问题的时候，要转换一下思考问题的思维
@@ -51,6 +51,18 @@ export class Queue implements IObservable<TQueueObserver> {
   //请求队列
   private readonly _requestQueue: Map<TRequestId, Context>;
 
+  private _clear(requestId) {
+    log(`clear invoke and schedule queue #${requestId}`);
+    this._requestQueue.delete(requestId);
+    if (isDev) {
+      log('current schedule queue', this.scheduleQueue);
+      this._showStatistics();
+    }
+  }
+
+  /**
+   * static factory method
+   */
   static create() {
     return new Queue();
   }
@@ -71,7 +83,9 @@ export class Queue implements IObservable<TQueueObserver> {
       log(`add queue,requestId#${requestId}, interface: ${dubboInterface}`);
       //设置调用队列
       this._requestQueue.set(requestId, ctx);
-      log(`current schedule queue =>`, this.scheduleQueue);
+      if (isDev) {
+        log(`current schedule queue =>`, this.scheduleQueue);
+      }
       //通知scheduler
       this._subscriber(requestId, ctx);
     });
@@ -98,13 +112,6 @@ export class Queue implements IObservable<TQueueObserver> {
   subscribe(cb: Function) {
     this._subscriber = cb;
     return this;
-  }
-
-  private _clear(requestId) {
-    log(`clear invoke and schedule queue #${requestId}`);
-    this._requestQueue.delete(requestId);
-    log('current schedule queue', this.scheduleQueue);
-    this._showStatistics();
   }
 
   allFailed(err: Error) {
@@ -162,7 +169,9 @@ export class Queue implements IObservable<TQueueObserver> {
     request.group = request.group || providerMeta.group;
     request.path = providerMeta.path;
     node.write(ctx);
-    log(`current schedule queue ==>`, this.scheduleQueue);
+    if (isDev) {
+      log(`current schedule queue ==>`, this.scheduleQueue);
+    }
   }
 
   resolve(requestId, res) {

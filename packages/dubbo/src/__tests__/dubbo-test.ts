@@ -14,18 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Dubbo, java} from 'dubbo2.js';
-import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
-import {BasicTypeProvider} from './providers/com/alibaba/dubbo/demo/BasicTypeProvider';
-import {ErrorProvider} from './providers/com/alibaba/dubbo/demo/ErrorProvider';
-import {UserRequest} from './providers/com/alibaba/dubbo/demo/UserRequest';
-import {TypeRequest} from './providers/com/alibaba/dubbo/demo/TypeRequest';
 import {dubboInvoker, matcher} from 'dubbo-invoker';
+import {Dubbo, java} from 'dubbo2.js';
+import {BasicTypeProvider} from './providers/com/alibaba/dubbo/demo/BasicTypeProvider';
+import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
+import {ErrorProvider} from './providers/com/alibaba/dubbo/demo/ErrorProvider';
+import {TypeRequest} from './providers/com/alibaba/dubbo/demo/TypeRequest';
+import {UserRequest} from './providers/com/alibaba/dubbo/demo/UserRequest';
 
 const dubbo = new Dubbo({
   application: {name: '@qianmi/node-dubbo'},
   register: 'localhost:2181',
-  dubboVersion: '2.0.0',
   interfaces: [
     'com.alibaba.dubbo.demo.DemoProvider',
     'com.alibaba.dubbo.demo.BasicTypeProvider',

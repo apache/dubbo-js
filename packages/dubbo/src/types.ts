@@ -134,3 +134,5 @@ export interface IQueryObj {
   version: string;
   group: string;
 }
+
+export type TQueueObserver = Function;

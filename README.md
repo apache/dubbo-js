@@ -342,26 +342,29 @@ let D2pMarketingQuery =  D2pMarketingQueryProvider(dubbo);
 ## Performance
 
 ```text
-loadtest -c 100 -n 10000 -k http://localhost:3000/hello
-[Mon Feb 12 2018 17:30:28 GMT+0800 (CST)] INFO Requests: 0 (0%), requests per second: 0, mean latency: 0 ms
-[Mon Feb 12 2018 17:30:30 GMT+0800 (CST)] INFO
-[Mon Feb 12 2018 17:30:30 GMT+0800 (CST)] INFO Target URL:          http://localhost:3000/hello
-[Mon Feb 12 2018 17:30:30 GMT+0800 (CST)] INFO Max requests:        10000
-[Mon Feb 12 2018 17:30:30 GMT+0800 (CST)] INFO Concurrency level:   100
-[Mon Feb 12 2018 17:30:30 GMT+0800 (CST)] INFO Agent:               keepalive
-[Mon Feb 12 2018 17:30:30 GMT+0800 (CST)] INFO
-[Mon Feb 12 2018 17:30:30 GMT+0800 (CST)] INFO Completed requests:  10000
-[Mon Feb 12 2018 17:30:30 GMT+0800 (CST)] INFO Total errors:        0
-[Mon Feb 12 2018 17:30:30 GMT+0800 (CST)] INFO Total time:          2.3191059540000003 s
-[Mon Feb 12 2018 17:30:30 GMT+0800 (CST)] INFO Requests per second: 4312
-[Mon Feb 12 2018 17:30:30 GMT+0800 (CST)] INFO Mean latency:        22.9 ms
-[Mon Feb 12 2018 17:30:30 GMT+0800 (CST)] INFO
-[Mon Feb 12 2018 17:30:30 GMT+0800 (CST)] INFO Percentage of the requests served within a certain time
-[Mon Feb 12 2018 17:30:30 GMT+0800 (CST)] INFO   50%      20 ms
-[Mon Feb 12 2018 17:30:30 GMT+0800 (CST)] INFO   90%      31 ms
-[Mon Feb 12 2018 17:30:30 GMT+0800 (CST)] INFO   95%      38 ms
-[Mon Feb 12 2018 17:30:30 GMT+0800 (CST)] INFO   99%      73 ms
-[Mon Feb 12 2018 17:30:30 GMT+0800 (CST)] INFO  100%      116 ms (longest request)
+❯ loadtest -t 20 -c 200 http://localhost:3000/hello -k
+[Mon Jun 04 2018 14:34:27 GMT+0800 (CST)] INFO Requests: 0, requests per second: 0, mean latency: 0 ms
+[Mon Jun 04 2018 14:34:32 GMT+0800 (CST)] INFO Requests: 35956, requests per second: 7215, mean latency: 27.9 ms
+[Mon Jun 04 2018 14:34:37 GMT+0800 (CST)] INFO Requests: 77133, requests per second: 8238, mean latency: 24.3 ms
+[Mon Jun 04 2018 14:34:42 GMT+0800 (CST)] INFO Requests: 116531, requests per second: 7869, mean latency: 25.4 ms
+[Mon Jun 04 2018 14:34:47 GMT+0800 (CST)] INFO
+[Mon Jun 04 2018 14:34:47 GMT+0800 (CST)] INFO Target URL:          http://localhost:3000/hello
+[Mon Jun 04 2018 14:34:47 GMT+0800 (CST)] INFO Max time (s):        20
+[Mon Jun 04 2018 14:34:47 GMT+0800 (CST)] INFO Concurrency level:   200
+[Mon Jun 04 2018 14:34:47 GMT+0800 (CST)] INFO Agent:               keepalive
+[Mon Jun 04 2018 14:34:47 GMT+0800 (CST)] INFO
+[Mon Jun 04 2018 14:34:47 GMT+0800 (CST)] INFO Completed requests:  156836
+[Mon Jun 04 2018 14:34:47 GMT+0800 (CST)] INFO Total errors:        0
+[Mon Jun 04 2018 14:34:47 GMT+0800 (CST)] INFO Total time:          20.001182913 s
+[Mon Jun 04 2018 14:34:47 GMT+0800 (CST)] INFO Requests per second: 7841
+[Mon Jun 04 2018 14:34:47 GMT+0800 (CST)] INFO Mean latency:        25.4 ms
+[Mon Jun 04 2018 14:34:47 GMT+0800 (CST)] INFO
+[Mon Jun 04 2018 14:34:47 GMT+0800 (CST)] INFO Percentage of the requests served within a certain time
+[Mon Jun 04 2018 14:34:47 GMT+0800 (CST)] INFO   50%      24 ms
+[Mon Jun 04 2018 14:34:47 GMT+0800 (CST)] INFO   90%      33 ms
+[Mon Jun 04 2018 14:34:47 GMT+0800 (CST)] INFO   95%      36 ms
+[Mon Jun 04 2018 14:34:47 GMT+0800 (CST)] INFO   99%      50 ms
+[Mon Jun 04 2018 14:34:47 GMT+0800 (CST)] INFO  100%      124 ms (longest request)
 ```
 
 ## FAQ
