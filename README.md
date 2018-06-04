@@ -24,6 +24,10 @@ nodejs 使用原生的 dubbo (dubbo head + hessian body) 协议打通了 dubbo �
 
 7.  supported Dubbox
 
+8.  typescript type definition
+
+9.  convert java dubbo interface to typescript module
+
 ## Getting Started
 
 ```shell
@@ -288,14 +292,13 @@ dubbo.use(
 
 我们希望整个 dubbo 调用的代码都可以无缝生成。
 
+**_职责_**
 
-***职责***
-1. 翻译Interface代码,生成node端可调用代码;
-2. 自动将参数转换为hessian.js能识别的对象;
-3. 接口方法及参数类型提示;
+1.  翻译 Interface 代码,生成 node 端可调用代码;
+2.  自动将参数转换为 hessian.js 能识别的对象;
+3.  接口方法及参数类型提示;
 
-
-[translator详细介绍](./packages/interpret-cli)
+[translator 详细介绍](./packages/interpret-cli)
 
 ## Performance
 
