@@ -41,6 +41,8 @@ import {Dubbo, java, TDubboCallResult} from 'dubbo2.js';
 
 //定义dubbo方法类型接口
 //方便代码自动提示
+//实际项目中会通过我们的[翻译师]工具自动根据java接口字节码jar包
+//自动生成
 interface IDemoService {
   sayHello(name: string): TDubboCallResult<string>;
 
