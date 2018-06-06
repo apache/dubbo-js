@@ -347,3 +347,7 @@ import {Dubbo} from 'dubbo2.js/es6';
 1.欢迎 pr
 
 2.欢迎 issue
+
+## 分享直戳
+
+[talk](https://github.com/hufeng/iThink/tree/master/talk)
