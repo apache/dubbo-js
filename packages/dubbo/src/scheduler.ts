@@ -17,7 +17,7 @@
 
 import debug from 'debug';
 import {ScheduleError, SocketError, ZookeeperTimeoutError} from './err';
-import {MSG_TYPE, msg} from './msg';
+import {msg, MSG_TYPE} from './msg';
 import queue from './queue';
 import serverAgent, {ServerAgent} from './server-agent';
 import {IZkClientProps} from './types';
@@ -72,6 +72,10 @@ export default class Scheduler {
     log(`handle requestId ${requestId}, current status: ${this._status}`);
 
     switch (this._status) {
+      case SCHEDULER_STATUS.READY:
+        //发起dubbo的调用
+        this._handleDubboInvoke(requestId);
+        break;
       case SCHEDULER_STATUS.PADDING:
         break;
       case SCHEDULER_STATUS.FAILED:
@@ -81,10 +85,6 @@ export default class Scheduler {
             'Schedule error, ZooKeeper Could not be connected!',
           ),
         );
-        break;
-      case SCHEDULER_STATUS.READY:
-        //发起dubbo的调用
-        this._handleDubboInvoke(requestId);
         break;
     }
   };
