@@ -53,7 +53,7 @@ export default class DubboUrl {
   }
 
   get port() {
-    return parseInt(this._url.port);
+    return Number(this._url.port);
   }
 
   get path() {

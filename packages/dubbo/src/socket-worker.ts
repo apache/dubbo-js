@@ -78,14 +78,18 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
 
   static from(url: string) {
     const [host, port] = url.split(':');
-    return new SocketWorker(host, parseInt(port));
+    return new SocketWorker(host, Number(port));
   }
 
   private _initSocket() {
     log(`SocketWorker#${this.pid} =connecting=> ${this.host}:${this.port}`);
     this._socket = new net.Socket();
     this._socket
-      .connect(this.port, this.host, this._onConnected)
+      .connect(
+        this.port,
+        this.host,
+        this._onConnected,
+      )
       .on('data', this._onData)
       .on('error', this._onError)
       .on('close', this._onClose);
