@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import debug from "debug";
+import debug from 'debug';
 
-const log = debug("j2t:core:paramEnhance");
+const log = debug('j2t:core:paramEnhance');
 
 export function argumentMap() {
   let _arguments = Array.from(arguments);
@@ -25,10 +25,9 @@ export function argumentMap() {
     argumentItem =>
       argumentItem.__fields2java
         ? paramEnhance(argumentItem.__fields2java())
-        : argumentItem
+        : argumentItem,
   );
 }
-
 
 //删除对象中包含undefined 与null的值情况
 function paramEnhance(javaParams: Array<object> | object) {
@@ -50,29 +49,29 @@ function minusRedundancy(itemParam: any) {
   for (var _key in itemParam.$) {
     if (itemParam.$[_key] === null || itemParam.$[_key] === undefined) {
       delete itemParam.$[_key];
-      log("删除 key %s from %j ", itemParam, _key);
+      log('删除 key %s from %j ', itemParam, _key);
     }
   }
 }
 
-export type JavaString=Object;
-export type JavaBoolean=Object;
-export type Javaboolean=Object;
-export type JavaInteger=Object;
-export type Javaint=Object;
-export type JavaShort=Object;
-export type Javashort=Object;
-export type Javabyte=Object;
-export type JavaByte=Object;
-export type JavaLong=Object;
-export type Javalong=Object;
-export type Javadouble=Object;
-export type JavaDouble=Object;
-export type Javafloat=Object;
-export type JavaFloat=Object;
-export type Javachar=Object;
-export type Javachars=Object;
-export type JavaList=Object;
-export type JavaSet=Object;
-export type JavaHashMap=Object;
-export type JavaMap=Object;
+export type JavaString = Object;
+export type JavaBoolean = Object;
+export type Javaboolean = Object;
+export type JavaInteger = Object;
+export type Javaint = Object;
+export type JavaShort = Object;
+export type Javashort = Object;
+export type Javabyte = Object;
+export type JavaByte = Object;
+export type JavaLong = Object;
+export type Javalong = Object;
+export type Javadouble = Object;
+export type JavaDouble = Object;
+export type Javafloat = Object;
+export type JavaFloat = Object;
+export type Javachar = Object;
+export type Javachars = Object;
+export type JavaList = Object;
+export type JavaSet = Object;
+export type JavaHashMap = Object;
+export type JavaMap = Object;
