@@ -78,7 +78,7 @@ const dubbo = new Dubbo<typeof service>({
 })();
 ```
 
-## 如果不是从java自动生成的typescript代码怎么注入到 dubbo 对象中？
+## 如果不是从 java 自动生成的 typescript 代码怎么注入到 dubbo 对象中？
 
 ```typescript
 //创建要注入的service
@@ -156,7 +156,7 @@ const errorProvider = ErrorProvider(dubbo);
 })();
 ```
 
-## 如果不是从java自动生成的typescript代码怎么注入到dubbo对象中？
+## 如果不是从 java 自动生成的 typescript 代码怎么注入到 dubbo 对象中？
 
 ```typescript
 //创建要注入的service
@@ -361,37 +361,36 @@ dubbo.use(async (ctx, next) => {
 
 在 dubbo 的接口调用中，需要设置一些动态的参数如，version, group, timeout, retry 等常常
 
-这些参数需要在 consumer 调用方才精确设定值，之前是在 interpret 翻译生成 ts 的代码里面进行设置这个不够灵活，所以这里面我就抽象一个 dubbo-invoker 作为设置参数的 middleware
+这些参数需要在 consumer 调用方才精确设定值，之前是在 interpret 翻译生成 ts 的代码里面进行设置这个不够灵活，所以这里面我就抽象一个 dubbo-invoker 作为设置参数的 middleware,这样可以很方便的动态设置各种 runtime 参数
 
 ```javascript
 import {dubboInvoker, matcher} from 'dubbo-invoker';
 
 //init
 const dubbo = Dubbo.from(/*....*/);
-//set params
-dubbo.use(
-  dubboInvoke(
-    matcher
-      //精确匹配接口
-      .match('com.alibaba.demo.UserProvider', {
-        version: '1.0.0',
-        group: 'user',
-      })
-      //正则匹配
-      .match(/^com.alibaba.dubbo/, {
-        version: '2.0.0',
-        group: '',
-      })
-      //match thunk
-      match((ctx) => {
-        //computed....
-        return true
-      }, {
-        version: '3.0.0'
-      })
-      .,
-  ),
-);
+
+const matchRuler = matcher
+  //精确匹配接口
+  .match('com.alibaba.demo.UserProvider', {
+    version: '1.0.0',
+    group: 'user',
+  })
+  //match thunk
+  .match(ctx => {
+    if (ctx.dubboInterface === 'com.alibaba.demo.ProductProvider') {
+      ctx.version = '2.0.0';
+      ctx.group = 'product-center';
+      //通知dubboInvoker匹配成功
+      return true;
+    }
+  })
+  //正则匹配
+  .match(/^com.alibaba.dubbo/, {
+    version: '2.0.0',
+    group: '',
+  });
+
+dubbo.use(dubboInvoke(matchRuler));
 ```
 
 ## Translator => Cool.

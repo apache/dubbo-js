@@ -30,3 +30,11 @@ clean-demo-api:
 interpret-jar:build-demo-api
 	ts-node ./packages/interpret-cli/src/cli.ts interpret -c dubbo.json
 
+build-dubbo-invoker:clean-dubbo-invoker
+	tsc --project ./packages/dubbo-invoker/tsconfig.json
+	@echo "compile dubbo-invoker successfully 👏\n"
+
+clean-dubbo-invoker:
+	rm -rf ./packages/dubbo-invoker/lib
+	@echo "clean dubbo-invoker successfully 👏\n"
+

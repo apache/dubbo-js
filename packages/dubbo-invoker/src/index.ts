@@ -14,18 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {Context} from 'dubbo2.js';
 import matcher, {Matcher} from './matcher';
 
 function dubboInvoker(matcher: Matcher) {
   return async function dubboMiddlewareInvoker(ctx: Context, next) {
+    //获取匹配的元数据
     const meta = matcher.invokeParam(ctx);
+
     if (meta) {
       const {group, version, timeout} = meta;
       ctx.version = version;
       ctx.group = group;
       ctx.timeout = timeout;
     }
+
     await next();
   };
 }
