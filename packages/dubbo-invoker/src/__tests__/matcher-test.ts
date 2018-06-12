@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import matcher from '../matcher';
 import {Context} from 'dubbo2.js';
+import matcher from '../matcher';
 
 describe('matcher test suite', () => {
   it('test string match', () => {
