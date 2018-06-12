@@ -78,7 +78,7 @@ const dubbo = new Dubbo<typeof service>({
 })();
 ```
 
-## 如果不是  自动生成从 java 生成的 typescript 代码怎么注入到 dubbo 对象中？
+## 如果不是从java自动生成的typescript代码怎么注入到 dubbo 对象中？
 
 ```typescript
 //创建要注入的service
@@ -156,7 +156,7 @@ const errorProvider = ErrorProvider(dubbo);
 })();
 ```
 
-## 如果不是  自动生成从 java 生成的 typescript 代码怎么注入到 dubbo 对象中？
+## 如果不是从java自动生成的typescript代码怎么注入到dubbo对象中？
 
 ```typescript
 //创建要注入的service
