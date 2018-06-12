@@ -36,6 +36,82 @@ yarn add dubbo2.js # or npm install dubbo2.js --save
 
 ## How to Usage?
 
+### dubbo2.js@2.0.4+
+
+```typescript
+import {Dubbo, java, TDubboCallResult} from 'dubbo2.js';
+
+//定义dubbo方法类型接口
+//方便代码自动提示
+//实际项目中会通过我们的[翻译师]工具自动根据java接口字节码jar包
+//自动生成
+interface IDemoService {
+  sayHello(name: string): TDubboCallResult<string>;
+
+  echo(): TDubboCallResult<string>;
+
+  test(): TDubboCallResult<void>;
+
+  getUserInfo(): TDubboCallResult<{
+    status: string;
+    info: {id: number; name: string};
+  }>;
+}
+
+//代理本地对象->dubbo对象
+const demoService = (dubbo: Dubbo) =>
+  dubbo.proxyService<IDemoService>({
+    dubboInterface: 'com.alibaba.dubbo.demo.DemoService',
+    version: '1.0.0',
+    methods: {
+      sayHello(name) {
+        //仅仅做参数hessian化转换
+        return [java.String(name)];
+      },
+
+      echo() {},
+
+      test() {},
+
+      getUserInfo() {
+        //仅仅做参数hessian化转换
+        return [
+          java.combine('com.alibaba.dubbo.demo.UserRequest', {
+            id: 1,
+            name: 'nodejs',
+            email: 'node@qianmi.com',
+          }),
+        ];
+      },
+    },
+  });
+
+const service = {
+  demoService,
+};
+
+//创建dubbo对象
+const dubbo = new Dubbo<typeof service>({
+  application: {name: 'node-dubbo'},
+  //zookeeper address
+  register: 'localhost:2181',
+  service,
+});
+
+//main method
+(async () => {
+  const result1 = await demoService.sayHello('node');
+  //print {err: null, res:'hello node from dubbo service'}
+  const res = await demoService.echo();
+  //print {err: null, res: 'pang'}
+
+  const res = await demoService.getUserInfo();
+  //status: 'ok', info: { id: '1', name: 'test' }
+})();
+```
+
+### dubbo2.js@1.xxx
+
 ```typescript
 import {Dubbo, java, TDubboCallResult} from 'dubbo2.js';
 
