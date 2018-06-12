@@ -1,9 +1,9 @@
 const http = require('http');
-const {demoService, basicTypeService} = require('./dubbo-es6');
+const dubbo = require('./dubbo/dubbo-es6');
 
 const app = http.createServer((req, response) => {
   if (req.url === '/dubbo') {
-    demoService.echo().then(({res, err}) => {
+    dubbo.service.demoProvider.echo().then(({res, err}) => {
       response.end(res);
     });
   }

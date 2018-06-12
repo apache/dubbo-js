@@ -22,11 +22,11 @@ nodejs 使用原生的 dubbo (dubbo head + hessian body) 协议打通了 dubbo �
 
 6.  Tracing
 
-7.  supported Dubbox
+7.  Supported Dubbox
 
-8.  typescript type definition
+8.  Typescript type definition
 
-9.  convert java dubbo interface to typescript module
+9.  Convert java dubbo interface to typescript module
 
 ## Getting Started
 

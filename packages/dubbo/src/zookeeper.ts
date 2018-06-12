@@ -22,7 +22,7 @@ import qs from 'querystring';
 import Context from './context';
 import DubboUrl from './dubbo-url';
 import {ZookeeperDisconnectedError, ZookeeperTimeoutError} from './err';
-import {MSG_TYPE, msg} from './msg';
+import {msg, MSG_TYPE} from './msg';
 import {to} from './to';
 import {IObservable, IZkClientProps, IZookeeperSubscriber} from './types';
 

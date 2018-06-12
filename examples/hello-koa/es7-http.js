@@ -1,8 +1,8 @@
 const http = require('http');
-const {demoProvider} = require('./dubbo');
+const dubbo = require('./dubbo/dubbo');
 
 const app = http.createServer(async (req, res) => {
-  const hello = await demoProvider.sayHello();
+  const hello = await dubbo.service.demoProvider.sayHello();
   res.end(hello.res);
 });
 

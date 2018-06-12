@@ -14,11 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import debug from 'debug';
 import compose from 'koa-compose';
 import config from './config';
 import Context from './context';
-import {MSG_TYPE, msg} from './msg';
+import {msg, MSG_TYPE} from './msg';
 import queue from './queue';
 import Scheduler from './scheduler';
 import {to} from './to';
@@ -28,12 +29,12 @@ import {
   IDubboSubscriber,
   IObservable,
   Middleware,
+  TDubboService,
 } from './types';
 
 const noop = () => {};
 const log = debug('dubbo:bootstrap');
-const {version} = require('../package.json');
-log('dubbo2.js version :=> %s', version);
+log('dubbo2.js version :=> %s', require('../package.json').version);
 
 //定位没有处理的promise
 process.on('unhandledRejection', (reason, p) => {
@@ -42,6 +43,7 @@ process.on('unhandledRejection', (reason, p) => {
 
 /**
  * Dubbo
+ *
  * 1. 连接注册中心zookeeper
  * 2. 发起远程dubbo provider的方法调用
  * 3. 序列化/反序列化dubbo协议
@@ -51,11 +53,17 @@ process.on('unhandledRejection', (reason, p) => {
  * 7. middleware
  * 8. 通过zone-context可以实现dubbo调用的全链路跟踪
  * 9. 集中消息管理
+ *
  */
-export default class Dubbo implements IObservable<IDubboSubscriber> {
+export default class Dubbo<TService = Object>
+  implements IObservable<IDubboSubscriber> {
   constructor(props: IDubboProps) {
     this._props = props;
+
+    this._interfaces = [];
     this._middleware = [];
+    this._service = <TDubboService<TService>>{};
+
     this._readyResolve = noop;
     this._subscriber = {
       onReady: noop,
@@ -63,65 +71,55 @@ export default class Dubbo implements IObservable<IDubboSubscriber> {
       onStatistics: noop,
     };
 
-    const {
-      zkRoot,
-      register,
-      application,
-      interfaces,
-      dubboInvokeTimeout,
-      dubboSocketPool,
-    } = this._props;
-
-    if (typeof interfaces === 'undefined' || interfaces.length === 0) {
-      log(`dubbo props could not find any interfaces`);
-      throw new Error(`dubbo props could not find any interfaces`);
-    }
+    //初始化消息监听
+    this._initMsgListener();
 
     //初始化config
     //全局超时时间(最大熔断时间)类似<dubbo:consumer timeout="sometime"/>
     //对应consumer客户端来说，用户设置了接口级别的超时时间，就使用接口级别的
     //如果用户没有设置用户级别，默认就是最大超时时间
-    config.dubboInvokeTimeout = dubboInvokeTimeout || config.dubboInvokeTimeout;
-    config.dubboSocketPool = dubboSocketPool || config.dubboSocketPool;
-
-    //初始化消息监听
-    this._initMsgListener();
+    config.dubboInvokeTimeout =
+      props.dubboInvokeTimeout || config.dubboInvokeTimeout;
+    config.dubboSocketPool = props.dubboSocketPool || config.dubboSocketPool;
 
     log('getting started...');
     log(`initial properties: %O`, props);
     log('config-> %O', config);
 
+    //注册dubbo需要处理接口服务
+    this._registryService(props.service);
+
+    log('interfaces->', this._interfaces);
+
+    //create scheduler
     Scheduler.from({
-      zkRoot,
-      register,
-      application,
-      interfaces,
+      zkRoot: props.zkRoot,
+      register: props.register,
+      application: props.application,
+      interfaces: this._interfaces,
     });
   }
 
   private readonly _props: IDubboProps;
-  private _subscriber: IDubboSubscriber;
+  private _interfaces: Array<string>;
   private _readyResolve: Function;
+  private _subscriber: IDubboSubscriber;
   private readonly _middleware: Array<Middleware<Context>>;
+  private readonly _service: TDubboService<TService>;
 
-  private _initMsgListener() {
-    process.nextTick(() => {
-      msg
-        .addListener(MSG_TYPE.SYS_READY, () => {
-          this._readyResolve();
-          this._subscriber.onReady();
-        })
-        .addListener(MSG_TYPE.SYS_ERR, err => {
-          this._subscriber.onSysError(err);
-        })
-        .addListener(MSG_TYPE.SYS_STATISTICS, stat =>
-          this._subscriber.onStatistics(stat),
-        );
-    });
-  }
-
+  /**
+   * static factory method
+   * @param props
+   */
   static from(props: IDubboProps) {
     return new Dubbo(props);
+  }
+
+  /**
+   * get service from dubbo container
+   */
+  get service() {
+    return this._service;
   }
 
   /**
@@ -131,6 +129,9 @@ export default class Dubbo implements IObservable<IDubboSubscriber> {
     const {application, isSupportedDubbox} = this._props;
     const {dubboInterface, methods, version, timeout, group} = provider;
     const proxyObj = Object.create(null);
+
+    //collect interface
+    this._interfaces.push(dubboInterface);
 
     //proxy methods
     Object.keys(methods).forEach(name => {
@@ -175,6 +176,10 @@ export default class Dubbo implements IObservable<IDubboSubscriber> {
     return proxyObj;
   };
 
+  /**
+   * extends middleware, api: the same as koa
+   * @param fn
+   */
   use(fn) {
     if (typeof fn != 'function') {
       throw new TypeError('middleware must be a function');
@@ -213,5 +218,33 @@ export default class Dubbo implements IObservable<IDubboSubscriber> {
 
   subscribe(subscriber: IDubboSubscriber) {
     this._subscriber = subscriber;
+  }
+
+  private _initMsgListener() {
+    process.nextTick(() => {
+      msg
+        .addListener(MSG_TYPE.SYS_READY, () => {
+          this._readyResolve();
+          this._subscriber.onReady();
+        })
+        .addListener(MSG_TYPE.SYS_ERR, err => {
+          this._subscriber.onSysError(err);
+        })
+        .addListener(MSG_TYPE.SYS_STATISTICS, stat =>
+          this._subscriber.onStatistics(stat),
+        );
+    });
+  }
+
+  /**
+   * 注册服务到dubbo容器中
+   * @param service dubbo需要管理的接口服务
+   * service style:
+   * {[key: string]: (dubbo): T => dubbo.proxyService<T>({...})}
+   */
+  private _registryService(service: Object) {
+    for (let key in service) {
+      this._service[key] = service[key](this);
+    }
   }
 }

@@ -59,7 +59,7 @@ export default class Scheduler {
    * static factory method
    * @param props
    */
-  static from(props) {
+  static from(props: IZkClientProps) {
     return new Scheduler(props);
   }
 
