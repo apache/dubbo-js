@@ -14,23 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Dubbo, java} from 'dubbo2.js';
-import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
-import {BasicTypeProvider} from './providers/com/alibaba/dubbo/demo/BasicTypeProvider';
-import {ErrorProvider} from './providers/com/alibaba/dubbo/demo/ErrorProvider';
-import {UserRequest} from './providers/com/alibaba/dubbo/demo/UserRequest';
-import {TypeRequest} from './providers/com/alibaba/dubbo/demo/TypeRequest';
-import {dubboInvoker, matcher} from 'dubbo-invoker';
 
-const dubbo = new Dubbo({
+import {dubboInvoker, matcher} from 'dubbo-invoker';
+import {Dubbo, java} from 'dubbo2.js';
+import {BasicTypeProvider} from './providers/com/alibaba/dubbo/demo/BasicTypeProvider';
+import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
+import {ErrorProvider} from './providers/com/alibaba/dubbo/demo/ErrorProvider';
+import {TypeRequest} from './providers/com/alibaba/dubbo/demo/TypeRequest';
+import {UserRequest} from './providers/com/alibaba/dubbo/demo/UserRequest';
+
+const service = {
+  BasicTypeProvider,
+  DemoProvider,
+  ErrorProvider,
+};
+
+const dubbo = new Dubbo<typeof service>({
   application: {name: '@qianmi/node-dubbo'},
   register: 'localhost:2181',
-  dubboVersion: '2.0.0',
-  interfaces: [
-    'com.alibaba.dubbo.demo.DemoProvider',
-    'com.alibaba.dubbo.demo.BasicTypeProvider',
-    'com.alibaba.dubbo.demo.ErrorProvider',
-  ],
+  service,
 });
 
 //use middleware
@@ -70,19 +72,20 @@ dubbo.subscribe({
   },
 });
 
-const demoService = DemoProvider(dubbo);
-
 describe('demoService', () => {
   it('test sayHello', async () => {
     await dubbo.ready();
+
     // @ts-ignore
-    const {res, err} = await demoService.sayHello(java.String('node'));
+    const {res, err} = await dubbo.service.DemoProvider.sayHello(
+      java.String('node'),
+    );
     expect(err).toEqual(null);
     expect(res.includes('Hello node, response form provider')).toEqual(true);
   });
 
   it('test echo', async () => {
-    const res = await demoService.echo();
+    const res = await dubbo.service.DemoProvider.echo();
     expect(res).toEqual({
       res: 'pang',
       err: null,
@@ -90,7 +93,7 @@ describe('demoService', () => {
   });
 
   it('test getUserInfo', async () => {
-    const res = await demoService.getUserInfo(
+    const res = await dubbo.service.DemoProvider.getUserInfo(
       new UserRequest({name: 'nodejs', email: 'email'}),
     );
     expect(res).toEqual({
@@ -100,11 +103,9 @@ describe('demoService', () => {
   });
 });
 
-const basicTypeService = BasicTypeProvider(dubbo);
-
 describe('typeBasicServer', () => {
   it('testBasicType', async () => {
-    const reuslt = await basicTypeService.testBasicType(
+    const reuslt = await dubbo.service.BasicTypeProvider.testBasicType(
       new TypeRequest({
         map: {
           hello: 'hello world',

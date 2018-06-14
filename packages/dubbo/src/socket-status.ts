@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export enum SOCKET_STATUS {
-  PADDING,
-  CONNECTED,
-  CLOSED,
-  RETRY,
+
+export const enum SOCKET_STATUS {
+  PADDING = 'PADDING',
+  CONNECTED = 'CONNECTED',
+  CLOSED = 'CLOSED',
 }

@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import debug from 'debug';
 import {Context} from 'dubbo2.js';
 import {isFn, isRegExp, isString} from './type';
@@ -21,28 +22,39 @@ import {IDubboInvokeParam, IRule, TPredictFunction} from './types';
 
 const log = debug('dubbo:dubbo-invoker');
 
+/**
+ * Matcher
+ * 多么想要一个ReasonML的match-pattern 😆
+ */
 export class Matcher {
-  constructor() {
-    this._rules = [];
-  }
+  private readonly _rules: Array<IRule> = [];
 
-  private readonly _rules: Array<IRule>;
-
+  /**
+   * 匹配规则
+   * 规则的有限级别 string > fn > regexp
+   * @param arg
+   * @param invokeParam
+   */
   match(
     arg: string | RegExp | TPredictFunction,
-    invokeParam: IDubboInvokeParam,
+    invokeParam?: IDubboInvokeParam,
   ) {
+    //build rule
     const rule = {
       condition: arg,
       invokeParam,
     };
+
     log('add match rule %j', rule);
+
     this._rules.push(rule);
     return this;
   }
 
   invokeParam(ctx: Context) {
+    //获取当前context的dubbo接口
     const {dubboInterface} = ctx;
+
     for (let rule of this._rules) {
       const {condition, invokeParam} = rule;
 
@@ -54,7 +66,14 @@ export class Matcher {
           condition,
           invokeParam,
         );
+
         return invokeParam;
+      }
+
+      //isFn return value is true
+      if (isFn(condition) && condition(ctx)) {
+        log('%s =match=> fn rule result=> %j', dubboInterface);
+        return null;
       }
 
       //dubboInteface match regexp
@@ -65,12 +84,6 @@ export class Matcher {
           condition,
           invokeParam,
         );
-        return invokeParam;
-      }
-
-      //isFn return value is true
-      if (isFn(condition) && condition(ctx)) {
-        log('%s =match=> fn rule result=> %j', dubboInterface, invokeParam);
         return invokeParam;
       }
     }

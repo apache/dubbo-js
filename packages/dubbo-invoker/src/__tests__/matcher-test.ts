@@ -14,75 +14,78 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import matcher from '../matcher';
+
 import {Context} from 'dubbo2.js';
+import matcher from '../matcher';
 
 describe('matcher test suite', () => {
   it('test string match', () => {
     matcher.match('com.alibaba.dubbo.demo.DemoProvider', {
       version: '1.0.0',
-      group: '',
+      group: 'alibaba',
     });
 
-    const param = matcher.invokeParam({
+    const param = matcher.invokeParam(<Context>{
       dubboInterface: 'com.alibaba.dubbo.demo.DemoProvider',
-    } as Context);
+    });
 
     expect(param).toEqual({
       version: '1.0.0',
-      group: '',
+      group: 'alibaba',
     });
   });
 
   it('test predict fn match', () => {
-    matcher.match(
-      (ctx: Context) => {
-        //complex computed...
-        return ctx.dubboInterface === 'com.alibaba.dubbo.demo.ProductProvider';
-      },
-      {
-        version: '3.0.0',
-        group: 'a',
-      },
-    );
-
-    const param1 = matcher.invokeParam({
-      dubboInterface: 'com.alibaba.dubbo.demo.ProductProvider',
-    } as Context);
-
-    expect(param1).toEqual({
-      version: '3.0.0',
-      group: 'a',
+    //setting match rule
+    matcher.match((ctx: Context) => {
+      if (ctx.dubboInterface === 'com.alibaba.dubbo.demo.ProductProvider') {
+        ctx.version = '3.0.0';
+        ctx.group = 'alibaba';
+        return true;
+      }
     });
 
-    const param2 = matcher.invokeParam({
-      dubboInterface: 'com.alibaba.dubbo.demo.GoodsProvider',
-    } as Context);
+    //expect match
+    const ctx = <Context>{
+      dubboInterface: 'com.alibaba.dubbo.demo.ProductProvider',
+    };
+    matcher.invokeParam(ctx);
+    expect(ctx).toEqual({
+      dubboInterface: 'com.alibaba.dubbo.demo.ProductProvider',
+      version: '3.0.0',
+      group: 'alibaba',
+    });
 
-    expect(param2).toEqual(null);
+    //not match
+    const ctx1 = <Context>{
+      dubboInterface: 'com.alibaba.dubbo.demo.GoodsProvider',
+    };
+    matcher.invokeParam(ctx1);
+    expect(ctx1).toEqual({
+      dubboInterface: 'com.alibaba.dubbo.demo.GoodsProvider',
+    });
   });
 
   it('test RegExp match', () => {
     matcher.match(/^com.alibaba.dubbo.demo/, {
       version: '2.0.0',
-      group: '',
+      group: 'alibaba',
     });
 
-    const param = matcher.invokeParam({
+    const param = matcher.invokeParam(<Context>{
       dubboInterface: 'com.alibaba.dubbo.demo.UserProvider',
-    } as Context);
+    });
 
     expect(param).toEqual({
       version: '2.0.0',
-      group: '',
+      group: 'alibaba',
     });
   });
 
   it('test not match', () => {
-    const param = matcher.invokeParam({
+    const param = matcher.invokeParam(<Context>{
       dubboInterface: 'com.dubbo.demo.ShoppingCart',
-    } as Context);
-
+    });
     expect(param).toEqual(null);
   });
 });

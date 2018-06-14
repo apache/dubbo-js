@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import debug from 'debug';
 import Context from './context';
 import {SOCKET_STATUS} from './socket-status';
@@ -166,7 +167,7 @@ export default class DirectlyDubbo {
     const {requestId} = ctx;
     this._queue.set(requestId, ctx);
 
-    log(`current socketworkder=> ${SOCKET_STATUS[this._socketStatus]}`);
+    log(`current socketworkder=> ${this._socketStatus}`);
 
     //根据当前socket的worker的状态，来对任务进行处理
     switch (this._socketStatus) {

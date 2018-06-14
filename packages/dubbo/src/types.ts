@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 export interface IObservable<T> {
   subscribe(subscriber: T);
 }
@@ -54,19 +55,28 @@ export interface IInvokeParam {
   version?: string;
   timeout?: number;
 }
+
 export interface IDubboProps {
-  isSupportedDubbox?: boolean;
-  application?: {name: string};
-  enableHeartBeat?: boolean;
-  /**
-   * 单位为秒
-   */
-  dubboInvokeTimeout?: number;
-  dubboSocketPool?: number;
+  //当前的应用标识
+  application: {name: string};
+  //zookeeper注册中心地址
   register: string;
+  isSupportedDubbox?: boolean;
+  //dubbo调用最大超时时间单位为秒，默认5s
+  dubboInvokeTimeout?: number;
+  //dubbo为每个server-agent创建的socketpool数量，默认4
+  dubboSocketPool?: number;
+  //zookeeper的根目录，默认/root
   zkRoot?: string;
-  interfaces: Array<string>;
+  //当前要注册到dubbo容器的服务对象
+  service: Object;
 }
+
+//magic, you should use typescript 2.8+
+export type TDubboService<T> = {
+  [k in keyof T]: T[k] extends ((dubbo: any) => infer R) ? R : any
+};
+
 export interface IDubboResult<T> {
   err: Error;
   res: T;
@@ -134,3 +144,5 @@ export interface IQueryObj {
   version: string;
   group: string;
 }
+
+export type TQueueObserver = Function;

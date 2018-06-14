@@ -45,7 +45,12 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     this._isSending = false;
     this._status = SOCKET_STATUS.PADDING;
 
-    log('create SocketWorker#%d addr: $s', pid, host + ':' + port);
+    log(
+      'new SocketWorker#%d addr: $s, status: %s',
+      pid,
+      host + ':' + port,
+      this._status,
+    );
 
     this._subscriber = {
       onConnect: noop,
@@ -56,6 +61,7 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     this._decodeBuff = DecodeBuffer.from(pid).subscribe(
       this._onSubscribeDecodeBuff,
     );
+
     this._initSocket();
   }
 
@@ -65,24 +71,28 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
 
   private _socket: net.Socket;
   private _isSending: boolean;
-  private _status: number;
+  private _status: SOCKET_STATUS;
   private _decodeBuff: DecodeBuffer;
   private _subscriber: ISocketSubscriber;
   private _heartBeatTimer: NodeJS.Timer;
 
   static from(url: string) {
     const [host, port] = url.split(':');
-    return new SocketWorker(host, parseInt(port));
+    return new SocketWorker(host, Number(port));
   }
 
   private _initSocket() {
     log(`SocketWorker#${this.pid} =connecting=> ${this.host}:${this.port}`);
-
     this._socket = new net.Socket();
-    this._socket.connect(this.port, this.host, this._onConnected);
-    this._socket.on('data', this._onData);
-    this._socket.on('error', this._onError);
-    this._socket.on('close', this._onClose);
+    this._socket
+      .connect(
+        this.port,
+        this.host,
+        this._onConnected,
+      )
+      .on('data', this._onData)
+      .on('error', this._onError)
+      .on('close', this._onClose);
   }
 
   private _onSubscribeDecodeBuff = (data: Buffer) => {

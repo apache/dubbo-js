@@ -14,12 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {EventEmitter} from 'events';
 
-export enum MSG_TYPE {
-  SYS_ERR = 'sys:err',
-  SYS_READY = 'sys:ready',
-  SYS_STATISTICS = 'sys:statistics',
+//use const enum instead of enum
+//less runtime object
+//inline value
+export const enum MSG_TYPE {
+  SYS_ERR = 'SYS:ERR',
+  SYS_READY = 'SYS_READY',
+  SYS_STATISTICS = 'SYS_STATISTICS',
 }
 
 export const msg = new EventEmitter();
