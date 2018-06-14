@@ -38,8 +38,10 @@ export async function extra(extraParam: IDubboExtInfo): Promise<IExtraResult> {
 
     let err: string = '';
     let jarDir: string = '';
-    execCmd.stdout.on('data', rowData => {
-      let output = rowData.toString();
+    execCmd.stdout.setEncoding("utf8");
+    execCmd.stderr.setEncoding("utf8");
+    execCmd.stdout.on('data', (rowData:Buffer) => {
+      let output = rowData.toString("utf8");
       console.log(output);
       if (output.includes(startFlag)) {
         let beginIndex = output.indexOf(startFlag) + startFlag.length;
@@ -47,8 +49,8 @@ export async function extra(extraParam: IDubboExtInfo): Promise<IExtraResult> {
       }
     });
 
-    execCmd.stderr.on('data', rowData => {
-      err += rowData.toString();
+    execCmd.stderr.on('data', (rowData:Buffer)  => {
+      err += rowData.toString("utf8");
       console.log(err);
     });
 
