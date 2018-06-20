@@ -20,14 +20,14 @@ import config from './config';
 import Context from './context';
 import DubboUrl from './dubbo-url';
 import {DubboMethodParamHessianTypeError, DubboTimeoutError} from './err';
-import {MSG_TYPE, msg} from './msg';
+import {msg, MSG_TYPE} from './msg';
 import SocketWorker from './socket-worker';
 import statistics from './statistics';
 import {IObservable, TQueueObserver, TRequestId} from './types';
+import {isDevEnv} from './util';
 
 const noop = () => {};
 const log = debug('dubbo:queue');
-const isDev = process.env.NODE_ENV != 'production';
 
 /**
  * Node的异步特性就会让我们在思考问题的时候，要转换一下思考问题的思维
@@ -54,7 +54,7 @@ export class Queue implements IObservable<TQueueObserver> {
   private _clear(requestId) {
     log(`clear invoke and schedule queue #${requestId}`);
     this._requestQueue.delete(requestId);
-    if (isDev) {
+    if (isDevEnv) {
       log('current schedule queue', this.scheduleQueue);
       this._showStatistics();
     }
@@ -83,7 +83,7 @@ export class Queue implements IObservable<TQueueObserver> {
       log(`add queue,requestId#${requestId}, interface: ${dubboInterface}`);
       //设置调用队列
       this._requestQueue.set(requestId, ctx);
-      if (isDev) {
+      if (isDevEnv) {
         log(`current schedule queue =>`, this.scheduleQueue);
       }
       //通知scheduler
@@ -169,7 +169,7 @@ export class Queue implements IObservable<TQueueObserver> {
     request.group = request.group || providerMeta.group;
     request.path = providerMeta.path;
     node.write(ctx);
-    if (isDev) {
+    if (isDevEnv) {
       log(`current schedule queue ==>`, this.scheduleQueue);
     }
   }

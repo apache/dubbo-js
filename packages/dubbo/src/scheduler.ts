@@ -24,7 +24,7 @@ import {IZkClientProps} from './types';
 import {ZkClient} from './zookeeper';
 
 const log = debug('dubbo:scheduler');
-const enum SCHEDULER_STATUS {
+const enum STATUS {
   PADDING = 'padding',
   READY = 'ready',
   FAILED = 'failded',
@@ -39,9 +39,9 @@ const enum SCHEDULER_STATUS {
  */
 export default class Scheduler {
   constructor(props: IZkClientProps) {
-    log(`new Scheduler, with %O`, props);
+    log(`new:|> %O`, props);
     //init current status
-    this._status = SCHEDULER_STATUS.PADDING;
+    this._status = STATUS.PADDING;
     //subscribe queue
     queue.subscribe(this._handleQueueRequest);
     //init ZkClient and subscribe
@@ -51,7 +51,7 @@ export default class Scheduler {
     });
   }
 
-  private _status: SCHEDULER_STATUS;
+  private _status: STATUS;
   private _zkClient: ZkClient;
   private _serverAgent: ServerAgent;
 
@@ -72,13 +72,14 @@ export default class Scheduler {
     log(`handle requestId ${requestId}, current status: ${this._status}`);
 
     switch (this._status) {
-      case SCHEDULER_STATUS.READY:
+      case STATUS.READY:
         //发起dubbo的调用
         this._handleDubboInvoke(requestId);
         break;
-      case SCHEDULER_STATUS.PADDING:
+      case STATUS.PADDING:
+        log('current scheduler was padding');
         break;
-      case SCHEDULER_STATUS.FAILED:
+      case STATUS.FAILED:
         this._handleFailed(
           requestId,
           new ScheduleError(
@@ -94,11 +95,12 @@ export default class Scheduler {
    */
   private _handleZkClientOnData = (agentSet: Set<string>) => {
     //获取负载列表
-    log(`get agent list:=> %O`, agentSet);
+    log(`get agent address:=> %O`, agentSet);
 
     //如果负载为空，也就是没有任何provider提供服务
     if (agentSet.size === 0) {
-      this._status = SCHEDULER_STATUS.FAILED;
+      this._status = STATUS.FAILED;
+      //将队列中的所有dubbo调用全调用失败
       queue.allFailed(new ScheduleError('Can not be found any agents'));
       return;
     }
@@ -118,7 +120,7 @@ export default class Scheduler {
     log(err);
     //说明zookeeper连接不上
     if (err instanceof ZookeeperTimeoutError) {
-      this._status = SCHEDULER_STATUS.FAILED;
+      this._status = STATUS.FAILED;
     }
   };
 
@@ -139,35 +141,34 @@ export default class Scheduler {
     //get request context
     const ctx = queue.requestQueue.get(requestId);
     //get socket agent list
-    const agentHostList = this._zkClient.getAgentHostList(ctx);
-    log('agentHostList-> %O', agentHostList);
+    const agentAddrSet = this._zkClient.getAgentAddrList(ctx);
+    log('agentAddrSet-> %O', agentAddrSet);
 
-    //if could not find any available socket agents
-    if (!this._serverAgent.hasAvailableSocketAgent(agentHostList)) {
+    const worker = this._serverAgent.getAvailableSocketWorker(agentAddrSet);
+    //if could not find any available socket agent worker
+    if (!worker) {
       const {requestId, dubboInterface, version, group} = ctx;
-      const msg = `requestId#${requestId}:Could not find any agentHost with ${dubboInterface}#${version}#${group}`;
+      const msg = `requestId#${requestId}:Could not find any agent address with ${dubboInterface}#${version}#${group}`;
       log(msg);
       this._handleFailed(requestId, new ScheduleError(msg));
       return;
     }
 
-    const node = this._serverAgent.getAvailableSocketAgent(agentHostList)
-      .worker;
-    ctx.invokeHost = node.host;
-    ctx.invokePort = node.port;
+    ctx.invokeHost = worker.host;
+    ctx.invokePort = worker.port;
 
-    const providerProps = this._zkClient.getProviderProps(ctx);
-    queue.consume(ctx.requestId, node, providerProps);
+    const providerProps = this._zkClient.getDubboServiceProp(ctx);
+    queue.consume(ctx.requestId, worker, providerProps);
   }
 
   private _handleOnConnect = ({pid, host, port}) => {
     log(`scheduler receive SocketWorker connect pid#${pid} ${host}:${port}`);
     const agentHost = `${host}:${port}`;
-    this._status = SCHEDULER_STATUS.READY;
+    this._status = STATUS.READY;
 
     for (let ctx of queue.requestQueue.values()) {
       if (ctx.isNotScheduled) {
-        const agentHostList = this._zkClient.getAgentHostList(ctx);
+        const agentHostList = this._zkClient.getAgentAddrList(ctx);
         log('agentHostList-> %O', agentHostList);
         //当前的socket是否可以处理当前的请求
         if (agentHostList.indexOf(agentHost) != -1) {

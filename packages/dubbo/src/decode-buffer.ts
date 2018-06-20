@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import debug from 'debug';
 import {convertBinaryNum} from './binary';
 import HeartBeat from './heartbeat';
@@ -130,6 +131,10 @@ export default class DecodeBuffer
         this._subscriber(dataBuffer);
       }
     }
+  }
+
+  clearBuffer() {
+    this._buffer = Buffer.alloc(0);
   }
 
   subscribe(subscriber: TDecodeBuffSubscriber) {

@@ -14,23 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import debug from 'debug';
 import {SocketError} from './err';
-import {MSG_TYPE, msg} from './msg';
+import {msg, MSG_TYPE} from './msg';
 import SocketPool from './socket-pool';
 import {IObservable, ISocketSubscriber} from './types';
-import {TAgentHostPort} from './zookeeper';
+import {isDevEnv, noop} from './util';
+import {TAgentAddr} from './zookeeper';
 
-const noop = () => {};
 const log = debug('dubbo:server-agent');
 
 /**
  * 机器agent和socket-pool的管理容器
+ * Agent可以理解为一台dubbo service的负载
  */
 export class ServerAgent implements IObservable<ISocketSubscriber> {
   constructor() {
-    log('new ServerAgent');
-    this._agentHostSet = new Set();
     this._serverAgentMap = new Map();
     this._subscriber = {
       onConnect: noop,
@@ -39,94 +39,96 @@ export class ServerAgent implements IObservable<ISocketSubscriber> {
     };
   }
 
-  private _agentHostSet: Set<string>;
   private _subscriber: ISocketSubscriber;
-  private readonly _serverAgentMap: Map<TAgentHostPort, SocketPool>;
+  private readonly _serverAgentMap: Map<TAgentAddr, SocketPool>;
 
-  from = (agentHostList: Set<string>) => {
+  /**
+   * static factor method
+   */
+  from = (agentAddrs: Set<string>) => {
+    log('agerntAddrs: %O', agentAddrs);
     //获取负载host:port列表
     //根据负载创建连接池
     process.nextTick(() => {
-      for (let agentHost of agentHostList) {
-        if (this._agentHostSet.has(agentHost)) {
+      for (let agentAddr of agentAddrs) {
+        //如果负载中存在该负载，继续下一个
+        if (this._serverAgentMap.has(agentAddr)) {
           continue;
         }
-        log(`new ServerAgent with ${agentHost} -> socket pool`);
-        const socketPool = SocketPool.from(agentHost).subscribe({
+        log(`create ServerAgent: ${agentAddr}`);
+        const socketPool = SocketPool.from(agentAddr).subscribe({
           onConnect: this._subscriber.onConnect,
           onData: this._subscriber.onData,
-          onClose: ({pid}) => {
-            this.clearClosedPool();
+          onClose: ({pid, host, port}) => {
+            this._clearClosedPool(host + ':' + port);
             this._subscriber.onClose({pid});
           },
         });
-        this._serverAgentMap.set(agentHost, socketPool);
+        this._serverAgentMap.set(agentAddr, socketPool);
       }
-      log(
-        'current ServerAgent includes agentHosts: %O',
-        this._serverAgentMap.keys(),
-      );
     });
 
     return this;
   };
 
   /**
-   * 查询一组负载可用的agent
-   * @param agentHostPorts
+   * 获取可用负载对应的socketWorker
+   * @param agentAddrList
    */
-  getAvailableSocketAgents(
-    agentHostPorts: Array<TAgentHostPort>,
-  ): Array<SocketPool> {
-    let availableList = [];
-    for (let agentHostPort of agentHostPorts) {
-      const socketPool = this._serverAgentMap.get(agentHostPort);
-      if (socketPool && socketPool.hasAvaliableNodes) {
-        availableList.push(socketPool);
-      }
+  getAvailableSocketWorker(agentAddrList: Array<TAgentAddr>) {
+    const availableAgentList = this._getAvailableSocketAgents(agentAddrList);
+    const len = availableAgentList.length;
+
+    if (len === 0) {
+      return null;
+    } else if (len === 1) {
+      return availableAgentList[0].worker;
+    } else {
+      return availableAgentList[Math.floor(Math.random() * len)].worker;
     }
-    return availableList;
   }
 
-  getAvailableSocketAgent(agentHostPorts: Array<TAgentHostPort>) {
-    const availableList = this.getAvailableSocketAgents(agentHostPorts);
-    const len = availableList.length;
-    if (len === 1) {
-      return availableList[0];
+  private _clearClosedPool = (agentAddr: string) => {
+    const socketPool = this._serverAgentMap.get(agentAddr);
+    if (socketPool.isAllClose) {
+      //如果全部关闭
+      log(
+        `${agentAddr}'s pool socket-worker had all closed. delete ${agentAddr}`,
+      );
+      this._serverAgentMap.delete(agentAddr);
+      //通知外部，销毁了这个socket-pool
+      msg.emit(
+        MSG_TYPE.SYS_ERR,
+        new SocketError(
+          `${agentAddr}'s pool socket-worker had all closed. delete ${agentAddr}`,
+        ),
+      );
     }
-
-    return availableList[Math.floor(Math.random() * len)];
-  }
-
-  hasAvailableSocketAgent(agentHostPorts: Array<TAgentHostPort>) {
-    return this.getAvailableSocketAgents(agentHostPorts).length > 0;
-  }
-
-  clearClosedPool = () => {
-    for (let [agentHost, socketPool] of this._serverAgentMap) {
-      if (socketPool.isAllClose) {
-        //如果全部关闭
-        log(
-          `${agentHost}'s pool socket-worker had all closed. delete ${agentHost}`,
-        );
-
-        //通知外部，销毁了这个socket-pool
-        msg.emit(
-          MSG_TYPE.SYS_ERR,
-          new SocketError(
-            `${agentHost}'s pool socket-worker had all closed. delete ${agentHost}`,
-          ),
-        );
-
-        this._serverAgentMap.delete(agentHost);
-      }
+    if (isDevEnv) {
+      log('SocketAgent current agentHost->', this._serverAgentMap.keys());
     }
-    log('SocketAgent current agentHost->', this._serverAgentMap.keys());
   };
 
   subscribe(subscriber: ISocketSubscriber) {
     this._subscriber = subscriber;
     return this;
+  }
+
+  /**
+   * 查询一组负载可用的agent
+   * @param agentAddrList
+   */
+  private _getAvailableSocketAgents(
+    agentAddrList: Array<TAgentAddr>,
+  ): Array<SocketPool> {
+    let availableList = [];
+    for (let agentAddr of agentAddrList) {
+      const socketPool = this._serverAgentMap.get(agentAddr);
+      if (socketPool && socketPool.hasAvaliableNodes) {
+        availableList.push(socketPool);
+      }
+    }
+    return availableList;
   }
 }
 

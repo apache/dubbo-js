@@ -25,38 +25,95 @@ import {ZookeeperDisconnectedError, ZookeeperTimeoutError} from './err';
 import {msg, MSG_TYPE} from './msg';
 import {to} from './to';
 import {IObservable, IZkClientProps, IZookeeperSubscriber} from './types';
+import {isDevEnv, noop} from './util';
 
 const log = debug('dubbo:zookeeper');
-const noop = () => {};
 
-export type TAgentHostPort = string;
+export type TAgentAddr = string;
 export type TDubboInterface = string;
 
 export class ZkClient implements IObservable<IZookeeperSubscriber> {
   constructor(props: IZkClientProps) {
-    log(`init props %O`, props);
+    log(`new:|> %O`, props);
     this._props = props;
+    //默认dubbo
     this._props.zkRoot = this._props.zkRoot || 'dubbo';
+    //保存接口和负载之间的映射
     this._agentMap = new Map();
-    this._providerMap = new Map();
+    //保存dubbo接口和服务url之间的映射关系
+    this._dubboServiceUrlMap = new Map();
+    //当前的ip
+    this._ipAddress = ip.address();
     this._subscriber = {
       onData: noop,
       onError: noop,
     };
+    //初始化zookeeper的client
     this._init().then(() => log('init providerMap and agentSet'));
   }
 
-  private readonly _props: IZkClientProps;
   private _client: zookeeper.Client;
   private _subscriber: IZookeeperSubscriber;
-  private _agentMap: Map<TDubboInterface, Array<TAgentHostPort>>;
-  private readonly _providerMap: Map<TDubboInterface, Array<DubboUrl>>;
+  private readonly _props: IZkClientProps;
+  private readonly _ipAddress: string;
+  private readonly _agentMap: Map<TDubboInterface, Set<TAgentAddr>>;
+  private readonly _dubboServiceUrlMap: Map<TDubboInterface, Array<DubboUrl>>;
 
+  //===========================public method=============================
   static from(props: IZkClientProps) {
     return new ZkClient(props);
   }
 
-  async _init(): Promise<null> {
+  /**
+   * 根据dubbo调用上下文interface, group, version等，获取负载列表
+   * @param ctx dubbo调用上下文
+   */
+  getAgentAddrList(ctx: Context) {
+    const {dubboInterface, version, group} = ctx;
+    return (this._dubboServiceUrlMap.get(dubboInterface) || [])
+      .filter(serviceProp => {
+        const isSameVersion = serviceProp.version === version;
+        //如果Group为null，就默认匹配， 不检查group
+        //如果Group不为null，确保group和接口的group一致
+        const isSameGroup = !group || group === serviceProp.group;
+        return isSameGroup && isSameVersion;
+      })
+      .map(({host, port}) => `${host}:${port}`);
+  }
+
+  /**
+   * 根据dubbo调用上下文获取服务提供者的信息
+   * @param ctx
+   */
+  getDubboServiceProp(ctx: Context) {
+    let {dubboInterface, version, group, invokeHost, invokePort} = ctx;
+    const dubboServicePropList = this._dubboServiceUrlMap.get(dubboInterface);
+    for (let prop of dubboServicePropList) {
+      const isSameHost = prop.host === invokeHost;
+      const isSamePort = prop.port === invokePort;
+      const isSameVersion = prop.version === version;
+      //如果Group为null，就默认匹配， 不检查group
+      //如果Group不为null，确保group和接口的group一致
+      const isSameGroup = !group || group === prop.group;
+
+      if (isSameHost && isSamePort && isSameVersion && isSameGroup) {
+        log('getProviderProps:|> %s', prop);
+        return prop;
+      }
+    }
+  }
+
+  /**
+   * 订阅者
+   * @param subscriber
+   */
+  subscribe(subscriber: IZookeeperSubscriber) {
+    this._subscriber = subscriber;
+    return this;
+  }
+
+  //========================private method==========================
+  private async _init(): Promise<null> {
     const {
       zkRoot,
       application: {name},
@@ -73,21 +130,24 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
 
     //获取所有provider
     for (let inf of interfaces) {
-      const providerPath = `/${zkRoot}/${inf}/providers`;
-      const providers = (await this._getProviderList(providerPath, inf)) || [];
-      const providerMetaList = providers.map(DubboUrl.from);
+      //当前接口在zookeeper中的路径
+      const dubboServicePath = `/${zkRoot}/${inf}/providers`;
+      //当前接口路径下的dubbo url
+      const dubboServiceUrls = await this._getDubboServiceUrls(
+        dubboServicePath,
+        inf,
+      );
 
-      for (let providerProp of providerMetaList) {
-        const {host, port, dubboVersion, version} = providerProp;
-        const agentHost = `${host}:${port}`;
+      //init
+      this._agentMap.set(inf, new Set());
+      this._dubboServiceUrlMap.set(inf, []);
 
-        if (this._providerMap.get(inf)) {
-          this._agentMap.get(inf).push(agentHost);
-          this._providerMap.get(inf).push(providerProp);
-        } else {
-          this._agentMap.set(inf, [agentHost]);
-          this._providerMap.set(inf, [providerProp]);
-        }
+      for (let serviceUrl of dubboServiceUrls) {
+        const url = DubboUrl.from(serviceUrl);
+        const {host, port, dubboVersion, version} = url;
+        const agentServerAddr = `${host}:${port}`;
+        this._agentMap.get(inf).add(agentServerAddr);
+        this._dubboServiceUrlMap.get(inf).push(url);
 
         //写入consume信息
         this._createConsumer({
@@ -101,84 +161,47 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
       }
     }
 
-    log('current agentSet: %O', this.agentSet);
-    this._subscriber.onData(this.agentSet);
+    log('agentAddrSet: %O', this._allAgentAddrSet);
+    if (isDevEnv) {
+      log('dubboServiceUrl:|> %O', this._dubboServiceUrlMap);
+    }
+    this._subscriber.onData(this._allAgentAddrSet);
   }
 
-  get agentSet() {
+  private get _allAgentAddrSet() {
     const set = new Set();
-    for (let agentList of this._agentMap.values()) {
-      for (let agentHostPort of agentList) {
-        set.add(agentHostPort);
+    for (let agentAddrSet of this._agentMap.values()) {
+      for (let agentAddr of agentAddrSet) {
+        set.add(agentAddr);
       }
     }
     return set;
   }
 
-  get providerMap() {
-    return this._providerMap;
-  }
-
-  getAgentHostList(ctx: Context) {
-    const {dubboInterface, version, group} = ctx;
-    return (this._providerMap.get(dubboInterface) || [])
-      .filter(providerProps => {
-        const isSameVersion = providerProps.version === version;
-        //如果Group不为null，确保group和接口的group一致
-        //如果Group为null，就默认匹配， 不检查group
-        const isSameGroup = group ? group === providerProps.group : true;
-
-        return isSameGroup && isSameVersion;
-      })
-      .map(({host, port}) => `${host}:${port}`);
-  }
-
-  getProviderProps(ctx: Context) {
-    let {dubboInterface, version, group, invokeHost, invokePort} = ctx;
-    const providerList = this._providerMap.get(dubboInterface);
-    for (let providerMeta of providerList) {
-      const isSameHost = providerMeta.host === invokeHost;
-      const isSamePort = providerMeta.port === invokePort;
-      const isSameVersion = providerMeta.version === version;
-      //如果Group不为null，确保group和接口的group一致
-      //如果Group为null，就默认匹配， 不检查group
-      const isSameGroup = group ? group === providerMeta.group : true;
-
-      if (isSameHost && isSamePort && isSameVersion && isSameGroup) {
-        log('getProviderProps=-> %s', providerMeta);
-        return providerMeta;
-      }
-    }
-  }
-
-  subscribe(subscriber: IZookeeperSubscriber) {
-    this._subscriber = subscriber;
-    return this;
-  }
-
   /**
    * 获取所有的provider列表
-   * @param {string} providerPath
+   * @param {string} dubboServicePath
    * @param dubboInterface
    * @returns {Promise<Array<string>>}
    * @private
    */
-  private async _getProviderList(
-    providerPath: string,
+  private async _getDubboServiceUrls(
+    dubboServicePath: string,
     dubboInterface: string,
   ): Promise<Array<string>> {
     const {res, err} = await to(
       this._getChildren(
-        providerPath,
-        this._watch(providerPath, dubboInterface),
+        dubboServicePath,
+        this._watch(dubboServicePath, dubboInterface),
       ),
     );
+
     if (err) {
-      log(`getChildren ${providerPath} error ${err}`);
+      log(`getChildren ${dubboServicePath} error ${err}`);
       return [];
     }
 
-    return res.children
+    return (res.children || [])
       .map(child => decodeURIComponent(child))
       .filter(child => child.startsWith('dubbo://'));
   }
@@ -241,40 +264,46 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
     });
   }
 
-  private _watch(providerPath: string, dubboInterface: string) {
+  private _watch(dubboServicePath: string, dubboInterface: string) {
     //@ts-ignore
     return async (e: zookeeper.Event) => {
-      log(`trigger watch ${providerPath}, type: %s`, e.getName());
-      const providers =
-        (await this._getProviderList(providerPath, dubboInterface)) || [];
-      const providerList = providers.map(DubboUrl.from);
-      log(
-        'update dubboInterface % providerList %O',
+      log(`trigger watch ${dubboServicePath}, type: %s`, e.getName());
+
+      const dubboServiceUrls = await this._getDubboServiceUrls(
+        dubboServicePath,
         dubboInterface,
-        providerList,
       );
-      //update providerMap
-      this.providerMap.set(dubboInterface, providerList);
-      log(`update current providerMap-> %O`, this._providerMap);
+      //clear current dubbo interface
+      this._agentMap.get(dubboInterface).clear();
+      this._dubboServiceUrlMap.set(dubboInterface, []);
 
-      //当前的agentList
-      const agentSet = providerList.map(
-        ({host, port, dubboVersion, version}) => {
-          this._createConsumer({
-            host: host,
-            port: port,
-            name: this._props.application.name,
-            dubboInterface: dubboInterface,
-            dubboVersion: dubboVersion,
-            version: version,
-          }).then(() => log('create consumer finish'));
-          return `${host}:${port}`;
-        },
-      );
+      for (let serviceUrl of dubboServiceUrls) {
+        const url = DubboUrl.from(serviceUrl);
+        const {host, port, dubboVersion, version} = url;
+        const agentServerAddr = `${host}:${port}`;
+        this._agentMap.get(dubboInterface).add(agentServerAddr);
+        this._dubboServiceUrlMap.get(dubboInterface).push(url);
 
-      this._agentMap.set(dubboInterface, agentSet);
-      log('current agentSet: %O', this.agentSet);
-      this._subscriber.onData(this.agentSet);
+        this._createConsumer({
+          host: host,
+          port: port,
+          name: this._props.application.name,
+          dubboInterface: dubboInterface,
+          dubboVersion: dubboVersion,
+          version: version,
+        }).then(() => log('create consumer finish'));
+      }
+
+      log('agentSet:|> %O', this._allAgentAddrSet);
+      if (isDevEnv) {
+        log(
+          'update dubboInterface %s providerList %O',
+          dubboInterface,
+          this._dubboServiceUrlMap.get(dubboInterface),
+        );
+      }
+
+      this._subscriber.onData(this._allAgentAddrSet);
     };
   }
 
@@ -338,7 +367,7 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
       consumerRoot +
       '/' +
       encodeURIComponent(
-        `consumer://${ip.address()}/${dubboInterface}?${qs.stringify(
+        `consumer://${this._ipAddress}/${dubboInterface}?${qs.stringify(
           queryParams,
         )}`,
       );

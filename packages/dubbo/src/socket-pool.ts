@@ -14,22 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import debug from 'debug';
-import SocketNode from './socket-worker';
-import {SOCKET_STATUS} from './socket-status';
-import SocketWorker from './socket-worker';
-import config from './config';
-import {IObservable, ISocketSubscriber} from './types';
 
-const noop = () => {};
+import debug from 'debug';
+import config from './config';
+import {SOCKET_STATUS} from './socket-status';
+import {default as SocketNode, default as SocketWorker} from './socket-worker';
+import {IObservable, ISocketSubscriber} from './types';
+import {noop} from './util';
+
 const log = debug('dubbo:socket-pool');
 
 /**
- * Socket池容器，默认初始化4个socket
+ * Socket池容器
  */
 export default class SocketPool implements IObservable<ISocketSubscriber> {
   constructor(props: {url: string; poolSize: number}) {
-    log(`new SocketPool with ${JSON.stringify(props, null, 2)}`);
+    log(`new:|> ${JSON.stringify(props, null, 2)}`);
 
     this._socketPool = [];
     this._isInitEnd = false;
@@ -61,16 +61,6 @@ export default class SocketPool implements IObservable<ISocketSubscriber> {
       poolSize,
     });
   }
-
-  private _init = () => {
-    for (let i = 0; i < this._poolSize; i++) {
-      this._socketPool.push(
-        SocketWorker.from(this._url).subscribe(this._subscriber),
-      );
-    }
-
-    this._isInitEnd = true;
-  };
 
   get isAllClose() {
     return (
@@ -104,4 +94,14 @@ export default class SocketPool implements IObservable<ISocketSubscriber> {
     this._subscriber = subscriber;
     return this;
   }
+
+  private _init = () => {
+    for (let i = 0; i < this._poolSize; i++) {
+      this._socketPool.push(
+        SocketWorker.from(this._url).subscribe(this._subscriber),
+      );
+    }
+
+    this._isInitEnd = true;
+  };
 }

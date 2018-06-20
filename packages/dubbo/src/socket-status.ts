@@ -19,4 +19,5 @@ export const enum SOCKET_STATUS {
   PADDING = 'PADDING',
   CONNECTED = 'CONNECTED',
   CLOSED = 'CLOSED',
+  RETRY = 'RETRY',
 }
