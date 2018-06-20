@@ -39,47 +39,27 @@ export default class DubboUrl {
     log('DubboUrl from -> %s', providerUrl);
     this._url = url.parse(providerUrl);
     this._query = qs.parse(providerUrl) as any;
+
+    this.host = this._url.hostname;
+    this.port = Number(this._url.port);
+    this.path = this._url.pathname.substring(1);
+    this.dubboVersion = this._query.dubbo || '';
+    this.version = this._query.version || '0.0.0';
+    this.group = this._query.group || '';
   }
 
   private readonly _url: Url;
   private readonly _query: IQueryObj;
 
+  //===================public fields and methods============
+  public readonly host;
+  public readonly port;
+  public readonly path;
+  public readonly dubboVersion;
+  public readonly version;
+  public readonly group;
+
   static from(providerUrl: string) {
     return new DubboUrl(providerUrl);
-  }
-
-  get host() {
-    return this._url.hostname;
-  }
-
-  get port() {
-    return Number(this._url.port);
-  }
-
-  get path() {
-    return this._url.pathname.substring(1);
-  }
-
-  get dubboVersion() {
-    return this._query.dubbo || '';
-  }
-
-  get version() {
-    return this._query.version || '';
-  }
-
-  get group() {
-    return this._query.group || '';
-  }
-
-  toString() {
-    return JSON.stringify({
-      host: this.host,
-      port: this.port,
-      path: this.path,
-      dubboVersion: this.dubboVersion,
-      version: this.version,
-      group: this.group,
-    });
   }
 }

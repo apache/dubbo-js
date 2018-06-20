@@ -94,13 +94,14 @@ export default class Dubbo<TService = Object>
     });
   }
 
-  private readonly _props: IDubboProps;
   private _interfaces: Array<string>;
   private _readyResolve: Function;
   private _subscriber: IDubboSubscriber;
+  private readonly _props: IDubboProps;
   private readonly _middleware: Array<Middleware<Context>>;
   private readonly _service: TDubboService<TService>;
 
+  //========================public method===================
   /**
    * static factory method
    * @param props
@@ -144,7 +145,7 @@ export default class Dubbo<TService = Object>
         ctx.timeout = timeout;
         ctx.group = group || '';
 
-        const middleware = [
+        const middlewares = [
           ...this._middleware,
           //handle request middleware
           async function handleRequest(ctx) {
@@ -154,8 +155,8 @@ export default class Dubbo<TService = Object>
           },
         ];
 
-        log('middleware->', middleware);
-        const fn = compose(middleware);
+        log('middleware->', middlewares);
+        const fn = compose(middlewares);
 
         try {
           await fn(ctx);
@@ -214,6 +215,7 @@ export default class Dubbo<TService = Object>
     this._subscriber = subscriber;
   }
 
+  //================private method================
   private _initMsgListener() {
     process.nextTick(() => {
       msg

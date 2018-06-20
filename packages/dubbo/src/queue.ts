@@ -24,9 +24,8 @@ import {msg, MSG_TYPE} from './msg';
 import SocketWorker from './socket-worker';
 import statistics from './statistics';
 import {IObservable, TQueueObserver, TRequestId} from './types';
-import {isDevEnv} from './util';
+import {isDevEnv, noop} from './util';
 
-const noop = () => {};
 const log = debug('dubbo:queue');
 
 /**

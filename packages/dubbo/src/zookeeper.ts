@@ -28,6 +28,7 @@ import {IObservable, IZkClientProps, IZookeeperSubscriber} from './types';
 import {isDevEnv, noop} from './util';
 
 const log = debug('dubbo:zookeeper');
+const ipAddress = ip.address();
 
 export type TAgentAddr = string;
 export type TDubboInterface = string;
@@ -42,8 +43,7 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
     this._agentMap = new Map();
     //保存dubbo接口和服务url之间的映射关系
     this._dubboServiceUrlMap = new Map();
-    //当前的ip
-    this._ipAddress = ip.address();
+
     this._subscriber = {
       onData: noop,
       onError: noop,
@@ -55,7 +55,6 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
   private _client: zookeeper.Client;
   private _subscriber: IZookeeperSubscriber;
   private readonly _props: IZkClientProps;
-  private readonly _ipAddress: string;
   private readonly _agentMap: Map<TDubboInterface, Set<TAgentAddr>>;
   private readonly _dubboServiceUrlMap: Map<TDubboInterface, Array<DubboUrl>>;
 
@@ -367,7 +366,7 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
       consumerRoot +
       '/' +
       encodeURIComponent(
-        `consumer://${this._ipAddress}/${dubboInterface}?${qs.stringify(
+        `consumer://${ipAddress}/${dubboInterface}?${qs.stringify(
           queryParams,
         )}`,
       );
