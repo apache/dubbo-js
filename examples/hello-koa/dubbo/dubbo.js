@@ -8,10 +8,11 @@ const dubbo = (module.exports = new Dubbo({
 }));
 
 //cost middleware
-dubbo.use(async function costTime(ctx, next) {
+/*dubbo.use(async function costTime(ctx, next) {
   console.log('before dubbo cost middleware');
   const startTime = Date.now();
   await next();
   const endTime = Date.now();
   console.log('end makecostTime->', endTime - startTime);
 });
+*/
