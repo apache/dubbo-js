@@ -6,6 +6,7 @@
     "declaration": false
   },
   "exclude": [
+    "node_modules",
     "**/__tests__/**/*",
     "temp/**",
     "demo/**"

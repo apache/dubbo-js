@@ -30,7 +30,7 @@ export async function extra(extraParam: IDubboExtInfo): Promise<IExtraResult> {
   return new Promise<IExtraResult>((resolve, reject) => {
     let execCmd = spawn(`java`, [
       '-jar',
-      join(__dirname, '../../ext/jexpose-1.0.jar'),
+      join(__dirname, '../../ext/jexpose-1.1.jar'),
       extraParam.entry,
       extraParam.entryJarPath,
       extraParam.libDirPath,
