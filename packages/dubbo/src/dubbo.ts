@@ -31,8 +31,8 @@ import {
   Middleware,
   TDubboService,
 } from './types';
+import {noop} from './util';
 
-const noop = () => {};
 const log = debug('dubbo:bootstrap');
 log('dubbo2.js version :=> %s', require('../package.json').version);
 
@@ -50,19 +50,32 @@ process.on('unhandledRejection', (reason, p) => {
  * 4. 管理tcp连接以及心跳
  * 5. 通过代理机制自动代理interface对应的方法
  * 6. 提供直连的方式快速测试接口
- * 7. middleware
+ * 7. Middleware
  * 8. 通过zone-context可以实现dubbo调用的全链路跟踪
  * 9. 集中消息管理
- *
  */
 export default class Dubbo<TService = Object>
   implements IObservable<IDubboSubscriber> {
   constructor(props: IDubboProps) {
     this._props = props;
-
     this._interfaces = [];
     this._middleware = [];
     this._service = <TDubboService<TService>>{};
+
+    //初始化config
+    //全局超时时间(最大熔断时间)类似<dubbo:consumer timeout="sometime"/>
+    //对应consumer客户端来说，用户设置了接口级别的超时时间，就使用接口级别的
+    //如果用户没有设置用户级别，默认就是最大超时时间
+    const {dubboInvokeTimeout, dubboSocketPool} = props;
+    config.dubboInvokeTimeout = dubboInvokeTimeout || config.dubboInvokeTimeout;
+    config.dubboSocketPool = dubboSocketPool || config.dubboSocketPool;
+
+    log(`initial:|> %O`, props);
+    log('config:|> %O', config);
+
+    //注册dubbo需要处理接口服务
+    this._registryService(props.service);
+    log('interfaces:|>', this._interfaces);
 
     this._readyResolve = noop;
     this._subscriber = {
@@ -70,27 +83,8 @@ export default class Dubbo<TService = Object>
       onSysError: noop,
       onStatistics: noop,
     };
-
     //初始化消息监听
     this._initMsgListener();
-
-    //初始化config
-    //全局超时时间(最大熔断时间)类似<dubbo:consumer timeout="sometime"/>
-    //对应consumer客户端来说，用户设置了接口级别的超时时间，就使用接口级别的
-    //如果用户没有设置用户级别，默认就是最大超时时间
-    config.dubboInvokeTimeout =
-      props.dubboInvokeTimeout || config.dubboInvokeTimeout;
-    config.dubboSocketPool = props.dubboSocketPool || config.dubboSocketPool;
-
-    log('getting started...');
-    log(`initial properties: %O`, props);
-    log('config-> %O', config);
-
-    //注册dubbo需要处理接口服务
-    this._registryService(props.service);
-
-    log('interfaces->', this._interfaces);
-
     //create scheduler
     Scheduler.from({
       zkRoot: props.zkRoot,
@@ -100,13 +94,14 @@ export default class Dubbo<TService = Object>
     });
   }
 
-  private readonly _props: IDubboProps;
   private _interfaces: Array<string>;
   private _readyResolve: Function;
   private _subscriber: IDubboSubscriber;
+  private readonly _props: IDubboProps;
   private readonly _middleware: Array<Middleware<Context>>;
   private readonly _service: TDubboService<TService>;
 
+  //========================public method===================
   /**
    * static factory method
    * @param props
@@ -150,7 +145,7 @@ export default class Dubbo<TService = Object>
         ctx.timeout = timeout;
         ctx.group = group || '';
 
-        const middleware = [
+        const middlewares = [
           ...this._middleware,
           //handle request middleware
           async function handleRequest(ctx) {
@@ -160,8 +155,8 @@ export default class Dubbo<TService = Object>
           },
         ];
 
-        log('middleware->', middleware);
-        const fn = compose(middleware);
+        log('middleware->', middlewares);
+        const fn = compose(middlewares);
 
         try {
           await fn(ctx);
@@ -220,6 +215,7 @@ export default class Dubbo<TService = Object>
     this._subscriber = subscriber;
   }
 
+  //================private method================
   private _initMsgListener() {
     process.nextTick(() => {
       msg

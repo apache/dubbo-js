@@ -14,27 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import debug from 'debug';
 import {id} from './request-id';
 import {IContextRequestParam, IDubboResult, IHessianType} from './types';
 
-const log = debug('dubbo:context');
 const NO_PID = -1;
+const log = debug('dubbo:context');
 
 export default class Context<T = any> {
   private constructor() {
     log('new Context');
 
-    this._body = {err: null, res: null};
-    this._application = {name: 'dubbo2.js'};
-    this._timeoutId = null;
+    //trace id
     this._uuid = '';
     this._pid = NO_PID;
+    this._timeoutId = null;
     this._isSupportedDubbox = false;
-
-    this._request = {
+    this._body = {err: null, res: null};
+    this._application = {name: 'dubbo2.js'};
+    this._request = <IContextRequestParam>{
       requestId: id(),
-    } as IContextRequestParam;
+    };
   }
 
   /**

@@ -14,10 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import java from 'js-to-java';
-import Dubbo from './dubbo';
-import DirectlyDubbo from './directly-dubbo';
 import Context from './context';
+import DirectlyDubbo from './directly-dubbo';
+import Dubbo from './dubbo';
 import {TDubboCallResult} from './types';
 
 export {Dubbo, DirectlyDubbo, java, TDubboCallResult, Context};

@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import debug from 'debug';
 import Hessian from 'hessian.js';
 import {convertBinaryNum} from './binary';
-import {IDubboResponse} from './types';
 import {DubboDecodeError} from './err';
+import {IDubboResponse} from './types';
 
 const log = debug('dubbo:hessian:DecoderV2');
-
 //dubbo response header length
 const HEADER_LENGTH = 16;
 

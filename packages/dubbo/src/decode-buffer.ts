@@ -14,12 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import debug from 'debug';
 import {convertBinaryNum} from './binary';
 import HeartBeat from './heartbeat';
 import {IObservable, TDecodeBuffSubscriber} from './types';
+import {noop} from './util';
 
-const noop = () => {};
 const MAGIC_HIGH = 0xda;
 const MAGIC_LOW = 0xbb;
 const HEADER_LENGTH = 16;
@@ -130,6 +131,10 @@ export default class DecodeBuffer
         this._subscriber(dataBuffer);
       }
     }
+  }
+
+  clearBuffer() {
+    this._buffer = Buffer.alloc(0);
   }
 
   subscribe(subscriber: TDecodeBuffSubscriber) {

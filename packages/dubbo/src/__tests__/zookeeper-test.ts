@@ -14,6 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import {ZkClient} from '../zookeeper';
+
 describe('zookeeper test suite', () => {
-  it('test connect', () => {});
+  it('test connect', async () => {
+    const client = ZkClient.from({
+      application: {
+        name: 'node-zookeeper-test',
+      },
+      register: 'localhost:2181',
+      interfaces: [
+        'com.alibaba.dubbo.demo.DemoProvider',
+        'com.alibaba.dubbo.demo.BasicTypeProvider',
+        'com.alibaba.dubbo.demo.ErrorProvider',
+      ],
+    });
+
+    await (client as any)._connect();
+
+    client.subscribe({
+      onData(data) {
+        expect(data.size).toEqual(1);
+      },
+      onError(err) {
+        expect(err).toBeNull();
+      },
+    });
+  });
 });

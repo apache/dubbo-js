@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import debug from 'debug';
 import net from 'net';
 import Context from './context';
@@ -24,9 +25,14 @@ import HeartBeat from './heartbeat';
 import {SOCKET_STATUS} from './socket-status';
 import statistics from './statistics';
 import {IObservable, ISocketSubscriber} from './types';
+import {noop} from './util';
 
 let pid = 0;
-const noop = () => {};
+//重试次数
+const RETRY_NUM = 6;
+//重试评率
+const RETRY_TIME = 5000;
+//心跳频率
 const HEART_BEAT = 180 * 1000;
 const log = debug('dubbo:socket-worker');
 
@@ -34,6 +40,7 @@ const log = debug('dubbo:socket-worker');
  * 具体处理tcp底层通信的模块
  * 1 负责socket的创建和通信
  * 2.负责dubbo的序列化和反序列化
+ * 3.socket断开自动重试
  */
 export default class SocketWorker implements IObservable<ISocketSubscriber> {
   constructor(host: string, port: number) {
@@ -42,15 +49,10 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
 
     this.host = host;
     this.port = port;
-    this._isSending = false;
+    this._retry = RETRY_NUM;
     this._status = SOCKET_STATUS.PADDING;
 
-    log(
-      'new SocketWorker#%d addr: $s, status: %s',
-      pid,
-      host + ':' + port,
-      this._status,
-    );
+    log('new SocketWorker#%d|> %s %s', pid, host + ':' + port, this._status);
 
     this._subscriber = {
       onConnect: noop,
@@ -69,18 +71,40 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
   public readonly host: string;
   public readonly port: number;
 
+  private _retry: number;
+  private _retryInterval: NodeJS.Timer;
+  private _heartBeatTimer: NodeJS.Timer;
   private _socket: net.Socket;
-  private _isSending: boolean;
   private _status: SOCKET_STATUS;
   private _decodeBuff: DecodeBuffer;
   private _subscriber: ISocketSubscriber;
-  private _heartBeatTimer: NodeJS.Timer;
 
+  //====================================public method==========================
   static from(url: string) {
     const [host, port] = url.split(':');
     return new SocketWorker(host, Number(port));
   }
 
+  write(ctx: Context) {
+    if (this.status === SOCKET_STATUS.CONNECTED) {
+      log(`SocketWorker#${this.pid} =invoked=> ${ctx.requestId}`);
+      statistics['pid#' + this.pid] = ++statistics['pid#' + this.pid];
+      ctx.pid = this.pid;
+      const encoder = new DubboEncoder(ctx);
+      this._socket.write(encoder.encode());
+    }
+  }
+
+  get status() {
+    return this._status;
+  }
+
+  subscribe(subscriber: ISocketSubscriber) {
+    this._subscriber = subscriber;
+    return this;
+  }
+
+  //==========================private method================================
   private _initSocket() {
     log(`SocketWorker#${this.pid} =connecting=> ${this.host}:${this.port}`);
     this._socket = new net.Socket();
@@ -95,31 +119,26 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
       .on('close', this._onClose);
   }
 
-  private _onSubscribeDecodeBuff = (data: Buffer) => {
-    //反序列化dubbo
-    const json = decode(data);
-    log(`SocketWorker#${this.pid} <=received=> dubbo result %O`, json);
-    this._subscriber.onData(json);
-  };
-
   private _onConnected = () => {
     log(`SocketWorker#${this.pid} <=connected=> ${this.host}:${this.port}`);
     this._status = SOCKET_STATUS.CONNECTED;
 
-    //通知外部连接成功
+    //reset retry number
+    this._retry = RETRY_NUM;
+    clearInterval(this._retryInterval);
+    this._retryInterval = null;
+
+    //notifiy subscriber, the socketworker was connected successfully
     this._subscriber.onConnect({
       pid: this.pid,
       host: this.host,
       port: this.port,
     });
 
-    //心跳
+    //heartbeart
     this._heartBeatTimer = setInterval(() => {
-      //如果当前没有正在发送数据包，才发送心跳包
-      if (!this._isSending) {
-        log('emit heartbeat');
-        this._socket.write(HeartBeat.encode());
-      }
+      log('emit heartbeat');
+      this._socket.write(HeartBeat.encode());
     }, HEART_BEAT);
   };
 
@@ -130,41 +149,47 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
 
   private _onError = error => {
     log(`SocketWorker#${this.pid} <=occur error=> ${this.host}:${this.port}`);
-
     log(error);
     clearInterval(this._heartBeatTimer);
   };
 
   private _onClose = () => {
-    log(`SocketWorker#${this.pid} <=closed=> ${this.host}:${this.port}`);
+    log(
+      `SocketWorker#${this.pid} <=closed=> ${this.host}:${this.port} retry: ${
+        this._retry
+      }`,
+    );
 
-    this._status = SOCKET_STATUS.CLOSED;
-    this._subscriber.onClose({
-      pid: this.pid,
-      host: this.host,
-      port: this.port,
-    });
+    this._status = SOCKET_STATUS.RETRY;
     clearInterval(this._heartBeatTimer);
+
+    if (this._retry > 0) {
+      if (!this._retryInterval) {
+        //clear decodebuffer
+        this._decodeBuff.clearBuffer();
+        //set retry interval
+        this._retryInterval = setInterval(() => {
+          this._initSocket();
+          this._retry--;
+        }, RETRY_TIME);
+      }
+    } else {
+      //clear
+      clearInterval(this._retryInterval);
+      //set state closed and notified socket-pool
+      this._status = SOCKET_STATUS.CLOSED;
+      this._subscriber.onClose({
+        pid: this.pid,
+        host: this.host,
+        port: this.port,
+      });
+    }
   };
 
-  write(ctx: Context) {
-    if (this.status === SOCKET_STATUS.CONNECTED) {
-      log(`SocketWorker#${this.pid} =invoked=> ${ctx.requestId}`);
-      statistics['pid#' + this.pid] = ++statistics['pid#' + this.pid];
-      this._isSending = true;
-      ctx.pid = this.pid;
-      const encoder = new DubboEncoder(ctx);
-      this._socket.write(encoder.encode());
-      this._isSending = false;
-    }
-  }
-
-  get status() {
-    return this._status;
-  }
-
-  subscribe(subscriber: ISocketSubscriber) {
-    this._subscriber = subscriber;
-    return this;
-  }
+  private _onSubscribeDecodeBuff = (data: Buffer) => {
+    //反序列化dubbo
+    const json = decode(data);
+    log(`SocketWorker#${this.pid} <=received=> dubbo result %O`, json);
+    this._subscriber.onData(json);
+  };
 }
