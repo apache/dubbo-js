@@ -26,7 +26,7 @@ import {TypeInfoI} from '../../../../typings';
  * @Date    2018/4/8
  **/
 
-let enums = ['com.qianmi.yxtc.enums.BusiTypeEnum'],
+let enums = ['com.qianmi.yxtc.enums.BusiTypeEnum','com.qianmi.gavin.comm.Phone'],
   beans = ['com.qianmi.yxtc.domain.PayMethodInfo'];
 let typeInfo: Map<string, TypeInfoI> = new Map();
 
@@ -182,6 +182,25 @@ describe('数组显示问题 string[]', () => {
   });
 });
 
+
+describe('枚举类型转换', () => {
+  it('Enum<Phone> 用法的支持',async ()=>{
+    let {fieldTrans, initContent} = await fields2CtrContent(
+      [
+        {
+          name: 'type',
+          filedAst: typeDef.fields.type,
+        },
+      ],
+      typeOptions,
+      typeDef,
+    );
+    expect(fieldTrans).toMatchSnapshot('枚举类型转换');
+
+  })
+
+});
+
 describe('map<string,List<string>>转换方法', () => {
   it('map类型转换生成', async () => {
     let {fieldTrans, initContent} = await fields2CtrContent(
@@ -236,6 +255,16 @@ const typeDef = {
         typeArgs: [],
       },
       isArray: true,
+    },
+    "type":{
+      "name":"java.lang.Enum",
+      "typeArgs":[{
+        "isWildcard":false,
+        "type":{
+          "name":"com.qianmi.gavin.comm.Phone",
+          "typeArgs":[]
+        }
+      }]
     },
     cats: {
       isArray: false,

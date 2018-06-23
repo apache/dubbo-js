@@ -86,6 +86,14 @@ export async function fields2CtrContent(
       } else {
         throw new Error('数组下未支持类型;;');
       }
+    } else if (filedAst.name === 'java.lang.Enum') {
+      // 枚举的一种写法;   private Enum<Phone> type; ==> private Phone type;
+      fieldTrans.push(
+        `${name}:${j2Jtj(typeOption, {
+          classPath: filedAst.typeArgs[0].type.name,
+          paramRefName: `this.${name}`,
+        })}`
+        );
     } else if (filedAst.typeArgs && filedAst.typeArgs.length > 0) {
       let isWildcard = false;
       for (var j = 0, jLen = filedAst.typeArgs.length; j < jLen; j++) {

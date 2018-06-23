@@ -17,8 +17,16 @@
 import {jType2Ts} from '../type-parse';
 import {TypeInfoI} from '../../typings';
 
-let beans = [];
+let beans = ['com.qianmi.gavin.comm.Phone'];
 let typeInfo: Map<string, TypeInfoI> = new Map();
+typeInfo.set('com.qianmi.gavin.comm.Phone',{
+  classPath:"com.qianmi.gavin.comm.Phone",
+  packagePath:"com.qianmi.gavin.comm",
+  className:"Phone",
+  isProvider:false,
+  isClass: false,
+  isEnum: true
+});
 
 describe('基本类型转换', () => {
   let typeOptions = {
@@ -26,10 +34,11 @@ describe('基本类型转换', () => {
       return false;
     },
     addDenpend: async (classPath: string) => {
+      let _typeInfo = typeInfo.get(classPath);
       return {
-        classPath:"",
-        name:"",
-        importName:"",
+        classPath:_typeInfo.classPath,
+        name:_typeInfo.className,
+        importName:_typeInfo.className,
       };
     },
     hasAst: (classPath: string) => {
@@ -51,6 +60,23 @@ describe('基本类型转换', () => {
       }
     },
   };
+
+  it('枚举Enum<Phone>类型转换',async()=>{
+    let type = await jType2Ts(
+      {
+        "name":"java.lang.Enum",
+        "typeArgs":[{
+          "isWildcard":false,
+          "type":{
+            "name":"com.qianmi.gavin.comm.Phone",
+            "typeArgs":[]
+          }
+        }]
+      },
+      typeOptions,
+    );
+    expect(type).toEqual('Phone');
+  });
 
   it('java.lang下的类型转换', async () => {
     let type = await jType2Ts(

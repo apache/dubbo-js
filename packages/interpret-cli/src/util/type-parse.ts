@@ -83,6 +83,10 @@ export async function jType2Ts(
   } else if (typePropers.isArray) {
     let subType = await jType2Ts(typePropers.elementType, typeOptions);
     return `${subType}[]`;
+  }else if(typePropers.name==='java.lang.Enum') {
+    //枚举类型处理
+    let enumClassPath =typePropers.typeArgs[0].type.name;
+    return classPath2TypeName(enumClassPath, typeOptions)
   } else if (
     typePropers.name === 'java.util.Map' &&
     typePropers.typeArgs.length === 0
