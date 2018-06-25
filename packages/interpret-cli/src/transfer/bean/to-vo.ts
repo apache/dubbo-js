@@ -46,7 +46,7 @@ export async function toBeanClass(
 
   if (typeDef.typeParams) {
     typeDef.typeParams.forEach(typeParamsItem => {
-      typeParameters.push({name: typeParamsItem.name});
+      typeParameters.push({name: typeParamsItem.name+"=any",});
     });
   }
   //获取 方法定义; 或者获取属性定义
