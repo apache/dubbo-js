@@ -103,7 +103,12 @@ export default class DecodeBuffer
         //取出头部字节
         const header = this._buffer.slice(0, HEADER_LENGTH);
         //计算body的长度字节位置[12-15]
-        const bodyLengthBuff = this._buffer.slice(12, 16);
+        const bodyLengthBuff = Buffer.from([
+          header[12],
+          header[13],
+          header[14],
+          header[15],
+        ]);
         const bodyLength = fromBytes4(bodyLengthBuff);
         log('body length', bodyLength);
 

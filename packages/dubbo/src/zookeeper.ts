@@ -38,11 +38,9 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
     this._props = props;
     //默认dubbo
     this._props.zkRoot = this._props.zkRoot || 'dubbo';
-    //保存接口和负载之间的映射
-    this._agentMap = new Map();
     //保存dubbo接口和服务url之间的映射关系
     this._dubboServiceUrlMap = new Map();
-
+    //初始化订阅者
     this._subscriber = {
       onData: noop,
       onError: noop,
@@ -54,7 +52,6 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
   private _client: zookeeper.Client;
   private _subscriber: IZookeeperSubscriber;
   private readonly _props: IZkClientProps;
-  private readonly _agentMap: Map<TDubboInterface, Set<TAgentAddr>>;
   private readonly _dubboServiceUrlMap: Map<TDubboInterface, Array<DubboUrl>>;
 
   //===========================public method=============================
@@ -137,14 +134,11 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
       );
 
       //init
-      this._agentMap.set(inf, new Set());
       this._dubboServiceUrlMap.set(inf, []);
 
       for (let serviceUrl of dubboServiceUrls) {
         const url = DubboUrl.from(serviceUrl);
         const {host, port, dubboVersion, version} = url;
-        const agentServerAddr = `${host}:${port}`;
-        this._agentMap.get(inf).add(agentServerAddr);
         this._dubboServiceUrlMap.get(inf).push(url);
 
         //写入consume信息
@@ -159,21 +153,26 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
       }
     }
 
-    log('agentAddrSet: %O', this._allAgentAddrSet);
     if (isDevEnv) {
+      log('agentAddrSet: %O', this._allAgentAddrSet);
       log('dubboServiceUrl:|> %O', this._dubboServiceUrlMap);
     }
+
     this._subscriber.onData(this._allAgentAddrSet);
   }
 
+  /**
+   * 获取所有的负载列表，通过agentAddrMap聚合出来
+   * 这样有点Reactive的感觉，不需要考虑当中增加删除的动作
+   */
   private get _allAgentAddrSet() {
-    const set = new Set();
-    for (let agentAddrSet of this._agentMap.values()) {
-      for (let agentAddr of agentAddrSet) {
-        set.add(agentAddr);
+    const agentSet = new Set();
+    for (let urlList of this._dubboServiceUrlMap.values()) {
+      for (let url of urlList) {
+        agentSet.add(url.host + ':' + url.port);
       }
     }
-    return set;
+    return agentSet;
   }
 
   /**
@@ -271,14 +270,11 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
         dubboInterface,
       );
       //clear current dubbo interface
-      this._agentMap.get(dubboInterface).clear();
       this._dubboServiceUrlMap.set(dubboInterface, []);
 
       for (let serviceUrl of dubboServiceUrls) {
         const url = DubboUrl.from(serviceUrl);
         const {host, port, dubboVersion, version} = url;
-        const agentServerAddr = `${host}:${port}`;
-        this._agentMap.get(dubboInterface).add(agentServerAddr);
         this._dubboServiceUrlMap.get(dubboInterface).push(url);
 
         this._createConsumer({
@@ -291,8 +287,8 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
         }).then(() => log('create consumer finish'));
       }
 
-      log('agentSet:|> %O', this._allAgentAddrSet);
       if (isDevEnv) {
+        log('agentSet:|> %O', this._allAgentAddrSet);
         log(
           'update dubboInterface %s providerList %O',
           dubboInterface,
