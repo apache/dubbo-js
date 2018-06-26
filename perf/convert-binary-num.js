@@ -116,3 +116,57 @@ for (let i = 0; i < 1000000; i++) {
   );
 }
 console.timeEnd('2 - 13234234234234234234');
+
+function toBytes4(num) {
+  assert.ok(num >= 0 && num <= 0xffffffff);
+  const buf = Buffer.allocUnsafe(4);
+  buf.writeUInt32BE(num, 0);
+  return buf;
+}
+
+function toBytes8(num) {
+  assert.ok(num >= 0 && num <= Number.MAX_SAFE_INTEGER);
+  const buf = Buffer.allocUnsafe(8);
+  const high = Math.floor(num / Math.pow(2, 32));
+  const low = (num & 0xffffffff) >>> 0;
+  buf.writeUInt32BE(high);
+  buf.writeUInt32BE(low, 4);
+  return buf;
+}
+
+function fromBytes4(buf) {
+  return buf.readUInt32BE(0);
+}
+
+function fromBytes8(buf) {
+  const high = buf.readUInt32BE(0);
+  assert(high <= 0x1fffff);
+  const low = buf.readUInt32BE(4);
+  return high * Math.pow(2, 32) + low;
+}
+
+assert.ok(
+  toBytes8(201212).equals(
+    Buffer.from([0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x11, 0xfc]),
+  ),
+  'toBytes8(201212)',
+);
+
+assert.ok(
+  toBytes8(9007199254740991).equals(
+    Buffer.from([0x00, 0x1f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]),
+  ),
+  'toBytes8(9007199254740991)',
+);
+
+assert.ok(
+  fromBytes8(Buffer.from([0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x11, 0xfc])) ===
+    201212,
+  'fromBytes8(201212)',
+);
+
+assert.ok(
+  fromBytes8(Buffer.from([0x00, 0x1f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff])) ===
+    9007199254740991,
+  'fromBytes8(9007199254740991)',
+);
