@@ -300,7 +300,7 @@ export function j2Jtj(
     return `${paramRefName}['__fields2java']?${paramRefName}['__fields2java']():${paramRefName}`;
   } else if (classPath === 'java.math.BigDecimal') {
     log('处理java BigDecimal类型,param %j,schema %j');
-    return `java.BigDecimal(${paramRefName}?${paramRefName}.value:null)`;
+    return `${paramRefName}?java.BigDecimal(${paramRefName}.value):null`;
   } else if (classPath === 'java.util.Date') {
     return `${paramRefName}`; //时间类型 js2java可以直接识别;
   } else if (classPath === 'java.lang.Object') {

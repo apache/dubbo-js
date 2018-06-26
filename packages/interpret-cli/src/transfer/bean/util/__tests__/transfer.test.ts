@@ -145,6 +145,14 @@ describe('基础转换生成', () => {
     });
     expect(content).toEqual('java.String(item)');
   });
+
+  it('bigDecimal.类型', async () => {
+    let content = j2Jtj(typeOptions, {
+      paramRefName: 'this.initPrice',
+      classPath: 'java.math.BigDecimal',
+    });
+    expect(content).toEqual('this.initPrice?java.BigDecimal(this.initPrice.value):null');
+  });
 });
 
 
@@ -237,6 +245,10 @@ describe('map<string,List<string>>转换方法', () => {
 
 const typeDef = {
   fields: {
+    "initPrice":{
+      "name":"java.math.BigDecimal",
+      "typeArgs":[]
+    },
     skuIds: {
       name: 'java.util.Collection',
       typeArgs: [
