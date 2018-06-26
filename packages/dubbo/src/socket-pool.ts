@@ -20,7 +20,7 @@ import config from './config';
 import {SOCKET_STATUS} from './socket-status';
 import {default as SocketNode, default as SocketWorker} from './socket-worker';
 import {IObservable, ISocketSubscriber} from './types';
-import {noop} from './util';
+import {noop, traceInfo} from './util';
 
 const log = debug('dubbo:socket-pool');
 
@@ -30,6 +30,7 @@ const log = debug('dubbo:socket-pool');
 export default class SocketPool implements IObservable<ISocketSubscriber> {
   constructor(props: {url: string; poolSize: number}) {
     log(`new:|> ${JSON.stringify(props, null, 2)}`);
+    traceInfo(`socket-pool: ${props.url} poolSize: ${props.poolSize}`);
 
     this._socketPool = [];
     this._isInitEnd = false;

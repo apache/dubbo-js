@@ -13,7 +13,7 @@ function convertBinaryNum1(binNum, byteLength) {
   return parseInt(str, 2);
 }
 
-// 在源文件中进行了搜索，发现 convertBinaryNum2 的作用就是对 big-endian 的 byte[4] 和 byte[8] 
+// 在源文件中进行了搜索，发现 convertBinaryNum2 的作用就是对 big-endian 的 byte[4] 和 byte[8]
 // 进行反序列化成 uint32 和 uint64，所以该实现只针对这样两种类型
 function convertBinaryNum2(binNum, byteLength) {
   // 感觉 byteLength 是不是可以省略，直接取 binNum.length 可以减少一些脑力负担

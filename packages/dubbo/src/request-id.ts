@@ -19,6 +19,7 @@ let uniqueId = 0;
 
 export function id() {
   uniqueId = ++uniqueId;
+  //reset
   if (uniqueId === Number.MAX_SAFE_INTEGER) {
     uniqueId = 0;
   }

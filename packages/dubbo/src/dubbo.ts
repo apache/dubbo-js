@@ -19,7 +19,6 @@ import debug from 'debug';
 import compose from 'koa-compose';
 import config from './config';
 import Context from './context';
-import {msg, MSG_TYPE} from './msg';
 import queue from './queue';
 import Scheduler from './scheduler';
 import {to} from './to';
@@ -28,17 +27,20 @@ import {
   IDubboProvider,
   IDubboSubscriber,
   IObservable,
+  ITrace,
   Middleware,
   TDubboService,
 } from './types';
-import {noop} from './util';
+import {msg, noop, traceErr} from './util';
+const version = require('../package.json').version;
 
 const log = debug('dubbo:bootstrap');
-log('dubbo2.js version :=> %s', require('../package.json').version);
+log('dubbo2.js version :=> %s', version);
 
 //定位没有处理的promise
 process.on('unhandledRejection', (reason, p) => {
   log(reason, p);
+  traceErr(new Error(reason));
 });
 
 /**
@@ -79,9 +81,7 @@ export default class Dubbo<TService = Object>
 
     this._readyResolve = noop;
     this._subscriber = {
-      onReady: noop,
-      onSysError: noop,
-      onStatistics: noop,
+      onTrace: noop,
     };
     //初始化消息监听
     this._initMsgListener();
@@ -162,6 +162,7 @@ export default class Dubbo<TService = Object>
           await fn(ctx);
         } catch (err) {
           log(err);
+          traceErr(err);
         }
 
         return ctx.body;
@@ -218,17 +219,17 @@ export default class Dubbo<TService = Object>
   //================private method================
   private _initMsgListener() {
     process.nextTick(() => {
+      this._subscriber.onTrace({
+        type: 'INFO',
+        msg: `dubbo:bootstrap version => ${version}`,
+      });
       msg
-        .addListener(MSG_TYPE.SYS_READY, () => {
+        .addListener('sys:trace', (msg: ITrace) => {
+          this._subscriber.onTrace(msg);
+        })
+        .addListener('sys:ready', () => {
           this._readyResolve();
-          this._subscriber.onReady();
-        })
-        .addListener(MSG_TYPE.SYS_ERR, err => {
-          this._subscriber.onSysError(err);
-        })
-        .addListener(MSG_TYPE.SYS_STATISTICS, stat =>
-          this._subscriber.onStatistics(stat),
-        );
+        });
     });
   }
 

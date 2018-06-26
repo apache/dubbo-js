@@ -22,10 +22,9 @@ import qs from 'querystring';
 import Context from './context';
 import DubboUrl from './dubbo-url';
 import {ZookeeperDisconnectedError, ZookeeperTimeoutError} from './err';
-import {msg, MSG_TYPE} from './msg';
 import {to} from './to';
 import {IObservable, IZkClientProps, IZookeeperSubscriber} from './types';
-import {isDevEnv, noop} from './util';
+import {isDevEnv, msg, noop, traceErr, traceInfo} from './util';
 
 const log = debug('dubbo:zookeeper');
 const ipAddress = ip.address();
@@ -214,7 +213,9 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
     return new Promise((resolve, reject) => {
       const {register} = this._props;
 
+      //debug log
       log(`connecting zkserver ${register}`);
+      //connect
       this._client = zookeeper.createClient(register, {
         retries: 3,
         sessionTimeout: 10 * 1000,
@@ -231,9 +232,7 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
           `ZooKeeper was connected ${register} time out. `,
         );
         reject(err);
-
-        //通知外部，比如对接钉钉机器人
-        msg.emit(MSG_TYPE.SYS_ERR, err);
+        traceErr(err);
       }, retries * sessionTimeout);
 
       //connected
@@ -241,9 +240,8 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
         log(`connected to zkserver ${register}`);
         clearTimeout(timeId);
         resolve(null);
-
-        //通知外部，比如对接钉钉机器人
-        msg.emit(MSG_TYPE.SYS_READY);
+        msg.emit('sys:ready');
+        traceInfo(`connected to zkserver ${register}`);
       });
 
       //the connection between client and server is dropped.
@@ -252,10 +250,9 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
         const err = new ZookeeperDisconnectedError(
           'ZooKeeper was disconnected.',
         );
-        this._subscriber.onError(err);
-        //通知外部，比如对接钉钉机器人
-        msg.emit(MSG_TYPE.SYS_ERR, err);
         clearTimeout(timeId);
+        this._subscriber.onError(err);
+        traceErr(err);
       });
 
       //connect
@@ -266,7 +263,8 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
   private _watch(dubboServicePath: string, dubboInterface: string) {
     //@ts-ignore
     return async (e: zookeeper.Event) => {
-      log(`trigger watch ${dubboServicePath}, type: %s`, e.getName());
+      log(`trigger watch ${dubboServicePath}, type: ${e.getName()}`);
+      traceInfo(`trigger watch ${dubboServicePath}, type: ${e.getName()}`);
 
       const dubboServiceUrls = await this._getDubboServiceUrls(
         dubboServicePath,

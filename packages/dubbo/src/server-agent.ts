@@ -16,11 +16,9 @@
  */
 
 import debug from 'debug';
-import {SocketError} from './err';
-import {msg, MSG_TYPE} from './msg';
 import SocketPool from './socket-pool';
 import {IObservable, ISocketSubscriber} from './types';
-import {isDevEnv, noop} from './util';
+import {isDevEnv, noop, traceErr, traceInfo} from './util';
 import {TAgentAddr} from './zookeeper';
 
 const log = debug('dubbo:server-agent');
@@ -56,6 +54,7 @@ export class ServerAgent implements IObservable<ISocketSubscriber> {
           continue;
         }
         log(`create ServerAgent: ${agentAddr}`);
+        traceInfo(`ServerAgent create socket-pool: ${agentAddr}`);
         const socketPool = SocketPool.from(agentAddr).subscribe({
           onConnect: this._subscriber.onConnect,
           onData: this._subscriber.onData,
@@ -96,10 +95,8 @@ export class ServerAgent implements IObservable<ISocketSubscriber> {
         `${agentAddr}'s pool socket-worker had all closed. delete ${agentAddr}`,
       );
       this._serverAgentMap.delete(agentAddr);
-      //通知外部，销毁了这个socket-pool
-      msg.emit(
-        MSG_TYPE.SYS_ERR,
-        new SocketError(
+      traceErr(
+        new Error(
           `${agentAddr}'s pool socket-worker had all closed. delete ${agentAddr}`,
         ),
       );
