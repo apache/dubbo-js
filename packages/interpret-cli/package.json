@@ -5,6 +5,10 @@
   "bin": {
     "interpret": "./lib/cli.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dubbo/dubbo2.js/blob/master/packages/interpret-cli"
+  },
   "keywords": [
     "dubbo",
     "typescript",
