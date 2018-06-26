@@ -17,7 +17,7 @@
 
 import debug from 'debug';
 import Hessian from 'hessian.js';
-import {binaryNum} from './binary';
+import {toBytes8} from './byte';
 import Context from './context';
 import {DubboEncodeError} from './err';
 
@@ -93,19 +93,15 @@ export default class DubboEncoder {
     }
 
     //body长度int-> 4个byte
-    const bodyLengthBuff = binaryNum(payload, 4);
-    header[12] = bodyLengthBuff[0];
-    header[13] = bodyLengthBuff[1];
-    header[14] = bodyLengthBuff[2];
-    header[15] = bodyLengthBuff[3];
 
+    header.writeUInt32BE(payload, 12);
     return header;
   }
 
   private setRequestId(header) {
     const {requestId} = this._ctx;
     log(`encode header requestId: ${requestId}`);
-    const buffer = binaryNum(requestId, 8);
+    const buffer = toBytes8(requestId);
     header[4] = buffer[0];
     header[5] = buffer[1];
     header[6] = buffer[2];

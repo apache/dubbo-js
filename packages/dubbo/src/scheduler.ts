@@ -17,10 +17,10 @@
 
 import debug from 'debug';
 import {ScheduleError, SocketError, ZookeeperTimeoutError} from './err';
-import {msg, MSG_TYPE} from './msg';
 import queue from './queue';
 import serverAgent, {ServerAgent} from './server-agent';
 import {IZkClientProps} from './types';
+import {traceErr, traceInfo} from './util';
 import {ZkClient} from './zookeeper';
 
 const log = debug('dubbo:scheduler');
@@ -101,7 +101,9 @@ export default class Scheduler {
     if (agentSet.size === 0) {
       this._status = STATUS.FAILED;
       //将队列中的所有dubbo调用全调用失败
-      queue.allFailed(new ScheduleError('Can not be found any agents'));
+      const err = new ScheduleError('Can not be found any agents');
+      queue.allFailed(err);
+      traceErr(err);
       return;
     }
 
@@ -165,6 +167,7 @@ export default class Scheduler {
     log(`scheduler receive SocketWorker connect pid#${pid} ${host}:${port}`);
     const agentHost = `${host}:${port}`;
     this._status = STATUS.READY;
+    traceInfo('scheduler is ready');
 
     for (let ctx of queue.requestQueue.values()) {
       if (ctx.isNotScheduled) {
@@ -205,11 +208,5 @@ export default class Scheduler {
         );
       }
     }
-
-    //通知外部
-    msg.emit(
-      MSG_TYPE.SYS_ERR,
-      new SocketError(`SocketWorker#${pid} was close`),
-    );
   };
 }

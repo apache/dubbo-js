@@ -21,10 +21,13 @@ export interface IObservable<T> {
 
 export type TDecodeBuffSubscriber = (data: Buffer) => void;
 
+export interface ITrace {
+  type: 'INFO' | 'ERR';
+  msg: string | Error;
+}
+
 export interface IDubboSubscriber {
-  onReady?: () => void;
-  onSysError?: (err: Error) => void;
-  onStatistics?: (statInfo) => void;
+  onTrace?: (msg: ITrace) => void;
 }
 
 export interface IZookeeperSubscriber {

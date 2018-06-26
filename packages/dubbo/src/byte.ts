@@ -15,15 +15,30 @@
  * limitations under the License.
  */
 
-import {EventEmitter} from 'events';
+// Merge pull request #27 from hsiaosiyuan0/master
+// 3ks hsiaosiyuan0
 
-//use const enum instead of enum
-//less runtime object
-//inline value
-export const enum MSG_TYPE {
-  SYS_ERR = 'SYS:ERR',
-  SYS_READY = 'SYS_READY',
-  SYS_STATISTICS = 'SYS_STATISTICS',
-}
+export const toBytes4 = (num: number) => {
+  const buf = Buffer.allocUnsafe(4);
+  buf.writeUInt32BE(num, 0);
+  return buf;
+};
 
-export const msg = new EventEmitter();
+export const fromBytes4 = (buf: Buffer) => {
+  return buf.readUInt32BE(0);
+};
+
+export const toBytes8 = (num: number) => {
+  const buf = Buffer.allocUnsafe(8);
+  const high = Math.floor(num / Math.pow(2, 32));
+  const low = (num & 0xffffffff) >>> 0;
+  buf.writeUInt32BE(high, 0);
+  buf.writeUInt32BE(low, 4);
+  return buf;
+};
+
+export const fromBytes8 = (buf: Buffer) => {
+  const high = buf.readUInt32BE(0);
+  const low = buf.readUInt32BE(4);
+  return high * Math.pow(2, 32) + low;
+};

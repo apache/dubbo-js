@@ -17,7 +17,7 @@
 
 import debug from 'debug';
 import Hessian from 'hessian.js';
-import {convertBinaryNum} from './binary';
+import {fromBytes8} from './byte';
 import {DubboDecodeError} from './err';
 import {IDubboResponse} from './types';
 
@@ -51,17 +51,9 @@ export function decode<T>(bytes: Buffer): IDubboResponse<T> {
   let err = null;
 
   // set request and serialization flag.
-  const requestIdBuff = Buffer.alloc(8);
-  requestIdBuff[0] = bytes[4];
-  requestIdBuff[1] = bytes[5];
-  requestIdBuff[2] = bytes[6];
-  requestIdBuff[3] = bytes[7];
-  requestIdBuff[4] = bytes[8];
-  requestIdBuff[5] = bytes[9];
-  requestIdBuff[6] = bytes[10];
-  requestIdBuff[7] = bytes[11];
-
-  const requestId = convertBinaryNum(requestIdBuff, 8);
+  //字节位置[4-11] 8 bytes
+  const requestIdBuff = bytes.slice(4, 12);
+  const requestId = fromBytes8(requestIdBuff);
   log(`decode parse requestId: ${requestId}`);
 
   // const typeId = bytes[2];

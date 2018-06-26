@@ -25,7 +25,7 @@ import HeartBeat from './heartbeat';
 import {SOCKET_STATUS} from './socket-status';
 import statistics from './statistics';
 import {IObservable, ISocketSubscriber} from './types';
-import {noop} from './util';
+import {noop, traceErr, traceInfo} from './util';
 
 let pid = 0;
 //重试次数
@@ -53,6 +53,7 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     this._status = SOCKET_STATUS.PADDING;
 
     log('new SocketWorker#%d|> %s %s', pid, host + ':' + port, this._status);
+    traceInfo(`new SocketWorker#${this.pid} |> ${host + ':' + port}`);
 
     this._subscriber = {
       onConnect: noop,
@@ -107,6 +108,10 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
   //==========================private method================================
   private _initSocket() {
     log(`SocketWorker#${this.pid} =connecting=> ${this.host}:${this.port}`);
+    traceInfo(
+      `SocketWorker#${this.pid} =connecting=> ${this.host}:${this.port}`,
+    );
+
     this._socket = new net.Socket();
     this._socket
       .connect(
@@ -121,6 +126,10 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
 
   private _onConnected = () => {
     log(`SocketWorker#${this.pid} <=connected=> ${this.host}:${this.port}`);
+    traceInfo(
+      `SocketWorker#${this.pid} <=connected=> ${this.host}:${this.port}`,
+    );
+
     this._status = SOCKET_STATUS.CONNECTED;
 
     //reset retry number
@@ -150,6 +159,7 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
   private _onError = error => {
     log(`SocketWorker#${this.pid} <=occur error=> ${this.host}:${this.port}`);
     log(error);
+    traceErr(error);
     clearInterval(this._heartBeatTimer);
   };
 
@@ -158,6 +168,14 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
       `SocketWorker#${this.pid} <=closed=> ${this.host}:${this.port} retry: ${
         this._retry
       }`,
+    );
+
+    traceErr(
+      new Error(
+        `SocketWorker#${this.pid} <=closed=> ${this.host}:${this.port} retry: ${
+          this._retry
+        }`,
+      ),
     );
 
     this._status = SOCKET_STATUS.RETRY;

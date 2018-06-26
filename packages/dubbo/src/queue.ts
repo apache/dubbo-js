@@ -20,11 +20,10 @@ import config from './config';
 import Context from './context';
 import DubboUrl from './dubbo-url';
 import {DubboMethodParamHessianTypeError, DubboTimeoutError} from './err';
-import {msg, MSG_TYPE} from './msg';
 import SocketWorker from './socket-worker';
 import statistics from './statistics';
 import {IObservable, TQueueObserver, TRequestId} from './types';
-import {isDevEnv, noop} from './util';
+import {isDevEnv, noop, traceErr} from './util';
 
 const log = debug('dubbo:queue');
 
@@ -139,10 +138,11 @@ export class Queue implements IObservable<TQueueObserver> {
     }
 
     const {
+      uuid,
       request: {dubboInterface, methodName},
     } = ctx;
     log('queue schedule failed requestId#%d, err: %s', requestId, err);
-    err.message = `invoke ${dubboInterface}#${methodName} was error, ${
+    err.message = `uuid: ${uuid} invoke ${dubboInterface}#${methodName} was error, ${
       err.message
     }`;
     //删除该属性，不然会导致JSON.Stringify失败
@@ -152,6 +152,7 @@ export class Queue implements IObservable<TQueueObserver> {
     ctx.cleanTimeout();
     ctx.reject(err);
     this._clear(requestId);
+    traceErr(err);
   }
 
   consume(requestId: TRequestId, node: SocketWorker, providerMeta: DubboUrl) {
@@ -167,7 +168,11 @@ export class Queue implements IObservable<TQueueObserver> {
     request.dubboVersion = providerMeta.dubboVersion;
     request.group = request.group || providerMeta.group;
     request.path = providerMeta.path;
-    node.write(ctx);
+    try {
+      node.write(ctx);
+    } catch (err) {
+      this.failed(requestId, err);
+    }
     if (isDevEnv) {
       log(`current schedule queue ==>`, this.scheduleQueue);
     }
@@ -188,8 +193,6 @@ export class Queue implements IObservable<TQueueObserver> {
     //调度完成,显示调度结果
     if (this._requestQueue.size === 0) {
       log('invoke statistics==>%o', statistics);
-      //通知外部
-      msg.emit(MSG_TYPE.SYS_STATISTICS, statistics);
     }
   }
 

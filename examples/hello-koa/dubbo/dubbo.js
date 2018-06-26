@@ -7,6 +7,16 @@ const dubbo = (module.exports = new Dubbo({
   service,
 }));
 
+// dubbo.ready().then(() => {
+//   console.log('dubbo was ready');
+// });
+
+dubbo.subscribe({
+  onTrace: msg => {
+    console.log(msg);
+  },
+});
+
 //cost middleware
 /*dubbo.use(async function costTime(ctx, next) {
   console.log('before dubbo cost middleware');
