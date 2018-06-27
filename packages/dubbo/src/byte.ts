@@ -30,7 +30,8 @@ export const fromBytes4 = (buf: Buffer) => {
 
 export const toBytes8 = (num: number) => {
   const buf = Buffer.allocUnsafe(8);
-  const high = Math.floor(num / Math.pow(2, 32));
+  //2 ** 32 = 4294967296
+  const high = Math.floor(num / 4294967296);
   const low = (num & 0xffffffff) >>> 0;
   buf.writeUInt32BE(high, 0);
   buf.writeUInt32BE(low, 4);

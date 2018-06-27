@@ -11,11 +11,11 @@ const dubbo = (module.exports = new Dubbo({
 //   console.log('dubbo was ready');
 // });
 
-dubbo.subscribe({
-  onTrace: msg => {
-    console.log(msg);
-  },
-});
+// dubbo.subscribe({
+//   onTrace: msg => {
+//     console.log(msg);
+//   },
+// });
 
 //cost middleware
 /*dubbo.use(async function costTime(ctx, next) {
