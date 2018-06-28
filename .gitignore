@@ -1,4 +1,7 @@
 .idea
+.project
+.settings
+.classpath
 # Logs
 logs
 *.log
