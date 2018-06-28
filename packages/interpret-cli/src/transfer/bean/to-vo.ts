@@ -63,13 +63,6 @@ export async function toBeanClass(
       filedType = typeDef.fields[fieldName].elementType.name;
     }
 
-    if (
-      filedType.startsWith('com.qianmi') ||
-      filedType.startsWith('java.lang') ||
-      filedType.startsWith('java.util') ||
-      filedType.startsWith('java.math') ||
-      intepretHandle.isTypeParam(filedType)
-    ) {
       let field = await toField(
         fieldName,
         typeDef.fields[fieldName],
@@ -84,7 +77,6 @@ export async function toBeanClass(
         type: await jType2Ts(filedItem, intepretHandle),
         filedAst: filedItem,
       });
-    }
   }
   //添加构造函数入参interface
   //1.2 生成方法;;

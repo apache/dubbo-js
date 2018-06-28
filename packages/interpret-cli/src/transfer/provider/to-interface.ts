@@ -37,14 +37,9 @@ export async function toInterface(
   let properties: PropertySignatureStructure[] = [];
 
   for (let fieldName in typeDef.fields) {
-    if (
-      typeDef.fields[fieldName].name.startsWith('com.qianmi') ||
-      typeDef.fields[fieldName].name.startsWith('java.')
-    ) {
       properties.push(
         await toField(fieldName, typeDef.fields[fieldName], intepretHandle),
       );
-    }
   }
 
   let filtersMethodNames = genePropsGetSet(properties.map(({name}) => name));

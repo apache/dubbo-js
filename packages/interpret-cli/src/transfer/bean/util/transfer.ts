@@ -294,7 +294,8 @@ export function j2Jtj(
       //引入类并且不是枚举类型
       return `${paramRefName}?${paramRefName}.__fields2java():null`;
     } else {
-      throw new Error('不可能出现这种的,classPathStr:' + classPath + isClass);
+      return `${paramRefName}['__fields2java']?${paramRefName}['__fields2java']():${paramRefName}`;
+      // throw new Error('不可能出现这种的,classPathStr:' + classPath + isClass);
     }
   } else if (typeOptions.isTypeParam(classPath)) {
     return `${paramRefName}['__fields2java']?${paramRefName}['__fields2java']():${paramRefName}`;
