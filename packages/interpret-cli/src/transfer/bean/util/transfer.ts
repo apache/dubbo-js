@@ -311,6 +311,8 @@ export function j2Jtj(
       classPath.lastIndexOf('.') + 1,
     )}(${paramRefName})`;
   } else {
-    return `${paramRefName}`
+    throw new Error(
+      `生成js-to-java代码出错:${paramRefName},${classPath}, ${classPath}`,
+    );
   }
 }

@@ -91,7 +91,7 @@ export async function jType2Ts(
     typePropers.name === 'java.util.Map' &&
     typePropers.typeArgs.length === 0
   ) {
-    return 'any';//直接返回any
+    return '{[name: any]: any}';
   } else if (typePropers.typeArgs && typePropers.typeArgs.length > 0) {
     //泛型处理
     let type = await classPath2TypeName(typePropers.name, typeOptions);
@@ -113,8 +113,6 @@ export async function jType2Ts(
       result = type
         .replace('${nameType}', nameType)
         .replace('${value}', valueType);
-    } else if(type === 'any') {
-      return 'any';
     } else {
       let subTypes = [];
       for (var i = 0, iLen = typePropers.typeArgs.length; i < iLen; i++) {
@@ -162,10 +160,9 @@ export async function classPath2TypeName(
       return denpendItem.importName;
     }else{
       console.warn('warning: not find class Type for :'+classPath);
-      return "any";
+      return "";
     }
   } else {
-    return "any";
-    // throw new Error(`未找到类${classPath},在typescript中的信息; `);
+    throw new Error(`未找到类${classPath},在typescript中的信息; `);
   }
 }
