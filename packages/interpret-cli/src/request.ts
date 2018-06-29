@@ -79,7 +79,7 @@ export class Request {
   }
 
   get providerSuffix(): string{
-    return this.config.providerSuffix;
+    return this.config.providerSuffix||"Provider";
   }
 
   registerTypeInfo(typeInfoItem: TypeInfoI) {

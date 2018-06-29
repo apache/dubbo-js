@@ -150,6 +150,7 @@ export interface IJClass {
   isInterface: boolean;
   isAbstract?: boolean;
   methods: IJMethod;
+  privateFields:string[];//私有变量
   typeParams: ITypeParam[];
   values?: string[] | number[]; //枚举类型首个值;
   name: typePath;
