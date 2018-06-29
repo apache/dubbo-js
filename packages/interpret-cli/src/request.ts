@@ -78,6 +78,10 @@ export class Request {
     return this.config.output;
   }
 
+  get providerSuffix(): string{
+    return this.config.providerSuffix;
+  }
+
   registerTypeInfo(typeInfoItem: TypeInfoI) {
     let key = '';
     if (typeInfoItem.classPath) {
