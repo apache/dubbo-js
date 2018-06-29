@@ -1,0 +1,308 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>api · dubbo2.js</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="### create dubbo object"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="api · dubbo2.js"/><meta property="og:type" content="website"/><meta property="og:url" content="https://your-docusaurus-test-site.com/index.html"/><meta property="og:description" content="### create dubbo object"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/favicon.png"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://your-docusaurus-test-site.com/blog/atom.xml" title="dubbo2.js Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://your-docusaurus-test-site.com/blog/feed.xml" title="dubbo2.js Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/css/main.css"/></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/docusaurus.svg" alt="dubbo2.js"/><h2 class="headerTitleWithLogo">dubbo2.js</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/docs/preface.html" target="_self">Docs</a></li><li class="siteNavGroupActive siteNavItemActive"><a href="/docs/api.html" target="_self">API</a></li><li class=""><a href="/en/help.html" target="_self">Help</a></li><li class=""><a href="/blog" target="_self">Blog</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Api Reference</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Introduction</h3><ul><li class="navListItem"><a class="navItem" href="/docs/preface.html">Preface</a></li><li class="navListItem"><a class="navItem" href="/docs/getting-started.html">Getting started</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Api Reference</h3><ul><li class="navListItem navListItemActive"><a class="navItem" href="/docs/api.html">API</a></li><li class="navListItem"><a class="navItem" href="/docs/middleware.html">Middleware</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Java to TS</h3><ul><li class="navListItem"><a class="navItem" href="/docs/interpret.html">Interpret</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Guides</h3><ul><li class="navListItem"><a class="navItem" href="/docs/troubleshooting.html">Troubleshooting</a></li><li class="navListItem"><a class="navItem" href="/docs/contributing.html">Contributing</a></li></ul></div></div></section></div><script>
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              const headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A') {
+                  document.body.classList.remove('tocActive');
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">api</h1></header><article><div><span><h3><a class="anchor" aria-hidden="true" id="create-dubbo-object"></a><a href="#create-dubbo-object" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>create dubbo object</h3>
+<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">const</span> dubbo = <span class="hljs-keyword">new</span> Dubbo({
+  isSupportedDubbox     <span class="hljs-comment">//是不是支持dubbox (boolean类型); 可选，默认false</span>
+  application           <span class="hljs-comment">//记录应用的名称，zookeeper的调用时候写入consumer 类型：({name: string};) 可选</span>
+  dubboInvokeTimeout    <span class="hljs-comment">//设置dubbo调用超时时间默认5s 可选 类型number</span>
+  dubboSocketPool       <span class="hljs-comment">//设置dubbo创建socket的pool大小，默认1 可选 类型number</span>
+  register              <span class="hljs-comment">//设置zookeeper注册中心地址 必填 类型string</span>
+  zkRoot                <span class="hljs-comment">//zk的默认根路径，默认/dubbo 类型string 可选</span>
+  interfaces            <span class="hljs-comment">//设置zk监听的接口名称 类型 Array&lt;string&gt; 必填, 在dubbo2.js@2.0.4+版本中不在使用这个参数</span>
+  service               <span class="hljs-comment">//注入到dubbo容器的dubbo服务，类型Object, 在dubbo2.js@2.0.4+使用</span>
+});
+
+<span class="hljs-comment">// Or static factory method, and the parameters the same as above.</span>
+<span class="hljs-keyword">const</span> dubbo = Dubbo.from({
+  isSupportedDubbox     <span class="hljs-comment">//是不是支持dubbox (boolean类型); 可选，默认false</span>
+  application           <span class="hljs-comment">//记录应用的名称，zookeeper的调用时候写入consumer 类型：({name: string};) 可选</span>
+  dubboInvokeTimeout    <span class="hljs-comment">//设置dubbo调用超时时间默认5s 可选 类型number</span>
+  dubboSocketPool       <span class="hljs-comment">//设置dubbo创建socket的pool大小，默认1 可选 类型number</span>
+  register              <span class="hljs-comment">//设置zookeeper注册中心地址 必填 类型string</span>
+  zkRoot                <span class="hljs-comment">//zk的默认根路径，默认/dubbo 类型string 可选</span>
+  interfaces            <span class="hljs-comment">//设置zk监听的接口名称 类型 Array&lt;string&gt; 必填, 在dubbo2.js@2.0.4+版本中不在使用这个参数</span>
+  service               <span class="hljs-comment">//注入到dubbo容器的dubbo服务，类型Object, 在dubbo2.js@2.0.4+使用</span>
+})
+
+
+<span class="hljs-comment">//dubbo的代理服务</span>
+<span class="hljs-keyword">const</span> demoSerivce = dubbo.proxService({
+  <span class="hljs-comment">//代理的服务接口 - string 必传</span>
+  dubboInterface: <span class="hljs-string">'com.alibaba.dubbo.demo.DemoService'</span>,
+  <span class="hljs-comment">//服务接口的版本 - string 可选</span>
+  version: <span class="hljs-string">'1.0.0'</span>,
+  <span class="hljs-comment">//超时时间 number 可选</span>
+  timeout: <span class="hljs-number">10</span>
+  <span class="hljs-comment">//所属组 string 可选</span>
+  group: <span class="hljs-string">'qianmi'</span>,
+  <span class="hljs-comment">//接口内的方法 - Array&lt;Function&gt; 必传</span>
+  methods: {
+    <span class="hljs-comment">//method name</span>
+    sayHello(name) {
+      <span class="hljs-comment">//仅仅做参数hessian化转换，封装传递的给后端dubbo接口的参数</span>
+      <span class="hljs-keyword">return</span> [java.String(name)];
+    },
+    <span class="hljs-comment">//method name</span>
+    getUserInfo() {
+      <span class="hljs-comment">//仅仅做参数hessian化转换，封装传递的给后端dubbo接口的参数</span>
+      <span class="hljs-keyword">return</span> [
+        java.combine(<span class="hljs-string">'com.alibaba.dubbo.demo.UserRequest'</span>, {
+          <span class="hljs-attr">id</span>: <span class="hljs-number">1</span>,
+          <span class="hljs-attr">name</span>: <span class="hljs-string">'nodejs'</span>,
+          <span class="hljs-attr">email</span>: <span class="hljs-string">'node@qianmi.com'</span>,
+        }),
+      ];
+    },
+  },
+})
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="connect-dubbo-directly"></a><a href="#connect-dubbo-directly" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>connect dubbo directly</h3>
+<pre><code class="hljs css languages- typescript"><span class="hljs-keyword">import</span> {DirectlyDubbo, java} <span class="hljs-keyword">from</span> <span class="hljs-string">'dubbo2.js'</span>;
+<span class="hljs-keyword">import</span> {
+  DemoProvider,
+  DemoProviderWrapper,
+  IDemoProvider,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">'./providers/com/alibaba/dubbo/demo/DemoProvider'</span>;
+<span class="hljs-keyword">import</span> {UserRequest} <span class="hljs-keyword">from</span> <span class="hljs-string">'./providers/com/alibaba/dubbo/demo/UserRequest'</span>;
+
+<span class="hljs-keyword">const</span> dubbo = DirectlyDubbo.from({
+  dubboAddress: <span class="hljs-string">'localhost:20880'</span>,
+  dubboVersion: <span class="hljs-string">'2.0.0'</span>,
+  dubboInvokeTimeout: <span class="hljs-number">10</span>,
+});
+
+<span class="hljs-keyword">const</span> demoService = dubbo.proxyService&lt;IDemoProvider&gt;({
+  dubboInterface: <span class="hljs-string">'com.alibaba.dubbo.demo.DemoProvider'</span>,
+  methods: DemoProviderWrapper,
+  version: <span class="hljs-string">'1.0.0'</span>,
+});
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="when-dubbo-was-ready"></a><a href="#when-dubbo-was-ready" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>When dubbo was ready?</h2>
+<pre><code class="hljs css languages- javascript"><span class="hljs-comment">/**
+ * dubbo的连接是异步的，有没有连接成功，通常需要到runtime才可以知道
+ * 这时候可能会给我们一些麻烦，我们必须发出一个请求才能知道dubbo状态
+ * 基于这种场景，我们提供一个方法，来告诉外部，dubbo是不是初始化成功，
+ * 这样在node启动的过程中就知道dubbo的连接状态，如果连不上我们就可以
+ * 及时的fixed
+ */</span>
+<span class="hljs-keyword">const</span> dubbo = Dubbo.from(<span class="hljs-comment">/*...*/</span>);
+
+<span class="hljs-comment">//普通使用方法</span>
+(<span class="hljs-keyword">async</span> () =&gt; {
+  <span class="hljs-keyword">await</span> dubbo.ready();
+})();
+
+<span class="hljs-comment">/**
+ * 比如和egg配合起来，egg提供了beforeStart方法
+ * 通过ready方法来等待dubbo初始化成功
+ */</span>
+ <span class="hljs-comment">//app.js</span>
+ <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> (app: EggApplication) =&gt; {
+   <span class="hljs-keyword">const</span> dubbo = Dubbo.from({....})
+   app.beforeStart(<span class="hljs-keyword">async</span> () =&gt; {
+     <span class="hljs-keyword">await</span> dubbo.ready();
+     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'dubbo was ready...'</span>);
+   })
+ }
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="dubbo-s-subscriber"></a><a href="#dubbo-s-subscriber" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>dubbo's subscriber</h2>
+<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">const</span> dubbo = Dubbo.from(<span class="hljs-comment">/*...*/</span>);
+
+dubbo.subcribe({
+  onTrace(msg: ITrace) {
+    <span class="hljs-built_in">console</span>.log(msg);
+  },
+});
+</code></pre>
+<p>you should get runtime trace info</p>
+<pre><code class="hljs css languages- text">{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O', msg: <span class="hljs-symbol">'dubbo</span>:bootstrap version =&gt; <span class="hljs-number">2.1</span><span class="hljs-number">.5</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O', msg: <span class="hljs-symbol">'connected</span> to zkserver localhost:<span class="hljs-number">2181</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'ServerAgent</span> create socket-pool: <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'socket</span>-pool: <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span> poolSize: <span class="hljs-number">1</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'new</span> <span class="hljs-type">SocketWorker</span>#<span class="hljs-number">1</span> |&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'SocketWorker</span>#<span class="hljs-number">1</span> =connecting=&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'SocketWorker</span>#<span class="hljs-number">1</span> &lt;=connected=&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O', msg: <span class="hljs-symbol">'scheduler</span> is ready' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'trigger</span> watch /dubbo/com.alibaba.dubbo.demo.<span class="hljs-type">DemoProvider</span>/providers, <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-type">NODE_CHILDREN_CHANGED</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'trigger</span> watch /dubbo/com.alibaba.dubbo.demo.<span class="hljs-type">ErrorProvider</span>/providers, <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-type">NODE_CHILDREN_CHANGED</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'trigger</span> watch /dubbo/com.alibaba.dubbo.demo.<span class="hljs-type">BasicTypeProvider</span>/providers, <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-type">NODE_CHILDREN_CHANGED</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'ER</span>R',
+  msg: <span class="hljs-type">Error</span>: <span class="hljs-type">Can</span> not be found any agents
+    at <span class="hljs-type">Object</span>.<span class="hljs-type">Scheduler</span>._handleZkClientOnData [as onData] (/<span class="hljs-type">Users</span>/hufeng/<span class="hljs-type">Github</span>/dubbo2.js/packages/dubbo/es7/scheduler.js:<span class="hljs-number">68</span>:<span class="hljs-number">29</span>)
+    at <span class="hljs-type">EventEmitter</span>.&lt;anonymous&gt; (/<span class="hljs-type">Users</span>/hufeng/<span class="hljs-type">Github</span>/dubbo2.js/packages/dubbo/es7/zookeeper.js:<span class="hljs-number">275</span>:<span class="hljs-number">30</span>)
+    at &lt;anonymous&gt;
+    at process._tickCallback (internal/process/next_tick.js:<span class="hljs-number">118</span>:<span class="hljs-number">7</span>) }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'ER</span>R',
+  msg: <span class="hljs-type">Error</span>: <span class="hljs-type">SocketWorker</span>#<span class="hljs-number">1</span> &lt;=closed=&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span> retry: <span class="hljs-number">6</span>
+    at <span class="hljs-type">SocketWorker</span>._onClose (/<span class="hljs-type">Users</span>/hufeng/<span class="hljs-type">Github</span>/dubbo2.js/packages/dubbo/es7/socket-worker.js:<span class="hljs-number">78</span>:<span class="hljs-number">29</span>)
+    at <span class="hljs-type">Socket</span>.emit (events.js:<span class="hljs-number">180</span>:<span class="hljs-number">13</span>)
+    at <span class="hljs-type">TCP</span>._handle.close [as _onclose] (net.js:<span class="hljs-number">541</span>:<span class="hljs-number">12</span>) }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'SocketWorker</span>#<span class="hljs-number">1</span> =connecting=&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'ER</span>R',
+  msg:
+   { <span class="hljs-type">Error</span>: connect <span class="hljs-type">ECONNREFUSED</span> <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>
+    at <span class="hljs-type">TCPConnectWrap</span>.afterConnect [as oncomplete] (net.js:<span class="hljs-number">1173</span>:<span class="hljs-number">14</span>)
+     errno: <span class="hljs-symbol">'ECONNREFUSE</span>D',
+     code: <span class="hljs-symbol">'ECONNREFUSE</span>D',
+     syscall: <span class="hljs-symbol">'connec</span>t',
+     address: <span class="hljs-symbol">'172</span><span class="hljs-number">.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>',
+     port: <span class="hljs-number">20880</span> } }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'ER</span>R',
+  msg: <span class="hljs-type">Error</span>: <span class="hljs-type">SocketWorker</span>#<span class="hljs-number">1</span> &lt;=closed=&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span> retry: <span class="hljs-number">5</span>
+    at <span class="hljs-type">SocketWorker</span>._onClose (/<span class="hljs-type">Users</span>/hufeng/<span class="hljs-type">Github</span>/dubbo2.js/packages/dubbo/es7/socket-worker.js:<span class="hljs-number">78</span>:<span class="hljs-number">29</span>)
+    at <span class="hljs-type">Socket</span>.emit (events.js:<span class="hljs-number">180</span>:<span class="hljs-number">13</span>)
+    at <span class="hljs-type">TCP</span>._handle.close [as _onclose] (net.js:<span class="hljs-number">541</span>:<span class="hljs-number">12</span>) }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'trigger</span> watch /dubbo/com.alibaba.dubbo.demo.<span class="hljs-type">DemoProvider</span>/providers, <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-type">NODE_CHILDREN_CHANGED</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'trigger</span> watch /dubbo/com.alibaba.dubbo.demo.<span class="hljs-type">BasicTypeProvider</span>/providers, <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-type">NODE_CHILDREN_CHANGED</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'trigger</span> watch /dubbo/com.alibaba.dubbo.demo.<span class="hljs-type">ErrorProvider</span>/providers, <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-type">NODE_CHILDREN_CHANGED</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'trigger</span> watch /dubbo/com.alibaba.dubbo.demo.<span class="hljs-type">ErrorProvider</span>/providers, <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-type">NODE_CHILDREN_CHANGED</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'trigger</span> watch /dubbo/com.alibaba.dubbo.demo.<span class="hljs-type">DemoProvider</span>/providers, <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-type">NODE_CHILDREN_CHANGED</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'trigger</span> watch /dubbo/com.alibaba.dubbo.demo.<span class="hljs-type">BasicTypeProvider</span>/providers, <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-type">NODE_CHILDREN_CHANGED</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'ER</span>R',
+  msg: <span class="hljs-type">Error</span>: <span class="hljs-type">Can</span> not be found any agents
+    at <span class="hljs-type">Object</span>.<span class="hljs-type">Scheduler</span>._handleZkClientOnData [as onData] (/<span class="hljs-type">Users</span>/hufeng/<span class="hljs-type">Github</span>/dubbo2.js/packages/dubbo/es7/scheduler.js:<span class="hljs-number">68</span>:<span class="hljs-number">29</span>)
+    at <span class="hljs-type">EventEmitter</span>.&lt;anonymous&gt; (/<span class="hljs-type">Users</span>/hufeng/<span class="hljs-type">Github</span>/dubbo2.js/packages/dubbo/es7/zookeeper.js:<span class="hljs-number">275</span>:<span class="hljs-number">30</span>)
+    at &lt;anonymous&gt;
+    at process._tickCallback (internal/process/next_tick.js:<span class="hljs-number">118</span>:<span class="hljs-number">7</span>) }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'SocketWorker</span>#<span class="hljs-number">1</span> =connecting=&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'ER</span>R',
+  msg:
+   { <span class="hljs-type">Error</span>: connect <span class="hljs-type">ECONNREFUSED</span> <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>
+    at <span class="hljs-type">TCPConnectWrap</span>.afterConnect [as oncomplete] (net.js:<span class="hljs-number">1173</span>:<span class="hljs-number">14</span>)
+     errno: <span class="hljs-symbol">'ECONNREFUSE</span>D',
+     code: <span class="hljs-symbol">'ECONNREFUSE</span>D',
+     syscall: <span class="hljs-symbol">'connec</span>t',
+     address: <span class="hljs-symbol">'172</span><span class="hljs-number">.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>',
+     port: <span class="hljs-number">20880</span> } }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'ER</span>R',
+  msg: <span class="hljs-type">Error</span>: <span class="hljs-type">SocketWorker</span>#<span class="hljs-number">1</span> &lt;=closed=&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span> retry: <span class="hljs-number">4</span>
+    at <span class="hljs-type">SocketWorker</span>._onClose (/<span class="hljs-type">Users</span>/hufeng/<span class="hljs-type">Github</span>/dubbo2.js/packages/dubbo/es7/socket-worker.js:<span class="hljs-number">78</span>:<span class="hljs-number">29</span>)
+    at <span class="hljs-type">Socket</span>.emit (events.js:<span class="hljs-number">180</span>:<span class="hljs-number">13</span>)
+    at <span class="hljs-type">TCP</span>._handle.close [as _onclose] (net.js:<span class="hljs-number">541</span>:<span class="hljs-number">12</span>) }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'SocketWorker</span>#<span class="hljs-number">1</span> =connecting=&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'ER</span>R',
+  msg:
+   { <span class="hljs-type">Error</span>: connect <span class="hljs-type">ECONNREFUSED</span> <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>
+    at <span class="hljs-type">TCPConnectWrap</span>.afterConnect [as oncomplete] (net.js:<span class="hljs-number">1173</span>:<span class="hljs-number">14</span>)
+     errno: <span class="hljs-symbol">'ECONNREFUSE</span>D',
+     code: <span class="hljs-symbol">'ECONNREFUSE</span>D',
+     syscall: <span class="hljs-symbol">'connec</span>t',
+     address: <span class="hljs-symbol">'172</span><span class="hljs-number">.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>',
+     port: <span class="hljs-number">20880</span> } }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'ER</span>R',
+  msg: <span class="hljs-type">Error</span>: <span class="hljs-type">SocketWorker</span>#<span class="hljs-number">1</span> &lt;=closed=&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span> retry: <span class="hljs-number">3</span>
+    at <span class="hljs-type">SocketWorker</span>._onClose (/<span class="hljs-type">Users</span>/hufeng/<span class="hljs-type">Github</span>/dubbo2.js/packages/dubbo/es7/socket-worker.js:<span class="hljs-number">78</span>:<span class="hljs-number">29</span>)
+    at <span class="hljs-type">Socket</span>.emit (events.js:<span class="hljs-number">180</span>:<span class="hljs-number">13</span>)
+    at <span class="hljs-type">TCP</span>._handle.close [as _onclose] (net.js:<span class="hljs-number">541</span>:<span class="hljs-number">12</span>) }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'SocketWorker</span>#<span class="hljs-number">1</span> =connecting=&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'ER</span>R',
+  msg:
+   { <span class="hljs-type">Error</span>: connect <span class="hljs-type">ECONNREFUSED</span> <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>
+    at <span class="hljs-type">TCPConnectWrap</span>.afterConnect [as oncomplete] (net.js:<span class="hljs-number">1173</span>:<span class="hljs-number">14</span>)
+     errno: <span class="hljs-symbol">'ECONNREFUSE</span>D',
+     code: <span class="hljs-symbol">'ECONNREFUSE</span>D',
+     syscall: <span class="hljs-symbol">'connec</span>t',
+     address: <span class="hljs-symbol">'172</span><span class="hljs-number">.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>',
+     port: <span class="hljs-number">20880</span> } }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'ER</span>R',
+  msg: <span class="hljs-type">Error</span>: <span class="hljs-type">SocketWorker</span>#<span class="hljs-number">1</span> &lt;=closed=&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span> retry: <span class="hljs-number">2</span>
+    at <span class="hljs-type">SocketWorker</span>._onClose (/<span class="hljs-type">Users</span>/hufeng/<span class="hljs-type">Github</span>/dubbo2.js/packages/dubbo/es7/socket-worker.js:<span class="hljs-number">78</span>:<span class="hljs-number">29</span>)
+    at <span class="hljs-type">Socket</span>.emit (events.js:<span class="hljs-number">180</span>:<span class="hljs-number">13</span>)
+    at <span class="hljs-type">TCP</span>._handle.close [as _onclose] (net.js:<span class="hljs-number">541</span>:<span class="hljs-number">12</span>) }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'SocketWorker</span>#<span class="hljs-number">1</span> =connecting=&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'ER</span>R',
+  msg:
+   { <span class="hljs-type">Error</span>: connect <span class="hljs-type">ECONNREFUSED</span> <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>
+    at <span class="hljs-type">TCPConnectWrap</span>.afterConnect [as oncomplete] (net.js:<span class="hljs-number">1173</span>:<span class="hljs-number">14</span>)
+     errno: <span class="hljs-symbol">'ECONNREFUSE</span>D',
+     code: <span class="hljs-symbol">'ECONNREFUSE</span>D',
+     syscall: <span class="hljs-symbol">'connec</span>t',
+     address: <span class="hljs-symbol">'172</span><span class="hljs-number">.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>',
+     port: <span class="hljs-number">20880</span> } }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'ER</span>R',
+  msg: <span class="hljs-type">Error</span>: <span class="hljs-type">SocketWorker</span>#<span class="hljs-number">1</span> &lt;=closed=&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span> retry: <span class="hljs-number">1</span>
+    at <span class="hljs-type">SocketWorker</span>._onClose (/<span class="hljs-type">Users</span>/hufeng/<span class="hljs-type">Github</span>/dubbo2.js/packages/dubbo/es7/socket-worker.js:<span class="hljs-number">78</span>:<span class="hljs-number">29</span>)
+    at <span class="hljs-type">Socket</span>.emit (events.js:<span class="hljs-number">180</span>:<span class="hljs-number">13</span>)
+    at <span class="hljs-type">TCP</span>._handle.close [as _onclose] (net.js:<span class="hljs-number">541</span>:<span class="hljs-number">12</span>) }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'SocketWorker</span>#<span class="hljs-number">1</span> =connecting=&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'ER</span>R',
+  msg:
+   { <span class="hljs-type">Error</span>: connect <span class="hljs-type">ECONNREFUSED</span> <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>
+    at <span class="hljs-type">TCPConnectWrap</span>.afterConnect [as oncomplete] (net.js:<span class="hljs-number">1173</span>:<span class="hljs-number">14</span>)
+     errno: <span class="hljs-symbol">'ECONNREFUSE</span>D',
+     code: <span class="hljs-symbol">'ECONNREFUSE</span>D',
+     syscall: <span class="hljs-symbol">'connec</span>t',
+     address: <span class="hljs-symbol">'172</span><span class="hljs-number">.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>',
+     port: <span class="hljs-number">20880</span> } }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'ER</span>R',
+  msg: <span class="hljs-type">Error</span>: <span class="hljs-type">SocketWorker</span>#<span class="hljs-number">1</span> &lt;=closed=&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span> retry: <span class="hljs-number">0</span>
+    at <span class="hljs-type">SocketWorker</span>._onClose (/<span class="hljs-type">Users</span>/hufeng/<span class="hljs-type">Github</span>/dubbo2.js/packages/dubbo/es7/socket-worker.js:<span class="hljs-number">78</span>:<span class="hljs-number">29</span>)
+    at <span class="hljs-type">Socket</span>.emit (events.js:<span class="hljs-number">180</span>:<span class="hljs-number">13</span>)
+    at <span class="hljs-type">TCP</span>._handle.close [as _onclose] (net.js:<span class="hljs-number">541</span>:<span class="hljs-number">12</span>) }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'ER</span>R',
+  msg: <span class="hljs-type">Error</span>: <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span><span class="hljs-symbol">'s</span> pool socket-worker had all closed. delete <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>
+    at <span class="hljs-type">ServerAgent</span>._clearClosedPool (/<span class="hljs-type">Users</span>/hufeng/<span class="hljs-type">Github</span>/dubbo2.js/packages/dubbo/es7/server-agent.js:<span class="hljs-number">66</span>:<span class="hljs-number">33</span>)
+    at <span class="hljs-type">Object</span>.onClose (/<span class="hljs-type">Users</span>/hufeng/<span class="hljs-type">Github</span>/dubbo2.js/packages/dubbo/es7/server-agent.js:<span class="hljs-number">51</span>:<span class="hljs-number">34</span>)
+    at <span class="hljs-type">SocketWorker</span>._onClose (/<span class="hljs-type">Users</span>/hufeng/<span class="hljs-type">Github</span>/dubbo2.js/packages/dubbo/es7/socket-worker.js:<span class="hljs-number">97</span>:<span class="hljs-number">34</span>)
+    at <span class="hljs-type">Socket</span>.emit (events.js:<span class="hljs-number">180</span>:<span class="hljs-number">13</span>)
+    at <span class="hljs-type">TCP</span>._handle.close [as _onclose] (net.js:<span class="hljs-number">541</span>:<span class="hljs-number">12</span>) }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'trigger</span> watch /dubbo/com.alibaba.dubbo.demo.<span class="hljs-type">DemoProvider</span>/providers, <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-type">NODE_CHILDREN_CHANGED</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'ServerAgent</span> create socket-pool: <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'socket</span>-pool: <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span> poolSize: <span class="hljs-number">1</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'new</span> <span class="hljs-type">SocketWorker</span>#<span class="hljs-number">2</span> |&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'SocketWorker</span>#<span class="hljs-number">2</span> =connecting=&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'SocketWorker</span>#<span class="hljs-number">2</span> &lt;=connected=&gt; <span class="hljs-number">172.19</span><span class="hljs-number">.6</span><span class="hljs-number">.203</span>:<span class="hljs-number">20880</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O', msg: <span class="hljs-symbol">'scheduler</span> is ready' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'trigger</span> watch /dubbo/com.alibaba.dubbo.demo.<span class="hljs-type">BasicTypeProvider</span>/providers, <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-type">NODE_CHILDREN_CHANGED</span>' }
+{ <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-symbol">'INF</span>O',
+  msg: <span class="hljs-symbol">'trigger</span> watch /dubbo/com.alibaba.dubbo.demo.<span class="hljs-type">ErrorProvider</span>/providers, <span class="hljs-class"><span class="hljs-keyword">type</span></span>: <span class="hljs-type">NODE_CHILDREN_CHANGED</span>' }
+</code></pre>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/getting-started.html">← Getting started</a><a class="docs-next button" href="/docs/middleware.html">Middleware →</a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#when-dubbo-was-ready">When dubbo was ready?</a></li><li><a href="#dubbo-s-subscriber">dubbo's subscriber</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/docusaurus.svg" alt="dubbo2.js" width="66" height="58"/></a><div><h5>Docs</h5><a href="/docs/en/getting-started.html">Getting Started</a><a href="/docs/en/api.html">API</a><a href="/docs/en/troubleshooting.html">Troubleshooting</a></div><div><h5>Community</h5><a href="/en/users.html">User Showcase</a><a href="https://github.com/dubbo/dubbo2.js/issues">Project issues</a></div><div><h5>More</h5><a href="/blog">Blog</a><a href="https://github.com/">GitHub</a><a class="github-button" href="https://github.com/dubbo/dubbo2.js" data-icon="octicon-star" data-count-href="/facebook/docusaurus/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section></footer></div></body></html>
