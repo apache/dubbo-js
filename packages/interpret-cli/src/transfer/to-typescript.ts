@@ -46,7 +46,7 @@ export async function toTypescript(
     isAbstract: astJava.isAbstract,
     isInterface: astJava.isInterface,
     isClass: !astJava.isEnum && !astJava.isInterface,
-    isProvider: astJava.name.endsWith('Provider'),
+    isProvider: astJava.name.endsWith(String(intepretHandle.providerSuffix) || 'Provider'),
   };
   intepretHandle.request.registerTypeInfo(typeInfo);
 
