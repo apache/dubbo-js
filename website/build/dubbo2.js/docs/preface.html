@@ -1,0 +1,44 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Preface · dubbo2.js</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="![love dubbo](https://raw.githubusercontent.com/dubbo/dubbo2.js/master/resources/dubbo-love.png)"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Preface · dubbo2.js"/><meta property="og:type" content="website"/><meta property="og:url" content="https://your-docusaurus-test-site.com/index.html"/><meta property="og:description" content="![love dubbo](https://raw.githubusercontent.com/dubbo/dubbo2.js/master/resources/dubbo-love.png)"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/favicon.png"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://your-docusaurus-test-site.com/blog/atom.xml" title="dubbo2.js Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://your-docusaurus-test-site.com/blog/feed.xml" title="dubbo2.js Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/css/main.css"/></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/docusaurus.svg" alt="dubbo2.js"/><h2 class="headerTitleWithLogo">dubbo2.js</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive siteNavItemActive"><a href="/docs/preface.html" target="_self">Docs</a></li><li class="siteNavGroupActive"><a href="/docs/api.html" target="_self">API</a></li><li class=""><a href="/en/help.html" target="_self">Help</a></li><li class=""><a href="/blog" target="_self">Blog</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Introduction</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Introduction</h3><ul><li class="navListItem navListItemActive"><a class="navItem" href="/docs/preface.html">Preface</a></li><li class="navListItem"><a class="navItem" href="/docs/getting-started.html">Getting started</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Api Reference</h3><ul><li class="navListItem"><a class="navItem" href="/docs/api.html">API</a></li><li class="navListItem"><a class="navItem" href="/docs/middleware.html">Middleware</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Java to TS</h3><ul><li class="navListItem"><a class="navItem" href="/docs/interpret.html">Interpret</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Guides</h3><ul><li class="navListItem"><a class="navItem" href="/docs/troubleshooting.html">Troubleshooting</a></li><li class="navListItem"><a class="navItem" href="/docs/contributing.html">Contributing</a></li></ul></div></div></section></div><script>
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              const headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A') {
+                  document.body.classList.remove('tocActive');
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">Preface</h1></header><article><div><span><p><img src="https://raw.githubusercontent.com/dubbo/dubbo2.js/master/resources/dubbo-love.png" alt="love dubbo"></p>
+<p><a href="https://nodei.co/npm/dubbo2.js"><img src="https://nodei.co/npm/dubbo2.js.png?downloads=true&amp;downloadRank=true&amp;stars=true" alt="NPM"></a></p>
+<h2><a class="anchor" aria-hidden="true" id="dubbo2js"></a><a href="#dubbo2js" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>dubbo2.js</h2>
+<p>dubbo2.js = Nodejs connected Java Dubbo RPC service by dubbo protocol (dubbo head + hessian body)</p>
+<p>多年期盼，一朝梦圆！ We love dubbo 👏</p>
+<p>感谢 <a href="https://github.com/node-modules/js-to-java">js-to-java</a>,<a href="https://github.com/node-modules/hessian.js">hessian.js</a> 两大核心模块, 感谢<a href="https://github.com/fengmk2">fengmk2</a>和<a href="https://github.com/dead-horse">dead-horse</a>老师。</p>
+<h2><a class="anchor" aria-hidden="true" id="features"></a><a href="#features" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Features</h2>
+<ol>
+<li><p>Keep it Simple</p></li>
+<li><p>Support zookeeper as registry center</p></li>
+<li><p>TCP Dubbo Native Protocol （Dubbo Header + Hessian Body）</p></li>
+<li><p>Socket Pool (ServerAgent -&gt; SocketPool -&gt; SocketWorker)</p></li>
+<li><p>Support Directly Dubbo (const Dubbo = DirectlyDubbo({..}))</p></li>
+<li><p>Middleware, Easy to extend, the same API as Koa middleware</p></li>
+<li><p>Tracing</p></li>
+<li><p>Supported Dubbox</p></li>
+<li><p>Typescript type definition</p></li>
+<li><p>Convert java dubbo interface to typescript module or JavaScript node module</p></li>
+<li><p>Socket-worker auto retry</p></li>
+</ol>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-next button" href="/docs/getting-started.html">Getting started →</a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#dubbo2js">dubbo2.js</a></li><li><a href="#features">Features</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/docusaurus.svg" alt="dubbo2.js" width="66" height="58"/></a><div><h5>Docs</h5><a href="/docs/en/getting-started.html">Getting Started</a><a href="/docs/en/api.html">API</a><a href="/docs/en/troubleshooting.html">Troubleshooting</a></div><div><h5>Community</h5><a href="/en/users.html">User Showcase</a><a href="https://github.com/dubbo/dubbo2.js/issues">Project issues</a></div><div><h5>More</h5><a href="/blog">Blog</a><a href="https://github.com/">GitHub</a><a class="github-button" href="https://github.com/dubbo/dubbo2.js" data-icon="octicon-star" data-count-href="/facebook/docusaurus/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section></footer></div></body></html>
