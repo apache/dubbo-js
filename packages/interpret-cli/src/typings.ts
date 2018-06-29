@@ -27,8 +27,8 @@ export interface IDubboExtInfo {
   entryJarPath: string;
   //指定jar包依赖的包目录
   libDirPath: string;
-  //provider后缀名可配置
-  providerSuffix: string;
+  //provider后缀名可配置,默认值 Provider
+  providerSuffix?: string;
 }
 
 export interface IConfig extends IDubboExtInfo {
