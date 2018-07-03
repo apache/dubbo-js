@@ -298,6 +298,9 @@ export function j2Jtj(
       // throw new Error('不可能出现这种的,classPathStr:' + classPath + isClass);
     }
   } else if (typeOptions.isTypeParam(classPath)) {
+    if(paramRefName.includes('.')){
+        return `${paramRefName}!['__fields2java']?${paramRefName}!['__fields2java']():${paramRefName}`;
+    }
     return `${paramRefName}['__fields2java']?${paramRefName}['__fields2java']():${paramRefName}`;
   } else if (classPath === 'java.math.BigDecimal') {
     log('处理java BigDecimal类型,param %j,schema %j');
