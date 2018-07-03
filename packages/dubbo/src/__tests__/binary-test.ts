@@ -14,27 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {binaryNum, convertBinaryNum} from '../binary';
+import {fromBytes4, fromBytes8, toBytes4, toBytes8} from '../byte';
 
 describe('binary test suite', () => {
   it('test binaryNum', () => {
-    expect(binaryNum(1025, 4)).toEqual(new Buffer([0x00, 0x00, 0x04, 0x01]));
-    expect(binaryNum(201212, 4)).toEqual(new Buffer([0x00, 0x03, 0x11, 0xfc]));
+    expect(toBytes4(1025)).toEqual(new Buffer([0x00, 0x00, 0x04, 0x01]));
+    expect(toBytes4(201212)).toEqual(new Buffer([0x00, 0x03, 0x11, 0xfc]));
   });
 
   it('test convert number', () => {
-    expect(convertBinaryNum(new Buffer([0x00, 0x00, 0x04, 0x01]), 4)).toEqual(
-      1025,
-    );
-    expect(convertBinaryNum(new Buffer([0x00, 0x03, 0x11, 0xfc]), 4)).toEqual(
-      201212,
-    );
+    expect(fromBytes4(new Buffer([0x00, 0x00, 0x04, 0x01]))).toEqual(1025);
+    expect(fromBytes4(new Buffer([0x00, 0x03, 0x11, 0xfc]))).toEqual(201212);
   });
 
   it('test binary uuid', () => {
     const seed = 13234234234234234234;
-    const buffer = binaryNum(seed, 8);
-    const num = convertBinaryNum(buffer, 8);
+    const buffer = toBytes8(seed);
+    const num = fromBytes8(buffer);
     expect(seed).toEqual(num);
   });
 });

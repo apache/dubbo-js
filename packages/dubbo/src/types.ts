@@ -27,7 +27,7 @@ export interface ITrace {
 }
 
 export interface IDubboSubscriber {
-  onTrace?: (msg: ITrace) => void;
+  onTrace: (msg: ITrace) => void;
 }
 
 export interface IZookeeperSubscriber {

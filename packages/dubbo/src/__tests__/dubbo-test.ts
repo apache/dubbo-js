@@ -61,14 +61,8 @@ dubbo.use(
 );
 
 dubbo.subscribe({
-  onReady() {
-    console.log('onReady');
-  },
-  onSysError(err) {
-    console.log(err);
-  },
-  onStatistics(stat) {
-    console.log(stat);
+  onTrace(msg) {
+    console.log(msg);
   },
 });
 

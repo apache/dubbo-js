@@ -17,6 +17,7 @@
 
 import debug from 'debug';
 import SocketPool from './socket-pool';
+import SocketWorker from './socket-worker';
 import {IObservable, ISocketSubscriber} from './types';
 import {isDevEnv, noop, traceErr, traceInfo} from './util';
 import {TAgentAddr} from './zookeeper';
@@ -74,7 +75,7 @@ export class ServerAgent implements IObservable<ISocketSubscriber> {
    * 获取可用负载对应的socketWorker
    * @param agentAddrList
    */
-  getAvailableSocketWorker(agentAddrList: Array<TAgentAddr>) {
+  getAvailableSocketWorker(agentAddrList: Array<TAgentAddr>): SocketWorker {
     const availableAgentList = this._getAvailableSocketAgents(agentAddrList);
     const len = availableAgentList.length;
 
