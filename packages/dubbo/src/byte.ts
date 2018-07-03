@@ -41,5 +41,6 @@ export const toBytes8 = (num: number) => {
 export const fromBytes8 = (buf: Buffer) => {
   const high = buf.readUInt32BE(0);
   const low = buf.readUInt32BE(4);
-  return high * Math.pow(2, 32) + low;
+  //Math.pow(2, 32) = 4294967296
+  return high * 4294967296 + low;
 };

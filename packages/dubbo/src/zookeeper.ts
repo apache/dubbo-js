@@ -21,10 +21,10 @@ import zookeeper from 'node-zookeeper-client';
 import qs from 'querystring';
 import Context from './context';
 import DubboUrl from './dubbo-url';
-import { ZookeeperDisconnectedError, ZookeeperTimeoutError } from './err';
-import { to } from './to';
-import { IObservable, IZkClientProps, IZookeeperSubscriber } from './types';
-import { isDevEnv, msg, noop, traceErr, traceInfo } from './util';
+import {ZookeeperDisconnectedError, ZookeeperTimeoutError} from './err';
+import {to} from './to';
+import {IObservable, IZkClientProps, IZookeeperSubscriber} from './types';
+import {isDevEnv, msg, noop, traceErr, traceInfo} from './util';
 
 const log = debug('dubbo:zookeeper');
 const ipAddress = ip.address();
