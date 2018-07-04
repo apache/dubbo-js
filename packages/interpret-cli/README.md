@@ -6,7 +6,7 @@ dubbo2.js 打通了 node 与 dubbo 服务调用的 rpc 通道
 
 调用 dubbo 接口时, 如果能自动生成接口定义,参数的转换,代码提示 开发体验会更优秀;
 
-"Translator(翻译师)" 为此而生!
+"Translator(翻译师)" 为此而生!!
 
 **_职责_**
 
