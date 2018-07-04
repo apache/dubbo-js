@@ -13,10 +13,6 @@ const GridBlock = CompLibrary.GridBlock;
 
 const siteConfig = require(process.cwd() + '/siteConfig.js');
 
-function imgUrl(img) {
-  return siteConfig.baseUrl + 'img/' + img;
-}
-
 function docUrl(doc, language) {
   return siteConfig.baseUrl + 'docs/' + (language ? language + '/' : '') + doc;
 }
@@ -97,19 +93,19 @@ const Features = props => (
   <Block layout="fourColumn">
     {[
       {
-        image: '/img/kiss.png',
+        image: '/dubbo2.js/img/kiss.png',
         content: 'build tools for Humans. 💗',
         imageAlign: 'top',
         title: 'Keep it Simple',
       },
       {
-        image: '/img/scale.png',
+        image: '/dubbo2.js/img/scale.png',
         content: 'Nodejs no-blocking io and cluster 🚀',
         imageAlign: 'top',
         title: 'Scale & Performance',
       },
       {
-        image: '/img/plugin.png',
+        image: '/dubbo2.js/img/plugin.png',
         content: 'Write plugin is so easy 👏',
         imageAlign: 'top',
         title: 'Easy to Extend',
