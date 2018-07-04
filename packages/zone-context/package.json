@@ -2,10 +2,6 @@
   "name": "zone-context",
   "version": "1.0.0",
   "description": "zone node async-hook",
-  "publishConfig": {
-    "access": "public",
-    "registry": "http://registry.npm.qianmi.com"
-  },
   "main": "./lib/index.js",
   "types": "./lib/typings/index.d.ts",
   "keywords": [
