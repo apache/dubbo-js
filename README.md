@@ -32,7 +32,7 @@
 
 10. Convert java dubbo interface to typescript module
 
-11. SocketWorker auto retry
+11. SocketWorker auto Retry
 
 ## Getting Started
 
