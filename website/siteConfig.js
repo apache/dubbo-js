@@ -14,7 +14,7 @@ const users = [
     caption: 'qiami.com',
     // You will need to prepend the image path with your baseUrl
     // if it is not '/', like: '/test-site/img/docusaurus.svg'.
-    image: '/img/qianmi.png',
+    image: '/dubbo2.js/img/qianmi.png',
     infoLink: 'https://www.qianmi.com',
     pinned: true,
   },
