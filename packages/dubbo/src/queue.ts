@@ -152,7 +152,6 @@ export class Queue implements IObservable<TQueueObserver> {
     ctx.cleanTimeout();
     ctx.reject(err);
     this._clear(requestId);
-    traceErr(err);
   }
 
   consume(requestId: TRequestId, node: SocketWorker, providerMeta: DubboUrl) {
@@ -172,6 +171,7 @@ export class Queue implements IObservable<TQueueObserver> {
       node.write(ctx);
     } catch (err) {
       this.failed(requestId, err);
+      traceErr(err);
     }
     if (isDevEnv) {
       log(`current schedule queue ==>`, this.scheduleQueue);

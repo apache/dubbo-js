@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {DirectlyDubbo, java} from 'dubbo2.js';
 import {
-  DemoProvider,
   DemoProviderWrapper,
   IDemoProvider,
 } from './providers/com/alibaba/dubbo/demo/DemoProvider';

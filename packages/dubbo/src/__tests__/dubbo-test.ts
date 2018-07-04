@@ -23,6 +23,7 @@ import {ErrorProvider} from './providers/com/alibaba/dubbo/demo/ErrorProvider';
 import {TypeRequest} from './providers/com/alibaba/dubbo/demo/TypeRequest';
 import {UserRequest} from './providers/com/alibaba/dubbo/demo/UserRequest';
 
+//==============init dubbo==============
 const service = {
   BasicTypeProvider,
   DemoProvider,
@@ -61,22 +62,14 @@ dubbo.use(
 );
 
 dubbo.subscribe({
-  onReady() {
-    console.log('onReady');
-  },
-  onSysError(err) {
-    console.log(err);
-  },
-  onStatistics(stat) {
-    console.log(stat);
+  onTrace(msg) {
+    console.log(msg);
   },
 });
 
+//=====demoservice==========
 describe('demoService', () => {
   it('test sayHello', async () => {
-    await dubbo.ready();
-
-    // @ts-ignore
     const {res, err} = await dubbo.service.DemoProvider.sayHello(
       java.String('node'),
     );
@@ -127,11 +120,9 @@ describe('typeBasicServer', () => {
   });
 });
 
-const errorService = ErrorProvider(dubbo);
-
 describe('error test', () => {
   it('test errorTest', async () => {
-    const {res, err} = await errorService.errorTest();
+    const {res, err} = await dubbo.service.ErrorProvider.errorTest();
     expect(err != null).toEqual(true);
     expect(res == null).toEqual(true);
   });

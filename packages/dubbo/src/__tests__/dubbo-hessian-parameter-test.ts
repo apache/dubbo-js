@@ -14,14 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Dubbo, java} from 'dubbo2.js';
+
+import {Dubbo} from 'dubbo2.js';
 import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
 
-const dubbo = new Dubbo({
+const service = {
+  DemoProvider,
+};
+
+const dubbo = new Dubbo<typeof service>({
   application: {name: '@qianmi/node-dubbo'},
   register: 'localhost:2181',
-  dubboVersion: '2.0.0',
-  interfaces: ['com.alibaba.dubbo.demo.DemoProvider'],
+  service,
 });
 
 //use middleware
@@ -38,12 +42,10 @@ dubbo.use(async function test(ctx, next) {
   );
 });
 
-const demoService = DemoProvider(dubbo);
-
 describe('dubbo hessian parameter check test suite', () => {
   it('test sayHello', async () => {
     //@ts-ignore
-    const {res, err} = await demoService.sayHello('node');
+    const {res, err} = await dubbo.service.DemoProvider.sayHello('node');
     expect(res).toEqual(null);
     expect(err != null).toEqual(true);
     expect(err.message).toMatch(/not all arguments are valid hessian type/);

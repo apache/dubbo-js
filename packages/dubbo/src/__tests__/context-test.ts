@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Context from '../context';
 import java from 'js-to-java';
+import Context from '../context';
 
 describe('context test suite', () => {
   it('test default Value', () => {

@@ -12,7 +12,7 @@
 
 ## Features
 
-1.  Keep it Simple
+1.  Keep it Simple (build tools for humans).
 
 2.  Support zookeeper as register center
 
@@ -22,9 +22,9 @@
 
 5.  Support Directly Dubbo (const Dubbo = DirectlyDubbo({..}))
 
-6.  Middleware, Easy to extend.
+6.  Middleware the same as Koa middleware, Easy to extend.
 
-7.  Tracing
+7.  Tracing (runtime info, call stack)
 
 8.  Supported Dubbox
 
@@ -32,7 +32,7 @@
 
 10. Convert java dubbo interface to typescript module
 
-11. socket-worker auto retry
+11. SocketWorker auto retry
 
 ## Getting Started
 
@@ -324,25 +324,190 @@ app.beforeStart(async () => {
 });
 ```
 
-## dubbo's subscriber
+## How to trace dubbo2.js runtime system info?
 
 ```javascript
 const dubbo = Dubbo.from(/*...*/);
 
+//通过subscribe
 dubbo.subcribe({
-  onReady: () => {
-    //dubbo was ready.
-    //TODO for example logger
-  },
-  onSysError: err => {
-    //dubbo occur error
-    //TODO dingTalkRobot.send('error')
-  },
-  onStatistics: stat => {
-    //get invoke time statistics info
-    //in order to know load whether balance
+  onTrace(msg: ITrace) {
+    //logger msg
   },
 });
+```
+
+You will get all runtim system info just like this.
+
+```text
+{ type: 'INFO', msg: 'dubbo:bootstrap version => 2.1.5' }
+{ type: 'INFO', msg: 'connected to zkserver localhost:2181' }
+{ type: 'INFO',
+  msg: 'ServerAgent create socket-pool: 172.19.6.203:20880' }
+{ type: 'INFO',
+  msg: 'socket-pool: 172.19.6.203:20880 poolSize: 1' }
+{ type: 'INFO',
+  msg: 'new SocketWorker#1 |> 172.19.6.203:20880' }
+{ type: 'INFO',
+  msg: 'SocketWorker#1 =connecting=> 172.19.6.203:20880' }
+{ type: 'INFO',
+  msg: 'SocketWorker#1 <=connected=> 172.19.6.203:20880' }
+{ type: 'INFO', msg: 'scheduler is ready' }
+{ type: 'INFO',
+  msg: 'trigger watch /dubbo/com.alibaba.dubbo.demo.DemoProvider/providers, type: NODE_CHILDREN_CHANGED' }
+{ type: 'INFO',
+  msg: 'trigger watch /dubbo/com.alibaba.dubbo.demo.ErrorProvider/providers, type: NODE_CHILDREN_CHANGED' }
+{ type: 'INFO',
+  msg: 'trigger watch /dubbo/com.alibaba.dubbo.demo.BasicTypeProvider/providers, type: NODE_CHILDREN_CHANGED' }
+{ type: 'ERR',
+  msg: Error: Can not be found any agents
+    at Object.Scheduler._handleZkClientOnData [as onData] (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/scheduler.js:68:29)
+    at EventEmitter.<anonymous> (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/zookeeper.js:275:30)
+    at <anonymous>
+    at process._tickCallback (internal/process/next_tick.js:118:7) }
+{ type: 'ERR',
+  msg: Error: SocketWorker#1 <=closed=> 172.19.6.203:20880 retry: 6
+    at SocketWorker._onClose (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/socket-worker.js:78:29)
+    at Socket.emit (events.js:180:13)
+    at TCP._handle.close [as _onclose] (net.js:541:12) }
+{ type: 'INFO',
+  msg: 'SocketWorker#1 =connecting=> 172.19.6.203:20880' }
+{ type: 'ERR',
+  msg:
+   { Error: connect ECONNREFUSED 172.19.6.203:20880
+    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1173:14)
+     errno: 'ECONNREFUSED',
+     code: 'ECONNREFUSED',
+     syscall: 'connect',
+     address: '172.19.6.203',
+     port: 20880 } }
+{ type: 'ERR',
+  msg: Error: SocketWorker#1 <=closed=> 172.19.6.203:20880 retry: 5
+    at SocketWorker._onClose (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/socket-worker.js:78:29)
+    at Socket.emit (events.js:180:13)
+    at TCP._handle.close [as _onclose] (net.js:541:12) }
+{ type: 'INFO',
+  msg: 'trigger watch /dubbo/com.alibaba.dubbo.demo.DemoProvider/providers, type: NODE_CHILDREN_CHANGED' }
+{ type: 'INFO',
+  msg: 'trigger watch /dubbo/com.alibaba.dubbo.demo.BasicTypeProvider/providers, type: NODE_CHILDREN_CHANGED' }
+{ type: 'INFO',
+  msg: 'trigger watch /dubbo/com.alibaba.dubbo.demo.ErrorProvider/providers, type: NODE_CHILDREN_CHANGED' }
+{ type: 'INFO',
+  msg: 'trigger watch /dubbo/com.alibaba.dubbo.demo.ErrorProvider/providers, type: NODE_CHILDREN_CHANGED' }
+{ type: 'INFO',
+  msg: 'trigger watch /dubbo/com.alibaba.dubbo.demo.DemoProvider/providers, type: NODE_CHILDREN_CHANGED' }
+{ type: 'INFO',
+  msg: 'trigger watch /dubbo/com.alibaba.dubbo.demo.BasicTypeProvider/providers, type: NODE_CHILDREN_CHANGED' }
+{ type: 'ERR',
+  msg: Error: Can not be found any agents
+    at Object.Scheduler._handleZkClientOnData [as onData] (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/scheduler.js:68:29)
+    at EventEmitter.<anonymous> (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/zookeeper.js:275:30)
+    at <anonymous>
+    at process._tickCallback (internal/process/next_tick.js:118:7) }
+{ type: 'INFO',
+  msg: 'SocketWorker#1 =connecting=> 172.19.6.203:20880' }
+{ type: 'ERR',
+  msg:
+   { Error: connect ECONNREFUSED 172.19.6.203:20880
+    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1173:14)
+     errno: 'ECONNREFUSED',
+     code: 'ECONNREFUSED',
+     syscall: 'connect',
+     address: '172.19.6.203',
+     port: 20880 } }
+{ type: 'ERR',
+  msg: Error: SocketWorker#1 <=closed=> 172.19.6.203:20880 retry: 4
+    at SocketWorker._onClose (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/socket-worker.js:78:29)
+    at Socket.emit (events.js:180:13)
+    at TCP._handle.close [as _onclose] (net.js:541:12) }
+{ type: 'INFO',
+  msg: 'SocketWorker#1 =connecting=> 172.19.6.203:20880' }
+{ type: 'ERR',
+  msg:
+   { Error: connect ECONNREFUSED 172.19.6.203:20880
+    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1173:14)
+     errno: 'ECONNREFUSED',
+     code: 'ECONNREFUSED',
+     syscall: 'connect',
+     address: '172.19.6.203',
+     port: 20880 } }
+{ type: 'ERR',
+  msg: Error: SocketWorker#1 <=closed=> 172.19.6.203:20880 retry: 3
+    at SocketWorker._onClose (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/socket-worker.js:78:29)
+    at Socket.emit (events.js:180:13)
+    at TCP._handle.close [as _onclose] (net.js:541:12) }
+{ type: 'INFO',
+  msg: 'SocketWorker#1 =connecting=> 172.19.6.203:20880' }
+{ type: 'ERR',
+  msg:
+   { Error: connect ECONNREFUSED 172.19.6.203:20880
+    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1173:14)
+     errno: 'ECONNREFUSED',
+     code: 'ECONNREFUSED',
+     syscall: 'connect',
+     address: '172.19.6.203',
+     port: 20880 } }
+{ type: 'ERR',
+  msg: Error: SocketWorker#1 <=closed=> 172.19.6.203:20880 retry: 2
+    at SocketWorker._onClose (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/socket-worker.js:78:29)
+    at Socket.emit (events.js:180:13)
+    at TCP._handle.close [as _onclose] (net.js:541:12) }
+{ type: 'INFO',
+  msg: 'SocketWorker#1 =connecting=> 172.19.6.203:20880' }
+{ type: 'ERR',
+  msg:
+   { Error: connect ECONNREFUSED 172.19.6.203:20880
+    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1173:14)
+     errno: 'ECONNREFUSED',
+     code: 'ECONNREFUSED',
+     syscall: 'connect',
+     address: '172.19.6.203',
+     port: 20880 } }
+{ type: 'ERR',
+  msg: Error: SocketWorker#1 <=closed=> 172.19.6.203:20880 retry: 1
+    at SocketWorker._onClose (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/socket-worker.js:78:29)
+    at Socket.emit (events.js:180:13)
+    at TCP._handle.close [as _onclose] (net.js:541:12) }
+{ type: 'INFO',
+  msg: 'SocketWorker#1 =connecting=> 172.19.6.203:20880' }
+{ type: 'ERR',
+  msg:
+   { Error: connect ECONNREFUSED 172.19.6.203:20880
+    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1173:14)
+     errno: 'ECONNREFUSED',
+     code: 'ECONNREFUSED',
+     syscall: 'connect',
+     address: '172.19.6.203',
+     port: 20880 } }
+{ type: 'ERR',
+  msg: Error: SocketWorker#1 <=closed=> 172.19.6.203:20880 retry: 0
+    at SocketWorker._onClose (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/socket-worker.js:78:29)
+    at Socket.emit (events.js:180:13)
+    at TCP._handle.close [as _onclose] (net.js:541:12) }
+{ type: 'ERR',
+  msg: Error: 172.19.6.203:20880's pool socket-worker had all closed. delete 172.19.6.203:20880
+    at ServerAgent._clearClosedPool (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/server-agent.js:66:33)
+    at Object.onClose (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/server-agent.js:51:34)
+    at SocketWorker._onClose (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/socket-worker.js:97:34)
+    at Socket.emit (events.js:180:13)
+    at TCP._handle.close [as _onclose] (net.js:541:12) }
+{ type: 'INFO',
+  msg: 'trigger watch /dubbo/com.alibaba.dubbo.demo.DemoProvider/providers, type: NODE_CHILDREN_CHANGED' }
+{ type: 'INFO',
+  msg: 'ServerAgent create socket-pool: 172.19.6.203:20880' }
+{ type: 'INFO',
+  msg: 'socket-pool: 172.19.6.203:20880 poolSize: 1' }
+{ type: 'INFO',
+  msg: 'new SocketWorker#2 |> 172.19.6.203:20880' }
+{ type: 'INFO',
+  msg: 'SocketWorker#2 =connecting=> 172.19.6.203:20880' }
+{ type: 'INFO',
+  msg: 'SocketWorker#2 <=connected=> 172.19.6.203:20880' }
+{ type: 'INFO', msg: 'scheduler is ready' }
+{ type: 'INFO',
+  msg: 'trigger watch /dubbo/com.alibaba.dubbo.demo.BasicTypeProvider/providers, type: NODE_CHILDREN_CHANGED' }
+{ type: 'INFO',
+  msg: 'trigger watch /dubbo/com.alibaba.dubbo.demo.ErrorProvider/providers, type: NODE_CHILDREN_CHANGED' }
 ```
 
 ## middleware

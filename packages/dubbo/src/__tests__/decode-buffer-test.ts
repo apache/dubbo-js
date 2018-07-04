@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 import {Buffer} from 'buffer';
-import DecodeBuffer from '../decode-buffer';
 import {decode} from '../decode';
+import DecodeBuffer from '../decode-buffer';
 
 it('test receive right data', () => {
   const buffer = Buffer.from([
