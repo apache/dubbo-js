@@ -162,7 +162,6 @@ export default class Dubbo<TService = Object>
           await fn(ctx);
         } catch (err) {
           log(err);
-          traceErr(err);
         }
 
         return ctx.body;
