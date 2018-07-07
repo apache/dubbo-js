@@ -131,6 +131,7 @@ export default class Dubbo<TService = Object>
     //proxy methods
     Object.keys(methods).forEach(name => {
       proxyObj[name] = async (...args: any[]) => {
+        log('%s create context', name);
         //创建dubbo调用的上下文
         const ctx = Context.create();
         ctx.application = application;

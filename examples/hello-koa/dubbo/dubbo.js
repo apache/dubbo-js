@@ -26,3 +26,16 @@ const dubbo = (module.exports = new Dubbo({
   console.log('end makecostTime->', endTime - startTime);
 });
 */
+
+// dubbo.use(async function trace(ctx, next) {
+//   const uuid = Date.now();
+//   ctx.attachments = {
+//     uuid,
+//   };
+
+//   ctx.attachments = {
+//     userId: uuid,
+//   };
+
+//   await next();
+// });

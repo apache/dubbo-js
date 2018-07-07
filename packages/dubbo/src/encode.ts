@@ -20,6 +20,7 @@ import Hessian from 'hessian.js';
 import {toBytes8} from './byte';
 import Context from './context';
 import {DubboEncodeError} from './err';
+import {isDevEnv} from './util';
 
 const log = debug('dubbo:hessian:encoderV2');
 
@@ -45,10 +46,12 @@ const DUBBO_DEFAULT_PAY_LOAD = 8 * 1024 * 1024; // 8M
 export default class DubboEncoder {
   constructor(ctx: Context) {
     this._ctx = ctx;
-    log(
-      'dubbo encode param request:%s',
-      JSON.stringify(this._ctx.request, null, 2),
-    );
+    if (isDevEnv) {
+      log(
+        'dubbo encode param request:%s',
+        JSON.stringify(this._ctx.request, null, 2),
+      );
+    }
   }
 
   private readonly _ctx: Context;
@@ -205,34 +208,37 @@ export default class DubboEncoder {
       group,
       timeout,
       version,
-      uuid,
       application: {name},
+      attachments,
     } = this._ctx;
 
+    //merge dubbo attachments and customize attachments
     const map = {
-      path: path,
-      interface: dubboInterface,
-      version: version || '0.0.0',
+      ...{
+        path: path,
+        interface: dubboInterface,
+        version: version || '0.0.0',
+      },
+      ...attachments,
     };
 
     group && (map['group'] = group);
     timeout && (map['timeout'] = timeout);
-    //全链路跟踪
-    log(`trace uuid-> ${uuid}`);
-    uuid && (map['QM_UUID'] = uuid);
     name && (map['application'] = name);
 
-    let attachments = {
+    let attachmentsHashMap = {
       $class: 'java.util.HashMap',
       $: map,
     };
 
-    log(
-      'request#%d attachment %s',
-      requestId,
-      JSON.stringify(attachments, null, 2),
-    );
+    if (isDevEnv) {
+      log(
+        'request#%d attachment %s',
+        requestId,
+        JSON.stringify(attachmentsHashMap, null, 2),
+      );
+    }
 
-    return attachments;
+    return attachmentsHashMap;
   }
 }

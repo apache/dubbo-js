@@ -16,7 +16,7 @@
  */
 
 import {dubboInvoker, matcher} from 'dubbo-invoker';
-import {Dubbo, java} from 'dubbo2.js';
+import {Context, Dubbo, java} from 'dubbo2.js';
 import {BasicTypeProvider} from './providers/com/alibaba/dubbo/demo/BasicTypeProvider';
 import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
 import {ErrorProvider} from './providers/com/alibaba/dubbo/demo/ErrorProvider';
@@ -37,16 +37,30 @@ const dubbo = new Dubbo<typeof service>({
 });
 
 //use middleware
-dubbo.use(async function test(ctx, next) {
+dubbo.use(async function costtime(ctx, next) {
   const startTime = Date.now();
   await next();
   const endTime = Date.now();
   const {
     request: {dubboInterface, methodName},
   } = ctx;
+
   console.log(
     `invoke ${dubboInterface}#${methodName} costTime: ${endTime - startTime}`,
   );
+});
+
+dubbo.use(async function trace(ctx: Context, next) {
+  const uuid = Date.now();
+  //auto merge attchments when assign more
+  ctx.attachments = {
+    uuid,
+  };
+
+  ctx.attachments = {
+    userId: uuid,
+  };
+  await next();
 });
 
 //dubbo-invoker set version

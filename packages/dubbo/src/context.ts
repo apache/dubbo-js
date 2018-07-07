@@ -25,7 +25,6 @@ const log = debug('dubbo:context');
 export default class Context<T = any> {
   private constructor() {
     log('new Context');
-
     //trace id
     this._uuid = '';
     this._pid = NO_PID;
@@ -33,6 +32,7 @@ export default class Context<T = any> {
     this._isSupportedDubbox = false;
     this._body = {err: null, res: null};
     this._application = {name: 'dubbo2.js'};
+    this._attachments = {};
     this._request = <IContextRequestParam>{
       requestId: id(),
     };
@@ -93,13 +93,10 @@ export default class Context<T = any> {
    */
   private _pid: number;
 
-  private static _checkHessianParam(param: any): param is IHessianType {
-    return (
-      typeof param === 'object' &&
-      typeof param['$class'] !== 'undefined' &&
-      typeof param['$'] !== 'undefined'
-    );
-  }
+  /**
+   * 扩展attachments,支持自定义一些属性可以放在dubbo的encoder底层协议的attachment字段中
+   */
+  private _attachments: Object;
 
   static create<T = any>() {
     return new Context<T>();
@@ -298,5 +295,33 @@ export default class Context<T = any> {
 
   get isSupportedDubbox() {
     return this._isSupportedDubbox;
+  }
+
+  //=====================attachments=======================
+  /**
+   * 设置当前的attachments
+   * @param key
+   * @param value
+   */
+  set attachments(param: Object) {
+    log('set attachments->%o', param);
+    //auto merge
+    this._attachments = {...this._attachments, ...param};
+  }
+
+  /**
+   * 获取当前的attachments
+   */
+  get attachments(): Object {
+    return this._attachments;
+  }
+
+  //===============private method==========================
+  private static _checkHessianParam(param: any): param is IHessianType {
+    return (
+      typeof param === 'object' &&
+      typeof param['$class'] !== 'undefined' &&
+      typeof param['$'] !== 'undefined'
+    );
   }
 }

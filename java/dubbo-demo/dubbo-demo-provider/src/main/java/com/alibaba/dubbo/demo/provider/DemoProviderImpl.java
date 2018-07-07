@@ -34,7 +34,6 @@ public class DemoProviderImpl implements DemoProvider {
 
     @Override
     public String echo()  {
-        System.out.println("receive....");
         return "pang";
     }
 
