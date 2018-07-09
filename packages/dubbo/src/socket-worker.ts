@@ -29,9 +29,9 @@ import {noop, traceErr, traceInfo} from './util';
 
 let pid = 0;
 //重试次数
-const RETRY_NUM = 6;
+const RETRY_NUM = 10;
 //重试评率
-const RETRY_TIME = 5000;
+const RETRY_TIME = 6000;
 //心跳频率
 const HEART_BEAT = 180 * 1000;
 const log = debug('dubbo:socket-worker');
@@ -43,7 +43,7 @@ const log = debug('dubbo:socket-worker');
  * 3.socket断开自动重试
  */
 export default class SocketWorker implements IObservable<ISocketSubscriber> {
-  constructor(host: string, port: number) {
+  private constructor(host: string, port: number) {
     this.pid = ++pid;
     statistics['pid#' + this.pid] = 0;
 
@@ -55,16 +55,19 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     log('new SocketWorker#%d|> %s %s', pid, host + ':' + port, this._status);
     traceInfo(`new SocketWorker#${this.pid} |> ${host + ':' + port}`);
 
+    //init subscriber
     this._subscriber = {
       onConnect: noop,
       onData: noop,
       onClose: noop,
     };
 
+    //init decodeBuffer
     this._decodeBuff = DecodeBuffer.from(pid).subscribe(
       this._onSubscribeDecodeBuff,
     );
 
+    //init socket
     this._initSocket();
   }
 
@@ -80,24 +83,50 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
   private _decodeBuff: DecodeBuffer;
   private _subscriber: ISocketSubscriber;
 
-  //====================================public method==========================
+  //==================================public method==========================
+
+  /**
+   * static factory method
+   * @param url(host:port)
+   */
   static from(url: string) {
     const [host, port] = url.split(':');
     return new SocketWorker(host, Number(port));
   }
 
+  /**
+   * send data to dubbo service
+   * @param ctx dubbo context
+   */
   write(ctx: Context) {
-    if (this.status === SOCKET_STATUS.CONNECTED) {
-      log(`SocketWorker#${this.pid} =invoked=> ${ctx.requestId}`);
-      statistics['pid#' + this.pid] = ++statistics['pid#' + this.pid];
-      ctx.pid = this.pid;
-      const encoder = new DubboEncoder(ctx);
-      this._socket.write(encoder.encode());
-    }
+    log(`SocketWorker#${this.pid} =invoked=> ${ctx.requestId}`);
+    statistics['pid#' + this.pid] = ++statistics['pid#' + this.pid];
+    //current dubbo context record the pid
+    //when current worker close, fail dubbo request
+    ctx.pid = this.pid;
+    const encoder = new DubboEncoder(ctx);
+    this._socket.write(encoder.encode());
   }
 
-  get status() {
-    return this._status;
+  /**
+   * current status is whether avaliable or not
+   */
+  get isAvaliable() {
+    return this._status === SOCKET_STATUS.CONNECTED;
+  }
+
+  /**
+   * current status whether retry or not
+   */
+  get isRetry() {
+    return this._status === SOCKET_STATUS.RETRY;
+  }
+
+  /**
+   * reset retry number
+   */
+  resetRetry() {
+    this._retry = RETRY_NUM;
   }
 
   subscribe(subscriber: ISocketSubscriber) {
@@ -130,9 +159,10 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
       `SocketWorker#${this.pid} <=connected=> ${this.host}:${this.port}`,
     );
 
+    //set current status
     this._status = SOCKET_STATUS.CONNECTED;
 
-    //reset retry number
+    //reset retry params
     this._retry = RETRY_NUM;
     clearInterval(this._retryInterval);
     this._retryInterval = null;
@@ -178,6 +208,7 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
       ),
     );
 
+    //set current status
     this._status = SOCKET_STATUS.RETRY;
     clearInterval(this._heartBeatTimer);
 

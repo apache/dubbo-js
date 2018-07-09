@@ -33,7 +33,7 @@ export type TAgentAddr = string;
 export type TDubboInterface = string;
 
 export class ZkClient implements IObservable<IZookeeperSubscriber> {
-  constructor(props: IZkClientProps) {
+  private constructor(props: IZkClientProps) {
     log(`new:|> %O`, props);
     this._props = props;
     //默认dubbo
@@ -240,11 +240,15 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
         clearTimeout(timeId);
         resolve(null);
         msg.emit('sys:ready');
+      });
+
+      //in order to trace connect info
+      this._client.on('connected', () => {
         traceInfo(`connected to zkserver ${register}`);
       });
 
       //the connection between client and server is dropped.
-      this._client.once('disconnected', () => {
+      this._client.on('disconnected', () => {
         log(`zk ${register} had disconnected`);
         const err = new ZookeeperDisconnectedError(
           'ZooKeeper was disconnected.',

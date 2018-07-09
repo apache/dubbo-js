@@ -83,7 +83,7 @@ export default class Scheduler {
         this._handleFailed(
           requestId,
           new ScheduleError(
-            'Schedule error, ZooKeeper Could not be connected!',
+            'Schedule error, ZooKeeper Could not be connected or can not find any agents!',
           ),
         );
         break;
@@ -143,16 +143,20 @@ export default class Scheduler {
     //get request context
     const ctx = queue.requestQueue.get(requestId);
     //get socket agent list
-    const agentAddrSet = this._zkClient.getAgentAddrList(ctx);
-    log('agentAddrSet-> %O', agentAddrSet);
+    const agentAddrList = this._zkClient.getAgentAddrList(ctx);
+    log('agentAddrSet-> %O', agentAddrList);
+    const worker = this._serverAgent.getAvailableSocketWorker(agentAddrList);
 
-    const worker = this._serverAgent.getAvailableSocketWorker(agentAddrSet);
     //if could not find any available socket agent worker
     if (!worker) {
       const {requestId, dubboInterface, version, group} = ctx;
-      const msg = `requestId#${requestId}:Could not find any agent address with ${dubboInterface}#${version}#${group}`;
-      log(msg);
-      this._handleFailed(requestId, new ScheduleError(msg));
+      const msg = `requestId#${requestId}:Could not find any agent worker with ${dubboInterface}#${version}#${group} agentList: ${agentAddrList.join(
+        ',',
+      )}`;
+      const err = new ScheduleError(msg);
+      this._handleFailed(requestId, err);
+      log(err);
+      traceErr(err);
       return;
     }
 
