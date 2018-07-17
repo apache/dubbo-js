@@ -215,7 +215,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
   /**
    * connect zookeeper
    */
-  private _connect(callback: (err: Error) => void) {
+  private _connect = (callback: (err: Error) => void) => {
     const {register} = this._props;
     //debug log
     log(`connecting zkserver ${register}`);
@@ -262,7 +262,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
 
     //connect
     this._client.connect();
-  }
+  };
 
   private _watch(dubboServicePath: string, dubboInterface: string) {
     //@ts-ignore
