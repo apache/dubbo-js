@@ -52,3 +52,20 @@ export const traceInfo = (info: string) => {
 export const traceErr = (err: Error) => {
   trace({type: 'ERR', msg: err});
 };
+
+export const eqSet = <T = any>(as: Set<T>, bs: Set<T>): boolean => {
+  //equal size?
+  if (as.size !== bs.size) {
+    return false;
+  }
+
+  //different element
+  for (var a of as) {
+    if (!bs.has(a)) {
+      return false;
+    }
+  }
+
+  //same
+  return true;
+};

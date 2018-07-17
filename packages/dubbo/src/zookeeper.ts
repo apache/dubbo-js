@@ -24,7 +24,7 @@ import DubboUrl from './dubbo-url';
 import {ZookeeperDisconnectedError, ZookeeperTimeoutError} from './err';
 import {to} from './to';
 import {IObservable, IRegistrySubscriber, IZkClientProps} from './types';
-import {isDevEnv, msg, noop, traceErr, traceInfo} from './util';
+import {eqSet, isDevEnv, msg, noop, traceErr, traceInfo} from './util';
 
 const log = debug('dubbo:zookeeper');
 const ipAddress = ip.address();
@@ -40,6 +40,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
     this._props.zkRoot = this._props.zkRoot || 'dubbo';
     //保存dubbo接口和服务url之间的映射关系
     this._dubboServiceUrlMap = new Map();
+    this._agentAddrSet = new Set();
     //初始化订阅者
     this._subscriber = {
       onData: noop,
@@ -49,6 +50,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
     this._connect(this._init);
   }
 
+  private _agentAddrSet: Set<string>;
   private _client: zookeeper.Client;
   private _subscriber: IRegistrySubscriber;
   private readonly _props: IZkClientProps;
@@ -159,7 +161,12 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
       log('dubboServiceUrl:|> %O', this._dubboServiceUrlMap);
     }
 
-    this._subscriber.onData(this._allAgentAddrSet);
+    if (!eqSet(this._agentAddrSet, this._allAgentAddrSet)) {
+      this._agentAddrSet = this._allAgentAddrSet;
+      this._subscriber.onData(this._allAgentAddrSet);
+    } else {
+      log('no agent change');
+    }
   };
 
   /**
@@ -260,13 +267,16 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
   private _watch(dubboServicePath: string, dubboInterface: string) {
     //@ts-ignore
     return async (e: zookeeper.Event) => {
-      log(`trigger watch ${dubboServicePath}, type: ${e.getName()}`);
-      traceInfo(`trigger watch ${dubboServicePath}, type: ${e.getName()}`);
+      log(`trigger watch ${e}`);
+      traceInfo(`trigger watch ${e}`);
 
       const dubboServiceUrls = await this._getDubboServiceUrls(
         dubboServicePath,
         dubboInterface,
       );
+
+      traceInfo(dubboServiceUrls.join());
+
       //clear current dubbo interface
       this._dubboServiceUrlMap.set(dubboInterface, []);
 
@@ -294,7 +304,12 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
         );
       }
 
-      this._subscriber.onData(this._allAgentAddrSet);
+      if (!eqSet(this._agentAddrSet, this._allAgentAddrSet)) {
+        this._agentAddrSet = this._allAgentAddrSet;
+        this._subscriber.onData(this._allAgentAddrSet);
+      } else {
+        log('no agent change');
+      }
     };
   }
 

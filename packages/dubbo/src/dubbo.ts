@@ -47,7 +47,7 @@ process.on('unhandledRejection', (reason, p) => {
  * Dubbo
  *
  * 1. 连接注册中心zookeeper
- * 2. 发起远程dubbo provider的方法调用
+ * 2. 发起远程dubbo service的方法调用
  * 3. 序列化/反序列化dubbo协议
  * 4. 管理tcp连接以及心跳
  * 5. 通过代理机制自动代理interface对应的方法
