@@ -134,7 +134,10 @@ export default class DecodeBuffer
   }
 
   clearBuffer() {
-    this._buffer = Buffer.alloc(0);
+    //reduce memory alloc
+    if (this._buffer.length > 0) {
+      this._buffer = Buffer.alloc(0);
+    }
   }
 
   subscribe(subscriber: TDecodeBuffSubscriber) {

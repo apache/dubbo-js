@@ -30,7 +30,7 @@ export interface IDubboSubscriber {
   onTrace: (msg: ITrace) => void;
 }
 
-export interface IZookeeperSubscriber {
+export interface IRegistrySubscriber {
   onData: Function;
   onError: Function;
 }

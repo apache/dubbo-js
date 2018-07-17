@@ -23,7 +23,7 @@ import Context from './context';
 import DubboUrl from './dubbo-url';
 import {ZookeeperDisconnectedError, ZookeeperTimeoutError} from './err';
 import {to} from './to';
-import {IObservable, IZkClientProps, IZookeeperSubscriber} from './types';
+import {IObservable, IRegistrySubscriber, IZkClientProps} from './types';
 import {isDevEnv, msg, noop, traceErr, traceInfo} from './util';
 
 const log = debug('dubbo:zookeeper');
@@ -32,7 +32,7 @@ const ipAddress = ip.address();
 export type TAgentAddr = string;
 export type TDubboInterface = string;
 
-export class ZkClient implements IObservable<IZookeeperSubscriber> {
+export class ZkRegistry implements IObservable<IRegistrySubscriber> {
   private constructor(props: IZkClientProps) {
     log(`new:|> %O`, props);
     this._props = props;
@@ -46,17 +46,17 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
       onError: noop,
     };
     //初始化zookeeper的client
-    this._init().then(() => log('init providerMap and agentSet'));
+    this._connect(this._init);
   }
 
   private _client: zookeeper.Client;
-  private _subscriber: IZookeeperSubscriber;
+  private _subscriber: IRegistrySubscriber;
   private readonly _props: IZkClientProps;
   private readonly _dubboServiceUrlMap: Map<TDubboInterface, Array<DubboUrl>>;
 
   //===========================public method=============================
   static from(props: IZkClientProps) {
-    return new ZkClient(props);
+    return new ZkRegistry(props);
   }
 
   /**
@@ -102,26 +102,27 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
    * 订阅者
    * @param subscriber
    */
-  subscribe(subscriber: IZookeeperSubscriber) {
+  subscribe(subscriber: IRegistrySubscriber) {
     this._subscriber = subscriber;
     return this;
   }
 
   //========================private method==========================
-  private async _init(): Promise<null> {
+  private _init = async (err: Error) => {
+    //zookeeper occur error
+    if (err) {
+      log(err);
+      traceErr(err);
+      this._subscriber.onError(err);
+      return;
+    }
+
+    //zookeeper connected（may be occur many times）
     const {
       zkRoot,
       application: {name},
       interfaces,
     } = this._props;
-
-    //等待连接zookeeper
-    const {err} = await to(this._connect());
-    if (err) {
-      log(`connect zk error ${err}`);
-      this._subscriber.onError(err);
-      return;
-    }
 
     //获取所有provider
     for (let inf of interfaces) {
@@ -159,7 +160,7 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
     }
 
     this._subscriber.onData(this._allAgentAddrSet);
-  }
+  };
 
   /**
    * 获取所有的负载列表，通过agentAddrMap聚合出来
@@ -206,61 +207,54 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
   //========================zookeeper helper=========================
   /**
    * connect zookeeper
-   * @returns {Promise<Error>}
    */
-  private _connect(): Promise<Error | null> {
-    return new Promise((resolve, reject) => {
-      const {register} = this._props;
-
-      //debug log
-      log(`connecting zkserver ${register}`);
-      //connect
-      this._client = zookeeper.createClient(register, {
-        retries: 3,
-        sessionTimeout: 10 * 1000,
-      });
-
-      //超时检测
-      //node-zookeeper-client,有个bug，当连不上zk时会无限重连
-      //手动做一个超时检测
-      const {retries, sessionTimeout} = (this._client as any).options;
-      const timeId = setTimeout(() => {
-        log(`Could not connect zk ${register}， time out`);
-        this._client.close();
-        const err = new ZookeeperTimeoutError(
-          `ZooKeeper was connected ${register} time out. `,
-        );
-        reject(err);
-        traceErr(err);
-      }, retries * sessionTimeout);
-
-      //connected
-      this._client.once('connected', () => {
-        log(`connected to zkserver ${register}`);
-        clearTimeout(timeId);
-        resolve(null);
-        msg.emit('sys:ready');
-      });
-
-      //in order to trace connect info
-      this._client.on('connected', () => {
-        traceInfo(`connected to zkserver ${register}`);
-      });
-
-      //the connection between client and server is dropped.
-      this._client.on('disconnected', () => {
-        log(`zk ${register} had disconnected`);
-        const err = new ZookeeperDisconnectedError(
-          'ZooKeeper was disconnected.',
-        );
-        clearTimeout(timeId);
-        this._subscriber.onError(err);
-        traceErr(err);
-      });
-
-      //connect
-      this._client.connect();
+  private _connect(callback: (err: Error) => void) {
+    const {register} = this._props;
+    //debug log
+    log(`connecting zkserver ${register}`);
+    //connect
+    this._client = zookeeper.createClient(register, {
+      retries: 3,
+      sessionTimeout: 10 * 1000,
     });
+
+    //超时检测
+    //node-zookeeper-client,有个bug，当连不上zk时会无限重连
+    //手动做一个超时检测
+    const {retries, sessionTimeout} = (this._client as any).options;
+    const timeId = setTimeout(() => {
+      log(`Could not connect zk ${register}， time out`);
+      this._client.close();
+      callback(
+        new ZookeeperTimeoutError(
+          `ZooKeeper was connected ${register} time out. `,
+        ),
+      );
+    }, retries * sessionTimeout);
+
+    //connected
+    this._client.once('connected', () => {
+      log(`connected to zkserver ${register}`);
+      clearTimeout(timeId);
+      callback(null);
+      msg.emit('sys:ready');
+    });
+
+    //in order to trace connect info
+    this._client.on('connected', () => {
+      traceInfo(`connected to zkserver ${register}`);
+      callback(null);
+    });
+
+    //the connection between client and server is dropped.
+    this._client.on('disconnected', () => {
+      log(`zk ${register} had disconnected`);
+      clearTimeout(timeId);
+      callback(new ZookeeperDisconnectedError('ZooKeeper was disconnected.'));
+    });
+
+    //connect
+    this._client.connect();
   }
 
   private _watch(dubboServicePath: string, dubboInterface: string) {
