@@ -27,7 +27,7 @@ const log = debug('dubbo:server-agent');
  * 机器agent和socket-worker的管理容器
  * Agent可以理解为一台dubbo service的负载
  */
-export class ServerAgent implements IObservable<ISocketSubscriber> {
+export class DubboAgent implements IObservable<ISocketSubscriber> {
   constructor() {
     this._serverAgentMap = new Map();
     this._subscriber = {
@@ -47,7 +47,6 @@ export class ServerAgent implements IObservable<ISocketSubscriber> {
   from = (agentAddrs: Set<string>) => {
     log('create server-agent :|> %O', agentAddrs);
     //获取负载host:port列表
-    //根据负载创建连接池
     process.nextTick(() => {
       for (let agentAddr of agentAddrs) {
         //如果负载中存在该负载，继续下一个
@@ -134,9 +133,25 @@ export class ServerAgent implements IObservable<ISocketSubscriber> {
   ): Array<SocketWorker> {
     let availableList = [];
     for (let agentAddr of agentAddrList) {
-      const socketWorker = this._serverAgentMap.get(agentAddr);
-      if (socketWorker && socketWorker.isAvaliable) {
-        availableList.push(socketWorker);
+      if (this._serverAgentMap.has(agentAddr)) {
+        const socketWorker = this._serverAgentMap.get(agentAddr);
+        if (socketWorker.isAvaliable) {
+          availableList.push(socketWorker);
+        } else {
+          traceErr(
+            new Error(
+              `${agentAddrList.join()}:|>${agentAddr} current status is ${
+                socketWorker.status
+              }`,
+            ),
+          );
+        }
+      } else {
+        traceErr(
+          new Error(
+            `${agentAddrList.join()}:|>${agentAddr} not match socket-worker`,
+          ),
+        );
       }
     }
     return availableList;
@@ -144,4 +159,4 @@ export class ServerAgent implements IObservable<ISocketSubscriber> {
 }
 
 //expose sington
-export default new ServerAgent();
+export default new DubboAgent();

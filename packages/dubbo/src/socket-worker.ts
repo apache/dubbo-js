@@ -109,6 +109,10 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     this._socket.write(encoder.encode());
   }
 
+  get status() {
+    return this._status;
+  }
+
   /**
    * current status is whether avaliable or not
    */

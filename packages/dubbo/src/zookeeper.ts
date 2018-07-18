@@ -161,13 +161,16 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
       log('dubboServiceUrl:|> %O', this._dubboServiceUrlMap);
     }
 
-    if (!eqSet(this._agentAddrSet, this._allAgentAddrSet)) {
-      this._agentAddrSet = this._allAgentAddrSet;
-      this._subscriber.onData(this._allAgentAddrSet);
-    } else {
-      log('no agent change');
-    }
+    this._agentAddrSet = this._allAgentAddrSet;
+    this._subscriber.onData(this._allAgentAddrSet);
   };
+
+  /**
+   * get current all agent address
+   */
+  get allAgentAddrSet() {
+    return this._agentAddrSet;
+  }
 
   /**
    * 获取所有的负载列表，通过agentAddrMap聚合出来
