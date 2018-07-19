@@ -361,8 +361,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
       revision: '',
       version: version,
       side: 'consumer',
-      check: 'false',
-      timestamp: Date.now(),
+      check: 'false'
     };
 
     const consumerRoot = `/dubbo/${dubboInterface}/consumers`;
