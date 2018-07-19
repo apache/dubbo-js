@@ -21,7 +21,11 @@ import zookeeper from 'node-zookeeper-client';
 import qs from 'querystring';
 import Context from './context';
 import DubboUrl from './dubbo-url';
-import {ZookeeperDisconnectedError, ZookeeperTimeoutError} from './err';
+import {
+  ZookeeperDisconnectedError,
+  ZookeeperExpiredError,
+  ZookeeperTimeoutError,
+} from './err';
 import {to} from './to';
 import {IObservable, IRegistrySubscriber, IZkClientProps} from './types';
 import {eqSet, isDevEnv, msg, noop, traceErr, traceInfo} from './util';
@@ -224,8 +228,8 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
     log(`connecting zkserver ${register}`);
     //connect
     this._client = zookeeper.createClient(register, {
-      retries: 3,
-      sessionTimeout: 10 * 1000,
+      retries: 10,
+      sessionTimeout: 60 * 1000,
     });
 
     //超时检测
@@ -252,7 +256,9 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
 
     //in order to trace connect info
     this._client.on('connected', () => {
-      traceInfo(`connected to zkserver ${register}`);
+      traceInfo(
+        `connected to zkserver ${register} current state is ${this._client.getState()}`,
+      );
       callback(null);
     });
 
@@ -260,7 +266,25 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
     this._client.on('disconnected', () => {
       log(`zk ${register} had disconnected`);
       clearTimeout(timeId);
-      callback(new ZookeeperDisconnectedError('ZooKeeper was disconnected.'));
+      callback(
+        new ZookeeperDisconnectedError(
+          `ZooKeeper was disconnected. current state is ${this._client.getState()} `,
+        ),
+      );
+    });
+
+    this._client.on('expired', () => {
+      log(`zk ${register} had disconnected`);
+      callback(
+        new ZookeeperDisconnectedError(
+          `ZooKeeper was disconnected. current state ${this._client.getState()}`,
+        ),
+      );
+      callback(
+        new ZookeeperExpiredError(
+          `Zookeeper was session Expired Error current state ${this._client.getState()}`,
+        ),
+      );
     });
 
     //connect
@@ -361,7 +385,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
       revision: '',
       version: version,
       side: 'consumer',
-      check: 'false'
+      check: 'false',
     };
 
     const consumerRoot = `/dubbo/${dubboInterface}/consumers`;

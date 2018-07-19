@@ -154,6 +154,9 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     );
 
     this._socket = new net.Socket();
+    // Disable the Nagle algorithm.
+    this._socket.setNoDelay();
+
     this._socket
       .connect(
         this.port,
