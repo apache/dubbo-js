@@ -16,18 +16,19 @@
  */
 
 import debug from 'debug';
+import dubboAgent, {DubboAgent} from './dubbo-agent';
 import {ScheduleError, SocketError, ZookeeperTimeoutError} from './err';
 import queue from './queue';
-import serverAgent, {ServerAgent} from './server-agent';
 import {IZkClientProps} from './types';
 import {traceErr, traceInfo} from './util';
-import {ZkClient} from './zookeeper';
+import {ZkRegistry} from './zookeeper';
 
 const log = debug('dubbo:scheduler');
 const enum STATUS {
   PADDING = 'padding',
   READY = 'ready',
   FAILED = 'failded',
+  NO_AGENT = 'no_agent',
 }
 
 /**
@@ -45,15 +46,15 @@ export default class Scheduler {
     //subscribe queue
     queue.subscribe(this._handleQueueRequest);
     //init ZkClient and subscribe
-    this._zkClient = ZkClient.from(props).subscribe({
+    this._zkClient = ZkRegistry.from(props).subscribe({
       onData: this._handleZkClientOnData,
       onError: this._handleZkClientError,
     });
   }
 
   private _status: STATUS;
-  private _zkClient: ZkClient;
-  private _serverAgent: ServerAgent;
+  private _zkClient: ZkRegistry;
+  private _serverAgent: DubboAgent;
 
   /**
    * static factory method
@@ -79,12 +80,16 @@ export default class Scheduler {
       case STATUS.PADDING:
         log('current scheduler was padding');
         break;
+      case STATUS.NO_AGENT:
+        this._handleFailed(
+          requestId,
+          new ScheduleError('Zookeeper Can not be find any agents'),
+        );
+        break;
       case STATUS.FAILED:
         this._handleFailed(
           requestId,
-          new ScheduleError(
-            'Schedule error, ZooKeeper Could not be connected or can not find any agents!',
-          ),
+          new ScheduleError('ZooKeeper Could not be connected'),
         );
         break;
     }
@@ -99,16 +104,16 @@ export default class Scheduler {
 
     //如果负载为空，也就是没有任何provider提供服务
     if (agentSet.size === 0) {
-      this._status = STATUS.FAILED;
+      this._status = STATUS.NO_AGENT;
       //将队列中的所有dubbo调用全调用失败
-      const err = new ScheduleError('Can not be found any agents');
+      const err = new ScheduleError('Can not be find any agents');
       queue.allFailed(err);
       traceErr(err);
       return;
     }
 
     //初始化serverAgent
-    this._serverAgent = serverAgent.from(agentSet).subscribe({
+    this._serverAgent = dubboAgent.from(agentSet).subscribe({
       onConnect: this._handleOnConnect,
       onData: this._handleOnData,
       onClose: this._handleOnClose,
@@ -171,7 +176,9 @@ export default class Scheduler {
     log(`scheduler receive SocketWorker connect pid#${pid} ${host}:${port}`);
     const agentHost = `${host}:${port}`;
     this._status = STATUS.READY;
-    traceInfo('scheduler is ready');
+    traceInfo(
+      `scheduler receive SocketWorker connect pid#${pid} ${host}:${port}`,
+    );
 
     for (let ctx of queue.requestQueue.values()) {
       if (ctx.isNotScheduled) {

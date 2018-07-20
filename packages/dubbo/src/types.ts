@@ -24,13 +24,16 @@ export type TDecodeBuffSubscriber = (data: Buffer) => void;
 export interface ITrace {
   type: 'INFO' | 'ERR';
   msg: string | Error;
+  pid?: string;
+  host?: string;
+  time?: string;
 }
 
 export interface IDubboSubscriber {
   onTrace: (msg: ITrace) => void;
 }
 
-export interface IZookeeperSubscriber {
+export interface IRegistrySubscriber {
   onData: Function;
   onError: Function;
 }

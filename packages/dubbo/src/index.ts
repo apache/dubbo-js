@@ -19,6 +19,7 @@ import java from 'js-to-java';
 import Context from './context';
 import DirectlyDubbo from './directly-dubbo';
 import Dubbo from './dubbo';
+import {go} from './go';
 import {TDubboCallResult} from './types';
 
-export {Dubbo, DirectlyDubbo, java, TDubboCallResult, Context};
+export {Dubbo, DirectlyDubbo, java, TDubboCallResult, Context, go};

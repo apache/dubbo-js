@@ -30,3 +30,5 @@ export class DubboMethodParamHessianTypeError extends Error {}
 export class ScheduleError extends Error {}
 
 export class SocketError extends Error {}
+
+export class ZookeeperExpiredError extends Error {}

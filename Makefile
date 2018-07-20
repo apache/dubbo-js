@@ -1,8 +1,8 @@
 default: build-interpret-util build-dubbo
 
 build-dubbo: clean-dubbo 
-	tsc --project ./packages/dubbo/tsconfig.json
-	tsc --project ./packages/dubbo/tsconfig-es6.json
+	./node_modules/.bin/tsc --project ./packages/dubbo/tsconfig.json
+	./node_modules/.bin/tsc --project ./packages/dubbo/tsconfig-es6.json
 	@echo "compile duboo successfully 👌\n"
 
 clean-dubbo:
@@ -11,7 +11,7 @@ clean-dubbo:
 	@echo "clean dubbo successfully 👌\n"
 
 build-interpret-util:clean-interpret-util
-	tsc --project ./packages/interpret-util/tsconfig.json
+	./node_modules/.bin/tsc --project ./packages/interpret-util/tsconfig.json
 	@echo "compile interpret-util successfully 👌\n"
 
 clean-interpret-util:
@@ -31,7 +31,7 @@ interpret-jar:build-demo-api
 	ts-node ./packages/interpret-cli/src/cli.ts interpret -c dubbo.json
 
 build-dubbo-invoker:clean-dubbo-invoker
-	tsc --project ./packages/dubbo-invoker/tsconfig.json
+	./node_modules/.bin/tsc --project ./packages/dubbo-invoker/tsconfig.json
 	@echo "compile dubbo-invoker successfully 👏\n"
 
 clean-dubbo-invoker:

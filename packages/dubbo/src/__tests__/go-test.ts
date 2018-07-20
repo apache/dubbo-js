@@ -17,7 +17,7 @@
 
 import fs from 'fs';
 import {promisify} from 'util';
-import {to} from '../to';
+import {go} from '../go';
 
 it('test resolve', async () => {
   const test = (): Promise<string> => {
@@ -26,7 +26,7 @@ it('test resolve', async () => {
     });
   };
 
-  const {res, err} = await to(test());
+  const {res, err} = await go(test());
   expect(res).toEqual('1');
   expect(err).toEqual(null);
 });
@@ -38,14 +38,14 @@ it('test reject', async () => {
     });
   };
 
-  const {res, err} = await to(test());
+  const {res, err} = await go(test());
   expect(res).toEqual(null);
   expect(err.message).toEqual('I am wrong.');
 });
 
 it('test fs.exists async', async () => {
   const existsPromisify = promisify(fs.exists);
-  const {res, err} = await to(existsPromisify('./to-test.ts'));
+  const {res, err} = await go(existsPromisify('./to-test.ts'));
   expect(res).toEqual(false);
   expect(err).toEqual(null);
 });

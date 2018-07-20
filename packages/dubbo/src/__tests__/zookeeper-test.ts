@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import {ZkClient} from '../zookeeper';
+import {ZkRegistry} from '../zookeeper';
 
 describe('zookeeper test suite', () => {
-  it('test connect', async () => {
-    const client = ZkClient.from({
+  it('test connect', () => {
+    const client = ZkRegistry.from({
       application: {
         name: 'node-zookeeper-test',
       },
@@ -30,8 +30,6 @@ describe('zookeeper test suite', () => {
         'com.alibaba.dubbo.demo.ErrorProvider',
       ],
     });
-
-    await (client as any)._connect();
 
     client.subscribe({
       onData(data) {

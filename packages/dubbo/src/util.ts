@@ -16,10 +16,12 @@
  */
 
 import {EventEmitter} from 'events';
+import ip from 'ip';
 import {ITrace} from './types';
-
 export const msg = new EventEmitter();
 export const isDevEnv = process.env.NODE_ENV !== 'production';
+const pid = process.pid;
+const ipAddr = ip.address();
 
 /**
  * yes, just do nothing.
@@ -31,13 +33,39 @@ export const noop = () => {};
  * @param info
  */
 export const trace = (obj: ITrace) => {
-  msg.emit('sys:trace', obj);
+  setImmediate(() => {
+    msg.emit('sys:trace', {
+      ...{
+        time: new Date().toISOString(),
+        pid,
+        host: ipAddr,
+      },
+      ...obj,
+    });
+  });
 };
 
 export const traceInfo = (info: string) => {
-  msg.emit('sys:trace', {type: 'INFO', msg: info});
+  trace({type: 'INFO', msg: info});
 };
 
 export const traceErr = (err: Error) => {
-  msg.emit('sys:trace', {type: 'ERR', msg: err});
+  trace({type: 'ERR', msg: err});
+};
+
+export const eqSet = <T = any>(as: Set<T>, bs: Set<T>): boolean => {
+  //equal size?
+  if (as.size !== bs.size) {
+    return false;
+  }
+
+  //different element
+  for (var a of as) {
+    if (!bs.has(a)) {
+      return false;
+    }
+  }
+
+  //same
+  return true;
 };

@@ -19,9 +19,9 @@ import debug from 'debug';
 import compose from 'koa-compose';
 import config from './config';
 import Context from './context';
+import {go} from './go';
 import queue from './queue';
 import Scheduler from './scheduler';
-import {to} from './to';
 import {
   IDubboProps,
   IDubboProvider,
@@ -47,7 +47,7 @@ process.on('unhandledRejection', (reason, p) => {
  * Dubbo
  *
  * 1. 连接注册中心zookeeper
- * 2. 发起远程dubbo provider的方法调用
+ * 2. 发起远程dubbo service的方法调用
  * 3. 序列化/反序列化dubbo协议
  * 4. 管理tcp连接以及心跳
  * 5. 通过代理机制自动代理interface对应的方法
@@ -151,7 +151,7 @@ export default class Dubbo<TService = Object>
           //handle request middleware
           async function handleRequest(ctx) {
             log('start middleware handle dubbo Request');
-            ctx.body = await to(queue.add(ctx));
+            ctx.body = await go(queue.add(ctx));
             log('end handle dubbo request');
           },
         ];

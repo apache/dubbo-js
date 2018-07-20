@@ -17,9 +17,9 @@
 
 import debug from 'debug';
 import Context from './context';
+import {go} from './go';
 import {SOCKET_STATUS} from './socket-status';
 import SocketWorker from './socket-worker';
-import {to} from './to';
 import {IDirectlyDubboProps, IHessianType, IInvokeParam} from './types';
 
 const log = debug('directly-dubbo');
@@ -86,7 +86,7 @@ export default class DirectlyDubbo {
 
     Object.keys(methods).forEach(methodName => {
       proxy[methodName] = (...args: Array<IHessianType>) => {
-        return to(
+        return go(
           new Promise((resolve, reject) => {
             const ctx = Context.create();
             ctx.resolve = resolve;

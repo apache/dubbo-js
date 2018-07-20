@@ -21,10 +21,14 @@ import zookeeper from 'node-zookeeper-client';
 import qs from 'querystring';
 import Context from './context';
 import DubboUrl from './dubbo-url';
-import {ZookeeperDisconnectedError, ZookeeperTimeoutError} from './err';
-import {to} from './to';
-import {IObservable, IZkClientProps, IZookeeperSubscriber} from './types';
-import {isDevEnv, msg, noop, traceErr, traceInfo} from './util';
+import {
+  ZookeeperDisconnectedError,
+  ZookeeperExpiredError,
+  ZookeeperTimeoutError,
+} from './err';
+import {go} from './go';
+import {IObservable, IRegistrySubscriber, IZkClientProps} from './types';
+import {eqSet, isDevEnv, msg, noop, traceErr, traceInfo} from './util';
 
 const log = debug('dubbo:zookeeper');
 const ipAddress = ip.address();
@@ -32,7 +36,7 @@ const ipAddress = ip.address();
 export type TAgentAddr = string;
 export type TDubboInterface = string;
 
-export class ZkClient implements IObservable<IZookeeperSubscriber> {
+export class ZkRegistry implements IObservable<IRegistrySubscriber> {
   private constructor(props: IZkClientProps) {
     log(`new:|> %O`, props);
     this._props = props;
@@ -40,23 +44,25 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
     this._props.zkRoot = this._props.zkRoot || 'dubbo';
     //保存dubbo接口和服务url之间的映射关系
     this._dubboServiceUrlMap = new Map();
+    this._agentAddrSet = new Set();
     //初始化订阅者
     this._subscriber = {
       onData: noop,
       onError: noop,
     };
     //初始化zookeeper的client
-    this._init().then(() => log('init providerMap and agentSet'));
+    this._connect(this._init);
   }
 
+  private _agentAddrSet: Set<string>;
   private _client: zookeeper.Client;
-  private _subscriber: IZookeeperSubscriber;
+  private _subscriber: IRegistrySubscriber;
   private readonly _props: IZkClientProps;
   private readonly _dubboServiceUrlMap: Map<TDubboInterface, Array<DubboUrl>>;
 
   //===========================public method=============================
   static from(props: IZkClientProps) {
-    return new ZkClient(props);
+    return new ZkRegistry(props);
   }
 
   /**
@@ -102,26 +108,27 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
    * 订阅者
    * @param subscriber
    */
-  subscribe(subscriber: IZookeeperSubscriber) {
+  subscribe(subscriber: IRegistrySubscriber) {
     this._subscriber = subscriber;
     return this;
   }
 
   //========================private method==========================
-  private async _init(): Promise<null> {
+  private _init = async (err: Error) => {
+    //zookeeper occur error
+    if (err) {
+      log(err);
+      traceErr(err);
+      this._subscriber.onError(err);
+      return;
+    }
+
+    //zookeeper connected（may be occur many times）
     const {
       zkRoot,
       application: {name},
       interfaces,
     } = this._props;
-
-    //等待连接zookeeper
-    const {err} = await to(this._connect());
-    if (err) {
-      log(`connect zk error ${err}`);
-      this._subscriber.onError(err);
-      return;
-    }
 
     //获取所有provider
     for (let inf of interfaces) {
@@ -158,7 +165,15 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
       log('dubboServiceUrl:|> %O', this._dubboServiceUrlMap);
     }
 
+    this._agentAddrSet = this._allAgentAddrSet;
     this._subscriber.onData(this._allAgentAddrSet);
+  };
+
+  /**
+   * get current all agent address
+   */
+  get allAgentAddrSet() {
+    return this._agentAddrSet;
   }
 
   /**
@@ -186,7 +201,7 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
     dubboServicePath: string,
     dubboInterface: string,
   ): Promise<Array<string>> {
-    const {res, err} = await to(
+    const {res, err} = await go(
       this._getChildren(
         dubboServicePath,
         this._watch(dubboServicePath, dubboInterface),
@@ -206,73 +221,89 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
   //========================zookeeper helper=========================
   /**
    * connect zookeeper
-   * @returns {Promise<Error>}
    */
-  private _connect(): Promise<Error | null> {
-    return new Promise((resolve, reject) => {
-      const {register} = this._props;
-
-      //debug log
-      log(`connecting zkserver ${register}`);
-      //connect
-      this._client = zookeeper.createClient(register, {
-        retries: 3,
-        sessionTimeout: 10 * 1000,
-      });
-
-      //超时检测
-      //node-zookeeper-client,有个bug，当连不上zk时会无限重连
-      //手动做一个超时检测
-      const {retries, sessionTimeout} = (this._client as any).options;
-      const timeId = setTimeout(() => {
-        log(`Could not connect zk ${register}， time out`);
-        this._client.close();
-        const err = new ZookeeperTimeoutError(
-          `ZooKeeper was connected ${register} time out. `,
-        );
-        reject(err);
-        traceErr(err);
-      }, retries * sessionTimeout);
-
-      //connected
-      this._client.once('connected', () => {
-        log(`connected to zkserver ${register}`);
-        clearTimeout(timeId);
-        resolve(null);
-        msg.emit('sys:ready');
-      });
-
-      //in order to trace connect info
-      this._client.on('connected', () => {
-        traceInfo(`connected to zkserver ${register}`);
-      });
-
-      //the connection between client and server is dropped.
-      this._client.on('disconnected', () => {
-        log(`zk ${register} had disconnected`);
-        const err = new ZookeeperDisconnectedError(
-          'ZooKeeper was disconnected.',
-        );
-        clearTimeout(timeId);
-        this._subscriber.onError(err);
-        traceErr(err);
-      });
-
-      //connect
-      this._client.connect();
+  private _connect = (callback: (err: Error) => void) => {
+    const {register} = this._props;
+    //debug log
+    log(`connecting zkserver ${register}`);
+    //connect
+    this._client = zookeeper.createClient(register, {
+      retries: 10,
+      sessionTimeout: 60 * 1000,
     });
-  }
+
+    //超时检测
+    //node-zookeeper-client,有个bug，当连不上zk时会无限重连
+    //手动做一个超时检测
+    const {retries, sessionTimeout} = (this._client as any).options;
+    const timeId = setTimeout(() => {
+      log(`Could not connect zk ${register}， time out`);
+      this._client.close();
+      callback(
+        new ZookeeperTimeoutError(
+          `ZooKeeper was connected ${register} time out. `,
+        ),
+      );
+    }, retries * sessionTimeout);
+
+    //connected
+    this._client.once('connected', () => {
+      log(`connected to zkserver ${register}`);
+      clearTimeout(timeId);
+      callback(null);
+      msg.emit('sys:ready');
+    });
+
+    //in order to trace connect info
+    this._client.on('connected', () => {
+      traceInfo(
+        `connected to zkserver ${register} current state is ${this._client.getState()}`,
+      );
+      callback(null);
+    });
+
+    //the connection between client and server is dropped.
+    this._client.on('disconnected', () => {
+      log(`zk ${register} had disconnected`);
+      clearTimeout(timeId);
+      callback(
+        new ZookeeperDisconnectedError(
+          `ZooKeeper was disconnected. current state is ${this._client.getState()} `,
+        ),
+      );
+    });
+
+    this._client.on('expired', () => {
+      log(`zk ${register} had disconnected`);
+      callback(
+        new ZookeeperDisconnectedError(
+          `ZooKeeper was disconnected. current state ${this._client.getState()}`,
+        ),
+      );
+      callback(
+        new ZookeeperExpiredError(
+          `Zookeeper was session Expired Error current state ${this._client.getState()}`,
+        ),
+      );
+    });
+
+    //connect
+    this._client.connect();
+  };
 
   private _watch(dubboServicePath: string, dubboInterface: string) {
     //@ts-ignore
     return async (e: zookeeper.Event) => {
-      log(`trigger watch ${dubboServicePath}, type: ${e.getName()}`);
-      traceInfo(`trigger watch ${dubboServicePath}, type: ${e.getName()}`);
+      log(`trigger watch ${e}`);
+      traceInfo(`trigger watch ${e}`);
 
       const dubboServiceUrls = await this._getDubboServiceUrls(
         dubboServicePath,
         dubboInterface,
       );
+
+      traceInfo(dubboServiceUrls.join());
+
       //clear current dubbo interface
       this._dubboServiceUrlMap.set(dubboInterface, []);
 
@@ -300,7 +331,12 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
         );
       }
 
-      this._subscriber.onData(this._allAgentAddrSet);
+      if (!eqSet(this._agentAddrSet, this._allAgentAddrSet)) {
+        this._agentAddrSet = this._allAgentAddrSet;
+        this._subscriber.onData(this._allAgentAddrSet);
+      } else {
+        log('no agent change');
+      }
     };
   }
 
@@ -350,7 +386,6 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
       version: version,
       side: 'consumer',
       check: 'false',
-      timestamp: Date.now(),
     };
 
     const consumerRoot = `/dubbo/${dubboInterface}/consumers`;
@@ -369,13 +404,13 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
         )}`,
       );
 
-    const exist = await to(this._exists(consumerUrl));
+    const exist = await go(this._exists(consumerUrl));
     if (exist.err || exist.res) {
       log(`check consumer url: ${consumerUrl}失败或者consumer已经存在`);
       return;
     }
 
-    const create = await to(
+    const create = await go(
       this._create(consumerUrl, zookeeper.CreateMode.EPHEMERAL),
     );
 
@@ -393,7 +428,7 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
   }
 
   private async _createRootConsumer(consumer: string) {
-    const {res, err} = await to(this._exists(consumer));
+    const {res, err} = await go(this._exists(consumer));
     if (err) {
       log(`consumer exisit ${consumer} %o`, err);
       return err;
@@ -401,7 +436,7 @@ export class ZkClient implements IObservable<IZookeeperSubscriber> {
 
     //如果没有
     if (!res) {
-      const {err} = await to(
+      const {err} = await go(
         this._create(consumer, zookeeper.CreateMode.PERSISTENT),
       );
       if (err) {

@@ -29,9 +29,9 @@ import {noop, traceErr, traceInfo} from './util';
 
 let pid = 0;
 //重试次数
-const RETRY_NUM = 10;
-//重试评率
-const RETRY_TIME = 6000;
+const RETRY_NUM = 20;
+//重试频率
+const RETRY_TIME = 3000;
 //心跳频率
 const HEART_BEAT = 180 * 1000;
 const log = debug('dubbo:socket-worker');
@@ -45,6 +45,7 @@ const log = debug('dubbo:socket-worker');
 export default class SocketWorker implements IObservable<ISocketSubscriber> {
   private constructor(host: string, port: number) {
     this.pid = ++pid;
+    //statistics info
     statistics['pid#' + this.pid] = 0;
 
     this.host = host;
@@ -76,7 +77,6 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
   public readonly port: number;
 
   private _retry: number;
-  private _retryInterval: NodeJS.Timer;
   private _heartBeatTimer: NodeJS.Timer;
   private _socket: net.Socket;
   private _status: SOCKET_STATUS;
@@ -101,11 +101,16 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
   write(ctx: Context) {
     log(`SocketWorker#${this.pid} =invoked=> ${ctx.requestId}`);
     statistics['pid#' + this.pid] = ++statistics['pid#' + this.pid];
+
     //current dubbo context record the pid
     //when current worker close, fail dubbo request
     ctx.pid = this.pid;
     const encoder = new DubboEncoder(ctx);
     this._socket.write(encoder.encode());
+  }
+
+  get status() {
+    return this._status;
   }
 
   /**
@@ -127,8 +132,15 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
    */
   resetRetry() {
     this._retry = RETRY_NUM;
+    if (this._status === SOCKET_STATUS.CLOSED) {
+      this._initSocket();
+    }
   }
 
+  /**
+   * subscribe the socket worker events
+   * @param subscriber
+   */
   subscribe(subscriber: ISocketSubscriber) {
     this._subscriber = subscriber;
     return this;
@@ -142,6 +154,9 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     );
 
     this._socket = new net.Socket();
+    // Disable the Nagle algorithm.
+    this._socket.setNoDelay();
+
     this._socket
       .connect(
         this.port,
@@ -162,10 +177,8 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     //set current status
     this._status = SOCKET_STATUS.CONNECTED;
 
-    //reset retry params
+    //reset retry number
     this._retry = RETRY_NUM;
-    clearInterval(this._retryInterval);
-    this._retryInterval = null;
 
     //notifiy subscriber, the socketworker was connected successfully
     this._subscriber.onConnect({
@@ -208,25 +221,21 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
       ),
     );
 
-    //set current status
-    this._status = SOCKET_STATUS.RETRY;
+    //clear buffer
+    this._decodeBuff.clearBuffer();
     clearInterval(this._heartBeatTimer);
 
     if (this._retry > 0) {
-      if (!this._retryInterval) {
-        //clear decodebuffer
-        this._decodeBuff.clearBuffer();
-        //set retry interval
-        this._retryInterval = setInterval(() => {
-          this._initSocket();
-          this._retry--;
-        }, RETRY_TIME);
-      }
+      //set current status
+      this._status = SOCKET_STATUS.RETRY;
+      //retry when delay RETRY_TIME
+      setTimeout(() => {
+        this._retry--;
+        this._initSocket();
+      }, RETRY_TIME);
     } else {
-      //clear
-      clearInterval(this._retryInterval);
-      //set state closed and notified socket-pool
       this._status = SOCKET_STATUS.CLOSED;
+      //set state closed and notified socket-pool
       this._subscriber.onClose({
         pid: this.pid,
         host: this.host,
@@ -236,7 +245,6 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
   };
 
   private _onSubscribeDecodeBuff = (data: Buffer) => {
-    //反序列化dubbo
     const json = decode(data);
     log(`SocketWorker#${this.pid} <=received=> dubbo result %O`, json);
     this._subscriber.onData(json);
