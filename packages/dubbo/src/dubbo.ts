@@ -19,9 +19,9 @@ import debug from 'debug';
 import compose from 'koa-compose';
 import config from './config';
 import Context from './context';
+import {go} from './go';
 import queue from './queue';
 import Scheduler from './scheduler';
-import {to} from './to';
 import {
   IDubboProps,
   IDubboProvider,
@@ -151,7 +151,7 @@ export default class Dubbo<TService = Object>
           //handle request middleware
           async function handleRequest(ctx) {
             log('start middleware handle dubbo Request');
-            ctx.body = await to(queue.add(ctx));
+            ctx.body = await go(queue.add(ctx));
             log('end handle dubbo request');
           },
         ];

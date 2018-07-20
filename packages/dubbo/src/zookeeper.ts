@@ -26,7 +26,7 @@ import {
   ZookeeperExpiredError,
   ZookeeperTimeoutError,
 } from './err';
-import {to} from './to';
+import {go} from './go';
 import {IObservable, IRegistrySubscriber, IZkClientProps} from './types';
 import {eqSet, isDevEnv, msg, noop, traceErr, traceInfo} from './util';
 
@@ -201,7 +201,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
     dubboServicePath: string,
     dubboInterface: string,
   ): Promise<Array<string>> {
-    const {res, err} = await to(
+    const {res, err} = await go(
       this._getChildren(
         dubboServicePath,
         this._watch(dubboServicePath, dubboInterface),
@@ -404,13 +404,13 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
         )}`,
       );
 
-    const exist = await to(this._exists(consumerUrl));
+    const exist = await go(this._exists(consumerUrl));
     if (exist.err || exist.res) {
       log(`check consumer url: ${consumerUrl}失败或者consumer已经存在`);
       return;
     }
 
-    const create = await to(
+    const create = await go(
       this._create(consumerUrl, zookeeper.CreateMode.EPHEMERAL),
     );
 
@@ -428,7 +428,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
   }
 
   private async _createRootConsumer(consumer: string) {
-    const {res, err} = await to(this._exists(consumer));
+    const {res, err} = await go(this._exists(consumer));
     if (err) {
       log(`consumer exisit ${consumer} %o`, err);
       return err;
@@ -436,7 +436,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
 
     //如果没有
     if (!res) {
-      const {err} = await to(
+      const {err} = await go(
         this._create(consumer, zookeeper.CreateMode.PERSISTENT),
       );
       if (err) {

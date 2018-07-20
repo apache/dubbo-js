@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
  * 统一promise的错误处理机制
  * 在使用async/await的过程中，对于错误的处理，通常第一选择是try/catch,
@@ -47,7 +48,7 @@
  * @param promise
  */
 
-export function to<T>(promise: Promise<T>): Promise<{err: Error; res: T}> {
+export function go<T>(promise: Promise<T>): Promise<{err: Error; res: T}> {
   return promise.then((res: T = null) => ({res, err: null})).catch(err => ({
     res: null,
     err,
