@@ -71,7 +71,8 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
    */
   getAgentAddrList(ctx: Context) {
     const {dubboInterface, version, group} = ctx;
-    return (this._dubboServiceUrlMap.get(dubboInterface) || [])
+    return this._dubboServiceUrlMap
+      .get(dubboInterface)
       .filter(serviceProp => {
         const isSameVersion = serviceProp.version === version;
         //如果Group为null，就默认匹配， 不检查group
@@ -210,7 +211,16 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
 
     if (err) {
       log(`getChildren ${dubboServicePath} error ${err}`);
+      traceErr(err);
       return [];
+    }
+
+    if (!res.children || res.children.length === 0) {
+      traceErr(
+        new Error(
+          `zk get DubboSericeUrls result is empty with service path ${dubboServicePath} and interface ${dubboInterface}.`,
+        ),
+      );
     }
 
     return (res.children || [])
