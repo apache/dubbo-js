@@ -131,29 +131,31 @@ export class DubboAgent implements IObservable<ISocketSubscriber> {
   private _getAvailableSocketAgents(
     agentAddrList: Array<TAgentAddr>,
   ): Array<SocketWorker> {
+    let errMessage = '';
     let availableList = [];
+
     for (let agentAddr of agentAddrList) {
       if (this._serverAgentMap.has(agentAddr)) {
         const socketWorker = this._serverAgentMap.get(agentAddr);
         if (socketWorker.isAvaliable) {
           availableList.push(socketWorker);
         } else {
-          traceErr(
-            new Error(
-              `${agentAddrList.join()}:|>${agentAddr} current status is ${
-                socketWorker.status
-              }`,
-            ),
-          );
+          //collect error message
+          errMessage += `${agentAddrList.join()}:|>${agentAddr} current status is ${
+            socketWorker.status
+          };`;
         }
       } else {
-        traceErr(
-          new Error(
-            `${agentAddrList.join()}:|>${agentAddr} not match socket-worker`,
-          ),
-        );
+        //collect error message
+        errMessage += `${agentAddrList.join()}:|>${agentAddr} not match socket-worker;`;
       }
     }
+
+    //trace error
+    if (errMessage) {
+      traceErr(new Error(errMessage));
+    }
+
     return availableList;
   }
 }
