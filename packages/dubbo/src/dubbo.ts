@@ -31,7 +31,7 @@ import {
   Middleware,
   TDubboService,
 } from './types';
-import {msg, noop, traceErr} from './util';
+import {msg, noop, traceErr, traceInfo} from './util';
 const version = require('../package.json').version;
 
 const log = debug('dubbo:bootstrap');
@@ -219,10 +219,6 @@ export default class Dubbo<TService = Object>
   //================private method================
   private _initMsgListener() {
     process.nextTick(() => {
-      this._subscriber.onTrace({
-        type: 'INFO',
-        msg: `dubbo:bootstrap version => ${version}`,
-      });
       msg
         .addListener('sys:trace', (msg: ITrace) => {
           this._subscriber.onTrace(msg);
@@ -230,6 +226,8 @@ export default class Dubbo<TService = Object>
         .addListener('sys:ready', () => {
           this._readyResolve();
         });
+
+      traceInfo(`dubbo:bootstrap version => ${version}`);
     });
   }
 

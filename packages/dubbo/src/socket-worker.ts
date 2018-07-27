@@ -199,25 +199,34 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     this._decodeBuff.receive(data);
   };
 
-  private _onError = error => {
-    log(`SocketWorker#${this.pid} <=occur error=> ${this.host}:${this.port}`);
-    log(error);
-    traceErr(error);
+  private _onError = (error: Error) => {
+    log(
+      `SocketWorker#${this.pid} <=occur error=> ${this.host}:${
+        this.port
+      } ${error}`,
+    );
+    traceErr(
+      new Error(
+        `SocketWorker#${this.pid} <=occur error=> ${this.host}:${this.port} ${
+          error.message
+        }`,
+      ),
+    );
     clearInterval(this._heartBeatTimer);
   };
 
-  private _onClose = () => {
+  private _onClose = (hadError: boolean) => {
     log(
-      `SocketWorker#${this.pid} <=closed=> ${this.host}:${this.port} retry: ${
-        this._retry
-      }`,
+      `SocketWorker#${this.pid} <=closed=> ${this.host}:${
+        this.port
+      } hasError: ${hadError} retry: ${this._retry}`,
     );
 
     traceErr(
       new Error(
-        `SocketWorker#${this.pid} <=closed=> ${this.host}:${this.port} retry: ${
-          this._retry
-        }`,
+        `SocketWorker#${this.pid} <=closed=> ${this.host}:${
+          this.port
+        } hadError: ${hadError} retry: ${this._retry}`,
       ),
     );
 
@@ -235,6 +244,7 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
       }, RETRY_TIME);
     } else {
       this._status = SOCKET_STATUS.CLOSED;
+      this._socket.destroy();
       //set state closed and notified socket-pool
       this._subscriber.onClose({
         pid: this.pid,

@@ -286,15 +286,12 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
     this._client.on('expired', () => {
       log(`zk ${register} had disconnected`);
       callback(
-        new ZookeeperDisconnectedError(
-          `ZooKeeper was disconnected. current state ${this._client.getState()}`,
-        ),
-      );
-      callback(
         new ZookeeperExpiredError(
           `Zookeeper was session Expired Error current state ${this._client.getState()}`,
         ),
       );
+      //connect retry
+      this._client.connect();
     });
 
     //connect
@@ -305,21 +302,19 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
     //@ts-ignore
     return async (e: zookeeper.Event) => {
       log(`trigger watch ${e}`);
-      traceInfo(`trigger watch ${e}`);
 
       const dubboServiceUrls = await this._getDubboServiceUrls(
         dubboServicePath,
         dubboInterface,
       );
 
-      traceInfo(dubboServiceUrls.join());
-
       //clear current dubbo interface
+      const agentAddrList = [];
       this._dubboServiceUrlMap.set(dubboInterface, []);
-
       for (let serviceUrl of dubboServiceUrls) {
         const url = DubboUrl.from(serviceUrl);
         const {host, port, dubboVersion, version} = url;
+        agentAddrList.push(`${host}:${port}`);
         this._dubboServiceUrlMap.get(dubboInterface).push(url);
 
         this._createConsumer({
@@ -330,6 +325,12 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
           dubboVersion: dubboVersion,
           version: version,
         }).then(() => log('create consumer finish'));
+      }
+
+      if (agentAddrList.length === 0) {
+        traceErr(new Error(`trigger watch ${e} agentList is empty`));
+      } else {
+        traceInfo(`trigger watch ${e} agentList ${agentAddrList.join(',')}`);
       }
 
       if (isDevEnv) {

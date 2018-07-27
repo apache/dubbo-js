@@ -131,29 +131,37 @@ export class DubboAgent implements IObservable<ISocketSubscriber> {
   private _getAvailableSocketAgents(
     agentAddrList: Array<TAgentAddr>,
   ): Array<SocketWorker> {
-    let errMessage = '';
+    let errMessage = [];
     let availableList = [];
+    let dieList = [];
 
     for (let agentAddr of agentAddrList) {
-      if (this._serverAgentMap.has(agentAddr)) {
-        const socketWorker = this._serverAgentMap.get(agentAddr);
-        if (socketWorker.isAvaliable) {
-          availableList.push(socketWorker);
-        } else {
-          //collect error message
-          errMessage += `${agentAddrList.join()}:|>${agentAddr} current status is ${
-            socketWorker.status
-          };`;
-        }
+      //die set
+      if (!this._serverAgentMap.has(agentAddr)) {
+        dieList.push(agentAddr);
+      }
+
+      const socketWorker = this._serverAgentMap.get(agentAddr);
+      if (socketWorker && socketWorker.isAvaliable) {
+        availableList.push(socketWorker);
       } else {
-        //collect error message
-        errMessage += `${agentAddrList.join()}:|>${agentAddr} not match socket-worker;`;
+        errMessage.push(
+          `${agentAddrList.join()}:|>${agentAddr} current state ${
+            socketWorker ? socketWorker.status : 'die'
+          }`,
+        );
       }
     }
 
+    if (dieList.length > 0) {
+      log(`recovery dieSet ${dieList.join()}`);
+      traceInfo(`recovery dieSet ${dieList.join()}`);
+      this.from(new Set(dieList));
+    }
+
     //trace error
-    if (errMessage) {
-      traceErr(new Error(errMessage));
+    if (errMessage.length > 0) {
+      traceErr(new Error(errMessage.join()));
     }
 
     return availableList;
