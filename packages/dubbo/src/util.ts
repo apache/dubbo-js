@@ -69,3 +69,9 @@ export const eqSet = <T = any>(as: Set<T>, bs: Set<T>): boolean => {
   //same
   return true;
 };
+
+export const delay = (timeout: number) => {
+  return new Promise(resolve => {
+    setTimeout(resolve, timeout);
+  });
+};
