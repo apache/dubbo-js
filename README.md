@@ -18,7 +18,7 @@
 
 3.  TCP Dubbo Native protocol （Dubbo Header + Hessian Body）
 
-4.  Socket Pool (ServerAgent -> SocketPool -> SocketWorker)
+4.  Socket Container (ServerAgent -> SocketWorker)
 
 5.  Support Directly Dubbo (const Dubbo = DirectlyDubbo({..}))
 
@@ -30,9 +30,9 @@
 
 9.  Typescript type definition
 
-10. Convert java dubbo interface to typescript module
+10. Convert java dubbo interface to typescript module by interpret tools
 
-11. SocketWorker auto retry
+11. SocketWorker was disconnected auto retry
 
 ## Getting Started
 
@@ -71,11 +71,11 @@ const dubbo = new Dubbo<typeof service>({
 
 //main method
 (async () => {
-  const result1 = await dubbo.service.DemoProvider.sayHello('node');
+  let {res, err} = await dubbo.service.DemoProvider.sayHello('node');
   //print {err: null, res:'hello node from dubbo service'}
-  const res = await dubbo.service.DemoProvider.echo();
+  ({res, err} = await dubbo.service.DemoProvider.echo());
   //print {err: null, res: 'pang'}
-  const res = await dubbo.service.DemoProvider.getUserInfo();
+  ({res, err} = await dubbo.service.DemoProvider.getUserInfo());
   //status: 'ok', info: { id: '1', name: 'test' }
 })();
 ```
@@ -148,12 +148,11 @@ const errorProvider = ErrorProvider(dubbo);
 
 //main method
 (async () => {
-  const result1 = await demoProvider.sayHello('node');
+  let {res, err} = await demoProvider.sayHello('node');
   //print {err: null, res:'hello node from dubbo service'}
-  const res = await demoProvider.echo();
+  ({res, err} = await demoProvider.echo());
   //print {err: null, res: 'pang'}
-
-  const res = await demoProvider.getUserInfo();
+  ({res, err} = await demoProvider.getUserInfo());
   //status: 'ok', info: { id: '1', name: 'test' }
 })();
 ```
