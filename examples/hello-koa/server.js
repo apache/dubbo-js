@@ -1,6 +1,7 @@
 const Koa = require('koa');
 const Router = require('koa-router');
 const dubbo = require('./dubbo/dubbo');
+const dubbo2 = require('./dubbo/dubbo-es6');
 
 const app = new Koa();
 const router = new Router();
@@ -11,6 +12,7 @@ router.get('/', ctx => {
 
 router.get('/hello', async ctx => {
   const {res, err} = await dubbo.service.demoProvider.sayHello('test');
+  console.log(await dubbo2.service.demoProvider.sayHello('test2'));
   ctx.body = err ? err.message : res;
 });
 

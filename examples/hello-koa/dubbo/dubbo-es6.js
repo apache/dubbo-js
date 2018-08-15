@@ -2,7 +2,7 @@ const {Dubbo} = require('dubbo2.js/es6');
 const service = require('./service');
 
 const dubbo = (module.exports = new Dubbo({
-  application: {name: 'dubbo-node-consumer'},
+  application: {name: 'dubbo-node-consumer1'},
   register: 'localhost:2181',
   service,
 }));
