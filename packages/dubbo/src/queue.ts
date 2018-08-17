@@ -35,7 +35,7 @@ const log = debug('dubbo:queue');
  * 所有简单的处理就是，每次处理请求incoming的时候先把请求参数推入队列，然后
  * 等待后面的资源初始化结束进行处理，如果超过超时时间就自动进行timeout超时处理
  */
-export class Queue implements IObservable<TQueueObserver> {
+export default class Queue implements IObservable<TQueueObserver> {
   private constructor() {
     log('new Queue');
     //调用队列-保持调用的requestId和参数
@@ -246,5 +246,3 @@ export class Queue implements IObservable<TQueueObserver> {
     }, timeout);
   }
 }
-
-export default Queue.create();

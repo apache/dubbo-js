@@ -1,5 +1,7 @@
-const {Dubbo} = require('dubbo2.js/es6');
+const {Dubbo} = require('dubbo2.js');
 const service = require('./service');
+
+delete service['demoProvider'];
 
 const dubbo = (module.exports = new Dubbo({
   application: {name: 'dubbo-node-consumer1'},
@@ -8,10 +10,10 @@ const dubbo = (module.exports = new Dubbo({
 }));
 
 //middleware
-dubbo.use(async function costTime(ctx, next) {
-  console.log('before dubbo cost middleware');
-  const startTime = Date.now();
-  await next();
-  const endTime = Date.now();
-  console.log('end makecostTime->', endTime - startTime);
-});
+// dubbo.use(async function costTime(ctx, next) {
+//   console.log('before dubbo cost middleware');
+//   const startTime = Date.now();
+//   await next();
+//   const endTime = Date.now();
+//   console.log('end makecostTime->', endTime - startTime);
+// });

@@ -21,7 +21,7 @@ import config from './config';
 import Context from './context';
 import {FaultExitError} from './err';
 import {go} from './go';
-import queue from './queue';
+import Queue from './queue';
 import Scheduler from './scheduler';
 import {
   IDubboProps,
@@ -70,6 +70,9 @@ export default class Dubbo<TService = Object>
     this._middleware = [];
     this._service = <TDubboService<TService>>{};
 
+    //初始化队列
+    this._queue = Queue.create();
+
     //初始化config
     //全局超时时间(最大熔断时间)类似<dubbo:consumer timeout="sometime"/>
     //对应consumer客户端来说，用户设置了接口级别的超时时间，就使用接口级别的
@@ -92,17 +95,21 @@ export default class Dubbo<TService = Object>
     //初始化消息监听
     this._initMsgListener();
     //create scheduler
-    Scheduler.from({
-      zkRoot: props.zkRoot,
-      register: props.register,
-      application: props.application,
-      interfaces: this._interfaces,
-    });
+    Scheduler.from(
+      {
+        zkRoot: props.zkRoot,
+        register: props.register,
+        application: props.application,
+        interfaces: this._interfaces,
+      },
+      this._queue,
+    );
   }
 
   private _interfaces: Array<string>;
   private _readyResolve: Function;
   private _subscriber: IDubboSubscriber;
+  private readonly _queue: Queue;
   private readonly _props: IDubboProps;
   private readonly _middleware: Array<Middleware<Context>>;
   private readonly _service: TDubboService<TService>;
@@ -152,12 +159,13 @@ export default class Dubbo<TService = Object>
         ctx.timeout = timeout;
         ctx.group = group || '';
 
+        const self = this;
         const middlewares = [
           ...this._middleware,
           //handle request middleware
           async function handleRequest(ctx) {
             log('start middleware handle dubbo Request');
-            ctx.body = await go(queue.add(ctx));
+            ctx.body = await go(self._queue.add(ctx));
             log('end handle dubbo request');
           },
         ];

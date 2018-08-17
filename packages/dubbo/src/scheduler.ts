@@ -16,9 +16,9 @@
  */
 
 import debug from 'debug';
-import dubboAgent, {DubboAgent} from './dubbo-agent';
+import DubboAgent from './dubbo-agent';
 import {ScheduleError, SocketError, ZookeeperTimeoutError} from './err';
-import queue from './queue';
+import Queue from './queue';
 import {IZkClientProps} from './types';
 import {traceErr, traceInfo} from './util';
 import {ZkRegistry} from './zookeeper';
@@ -39,12 +39,15 @@ const enum STATUS {
  * 4. 接受zookeeper的变化，更新Server-agent
  */
 export default class Scheduler {
-  constructor(props: IZkClientProps) {
+  constructor(props: IZkClientProps, queue: Queue) {
     log(`new:|> %O`, props);
-    //init current status
     this._status = STATUS.PADDING;
-    //subscribe queue
-    queue.subscribe(this._handleQueueRequest);
+
+    this._queue = queue;
+    this._queue.subscribe(this._handleQueueRequest);
+
+    this._dubboAgent = new DubboAgent();
+
     //init ZkClient and subscribe
     this._zkClient = ZkRegistry.from(props).subscribe({
       onData: this._handleZkClientOnData,
@@ -53,15 +56,16 @@ export default class Scheduler {
   }
 
   private _status: STATUS;
+  private _queue: Queue;
   private _zkClient: ZkRegistry;
-  private _serverAgent: DubboAgent;
+  private _dubboAgent: DubboAgent;
 
   /**
    * static factory method
    * @param props
    */
-  static from(props: IZkClientProps) {
-    return new Scheduler(props);
+  static from(props: IZkClientProps, queue: Queue) {
+    return new Scheduler(props, queue);
   }
 
   /**
@@ -107,13 +111,13 @@ export default class Scheduler {
       this._status = STATUS.NO_AGENT;
       //将队列中的所有dubbo调用全调用失败
       const err = new ScheduleError('Can not be find any agents');
-      queue.allFailed(err);
+      this._queue.allFailed(err);
       traceErr(err);
       return;
     }
 
-    //初始化serverAgent
-    this._serverAgent = dubboAgent.from(agentSet).subscribe({
+    //初始化dubboAgent
+    this._dubboAgent.from(agentSet).subscribe({
       onConnect: this._handleOnConnect,
       onData: this._handleOnData,
       onClose: this._handleOnClose,
@@ -136,7 +140,7 @@ export default class Scheduler {
    */
   private _handleFailed = (requestId: number, err: Error) => {
     log('#requestId: %d scheduler was failed, err: %s', requestId, err);
-    queue.failed(requestId, err);
+    this._queue.failed(requestId, err);
   };
 
   /**
@@ -146,11 +150,11 @@ export default class Scheduler {
    */
   private _handleDubboInvoke(requestId: number) {
     //get request context
-    const ctx = queue.requestQueue.get(requestId);
+    const ctx = this._queue.requestQueue.get(requestId);
     //get socket agent list
     const agentAddrList = this._zkClient.getAgentAddrList(ctx);
     log('agentAddrSet-> %O', agentAddrList);
-    const worker = this._serverAgent.getAvailableSocketWorker(agentAddrList);
+    const worker = this._dubboAgent.getAvailableSocketWorker(agentAddrList);
 
     //if could not find any available socket agent worker
     if (!worker) {
@@ -169,7 +173,7 @@ export default class Scheduler {
     ctx.invokePort = worker.port;
 
     const providerProps = this._zkClient.getDubboServiceProp(ctx);
-    queue.consume(ctx.requestId, worker, providerProps);
+    this._queue.consume(ctx.requestId, worker, providerProps);
   }
 
   private _handleOnConnect = ({pid, host, port}) => {
@@ -180,7 +184,7 @@ export default class Scheduler {
       `scheduler receive SocketWorker connect pid#${pid} ${host}:${port}`,
     );
 
-    for (let ctx of queue.requestQueue.values()) {
+    for (let ctx of this._queue.requestQueue.values()) {
       if (ctx.isNotScheduled) {
         const agentHostList = this._zkClient.getAgentAddrList(ctx);
         log('agentHostList-> %O', agentHostList);
@@ -197,9 +201,9 @@ export default class Scheduler {
    */
   private _handleOnData = ({requestId, res, err}) => {
     if (err) {
-      queue.failed(requestId, err);
+      this._queue.failed(requestId, err);
     } else {
-      queue.resolve(requestId, res);
+      this._queue.resolve(requestId, res);
     }
   };
 
@@ -210,7 +214,7 @@ export default class Scheduler {
     log(`SocketWorker#${pid} was close`);
 
     //查询之前哪些接口的方法被pid调用, 然后直接failfast
-    const {requestQueue} = queue;
+    const {requestQueue} = this._queue;
     for (let [requestId, ctx] of requestQueue) {
       if (ctx.pid === pid) {
         this._handleFailed(

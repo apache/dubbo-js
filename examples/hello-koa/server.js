@@ -12,7 +12,7 @@ router.get('/', ctx => {
 
 router.get('/hello', async ctx => {
   const {res, err} = await dubbo.service.demoProvider.sayHello('test');
-  console.log(await dubbo2.service.demoProvider.sayHello('test2'));
+  console.log(await dubbo.service.basicTypeProvider.testBasicType());
   ctx.body = err ? err.message : res;
 });
 

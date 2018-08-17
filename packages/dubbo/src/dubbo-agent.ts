@@ -27,7 +27,7 @@ const log = debug('dubbo:server-agent');
  * 机器agent和socket-worker的管理容器
  * Agent可以理解为一台dubbo service的负载
  */
-export class DubboAgent implements IObservable<ISocketSubscriber> {
+export default class DubboAgent implements IObservable<ISocketSubscriber> {
   constructor() {
     this._serverAgentMap = new Map();
     this._subscriber = {
@@ -167,6 +167,3 @@ export class DubboAgent implements IObservable<ISocketSubscriber> {
     return availableList;
   }
 }
-
-//expose sington
-export default new DubboAgent();
