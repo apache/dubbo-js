@@ -80,7 +80,7 @@ const dubbo = new Dubbo<typeof service>({
 })();
 ```
 
-## 如果不是从 java 自动生成的 typescript 代码怎么注入到 dubbo 对象中？
+## 不是从 java 自动生成的 typescript 代码，如何注入到 dubbo 对象中？
 
 ```typescript
 //创建要注入的service
@@ -157,51 +157,6 @@ const errorProvider = ErrorProvider(dubbo);
 })();
 ```
 
-## 如果不是从 java 自动生成的 typescript 代码怎么注入到 dubbo 对象中？
-
-```typescript
-//创建要注入的service
-import {Dubbo} from 'dubbo2.js';
-const demoProvider = dubbo =>
-  dubbo.proxyService({
-    dubboInterface: 'com.alibaba.dubbo.demo.DemoProvider',
-    version: '1.0.0',
-    methods: {
-      sayHello(name) {
-        return [java.String(name)];
-      },
-
-      echo() {},
-
-      test() {},
-
-      getUserInfo() {
-        return [
-          java.combine('com.alibaba.dubbo.demo.UserRequest', {
-            id: 1,
-            name: 'nodejs',
-            email: 'node@qianmi.com',
-          }),
-        ];
-      },
-    },
-  });
-
-//将该service合入dubbo对象构造函数的service对象中
-const service = {
-  demoProvider,
-};
-
-const dubbo = new Dubbo({
-  //  ....other parameters
-  interfaces: [
-    //....
-    'com.alibaba.dubbo.demo.DemoProvider',
-  ],
-});
-
-const demoProvider = demoProvider(dubbo);
-```
 
 ## as developer
 
@@ -227,26 +182,26 @@ DEBUG=dubbo* yarn run test
 
 ```javascript
 const dubbo = new Dubbo({
-  isSupportedDubbox     //是不是支持dubbox (boolean类型); 可选，默认false
-  application           //记录应用的名称，zookeeper的调用时候写入consumer 类型：({name: string};) 可选
-  dubboInvokeTimeout    //设置dubbo调用超时时间默认10s 可选 类型number
-  dubboSocketPool       //设置dubbo创建socket的pool大小，默认4 可选 类型number
-  register              //设置zookeeper注册中心地址 必填 类型string
-  zkRoot                //zk的默认根路径，默认/dubbo 类型string
-  interfaces            //设置zk监听的接口名称 类型 Array<string> 必填, 在dubbo2.js@2.0.4+版本中不在使用这个参数
-  service               //注入到dubbo容器的dubbo服务，类型Object, 在dubbo2.js@2.0.4+使用
+  isSupportedDubbox     //是否支持dubbox - boolean, 默认false, 可选
+  application           //记录应用的名称 - zookeeper的调用时候写入consumer, 类型({name: string};) 可选
+  dubboInvokeTimeout    //设置dubbo调用超时时间 - number类型, 默认10s, 可选
+  dubboSocketPool       //设置dubbo创建socket的pool大小 - 类型number, 默认4, 可选
+  register              //设置zookeeper注册中心地址 - 类型string, 必填
+  zkRoot                //zk的默认根路径 - 类型string, 默认/dubbo
+  interfaces            //设置zk监听的接口名称 - 类型 Array<string>, 必填, 在dubbo2.js@2.0.4+版本中不在使用这个参数
+  service               //注入到dubbo容器的dubbo服务 - 类型Object, 在dubbo2.js@2.0.4+使用
 });
 
 // Or
 const dubbo = Dubbo.from({
-  isSupportedDubbox     //是不是支持dubbox (boolean类型); 可选，默认false
-  application           //记录应用的名称，zookeeper的调用时候写入consumer 类型：({name: string};) 可选
-  dubboInvokeTimeout    //设置dubbo调用超时时间默认10s 可选 类型number
-  dubboSocketPool       //设置dubbo创建socket的pool大小，默认4 可选 类型number
-  register              //设置zookeeper注册中心地址 必填 类型string
-  zkRoot                //zk的默认根路径，默认/dubbo 类型string
-  interfaces            //设置zk监听的接口名称 类型 Array<string> 必填, 在dubbo2.js@2.0.4+版本中不在使用这个参数
-  service               //注入到dubbo容器的dubbo服务，类型Object, 在dubbo2.js@2.0.4+使用
+  isSupportedDubbox     //是否支持dubbox - 类型boolean, 默认false, 可选
+  application           //记录应用的名称 - zookeeper的调用时候写入consumer, 类型({name: string};) 可选
+  dubboInvokeTimeout    //设置dubbo调用超时时间 - number类型, 默认10s, 可选
+  dubboSocketPool       //设置dubbo创建socket的pool大小 - 类型number, 默认4, 可选
+  register              //设置zookeeper注册中心地址 - 类型string, 必填
+  zkRoot                //zk的默认根路径 - 类型string, 默认/dubbo
+  interfaces            //设置zk监听的接口名称 - 类型 Array<string>, 必填, 在dubbo2.js@2.0.4+版本中不在使用这个参数
+  service               //注入到dubbo容器的dubbo服务 - 类型Object, 在dubbo2.js@2.0.4+使用
 })
 
 
@@ -264,12 +219,12 @@ const demoSerivce = dubbo.proxService({
   methods: {
     //method name
     sayHello(name) {
-      //仅仅做参数hessian化转换
+      //仅做参数hessian化转换
       return [java.String(name)];
     },
     //method name
     getUserInfo() {
-      //仅仅做参数hessian化转换
+      //仅做参数hessian化转换
       return [
         java.combine('com.alibaba.dubbo.demo.UserRequest', {
           id: 1,
@@ -511,7 +466,7 @@ You will get all runtim system info just like this.
 
 ## middleware
 
-通过对调用链路的抽象使用和 koa 相同的 middleware 机制，方便自定义拦截器，比如 logger，
+抽象使用调用链路，并使用与 koa相同的 middleware机制。易于自定义拦截器，如：logger。
 
 ```js
 //cost-time middleware
@@ -525,9 +480,9 @@ dubbo.use(async (ctx, next) => {
 
 ## dubbo-invoker
 
-在 dubbo 的接口调用中，需要设置一些动态的参数如，version, group, timeout, retry 等常常
+dubbo 接口调用中，需设置某些动态参数，如：version, group, timeout, retry, 等。
 
-这些参数需要在 consumer 调用方才精确设定值，之前是在 interpret 翻译生成 ts 的代码里面进行设置这个不够灵活，所以这里面我就抽象一个 dubbo-invoker 作为设置参数的 middleware,这样可以很方便的动态设置各种 runtime 参数
+参数在 consumer 调用时赋值。在此，抽象一个 dubbo-invoker 作为设置参数的 middleware，便于动态设置 runtime 参数。
 
 ```javascript
 import {dubboInvoker, matcher} from 'dubbo-invoker';
@@ -561,15 +516,12 @@ dubbo.use(dubboInvoke(matchRuler));
 
 ## Translator => Cool.
 
-我们坚定的认为开发体验同用户的体验同等重要，我们做了一些创新，一些很酷的实践。
+开发体验与用户体验同样重要。为此，dubbo2.js做了一些创新与实践。
 
-为了使 node 和 dubbo 之间的调用像 java 调用 dubbo 一样简单透明，我们设计和实现了 [translator](./packages/interpret-cli).
+为使 node 和 dubbo 之间的调用像 java 调用 dubbo 一样简单透明，其中设计并实现了 [translator](./packages/interpret-cli).
 
 通过分析 java 的 jar 包中的 bytecode 提取 dubbo 调用的接口信息，自动生成 typescript 类型定义文件以及调用的代码。
 
-在 packages/dubbo/src/**tests**/provider 就是根据 java 目录下的 demo 翻译而来。
-
-我们希望整个 dubbo 调用的代码都可以无缝生成。
 
 **_职责_**
 
@@ -613,9 +565,9 @@ dubbo.use(dubboInvoke(matchRuler));
 import {Dubbo} from 'dubbo2.js';
 ```
 
-默认导入的 dubbo2.js 是按照 es2017 进行编译的，支持 node7.10 以上。
+默认导入的 dubbo2.js 编译语言：es2017 （支持 node7.10+ ）。
 
-如果更低的 node 版本，可以使用
+低于node7.10的版本可使用：
 
 ```javascript
 import {Dubbo} from 'dubbo2.js/es6';
