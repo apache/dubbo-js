@@ -298,14 +298,14 @@ export function j2Jtj(
       // throw new Error('不可能出现这种的,classPathStr:' + classPath + isClass);
     }
   } else if (typeOptions.isTypeParam(classPath)) {
-    return `${paramRefName}['__fields2java']?${paramRefName}['__fields2java']():${paramRefName}`;
+    return `(${paramRefName}&&${paramRefName}['__fields2java'])?${paramRefName}['__fields2java']():${paramRefName}`;
   } else if (classPath === 'java.math.BigDecimal') {
     log('处理java BigDecimal类型,param %j,schema %j');
     return `${paramRefName}?java.BigDecimal(${paramRefName}.value):null`;
   } else if (classPath === 'java.util.Date') {
     return `${paramRefName}`; //时间类型 js2java可以直接识别;
   } else if (classPath === 'java.lang.Object') {
-    return `${paramRefName}['__fields2java']?${paramRefName}['__fields2java']():${paramRefName}`;
+    return `(${paramRefName}&&${paramRefName}['__fields2java'])?${paramRefName}['__fields2java']():${paramRefName}`;
   } else if (classPath.startsWith('java.lang.')) {
     return `java.${classPath.substring(
       classPath.lastIndexOf('.') + 1,
