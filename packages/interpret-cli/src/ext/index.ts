@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 import {join} from 'path';
+import {pathExists} from 'fs-extra';
 import {spawn} from 'child_process';
 import {IDubboExtInfo, IExtraResult} from '../typings';
 
@@ -27,7 +28,8 @@ const startFlag = 'Output at:';
  * @returns {Promise<{err: Error; res: IExtraResult}>}
  */
 export async function extra(extraParam: IDubboExtInfo): Promise<IExtraResult> {
-  return new Promise<IExtraResult>((resolve, reject) => {
+  await checkConfigPath([extraParam.entryJarPath, extraParam.libDirPath]);
+  return new Promise<IExtraResult>(async (resolve, reject) => {
     let execCmd = spawn(`java`, [
       '-jar',
       join(__dirname, '../../ext/jexpose-1.3.jar'),
@@ -39,18 +41,18 @@ export async function extra(extraParam: IDubboExtInfo): Promise<IExtraResult> {
 
     let err: string = '';
     let jarDir: string = '';
-    execCmd.stdout.setEncoding("utf8");
-    execCmd.stderr.setEncoding("utf8");
-    execCmd.stdout.on('data', (rowData:Buffer) => {
-      let output = rowData.toString("utf8");
+    execCmd.stdout.setEncoding('utf8');
+    execCmd.stderr.setEncoding('utf8');
+    execCmd.stdout.on('data', (rowData: Buffer) => {
+      let output = rowData.toString('utf8');
       if (output.includes(startFlag)) {
         let beginIndex = output.indexOf(startFlag) + startFlag.length;
         jarDir = output.substring(beginIndex).trim();
       }
     });
 
-    execCmd.stderr.on('data', (rowData:Buffer)  => {
-      err += rowData.toString("utf8");
+    execCmd.stderr.on('data', (rowData: Buffer) => {
+      err += rowData.toString('utf8');
     });
 
     execCmd.on('close', code => {
@@ -64,6 +66,38 @@ export async function extra(extraParam: IDubboExtInfo): Promise<IExtraResult> {
           jarDir,
         });
       }
+    });
+  });
+}
+
+/**
+ *  验证文件路径是否存在
+ *
+ * @param fileOrDirPath
+ */
+async function checkConfigPath(fileOrDirPath: string[]): Promise<boolean> {
+  let isOk = true;
+  for (const fileItempath of fileOrDirPath) {
+    let isExist = await isPathExist(fileItempath);
+    if (!isExist) {
+      isOk = false;
+      console.warn(`文件路径配置不正确:${fileItempath}`);
+    }
+  }
+
+  return isOk;
+}
+/**
+ * 验证文件或文件夹
+ * @param fileOrDirPath
+ */
+async function isPathExist(fileOrDirPath: string): Promise<boolean> {
+  return new Promise<boolean>((resolve, reject) => {
+    pathExists(fileOrDirPath, (err, exists) => {
+      if (err) {
+        return resolve(false);
+      }
+      resolve(exists);
     });
   });
 }
