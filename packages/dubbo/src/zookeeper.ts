@@ -27,7 +27,12 @@ import {
   ZookeeperTimeoutError,
 } from './err';
 import {go} from './go';
-import {IObservable, IRegistrySubscriber, IZkClientProps} from './types';
+import {
+  ICreateConsumerParam,
+  IObservable,
+  IRegistrySubscriber,
+  IZkClientProps,
+} from './types';
 import {delay, eqSet, isDevEnv, msg, noop, traceErr, traceInfo} from './util';
 
 const log = debug('dubbo:zookeeper');
@@ -290,6 +295,9 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
           `Zookeeper was session Expired Error current state ${this._client.getState()}`,
         ),
       );
+
+      //Please FIXEDME
+      this._client.connect();
     });
 
     //connect
@@ -378,14 +386,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
   /**
    * com.alibaba.dubbo.registry.zookeeper.ZookeeperRegistry
    */
-  private async _createConsumer(params: {
-    host: string;
-    port: number;
-    name: string;
-    dubboInterface: string;
-    dubboVersion: string;
-    version: string;
-  }) {
+  private async _createConsumer(params: ICreateConsumerParam) {
     let {host, port, name, dubboInterface, dubboVersion, version} = params;
     const queryParams = {
       host,
@@ -401,13 +402,15 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
       check: 'false',
     };
 
+    //create root comsumer
     const consumerRoot = `/dubbo/${dubboInterface}/consumers`;
     const err = await this._createRootConsumer(consumerRoot);
     if (err) {
-      log('create root consumer %o', err);
+      log('create root consumer: error %o', err);
       return;
     }
 
+    //create comsumer
     const consumerUrl =
       consumerRoot +
       '/' +
@@ -416,10 +419,14 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
           queryParams,
         )}`,
       );
-
     const exist = await go(this._exists(consumerUrl));
-    if (exist.err || exist.res) {
-      log(`check consumer url: ${consumerUrl}失败或者consumer已经存在`);
+    if (exist.err) {
+      log(`check consumer url: ${consumerUrl} failed`);
+      return;
+    }
+
+    if (exist.res) {
+      log(`check consumer url: ${consumerUrl} was existed.`);
       return;
     }
 
@@ -441,22 +448,24 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
   }
 
   private async _createRootConsumer(consumer: string) {
-    const {res, err} = await go(this._exists(consumer));
+    let {res, err} = await go(this._exists(consumer));
+    //check error
     if (err) {
-      log(`consumer exisit ${consumer} %o`, err);
       return err;
     }
 
-    //如果没有
-    if (!res) {
-      const {err} = await go(
-        this._create(consumer, zookeeper.CreateMode.PERSISTENT),
-      );
-      if (err) {
-        log(`create consumer#${consumer} successfully`);
-        return err;
-      }
+    // current consumer root path was existed.
+    if (res) {
+      return null;
     }
+
+    //create current consumer path
+    ({err} = await go(this._create(consumer, zookeeper.CreateMode.PERSISTENT)));
+    if (err) {
+      return err;
+    }
+
+    log('create root comsumer %s successfull', consumer);
   }
 
   private _create = (path: string, mode: number): Promise<string> => {
