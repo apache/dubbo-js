@@ -550,6 +550,7 @@ Analyze bytecode in java jar package and extract interface information in dubbo.
 
 # Performance
 
+```text
 ❯ loadtest -t 20 -c 200 http://localhost:3000/dubbo -k
 [Wed Jun 20 2018 15:10:16 GMT+0800 (CST)] INFO Requests: 0, requests per second: 0, mean latency: 0 ms
 [Wed Jun 20 2018 15:10:21 GMT+0800 (CST)] INFO Requests: 37305, requests per second: 7484, mean latency: 26.9 ms
@@ -573,18 +574,23 @@ Analyze bytecode in java jar package and extract interface information in dubbo.
 [Wed Jun 20 2018 15:10:36 GMT+0800 (CST)] INFO 95% 34 ms
 [Wed Jun 20 2018 15:10:36 GMT+0800 (CST)] INFO 99% 49 ms
 [Wed Jun 20 2018 15:10:36 GMT+0800 (CST)] INFO 100% 134 ms (longest request)
+```
 
 # FAQ
 
 ---
 
+```typescript
 import {Dubbo} from 'dubbo2.js';
+```
 
 The default compiling language: es2017 (support node7.10+)
 
 For lower version of node:
 
+```typescript
 import {Dubbo} from 'dubbo2.js/es6';
+```
 
 # How to participate in development？
 
