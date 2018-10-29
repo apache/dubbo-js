@@ -169,15 +169,16 @@ const errorProvider = ErrorProvider(dubbo);
 
 ---
 
+```sh
 brew install zookeeper
 brew services start zookeeper
 
 #Run test example in java/dubbo-demo-provider
-
 yarn run test
 
 #Full link log tracking
 DEBUG=dubbo\* yarn run test
+```
 
 # dubbo flow graph
 
