@@ -1,10 +1,9 @@
-import { Service } from 'egg';
+import {Service} from 'egg';
 
 /**
  * Test Service
  */
 export default class Test extends Service {
-
   /**
    * sayHi to you
    * @param name - your name
@@ -13,4 +12,3 @@ export default class Test extends Service {
     return `hi, ${name}`;
   }
 }
-

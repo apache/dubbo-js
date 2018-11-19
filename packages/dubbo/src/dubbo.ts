@@ -19,7 +19,6 @@ import debug from 'debug';
 import compose from 'koa-compose';
 import config from './config';
 import Context from './context';
-import {FaultExitError} from './err';
 import {go} from './go';
 import Queue from './queue';
 import Scheduler from './scheduler';
@@ -42,11 +41,6 @@ log('dubbo2.js version :=> %s', version);
 process.on('unhandledRejection', (reason, p) => {
   log(reason, p);
   traceErr(new Error(reason));
-});
-
-//监听uncaughtException
-process.on('uncaughtException', err => {
-  traceErr(new FaultExitError(err));
 });
 
 /**

@@ -152,3 +152,12 @@ export interface IQueryObj {
 }
 
 export type TQueueObserver = Function;
+
+export interface ICreateConsumerParam {
+  host: string;
+  port: number;
+  name: string;
+  dubboInterface: string;
+  dubboVersion: string;
+  version: string;
+}

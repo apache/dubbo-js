@@ -60,6 +60,7 @@ dubbo.use(async function trace(ctx: Context, next) {
   ctx.attachments = {
     userId: uuid,
   };
+
   await next();
 });
 
