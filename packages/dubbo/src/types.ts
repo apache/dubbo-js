@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {Setting} from './setting';
 
 export interface IObservable<T> {
   subscribe(subscriber: T);
@@ -76,6 +77,7 @@ export interface IDubboProps {
   zkRoot?: string;
   //当前要注册到dubbo容器的服务对象
   service: Object;
+  dubboSetting: Setting;
 }
 
 //magic, you should use typescript 2.8+
@@ -103,6 +105,7 @@ export interface IZkClientProps {
   zkRoot?: string;
   register: string;
   interfaces: Array<string>;
+  dubboSetting: Setting;
 }
 
 export interface IProviderProps {
@@ -159,5 +162,4 @@ export interface ICreateConsumerParam {
   name: string;
   dubboInterface: string;
   dubboVersion: string;
-  version: string;
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {Dubbo, java} from 'dubbo2.js';
+import {Dubbo, java, setting} from 'dubbo2.js';
 import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
 import {UserRequest} from './providers/com/alibaba/dubbo/demo/UserRequest';
 
@@ -23,11 +23,19 @@ const service = {
   DemoProvider,
 };
 
+const dubboSetting = setting
+  .match('com.alibaba.dubbo.demo.BasicTypeProvider', {
+    version: '2.0.0',
+  })
+  .match('com.alibaba.dubbo.demo.DemoProvider', {version: '1.0.0'})
+  .match('com.alibaba.dubbo.demo.ErrorProvider', {version: '1.0.0'});
+
 const dubbo = new Dubbo<typeof service>({
   application: {name: '@qianmi/node-dubbo'},
   register: 'localhost:2181',
   dubboInvokeTimeout: 0.001,
   service,
+  dubboSetting,
 });
 
 //use middleware

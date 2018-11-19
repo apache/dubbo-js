@@ -32,10 +32,10 @@ import {
   TDubboService,
 } from './types';
 import {msg, noop, traceErr, traceInfo} from './util';
-const version = require('../package.json').version;
 
 const log = debug('dubbo:bootstrap');
-log('dubbo2.js version :=> %s', version);
+const packageVersion = require('../package.json').version;
+log('dubbo2.js version :=> %s', packageVersion);
 
 //定位没有处理的promise
 process.on('unhandledRejection', (reason, p) => {
@@ -60,6 +60,11 @@ export default class Dubbo<TService = Object>
   implements IObservable<IDubboSubscriber> {
   constructor(props: IDubboProps) {
     this._props = props;
+
+    if (!props.dubboSetting) {
+      throw new Error('Please specify dubboSetting');
+    }
+
     this._interfaces = [];
     this._middleware = [];
     this._service = <TDubboService<TService>>{};
@@ -95,6 +100,7 @@ export default class Dubbo<TService = Object>
         register: props.register,
         application: props.application,
         interfaces: this._interfaces,
+        dubboSetting: props.dubboSetting,
       },
       this._queue,
     );
@@ -128,12 +134,18 @@ export default class Dubbo<TService = Object>
    * 代理dubbo的服务
    */
   proxyService = <T>(provider: IDubboProvider): T => {
-    const {application, isSupportedDubbox} = this._props;
-    const {dubboInterface, methods, version, timeout, group} = provider;
+    const {application, isSupportedDubbox, dubboSetting} = this._props;
+    const {dubboInterface, methods, timeout} = provider;
     const proxyObj = Object.create(null);
 
     //collect interface
     this._interfaces.push(dubboInterface);
+    const setting = dubboSetting.getDubboSetting(dubboInterface);
+    if (!setting) {
+      throw new Error(
+        `Could not find any group or version for ${dubboInterface}`,
+      );
+    }
 
     //proxy methods
     Object.keys(methods).forEach(name => {
@@ -149,9 +161,9 @@ export default class Dubbo<TService = Object>
         ctx.methodArgs = method.call(provider, ...args) || [];
 
         ctx.dubboInterface = dubboInterface;
-        ctx.version = version;
+        ctx.version = setting.version;
         ctx.timeout = timeout;
-        ctx.group = group || '';
+        ctx.group = setting.group || '';
 
         const self = this;
         const middlewares = [
@@ -235,7 +247,7 @@ export default class Dubbo<TService = Object>
           this._readyResolve();
         });
 
-      traceInfo(`dubbo:bootstrap version => ${version}`);
+      traceInfo(`dubbo:bootstrap version => ${packageVersion}`);
     });
   }
 

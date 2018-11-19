@@ -15,8 +15,7 @@
  * limitations under the License.
  */
 
-import {dubboInvoker, matcher} from 'dubbo-invoker';
-import {Context, Dubbo, java} from 'dubbo2.js';
+import {Context, Dubbo, java, setting} from 'dubbo2.js';
 import {BasicTypeProvider} from './providers/com/alibaba/dubbo/demo/BasicTypeProvider';
 import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
 import {ErrorProvider} from './providers/com/alibaba/dubbo/demo/ErrorProvider';
@@ -30,10 +29,24 @@ const service = {
   ErrorProvider,
 };
 
+//dubbo-setting
+const dubboSetting = setting
+  .match('com.alibaba.dubbo.demo.BasicTypeProvider', {
+    version: '2.0.0',
+  })
+  .match(
+    [
+      'com.alibaba.dubbo.demo.DemoProvider',
+      'com.alibaba.dubbo.demo.ErrorProvider',
+    ],
+    {version: '1.0.0'},
+  );
+
 const dubbo = new Dubbo<typeof service>({
   application: {name: '@qianmi/node-dubbo'},
   register: 'localhost:2181',
   service,
+  dubboSetting,
 });
 
 //use middleware
@@ -63,18 +76,6 @@ dubbo.use(async function trace(ctx: Context, next) {
 
   await next();
 });
-
-//dubbo-invoker set version
-dubbo.use(
-  dubboInvoker(
-    matcher
-      .match('com.alibaba.dubbo.demo.BasicTypeProvider', {
-        version: '2.0.0',
-      })
-      .match('com.alibaba.dubbo.demo.DemoProvider', {version: '1.0.0'})
-      .match('com.alibaba.dubbo.demo.ErrorProvider', {version: '1.0.0'}),
-  ),
-);
 
 dubbo.subscribe({
   onTrace(msg) {

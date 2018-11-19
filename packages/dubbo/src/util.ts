@@ -18,10 +18,13 @@
 import {EventEmitter} from 'events';
 import ip from 'ip';
 import {ITrace} from './types';
-export const msg = new EventEmitter();
-export const isDevEnv = process.env.NODE_ENV !== 'production';
+
 const pid = process.pid;
 const ipAddr = ip.address();
+
+export const msg = new EventEmitter();
+
+export const isDevEnv = process.env.NODE_ENV !== 'production';
 
 /**
  * yes, just do nothing.
