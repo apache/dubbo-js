@@ -77,7 +77,12 @@ export class Matcher {
       }
 
       if (isArray(condition) && condition.includes(dubboInterface)) {
-        log('%s =match=> Array rule result=> %j', dubboInterface, dubboSetting);
+        log(
+          '%s =match=> Array rule [%s] result=> %j',
+          dubboInterface,
+          condition,
+          dubboSetting,
+        );
         //cache
         this._cache.set(dubboInterface, dubboSetting);
         return dubboSetting;
