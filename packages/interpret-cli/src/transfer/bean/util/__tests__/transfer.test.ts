@@ -126,7 +126,7 @@ describe('基础转换生成', () => {
       classPath: 'T',
     });
     expect(content).toEqual(
-      "item['__fields2java']?item['__fields2java']():item",
+      "(item&&item['__fields2java'])?item['__fields2java']():item",
     );
   });
 
