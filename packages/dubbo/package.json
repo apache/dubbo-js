@@ -1,6 +1,6 @@
 {
   "name": "dubbo2.js",
-  "version": "2.2.5",
+  "version": "2.3.5",
   "main": "./es7/index.js",
   "types": "./es7/typings/index.d.ts",
   "license": "Apache Licence 2.0",
