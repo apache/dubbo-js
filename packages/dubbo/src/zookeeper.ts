@@ -392,7 +392,9 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
     );
 
     if (!dubboSetting) {
-      throw new Error(`Could not find group, version for ${dubboInterface}`);
+      throw new Error(
+        `Could not find group, version for ${dubboInterface} please check your dubbo setting`,
+      );
     }
 
     const queryParams = {

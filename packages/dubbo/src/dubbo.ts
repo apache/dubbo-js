@@ -140,10 +140,11 @@ export default class Dubbo<TService = Object>
 
     //collect interface
     this._interfaces.push(dubboInterface);
+    //get interface setting such as group, version
     const setting = dubboSetting.getDubboSetting(dubboInterface);
     if (!setting) {
       throw new Error(
-        `Could not find any group or version for ${dubboInterface}`,
+        `Could not find any group or version for ${dubboInterface}, Please specify dubboSetting`,
       );
     }
 
