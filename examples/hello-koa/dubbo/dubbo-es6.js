@@ -1,12 +1,23 @@
-const {Dubbo} = require('dubbo2.js');
+const {Dubbo, setting} = require('dubbo2.js');
 const service = require('./service');
 
-delete service['demoProvider'];
+const dubboSetting = setting
+  .match(
+    [
+      'com.alibaba.dubbo.demo.DemoProvider',
+      'com.alibaba.dubbo.demo.ErrorProvider',
+    ],
+    {
+      version: '1.0.0',
+    },
+  )
+  .match('com.alibaba.dubbo.demo.BasicTypeProvider', {version: '2.0.0'});
 
 const dubbo = (module.exports = new Dubbo({
   application: {name: 'dubbo-node-consumer1'},
   register: 'localhost:2181',
   service,
+  dubboSetting,
 }));
 
 //middleware
