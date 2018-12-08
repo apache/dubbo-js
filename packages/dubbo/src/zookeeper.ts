@@ -294,9 +294,6 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
           `Zookeeper was session Expired Error current state ${this._client.getState()}`,
         ),
       );
-
-      //Please FIXEDME
-      this._client.connect();
     });
 
     //connect
