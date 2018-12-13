@@ -44,7 +44,7 @@ export default class DubboUrl {
     this.port = Number(this._url.port);
     this.path = this._url.pathname.substring(1);
     this.dubboVersion = this._query.dubbo || '';
-    this.version = this._query.version || '0.0.0';
+    this.version = this._query.version || this._query['default.version'] || '0.0.0';
     this.group = this._query.group || '';
   }
 

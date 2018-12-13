@@ -43,12 +43,16 @@ enum DUBBO_RESPONSE_BODY_FLAG {
   RESPONSE_WITH_EXCEPTION = 0,
   RESPONSE_VALUE = 1,
   RESPONSE_NULL_VALUE = 2,
+  RESPONSE_WITH_EXCEPTION_WITH_ATTACHMENTS = 3,
+  RESPONSE_VALUE_WITH_ATTACHMENTS = 4,
+  RESPONSE_NULL_VALUE_WITH_ATTACHMENTS = 5,
 }
 
 //com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec.encodeResponse/decode
 export function decode<T>(bytes: Buffer): IDubboResponse<T> {
   let res = null;
   let err = null;
+  let resProps = null;
 
   // set request and serialization flag.
   //字节位置[4-11] 8 bytes
@@ -72,6 +76,7 @@ export function decode<T>(bytes: Buffer): IDubboResponse<T> {
       err: new DubboDecodeError(bytes.slice(HEADER_LENGTH).toString()),
       res: null,
       requestId,
+      resProps
     };
   }
 
@@ -102,9 +107,28 @@ export function decode<T>(bytes: Buffer): IDubboResponse<T> {
           : new DubboDecodeError(exception);
       res = null;
       break;
+      case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION_WITH_ATTACHMENTS:
+          const exception2 = body.read();
+          err =
+            exception2 instanceof Error
+              ? exception2
+              : new DubboDecodeError(exception2);
+          res = null
+          resProps = body.read();
+          break;
+      case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_VALUE_WITH_ATTACHMENTS:
+          err = null;
+          res = body.read();
+          resProps = body.read();
+          break;
+      case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_NULL_VALUE_WITH_ATTACHMENTS:
+          err = null;
+          res = null;
+          resProps = body.read();
+          break;
     default:
       err = new DubboDecodeError(
-        `Unknown result flag, expect '0' '1' '2', get  ${flag})`,
+        `Unknown result flag, expect 0/1/2/3/4/5, get  ${flag})`,
       );
       res = null;
   }
@@ -113,5 +137,6 @@ export function decode<T>(bytes: Buffer): IDubboResponse<T> {
     requestId,
     err,
     res,
+    resProps
   };
 }
