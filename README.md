@@ -550,6 +550,8 @@ const matchRuler = matcher
 dubbo.use(dubboInvoke(matchRuler));
 ```
 
+[dubbo2.js@2.3.5 we add dubboSetting](https://github.com/dubbo/dubbo2.js/releases/tag/dubbo2.js%402.3.5)
+
 # Translator => Cool.
 
 Believing the experience of development is as important as that of users, some innovations and cool practices are made.
