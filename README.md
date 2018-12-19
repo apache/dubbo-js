@@ -499,8 +499,8 @@ dubbo.use(async (ctx, next) => {
 });
 ```
 
-since dubbo2.6.3 Support implicit delivery of attachments from provider to consumer, [#889]
-How to get providerAttachments. Because we have middleware, it's so easy.
+dubbo2.6.3:Support implicit delivery of attachments from provider to consumer, [#889](https://github.com/apache/incubator-dubbo/issues/889)
+How to get providerAttachments?. Because we have middleware, it's so easy :)
 
 ```typescript
 dubbo.use(async (ctx, next) => {
