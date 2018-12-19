@@ -38,6 +38,12 @@ With core module [js-to-java](https://github.com/node-modules/js-to-java), and [
 
 11. SocketWorker was disconnected auto retry
 
+# Tip
+
+dubbo2.6.3:Support implicit delivery of attachments from provider to consumer, [#889](https://github.com/apache/incubator-dubbo/issues/889)
+
+dubbo2.js@2.3.7 support the feature.
+
 # Getting Started
 
 ---
@@ -490,6 +496,17 @@ dubbo.use(async (ctx, next) => {
   await next();
   const endTime = Date.now();
   console.log('invoke cost time->', endTime - startTime);
+});
+```
+
+since dubbo2.6.3 Support implicit delivery of attachments from provider to consumer, [#889]
+How to get providerAttachments. Because we have middleware, it's so easy.
+
+```typescript
+dubbo.use(async (ctx, next) => {
+  await next();
+  //yes, we get it.
+  console.log(ctx.providerAttachments);
 });
 ```
 
