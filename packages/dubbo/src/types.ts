@@ -123,6 +123,7 @@ export interface IDubboResponse<T> {
   requestId: number;
   err: Error | null;
   res: T | null;
+  attachments: Object;
 }
 
 export interface IHessianType {

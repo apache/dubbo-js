@@ -20,6 +20,11 @@ const dubbo = (module.exports = new Dubbo({
   dubboSetting,
 }));
 
+dubbo.use(async (ctx, next) => {
+  await next();
+  console.log('-providerAttachments-->', ctx.providerAttachments);
+});
+
 // dubbo.ready().then(() => {
 //   console.log('dubbo was ready');
 // });

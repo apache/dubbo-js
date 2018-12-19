@@ -33,6 +33,7 @@ export default class Context<T = any> {
     this._body = {err: null, res: null};
     this._application = {name: 'dubbo2.js'};
     this._attachments = {};
+    this._providerAttachments = {};
     this._request = <IContextRequestParam>{
       requestId: id(),
     };
@@ -97,6 +98,12 @@ export default class Context<T = any> {
    * 扩展attachments,支持自定义一些属性可以放在dubbo的encoder底层协议的attachment字段中
    */
   private _attachments: Object;
+
+  /**
+   * dubbo2.6.3 增加了 provider => consumer的attachments的能力
+   * https://github.com/apache/incubator-dubbo/issues/889
+   */
+  private _providerAttachments: Object;
 
   static create<T = any>() {
     return new Context<T>();
@@ -314,6 +321,23 @@ export default class Context<T = any> {
    */
   get attachments(): Object {
     return this._attachments;
+  }
+
+  /**
+   * 设置provider传递过来的attachments
+   * @since dubbo2.6.3
+   */
+  set providerAttachments(param: Object) {
+    log('set provider attachments->%o', param);
+    this._providerAttachments = param;
+  }
+
+  /**
+   * 设置provider传递过来的attachments
+   * @since dubbo2.6.3
+   */
+  get providerAttachments() {
+    return this._providerAttachments;
   }
 
   //===============private method==========================

@@ -131,7 +131,7 @@ export default class Queue implements IObservable<TQueueObserver> {
     this._requestQueue.clear();
   }
 
-  failed(requestId: TRequestId, err: Error) {
+  failed(requestId: TRequestId, err: Error, attachments: Object = {}) {
     const ctx = this._requestQueue.get(requestId);
     if (!ctx) {
       return;
@@ -149,6 +149,8 @@ export default class Queue implements IObservable<TQueueObserver> {
     if (err['cause']) {
       delete err['cause']['cause'];
     }
+    //dubbo2.6.3
+    ctx.providerAttachments = attachments;
     ctx.cleanTimeout();
     ctx.reject(err);
     this._clear(requestId);
@@ -178,12 +180,14 @@ export default class Queue implements IObservable<TQueueObserver> {
     }
   }
 
-  resolve(requestId, res) {
+  resolve(requestId: TRequestId, res: any, attachments: Object = {}) {
     const ctx = this._requestQueue.get(requestId);
     if (!ctx) {
       return;
     }
     log('resolve requestId#%d, res: %O', requestId, res);
+    //dubbo2.6.3
+    ctx.providerAttachments = attachments;
     ctx.cleanTimeout();
     ctx.resolve(res);
     this._clear(requestId);
