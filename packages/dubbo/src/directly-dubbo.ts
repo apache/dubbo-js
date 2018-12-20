@@ -27,7 +27,7 @@ const log = debug('directly-dubbo');
 /**
  * 直连dubbo的远程方法，方便快速测试还没有发布到zookeeper的的方法
  * Usage:
- * 
+ *
 const dubbo = DirectlyDubbo.from({
   dubboAddress: 'localhost:20880',
   dubboVersion: '2.0.0',
