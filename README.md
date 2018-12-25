@@ -38,6 +38,11 @@ With core module [js-to-java](https://github.com/node-modules/js-to-java), and [
 
 11. SocketWorker was disconnected auto retry
 
+# Oops
+
+Oops, please dont's use dubbo2.js@2.2.2 dubbo2.js@2.3.5.
+When zookeper session expires, it causes the dubbo2.js's zookeeper client to attempt to reconnect indefinitely.
+
 # Tip
 
 dubbo2.6.3:Support implicit delivery of attachments from provider to consumer, [#889](https://github.com/apache/incubator-dubbo/issues/889)
