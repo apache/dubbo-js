@@ -26,7 +26,7 @@ const log = debug('dubbo:dubbo-setting');
  * Matcher
  * 多么想要一个ReasonML的match-pattern 😆
  */
-export class Matcher {
+export class Setting {
   private readonly _rules: Array<IRule> = [];
   private _cache: Map<string, IDubboSetting> = new Map();
 
@@ -76,7 +76,7 @@ export class Matcher {
         return dubboSetting;
       }
 
-      if (isArray(condition) && condition.includes(dubboInterface)) {
+      if (isArray(condition) && condition.indexOf(dubboInterface) != -1) {
         log(
           '%s =match=> Array rule [%s] result=> %j',
           dubboInterface,
@@ -116,4 +116,4 @@ export class Matcher {
   }
 }
 
-export default new Matcher();
+export default new Setting();

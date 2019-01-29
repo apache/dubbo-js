@@ -44,7 +44,8 @@ export default class DubboUrl {
     this.port = Number(this._url.port);
     this.path = this._url.pathname.substring(1);
     this.dubboVersion = this._query.dubbo || '';
-    this.version = this._query.version || '0.0.0';
+    this.version =
+      this._query.version || this._query['default.version'] || '0.0.0';
     this.group = this._query.group || '';
   }
 
@@ -52,12 +53,12 @@ export default class DubboUrl {
   private readonly _query: IQueryObj;
 
   //===================public fields and methods============
-  public readonly host;
-  public readonly port;
-  public readonly path;
-  public readonly dubboVersion;
-  public readonly version;
-  public readonly group;
+  public readonly host: string;
+  public readonly port: number;
+  public readonly path: string;
+  public readonly dubboVersion: string;
+  public readonly version: string;
+  public readonly group: string;
 
   static from(providerUrl: string) {
     return new DubboUrl(providerUrl);

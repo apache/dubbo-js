@@ -19,7 +19,7 @@ import debug from 'debug';
 import DubboAgent from './dubbo-agent';
 import {ScheduleError, SocketError, ZookeeperTimeoutError} from './err';
 import Queue from './queue';
-import {IZkClientProps} from './types';
+import {IDubboResponse, IZkClientProps} from './types';
 import {traceErr, traceInfo} from './util';
 import {ZkRegistry} from './zookeeper';
 
@@ -127,7 +127,7 @@ export default class Scheduler {
   /**
    * 处理zookeeper的错误
    */
-  private _handleZkClientError = err => {
+  private _handleZkClientError = (err: Error) => {
     log(err);
     //说明zookeeper连接不上
     if (err instanceof ZookeeperTimeoutError) {
@@ -199,11 +199,16 @@ export default class Scheduler {
   /**
    * 当收到数据的时候
    */
-  private _handleOnData = ({requestId, res, err}) => {
+  private _handleOnData = ({
+    requestId,
+    res,
+    err,
+    attachments,
+  }: IDubboResponse<any>) => {
     if (err) {
-      this._queue.failed(requestId, err);
+      this._queue.failed(requestId, err, attachments);
     } else {
-      this._queue.resolve(requestId, res);
+      this._queue.resolve(requestId, res, attachments);
     }
   };
 

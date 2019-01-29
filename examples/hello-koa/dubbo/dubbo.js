@@ -1,11 +1,29 @@
-const {Dubbo} = require('dubbo2.js');
+const {Dubbo, setting} = require('dubbo2.js');
 const service = require('./service');
+
+const dubboSetting = setting
+  .match(
+    [
+      'com.alibaba.dubbo.demo.DemoProvider',
+      'com.alibaba.dubbo.demo.ErrorProvider',
+    ],
+    {
+      version: '1.0.0',
+    },
+  )
+  .match('com.alibaba.dubbo.demo.BasicTypeProvider', {version: '2.0.0'});
 
 const dubbo = (module.exports = new Dubbo({
   application: {name: 'dubbo-node-consumer'},
   register: 'localhost:2181',
   service,
+  dubboSetting,
 }));
+
+dubbo.use(async (ctx, next) => {
+  await next();
+  console.log('-providerAttachments-->', ctx.providerAttachments);
+});
 
 // dubbo.ready().then(() => {
 //   console.log('dubbo was ready');

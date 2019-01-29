@@ -1,5 +1,4 @@
-import {dubboInvoker, matcher} from 'dubbo-invoker';
-import {Context, Dubbo} from 'dubbo2.js';
+import {Context, Dubbo, setting} from 'dubbo2.js';
 import {EggApplication} from 'egg';
 import service from './service';
 
@@ -10,10 +9,23 @@ declare module 'egg' {
 }
 
 export default (app: EggApplication) => {
+  const dubboSetting = setting
+    .match(
+      [
+        'com.alibaba.dubbo.demo.DemoProvider',
+        'com.alibaba.dubbo.demo.ErrorProvider',
+      ],
+      {
+        version: '1.0.0',
+      },
+    )
+    .match('com.alibaba.dubbo.demo.BasicTypeProvider', {version: '2.0.0'});
+
   const dubbo = new Dubbo<typeof service>({
     application: {name: 'node-egg-bff'},
     register: 'localhost:2181',
     service,
+    dubboSetting,
   });
 
   // extends middleware
@@ -25,18 +37,6 @@ export default (app: EggApplication) => {
       `${ctx.dubboInterface} was invoked, cost-time ${end - start}`,
     );
   });
-
-  // setting runtime version etc.
-  dubbo.use(
-    dubboInvoker(
-      matcher
-        .match('com.alibaba.dubbo.demo.BasicTypeProvider', {
-          version: '2.0.0',
-        })
-        .match('com.alibaba.dubbo.demo.DemoProvider', {version: '1.0.0'})
-        .match('com.alibaba.dubbo.demo.ErrorProvider', {version: '1.0.0'}),
-    ),
-  );
 
   app.dubbo = dubbo;
 };

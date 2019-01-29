@@ -5,7 +5,6 @@ const provider = (module.exports = {});
 provider.demoProvider = dubbo =>
   dubbo.proxyService({
     dubboInterface: 'com.alibaba.dubbo.demo.DemoProvider',
-    version: '1.0.0',
     methods: {
       sayHello(name) {
         return [java.String(name)];
@@ -30,7 +29,6 @@ provider.demoProvider = dubbo =>
 provider.basicTypeProvider = dubbo =>
   dubbo.proxyService({
     dubboInterface: 'com.alibaba.dubbo.demo.BasicTypeProvider',
-    version: '2.0.0',
     methods: {
       testBasicType() {
         return [
@@ -46,7 +44,6 @@ provider.basicTypeProvider = dubbo =>
 provider.errorProvider = dubbo =>
   dubbo.proxyService({
     dubboInterface: 'com.alibaba.dubbo.demo.ErrorProvider',
-    version: '1.0.0',
     methods: {
       errorTest() {
         return [];

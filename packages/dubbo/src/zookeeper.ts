@@ -151,7 +151,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
 
       for (let serviceUrl of dubboServiceUrls) {
         const url = DubboUrl.from(serviceUrl);
-        const {host, port, dubboVersion, version} = url;
+        const {host, port, dubboVersion} = url;
         this._dubboServiceUrlMap.get(inf).push(url);
 
         //写入consume信息
@@ -161,7 +161,6 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
           name: name,
           dubboInterface: inf,
           dubboVersion: dubboVersion,
-          version: version,
         }).then(() => log('create Consumer finish'));
       }
     }
@@ -295,9 +294,6 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
           `Zookeeper was session Expired Error current state ${this._client.getState()}`,
         ),
       );
-
-      //Please FIXEDME
-      this._client.connect();
     });
 
     //connect
@@ -322,7 +318,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
       const urls = [];
       for (let serviceUrl of dubboServiceUrls) {
         const url = DubboUrl.from(serviceUrl);
-        const {host, port, dubboVersion, version} = url;
+        const {host, port, dubboVersion} = url;
         agentAddrList.push(`${host}:${port}`);
         urls.push(url);
 
@@ -332,7 +328,6 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
           name: this._props.application.name,
           dubboInterface: dubboInterface,
           dubboVersion: dubboVersion,
-          version: version,
         }).then(() => log('create consumer finish'));
       }
       this._dubboServiceUrlMap.set(dubboInterface, urls);
@@ -387,7 +382,18 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
    * com.alibaba.dubbo.registry.zookeeper.ZookeeperRegistry
    */
   private async _createConsumer(params: ICreateConsumerParam) {
-    let {host, port, name, dubboInterface, dubboVersion, version} = params;
+    let {host, port, name, dubboInterface, dubboVersion} = params;
+
+    const dubboSetting = this._props.dubboSetting.getDubboSetting(
+      dubboInterface,
+    );
+
+    if (!dubboSetting) {
+      throw new Error(
+        `Could not find group, version for ${dubboInterface} please check your dubbo setting`,
+      );
+    }
+
     const queryParams = {
       host,
       port,
@@ -397,7 +403,8 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
       dubbo: dubboVersion,
       method: '',
       revision: '',
-      version: version,
+      version: dubboSetting.version,
+      group: dubboSetting.group,
       side: 'consumer',
       check: 'false',
     };

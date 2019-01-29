@@ -43,12 +43,17 @@ enum DUBBO_RESPONSE_BODY_FLAG {
   RESPONSE_WITH_EXCEPTION = 0,
   RESPONSE_VALUE = 1,
   RESPONSE_NULL_VALUE = 2,
+  //@since dubbo2.6.3
+  RESPONSE_WITH_EXCEPTION_WITH_ATTACHMENTS = 3,
+  RESPONSE_VALUE_WITH_ATTACHMENTS = 4,
+  RESPONSE_NULL_VALUE_WITH_ATTACHMENTS = 5,
 }
 
 //com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec.encodeResponse/decode
 export function decode<T>(bytes: Buffer): IDubboResponse<T> {
   let res = null;
   let err = null;
+  let attachments = {};
 
   // set request and serialization flag.
   //字节位置[4-11] 8 bytes
@@ -71,6 +76,7 @@ export function decode<T>(bytes: Buffer): IDubboResponse<T> {
     return {
       err: new DubboDecodeError(bytes.slice(HEADER_LENGTH).toString()),
       res: null,
+      attachments,
       requestId,
     };
   }
@@ -89,10 +95,12 @@ export function decode<T>(bytes: Buffer): IDubboResponse<T> {
     case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_VALUE:
       err = null;
       res = body.read();
+      attachments = {};
       break;
     case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_NULL_VALUE:
       err = null;
       res = null;
+      attachments = {};
       break;
     case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION:
       const exception = body.read();
@@ -101,10 +109,27 @@ export function decode<T>(bytes: Buffer): IDubboResponse<T> {
           ? exception
           : new DubboDecodeError(exception);
       res = null;
+      attachments = {};
+      break;
+    case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_NULL_VALUE_WITH_ATTACHMENTS:
+      err = null;
+      res = null;
+      attachments = body.read();
+      break;
+    case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_VALUE_WITH_ATTACHMENTS:
+      err = null;
+      res = body.read();
+      attachments = body.read();
+      break;
+    case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION_WITH_ATTACHMENTS:
+      const exp = body.read();
+      err = exp instanceof Error ? exp : new DubboDecodeError(exp);
+      res = null;
+      attachments = body.read();
       break;
     default:
       err = new DubboDecodeError(
-        `Unknown result flag, expect '0' '1' '2', get  ${flag})`,
+        `Unknown result flag, expect '0/1/2/3/4/5', get  ${flag})`,
       );
       res = null;
   }
@@ -113,5 +138,6 @@ export function decode<T>(bytes: Buffer): IDubboResponse<T> {
     requestId,
     err,
     res,
+    attachments,
   };
 }

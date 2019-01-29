@@ -22,7 +22,7 @@ export const type = (arg: any) => {
   return toString.call(arg);
 };
 
-export const isArray = (arg: any): arg is Array<any> => {
+export const isArray = (arg: any): arg is Array<string> => {
   return type(arg) === '[object Array]';
 };
 

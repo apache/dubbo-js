@@ -38,6 +38,17 @@ With core module [js-to-java](https://github.com/node-modules/js-to-java), and [
 
 11. SocketWorker was disconnected auto retry
 
+# Oops
+
+Oops, please dont's use dubbo2.js@2.2.2 dubbo2.js@2.3.5.
+When zookeper session expires, it causes the dubbo2.js's zookeeper client to attempt to reconnect indefinitely.
+
+# Tip
+
+dubbo2.6.3:Support implicit delivery of attachments from provider to consumer, [#889](https://github.com/apache/incubator-dubbo/issues/889)
+
+dubbo2.js@2.3.7 support the feature.
+
 # Getting Started
 
 ---
@@ -493,6 +504,17 @@ dubbo.use(async (ctx, next) => {
 });
 ```
 
+dubbo2.6.3:Support implicit delivery of attachments from provider to consumer, [#889](https://github.com/apache/incubator-dubbo/issues/889)
+How to get providerAttachments?. Because we have middleware, it's so easy :)
+
+```typescript
+dubbo.use(async (ctx, next) => {
+  await next();
+  //yes, we get it.
+  console.log(ctx.providerAttachments);
+});
+```
+
 # dubbo-invoker
 
 ---
@@ -532,6 +554,8 @@ const matchRuler = matcher
 
 dubbo.use(dubboInvoke(matchRuler));
 ```
+
+[dubbo2.js@2.3.5 we add dubboSetting](https://github.com/dubbo/dubbo2.js/releases/tag/dubbo2.js%402.3.5)
 
 # Translator => Cool.
 
