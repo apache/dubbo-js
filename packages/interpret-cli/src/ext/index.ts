@@ -56,15 +56,17 @@ export async function extra(extraParam: IDubboExtInfo): Promise<IExtraResult> {
     });
 
     execCmd.on('close', code => {
-      if (err) {
-        reject(new Error(`exitCode:${code}  errorInfo:${err}`));
-      } else if (!jarDir) {
-        reject(new Error('解析失败未获取输出文件路径'));
-      } else {
+      if (jarDir) {
         resolve({
           jarInfo: join(jarDir, '/output/deflated.json'),
           jarDir,
         });
+      }
+      if (err) {
+        console.error(`exitCode:${code}  errorInfo:${err}`);
+      } else if (!jarDir) {
+        reject(new Error('解析失败未获取输出文件路径'));
+      } else {
       }
     });
   });
