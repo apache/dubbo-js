@@ -91,6 +91,8 @@ const dubbo = new Dubbo({
   //so easy
   await dubbo.service.ShowCaseProvider.show();
 })();
-```
+``
 
 **_Tip_** `npm install interpret-util dubbo2.js`;
+
+[interpret-example](https://github.com/creasy2010/interpret-example);
