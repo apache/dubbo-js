@@ -42,7 +42,7 @@ export function getCtorParaStr(
   if (typeParameters.length === 0) {
     return 'I' + className;
   } else {
-    return `I${className}<${typeParameters.map(({name}) => name.replace("=any","")).join(',')}>`;
+    return `I${className}<${typeParameters.map(({name}) => name.replace(" extends { __fields2java(): any } = any","")).join(',')}>`;
   }
 }
 
