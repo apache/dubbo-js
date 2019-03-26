@@ -95,7 +95,7 @@ export class ZoneContext {
   /**
    * 获取zonecontext值策略:
    * 1. 找出当前async-resource 有context的async-resources集合;
-   * 2. 从根部遍历async-resources集合对应的context;(从根部开始找,可以减弱名字冲突的影响,,防止下级扩展影响上级);
+   * 2. 按就近原则, 遍历async-resources集合对应的context;
    * 3. 如果context包含key值则返回,如果不包含key值,则继续;
    *
    * @param key
@@ -106,8 +106,8 @@ export class ZoneContext {
 
     let ids = this.getRootAsyncIdLinks(asyncId);
     let value = undefined;
-    for (let index = ids.length - 1; index >= 0; index--) {
-      let contextMap = this.rootMap.get(ids[index]);
+    for (let i = 0,iLen=ids.length ; i < iLen ; i--) {
+      let contextMap = this.rootMap.get(ids[i]);
       if (contextMap[key]) {
         value = contextMap[key];
         break;
