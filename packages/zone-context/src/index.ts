@@ -106,7 +106,7 @@ export class ZoneContext {
 
     let ids = this.getRootAsyncIdLinks(asyncId);
     let value = undefined;
-    for (let i = 0,iLen=ids.length ; i < iLen ; i--) {
+    for (let i = 0,iLen=ids.length ; i < iLen ; i++) {
       let contextMap = this.rootMap.get(ids[i]);
       if (contextMap[key]) {
         value = contextMap[key];
