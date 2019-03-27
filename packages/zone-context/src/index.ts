@@ -92,14 +92,49 @@ export class ZoneContext {
       .enable();
   }
 
-  get(key) {
-    const asyncId = async_hooks.executionAsyncId();
-    const value =
-      this.rootMap.get(this.statckFrameMap.get(asyncId)) ||
-      this.rootMap.get(asyncId) ||
-      {};
-    log(`current currentAsyncId ${asyncId} value: ${JSON.stringify(value)}`);
-    return value[key];
+  /**
+   * 获取zonecontext值策略:
+   * 1. 找出当前async-resource 有context的async-resources集合;
+   * 2. 按就近原则, 遍历async-resources集合对应的context;
+   * 3. 如果context包含key值则返回,如果不包含key值,则继续;
+   *
+   * @param key
+   * @returns {any}
+   */
+  get(key: string): any | undefined {
+    let asyncId = async_hooks.executionAsyncId();
+
+    let ids = this.getRootAsyncIdLinks(asyncId);
+    let value = undefined;
+    for (let i = 0,iLen=ids.length ; i < iLen ; i++) {
+      let contextMap = this.rootMap.get(ids[i]);
+      if (contextMap[key]) {
+        value = contextMap[key];
+        break;
+      }
+    }
+
+    log(`current currentAsyncId ${asyncId} value:${JSON.stringify(value)}`);
+    return value;
+  }
+
+  /**
+   * 获取调用链上的有Context的async resourec
+   *
+   * @param {AsyncId} asyncId
+   * @returns {AsyncId[]}
+   */
+  private getRootAsyncIdLinks(asyncId: AsyncId): AsyncId[] {
+    let ids: AsyncId[] = [];
+
+    do {
+      if (this.rootMap.has(asyncId)) {
+        ids.push(asyncId);
+      }
+      asyncId = this.statckFrameMap.get(asyncId);
+    } while (asyncId);
+
+    return ids;
   }
 
   setRootContext(key, value) {

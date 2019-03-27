@@ -1,19 +1,16 @@
 {
   "name": "interpret-dubbo2js",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "interpret java-jar file to typescript files",
   "bin": {
     "interpret": "./lib/cli.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dubbo/dubbo2.js/blob/master/packages/interpret-cli"
+    "url":
+      "https://github.com/dubbo/dubbo2.js/blob/master/packages/interpret-cli"
   },
-  "keywords": [
-    "dubbo",
-    "typescript",
-    "ts-simple-ast"
-  ],
+  "keywords": ["dubbo", "typescript", "ts-simple-ast"],
   "engines": {
     "node": ">=8.0.0"
   },
