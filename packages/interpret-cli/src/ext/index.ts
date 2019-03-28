@@ -46,8 +46,7 @@ export async function extra(extraParam: IDubboExtInfo): Promise<IExtraResult> {
     execCmd.stdout.on('data', (rowData: Buffer) => {
       let output = rowData.toString('utf8');
       if (output.includes(startFlag)) {
-        let beginIndex = output.indexOf(startFlag) + startFlag.length;
-        jarDir = output.substring(beginIndex).trim();
+        jarDir = output.match(/Output at:(.*)(\nelapsed.*?s)?/)[1];
       }
     });
 
