@@ -410,7 +410,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
     };
 
     //create root comsumer
-    const consumerRoot = `/dubbo/${dubboInterface}/consumers`;
+    const consumerRoot = `/${this._props.zkRoot}/${dubboInterface}/consumers`;
     const err = await this._createRootConsumer(consumerRoot);
     if (err) {
       log('create root consumer: error %o', err);
