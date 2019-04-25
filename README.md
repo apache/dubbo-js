@@ -1,4 +1,4 @@
-# dubbo2.js
+# js-for-apache-dubbo
 
 ---
 
@@ -6,9 +6,9 @@
 
 [![NPM](https://nodei.co/npm/dubbo2.js.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/dubbo2.js)
 
-dubbo2.js = Nodejs connected Java Dubbo service by dubbo protocol (dubbo head + hessian body)
+js-for-apache-dubbo = Nodejs connected Java Dubbo service by dubbo protocol (dubbo head + hessian body)
 
-After all these years, dubbo 2 comes finally~ We love dubbo!👏
+After all these years, js-for-apache-dubbo comes finally~ We love dubbo!👏
 
 With core module [js-to-java](https://github.com/node-modules/js-to-java), and [hessian.js](https://github.com/node-modules/hessian.js), dubbo2 is finished. And many thanks to [fengmk2](https://github.com/fengmk2)和[dead-horse](https://github.com/dead-horse).
 
