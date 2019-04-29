@@ -151,18 +151,13 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
 
       for (let serviceUrl of dubboServiceUrls) {
         const url = DubboUrl.from(serviceUrl);
-        const {host, port, dubboVersion} = url;
         this._dubboServiceUrlMap.get(inf).push(url);
-
-        //写入consume信息
-        this._createConsumer({
-          host: host,
-          port: port,
-          name: name,
-          dubboInterface: inf,
-          dubboVersion: dubboVersion,
-        }).then(() => log('create Consumer finish'));
       }
+      //写入consumer信息
+      this._createConsumer({
+        name: name,
+        dubboInterface: inf,
+      }).then(() => log('create Consumer finish'));
     }
 
     if (isDevEnv) {
@@ -318,18 +313,16 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
       const urls = [];
       for (let serviceUrl of dubboServiceUrls) {
         const url = DubboUrl.from(serviceUrl);
-        const {host, port, dubboVersion} = url;
+        const {host, port} = url;
         agentAddrList.push(`${host}:${port}`);
         urls.push(url);
-
-        this._createConsumer({
-          host: host,
-          port: port,
-          name: this._props.application.name,
-          dubboInterface: dubboInterface,
-          dubboVersion: dubboVersion,
-        }).then(() => log('create consumer finish'));
       }
+
+      this._createConsumer({
+        name: this._props.application.name,
+        dubboInterface: dubboInterface,
+      }).then(() => log('create consumer finish'));
+
       this._dubboServiceUrlMap.set(dubboInterface, urls);
 
       if (agentAddrList.length === 0) {
@@ -382,7 +375,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
    * com.alibaba.dubbo.registry.zookeeper.ZookeeperRegistry
    */
   private async _createConsumer(params: ICreateConsumerParam) {
-    let {host, port, name, dubboInterface, dubboVersion} = params;
+    let {name, dubboInterface} = params;
 
     const dubboSetting = this._props.dubboSetting.getDubboSetting(
       dubboInterface,
@@ -395,12 +388,9 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
     }
 
     const queryParams = {
-      host,
-      port,
       interface: dubboInterface,
       application: name,
       category: 'consumers',
-      dubbo: dubboVersion,
       method: '',
       revision: '',
       version: dubboSetting.version,
