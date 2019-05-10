@@ -52,9 +52,9 @@ dubbo2.js@2.3.7 support the feature.
 # Getting Started
 
 ---
-
+```
 yarn add dubbo2.js
-
+```
 # How to Usage?
 
 ---
