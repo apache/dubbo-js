@@ -64,6 +64,10 @@ export class IntepretHandle implements ITypeSearch {
     return this.request.providerSuffix;
   }
 
+  get include(): string {
+    return this.request.include;
+  }
+
   public async work() {
     await this.prepare();
     await this.doItRecursively();

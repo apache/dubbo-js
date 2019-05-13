@@ -29,15 +29,26 @@ const startFlag = 'Output at:';
  */
 export async function extra(extraParam: IDubboExtInfo): Promise<IExtraResult> {
   await checkConfigPath([extraParam.entryJarPath, extraParam.libDirPath]);
+  await checkConfigPath([extraParam.entryJarPath, extraParam.libDirPath]);
+  let params = ['-jar',
+    join(__dirname, '../../ext/jexpose-1.4.jar'),
+    '-t',
+    extraParam.entry,
+    '-j',
+    extraParam.entryJarPath,
+    '-l',
+    extraParam.libDirPath];
+  if (extraParam.providerSuffix) {
+    params.push("-s");
+    params.push(extraParam.providerSuffix)
+  }
+  if (extraParam.include) {
+    params.push("-i");
+    params.push(extraParam.include)
+  }
+
   return new Promise<IExtraResult>(async (resolve, reject) => {
-    let execCmd = spawn(`java`, [
-      '-jar',
-      join(__dirname, '../../ext/jexpose-1.3.jar'),
-      extraParam.entry,
-      extraParam.entryJarPath,
-      extraParam.libDirPath,
-      extraParam.providerSuffix || 'Provider',
-    ]);
+    let execCmd = spawn(`java`, params);
 
     let err: string = '';
     let jarDir: string = '';

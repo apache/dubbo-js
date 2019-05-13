@@ -38,6 +38,16 @@ export async function toTypescript(
   let {sourceFile, astJava} = intepretHandle;
 
   let lastPointIndex = astJava.name.lastIndexOf('.') + 1;
+  let isProvider = false;
+  if (intepretHandle.providerSuffix && astJava.name.endsWith(String(intepretHandle.providerSuffix))) {
+    isProvider = true;
+  }
+  if (intepretHandle.include ) {
+    var reg = new RegExp(intepretHandle.include);
+    if (reg.test(astJava.name)) {
+      isProvider = true;
+    }
+  }
   let typeInfo = {
     classPath: astJava.name,
     packagePath: astJava.name.substring(0, lastPointIndex),
@@ -46,7 +56,7 @@ export async function toTypescript(
     isAbstract: astJava.isAbstract,
     isInterface: astJava.isInterface,
     isClass: !astJava.isEnum && !astJava.isInterface,
-    isProvider: astJava.name.endsWith(String(intepretHandle.providerSuffix) || 'Provider'),
+    isProvider: isProvider,
   };
   intepretHandle.request.registerTypeInfo(typeInfo);
 

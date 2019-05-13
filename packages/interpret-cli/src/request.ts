@@ -89,6 +89,11 @@ export class Request {
     return this.config.providerSuffix || 'Provider';
   }
 
+
+  get include(): string {
+    return this.config.include || '';
+  }
+
   registerTypeInfo(typeInfoItem: TypeInfoI) {
     let key = '';
     if (typeInfoItem.classPath) {
