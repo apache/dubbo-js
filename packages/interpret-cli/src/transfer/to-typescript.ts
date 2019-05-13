@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 import debug from 'debug';
+import program from 'commander';
 import {toEnum} from './bean/to-enum';
 import {toBeanClass} from './bean/to-vo';
 import {SourceFile} from 'ts-simple-ast';
@@ -22,6 +23,8 @@ import {IntepretHandle} from '../handle';
 import {toInterface} from './provider/to-interface';
 import {toProxyFunc} from './provider/to-proxy-function';
 import {toWrapperClass} from './provider/to-wrapper-class';
+import {toGenericInterface} from "./provider/to-generic-interface";
+import {toGenericWrapperClass} from "./provider/to-generic-wrapper-class";
 
 const log = debug('j2t:core:toTypewcript');
 
@@ -59,10 +62,13 @@ export async function toTypescript(
       sourceFile.addEnum(toEnum(astJava.name, astJava, intepretHandle));
     } else {
       if (typeInfo.isProvider) {
-        sourceFile.addInterface(await toInterface(astJava, intepretHandle));
-        sourceFile.addVariableStatement(
-          toWrapperClass(astJava, intepretHandle),
-        );
+        if (program.generic === 'true') {
+          sourceFile.addInterface(await toGenericInterface(astJava, intepretHandle));
+          sourceFile.addVariableStatement(await toGenericWrapperClass(astJava, intepretHandle));
+        } else {
+          sourceFile.addInterface(await toInterface(astJava, intepretHandle));
+          sourceFile.addVariableStatement(await toWrapperClass(astJava, intepretHandle));
+        }
         sourceFile.addImport({
           moduleSpecifier: 'dubbo2.js',
           defaultImport: '{TDubboCallResult,Dubbo}',

@@ -23,11 +23,13 @@ import {
   TypeParameterDeclarationStructure,
 } from 'ts-simple-ast';
 import debug from 'debug';
+import program from 'commander';
 import {toField} from './to-field';
 import {IntepretHandle} from '../../handle';
 import {jType2Ts} from '../../util/type-parse';
 import {IJClass} from '../../typings';
 import {fields2CtrContent, getCtorParaStr} from './util/transfer';
+import {genericFields2CtrContent, genericGetCtorParaStr} from "./util/generic-transfer";
 
 const log = debug('j2t:core:toBeanClass');
 
@@ -80,11 +82,27 @@ export async function toBeanClass(
   }
   //添加构造函数入参interface
   //1.2 生成方法;;
-  let {fieldTrans, initContent} = await fields2CtrContent(
-    fileds,
-    intepretHandle,
-    typeDef,
-  );
+  let parameterNames, fieldTrans, initContent;
+
+  if (program.generic === 'true') {
+    parameterNames = genericGetCtorParaStr(typeName, typeParameters);
+    let result = await genericFields2CtrContent(
+        fileds,
+        intepretHandle,
+        typeDef,
+    );
+    fieldTrans = result.fieldTrans;
+    initContent = result.initContent;
+  } else {
+    parameterNames = getCtorParaStr(typeName, typeParameters);
+    let result = await fields2CtrContent(
+        fileds,
+        intepretHandle,
+        typeDef,
+    );
+    fieldTrans = result.fieldTrans;
+    initContent = result.initContent;
+  }
 
   let bodyText = `${initContent ? initContent + ';' : ''}
       return {
@@ -113,7 +131,7 @@ export async function toBeanClass(
     ctor: {
       parameters: [
         {
-          name: `params:${getCtorParaStr(typeName, typeParameters)}`,
+          name: `params:${parameterNames}`,
         },
       ],
       bodyText: ctorBody,

@@ -31,6 +31,7 @@ program
   .version('0.0.1')
   .usage('-c dubbo.json')
   .option('-c, --config [value]', 'specify interpret Config ')
+  .option('-g, --generic [false]', 'generic class ts info')
   .parse(process.argv);
 
 (async () => {
