@@ -27,12 +27,15 @@ const log = debug('dubbo:dubbo-setting');
  * 多么想要一个ReasonML的match-pattern 😆
  */
 export class Setting {
-  private readonly _rules: Array<IRule> = [];
+  private readonly _rules: Map<string, Array<IRule>> = new Map<string, Array<IRule>>()
+  .set("Array", new Array<IRule>())
+  .set("RegExp", new Array<IRule>())
+  .set("TPredictFunction", new Array<IRule>());
   private _cache: Map<string, IDubboSetting> = new Map();
 
   /**
    * 匹配规则
-   * 规则的有限级别 string > string[] > fn > regexp
+   * 规则的有限级别 string[] > fn > regexp
    * @param arg
    * @param dubboSetting
    */
@@ -45,10 +48,17 @@ export class Setting {
       condition: arg,
       dubboSetting,
     };
-
     log('add match rule %j', rule);
-
-    this._rules.push(rule);
+    if (isString(arg)) {
+      rule.condition = [arg];
+      this._rules.get("Array").push(rule);
+    } else if (isArray(arg)) {
+      this._rules.get("Array").push(rule);
+    } else if (isFn(arg)) {
+      this._rules.get("TPredictFunction").push(rule);
+    } else if (isRegExp(arg)) {
+      this._rules.get("RegExp").push(rule);
+    }
     return this;
   }
 
@@ -57,60 +67,42 @@ export class Setting {
     if (this._cache.has(dubboInterface)) {
       return this._cache.get(dubboInterface);
     }
-
-    //no cache
-    for (let rule of this._rules) {
-      const {condition, dubboSetting} = rule;
-
-      //dubboInterface == condition
-      if (isString(condition) && dubboInterface === condition) {
-        log(
-          '%s =match=> string rule %s result=> %j',
-          dubboInterface,
-          condition,
-          dubboSetting,
-        );
-
-        //cache
-        this._cache.set(dubboInterface, dubboSetting);
-        return dubboSetting;
+    let matchedRule = null;
+    if (!matchedRule) {
+      for (let rule of this._rules.get("Array")) {
+        if (isArray(rule.condition) && rule.condition.indexOf(dubboInterface)) {
+          matchedRule = rule;
+          break;
+        }
       }
-
-      if (isArray(condition) && condition.indexOf(dubboInterface) != -1) {
-        log(
-          '%s =match=> Array rule [%s] result=> %j',
-          dubboInterface,
-          condition,
-          dubboSetting,
-        );
-        //cache
-        this._cache.set(dubboInterface, dubboSetting);
-        return dubboSetting;
-      }
-
-      //isFn return value is true
-      if (isFn(condition) && condition(dubboInterface)) {
-        log('%s =match=> fn rule result=> %j', dubboInterface);
-        const dubboSetting = condition(dubboInterface);
-        //cache it
-        this._cache.set(dubboInterface, dubboSetting);
-        return dubboSetting;
-      }
-
-      //dubboInteface match regexp
-      if (isRegExp(condition) && condition.test(dubboInterface)) {
-        log(
-          '%s =match=> regexp rule %O result=> %j',
-          dubboInterface,
-          condition,
-          dubboSetting,
-        );
-        //cache it
-        this._cache.set(dubboInterface, dubboSetting);
-        return dubboSetting;
+    }
+    if (!matchedRule) {
+      for (let rule of this._rules.get("TPredictFunction")) {
+        if (isFn(rule.condition) && rule.condition(dubboInterface)) {
+          matchedRule = rule;
+          break;
+        }
       }
     }
 
+    if (!matchedRule) {
+      for (let rule of this._rules.get("RegExp")) {
+        if (isRegExp(rule.condition) && rule.condition.test(dubboInterface)) {
+          matchedRule = rule;
+          break;
+        }
+      }
+    }
+    if (matchedRule) {
+      log(
+          '%s =match=> rule %s result=> %j',
+          dubboInterface,
+          matchedRule.condition,
+          matchedRule.dubboSetting,
+      );
+      this._cache.set(dubboInterface, matchedRule.dubboSetting);
+      return matchedRule.dubboSetting;
+    }
     log('oops, %s can not find any match rule', dubboInterface);
     return null;
   }
