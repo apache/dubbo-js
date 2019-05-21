@@ -1,0 +1,7 @@
+{
+    "output": "/Users/dong/Falcon/node/incubator-dubbo-js/examples/hello-egg/app/dubbo/providers",
+    "entry": "com.alibaba.dubbo.demo",
+    "entryJarPath": "/Users/dong/Falcon/node/incubator-dubbo-js/java/dubbo-demo/dubbo-demo-api/target/dubbo-demo-api-2.6.3.jar",
+    "libDirPath":   "/Users/dong/Falcon/node/incubator-dubbo-js/java/dubbo-demo/dubbo-demo-api/target/dependency",
+    "providerSuffix": "Provider"
+}
