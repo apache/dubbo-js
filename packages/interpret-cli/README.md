@@ -148,14 +148,16 @@ export function DemoProvider(dubbo: Dubbo): IDemoProvider {
 ### converter
 The main responsibility of a translator is to seamlessly connect with nodejs dubbo.
 
-The main responsibility of the converter is to convert JavaScript code into JS objects in hession.JS format and then communicate with Dubbo service. for example:
+The main responsibility of the converter is to convert JavaScript code into JS objects in hession.JS format and then communicate with Dubbo service.
 
+Let's see how it works:
+
+[UserRequest.java]()
 ```java interface
 
 //dubbo-demo/dubbo-demo-api/src/main/java/com/alibaba/dubbo/demo/DemoProvider.java
 public interface DemoProvider {
     UserResponse getUserInfo(UserRequest request);
-
 }
 
 //dubbo-demo/dubbo-demo-api/src/main/java/com/alibaba/dubbo/demo/UserRequest.java
@@ -167,9 +169,11 @@ public class UserRequest implements Serializable {
 ```
 
 Corresponding TS code
+
+[UserRequest.ts]()
 ```typescript
 
-//dubbo-demo-node/src/com/alibaba/dubbo/demo/UserRequest.java
+//
 import java from 'js-to-java';
 
 //
@@ -205,7 +209,326 @@ export class UserRequest {
 //generate by interpret-cli dubbo2.js
 ```
 
-###
+### java Ast
+Extract ast from Java source code and use it to convert to typescritp code
+
+Let's look at the ast information for DemoProvider and UserRequest in the example above.
+
+```json
+{
+  "classes":{
+
+    "com.alibaba.dubbo.demo.DemoProvider":{
+      "fields":{},
+      "isAbstract":true,
+      "isEnum":false,
+      "isInterface":true,
+      "methods":{
+        "sayHello":{
+          "formalParams":[
+            "name"
+          ],
+          "isOverride":false,
+          "params":[
+            {
+              "name":"java.lang.String",
+              "typeArgs":[]
+            }
+          ],
+          "ret":{
+            "name":"java.lang.String",
+            "typeArgs":[]
+          },
+          "typeParams":[]
+        },
+        "test":{
+          "formalParams":[],
+          "isOverride":false,
+          "params":[],
+          "ret":{
+            "name":"java.lang.Void"
+          },
+          "typeParams":[]
+        },
+        "echo":{
+          "formalParams":[],
+          "isOverride":false,
+          "params":[],
+          "ret":{
+            "name":"java.lang.String",
+            "typeArgs":[]
+          },
+          "typeParams":[]
+        },
+        "getUserInfo":{
+          "formalParams":[
+            "request"
+          ],
+          "isOverride":false,
+          "params":[
+            {
+              "name":"com.alibaba.dubbo.demo.UserRequest",
+              "typeArgs":[]
+            }
+          ],
+          "ret":{
+            "name":"com.alibaba.dubbo.demo.UserResponse",
+            "typeArgs":[]
+          },
+          "typeParams":[]
+        }
+      },
+      "name":"com.alibaba.dubbo.demo.DemoProvider",
+      "privateFields":[],
+      "typeParams":[],
+      "values":[]
+    },
+    "com.alibaba.dubbo.demo.UserRequest":{
+      "fields":{
+        "name":{
+          "name":"java.lang.String",
+          "typeArgs":[]
+        },
+        "id":{
+          "name":"java.lang.Integer",
+          "typeArgs":[]
+        },
+        "email":{
+          "name":"java.lang.String",
+          "typeArgs":[]
+        }
+      },
+      "isAbstract":false,
+      "isEnum":false,
+      "isInterface":false,
+      "methods":{
+        "setName":{
+          "formalParams":[
+            "name"
+          ],
+          "isOverride":false,
+          "params":[
+            {
+              "name":"java.lang.String",
+              "typeArgs":[]
+            }
+          ],
+          "ret":{
+            "name":"java.lang.Void"
+          },
+          "typeParams":[]
+        },
+        "getName":{
+          "formalParams":[],
+          "isOverride":false,
+          "params":[],
+          "ret":{
+            "name":"java.lang.String",
+            "typeArgs":[]
+          },
+          "typeParams":[]
+        },
+        "setEmail":{
+          "formalParams":[
+            "email"
+          ],
+          "isOverride":false,
+          "params":[
+            {
+              "name":"java.lang.String",
+              "typeArgs":[]
+            }
+          ],
+          "ret":{
+            "name":"java.lang.Void"
+          },
+          "typeParams":[]
+        },
+        "setId":{
+          "formalParams":[
+            "id"
+          ],
+          "isOverride":false,
+          "params":[
+            {
+              "name":"java.lang.Integer",
+              "typeArgs":[]
+            }
+          ],
+          "ret":{
+            "name":"java.lang.Void"
+          },
+          "typeParams":[]
+        },
+        "getEmail":{
+          "formalParams":[],
+          "isOverride":false,
+          "params":[],
+          "ret":{
+            "name":"java.lang.String",
+            "typeArgs":[]
+          },
+          "typeParams":[]
+        },
+        "getId":{
+          "formalParams":[],
+          "isOverride":false,
+          "params":[],
+          "ret":{
+            "name":"java.lang.Integer",
+            "typeArgs":[]
+          },
+          "typeParams":[]
+        },
+        "toString":{
+          "formalParams":[],
+          "isOverride":false,
+          "params":[],
+          "ret":{
+            "name":"java.lang.String",
+            "typeArgs":[]
+          },
+          "typeParams":[]
+        }
+      },
+      "name":"com.alibaba.dubbo.demo.UserRequest",
+      "privateFields":[
+        "id",
+        "name",
+        "email"
+      ],
+      "typeParams":[],
+      "values":[]
+    },
+    "com.alibaba.dubbo.demo.UserResponse":{
+      "fields":{
+        "status":{
+          "name":"java.lang.String",
+          "typeArgs":[]
+        },
+        "info":{
+          "name":"java.util.Map",
+          "typeArgs":[{
+            "isWildcard":false,
+            "type":{
+              "name":"java.lang.String",
+              "typeArgs":[]
+            }
+          },{
+            "isWildcard":false,
+            "type":{
+              "name":"java.lang.String",
+              "typeArgs":[]
+            }
+          }]
+        }
+      },
+      "isAbstract":false,
+      "isEnum":false,
+      "isInterface":false,
+      "methods":{
+        "getInfo":{
+          "formalParams":[],
+          "isOverride":false,
+          "params":[],
+          "ret":{
+            "name":"java.util.Map",
+            "typeArgs":[{
+              "isWildcard":false,
+              "type":{
+                "name":"java.lang.String",
+                "typeArgs":[]
+              }
+            },{
+              "isWildcard":false,
+              "type":{
+                "name":"java.lang.String",
+                "typeArgs":[]
+              }
+            }]
+          },
+          "typeParams":[]
+        },
+        "toString":{
+          "formalParams":[],
+          "isOverride":false,
+          "params":[],
+          "ret":{
+            "name":"java.lang.String",
+            "typeArgs":[]
+          },
+          "typeParams":[]
+        },
+        "setInfo":{
+          "formalParams":[
+            "info"
+          ],
+          "isOverride":false,
+          "params":[
+            {
+              "name":"java.util.Map",
+              "typeArgs":[{
+                "isWildcard":false,
+                "type":{
+                  "name":"java.lang.String",
+                  "typeArgs":[]
+                }
+              },{
+                "isWildcard":false,
+                "type":{
+                  "name":"java.lang.String",
+                  "typeArgs":[]
+                }
+              }]
+            }
+          ],
+          "ret":{
+            "name":"java.lang.Void"
+          },
+          "typeParams":[]
+        },
+        "getStatus":{
+          "formalParams":[],
+          "isOverride":false,
+          "params":[],
+          "ret":{
+            "name":"java.lang.String",
+            "typeArgs":[]
+          },
+          "typeParams":[]
+        },
+        "setStatus":{
+          "formalParams":[
+            "status"
+          ],
+          "isOverride":false,
+          "params":[
+            {
+              "name":"java.lang.String",
+              "typeArgs":[]
+            }
+          ],
+          "ret":{
+            "name":"java.lang.Void"
+          },
+          "typeParams":[]
+        }
+      },
+      "name":"com.alibaba.dubbo.demo.UserResponse",
+      "privateFields":[
+        "status",
+        "info"
+      ],
+      "typeParams":[],
+      "values":[]
+    }
+  },
+  "providers":[
+    "com.alibaba.dubbo.demo.DemoProvider"
+  ]
+}
+
+```
 
 
 
