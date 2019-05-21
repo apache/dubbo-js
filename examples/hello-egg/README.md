@@ -21,6 +21,14 @@ $ npm run tsc
 $ npm start
 ```
 
+
+### Regenerate
+
+```bash
+$ npm run interpret
+```
+Note: Install MVN Java node locally;
+
 ### Npm Scripts
 
 - Use `npm run lint` to check code style
@@ -31,3 +39,4 @@ $ npm start
 
 - Node.js 8.x
 - Typescript 2.8+
+- Node.js 8.x
