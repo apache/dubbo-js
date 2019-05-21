@@ -11,6 +11,8 @@
     "stop": "egg-scripts stop --title=egg-server-hello-egg",
     "dev": "egg-bin dev -r egg-ts-helper/register",
     "debug": "egg-bin debug -r egg-ts-helper/register",
+    "interpret:denp": "cd ../../java/dubbo-demo/dubbo-demo-api && mvn package && mvn install dependency:copy-dependencies",
+    "interpret": "npm run interpret:denp  && interpret -c dubbo.json",
     "test-local": "egg-bin test -r egg-ts-helper/register",
     "test": "npm run lint -- --fix && npm run test-local",
     "cov": "egg-bin cov -r egg-ts-helper/register",
@@ -29,6 +31,7 @@
     "interpret-util": "^0.0.6"
   },
   "devDependencies": {
+    "interpret-dubbo2js": "0.0.22",
     "@types/mocha": "^2.2.40",
     "@types/node": "^7.0.12",
     "@types/supertest": "^2.0.0",

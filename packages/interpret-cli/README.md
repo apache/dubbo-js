@@ -16,8 +16,8 @@ dubbo2.js 打通了 node 与 dubbo 服务调用的 rpc 通道
 
 ## TODO
 
-* [ ] 接口注释信息未同步;
-* [ ] mvn 打包插件;
+* [ ] Synchronization of interface annotation information;
+* [ ] MVN packaged plug-in;
 
 ## How to Usage?
 
@@ -59,10 +59,10 @@ dubbo.json:
 
 | 参数名称     | 作用             |
 | ------------ | ---------------- |
-| output       | 生成代码保存路径 |
-| entry        | 可选过滤无关代码 |
-| entryJarPath | 接口的 jar 包    |
-| libDirPath   | 接口所依赖的     |
+| output       | 生成代码保存路径 eg: [config example](../../examples/hello-egg/dubbo.json) |
+| entry        | 可选过滤无关代码 eg: [config example](../../examples/hello-egg/dubbo.json)|
+| entryJarPath | 接口的 jar 包  eg:  [config example](../../examples/hello-egg/dubbo.json)  |
+| libDirPath   | 接口所依赖的    eg:  [config example](../../examples/hello-egg/dubbo.json) |
 
 **_Tip_** 生成的代码可以发 npm 包供其他业务线使用或直接在项目中引用
 
@@ -88,3 +88,534 @@ showCaseProvider.show();
 **_Tip_** `npm install interpret-util dubbo2.js`;
 
 [interpret-example](https://github.com/creasy2010/interpret-example);
+
+
+
+
+## vocabulary explanation
+
+Note: The code snippet in the following explanation comes from
+[hello-egg-node](../../examples/hello-egg)
+
+### Provider
+There are two meanings.
+
+First, Dubbo provides services interfaces, such as
+```java
+
+package com.alibaba.dubbo.demo;
+
+public interface DemoProvider {
+
+    String sayHello(String name);
+
+    String echo() ;
+
+    void test();
+
+    UserResponse getUserInfo(UserRequest request);
+}
+```
+Second,  the client for node.js, corresponding to the Dubbo service, such as
+
+```typescript
+import {UserRequest} from './UserRequest';
+import {UserResponse} from './UserResponse';
+import {argumentMap, JavaString} from 'interpret-util';
+import {TDubboCallResult, Dubbo} from 'dubbo2.js';
+
+export interface IDemoProvider {
+  sayHello(name: JavaString): TDubboCallResult<string>;
+  test(): TDubboCallResult<void>;
+  echo(): TDubboCallResult<string>;
+  getUserInfo(request: UserRequest): TDubboCallResult<UserResponse>;
+}
+
+export const DemoProviderWrapper = {
+  sayHello: argumentMap,
+  test: argumentMap,
+  echo: argumentMap,
+  getUserInfo: argumentMap,
+};
+
+export function DemoProvider(dubbo: Dubbo): IDemoProvider {
+  return dubbo.proxyService<IDemoProvider>({
+    dubboInterface: 'com.alibaba.dubbo.demo.DemoProvider',
+    methods: DemoProviderWrapper,
+  });
+}
+
+//generate by interpret-cli dubbo2.js
+```
+
+### converter
+The main responsibility of a translator is to seamlessly connect with nodejs dubbo.
+
+The main responsibility of the converter is to convert JavaScript code into JS objects in hession.JS format and then communicate with Dubbo service.
+
+Let's see how it works:
+
+[UserRequest.java](../../java/dubbo-demo/dubbo-demo-api/src/main/java/com/alibaba/dubbo/demo/UserRequest.java)
+```java interface
+
+//dubbo-demo/dubbo-demo-api/src/main/java/com/alibaba/dubbo/demo/DemoProvider.java
+public interface DemoProvider {
+    UserResponse getUserInfo(UserRequest request);
+}
+
+//dubbo-demo/dubbo-demo-api/src/main/java/com/alibaba/dubbo/demo/UserRequest.java
+public class UserRequest implements Serializable {
+    private Integer id;
+    private String name;
+    private String email;
+}
+```
+
+Corresponding TS code
+
+[UserRequest.ts](../../examples/hello-egg/app/dubbo/providers/com/alibaba/dubbo/demo/UserRequest.ts)
+```typescript
+
+//
+import java from 'js-to-java';
+
+//
+export interface IUserRequest {
+  name?: string;
+  id?: number;
+  email?: string;
+}
+
+export class UserRequest {
+  constructor(params: IUserRequest) {
+    this.name = params.name;
+    this.id = params.id;
+    this.email = params.email;
+  }
+
+  name?: string;
+  id?: number;
+  email?: string;
+
+  __fields2java() {
+    return {
+      $class: 'com.alibaba.dubbo.demo.UserRequest',
+      $: {
+        name: java.String(this.name),
+        id: java.Integer(this.id),
+        email: java.String(this.email),
+      },
+    };
+  }
+}
+
+//generate by interpret-cli dubbo2.js
+```
+
+### java Ast
+Extract ast from Java source code and use it to convert to typescritp code
+
+Let's look at the ast information for DemoProvider and UserRequest in the example above.
+
+```json
+{
+  "classes":{
+
+    "com.alibaba.dubbo.demo.DemoProvider":{
+      "fields":{},
+      "isAbstract":true,
+      "isEnum":false,
+      "isInterface":true,
+      "methods":{
+        "sayHello":{
+          "formalParams":[
+            "name"
+          ],
+          "isOverride":false,
+          "params":[
+            {
+              "name":"java.lang.String",
+              "typeArgs":[]
+            }
+          ],
+          "ret":{
+            "name":"java.lang.String",
+            "typeArgs":[]
+          },
+          "typeParams":[]
+        },
+        "test":{
+          "formalParams":[],
+          "isOverride":false,
+          "params":[],
+          "ret":{
+            "name":"java.lang.Void"
+          },
+          "typeParams":[]
+        },
+        "echo":{
+          "formalParams":[],
+          "isOverride":false,
+          "params":[],
+          "ret":{
+            "name":"java.lang.String",
+            "typeArgs":[]
+          },
+          "typeParams":[]
+        },
+        "getUserInfo":{
+          "formalParams":[
+            "request"
+          ],
+          "isOverride":false,
+          "params":[
+            {
+              "name":"com.alibaba.dubbo.demo.UserRequest",
+              "typeArgs":[]
+            }
+          ],
+          "ret":{
+            "name":"com.alibaba.dubbo.demo.UserResponse",
+            "typeArgs":[]
+          },
+          "typeParams":[]
+        }
+      },
+      "name":"com.alibaba.dubbo.demo.DemoProvider",
+      "privateFields":[],
+      "typeParams":[],
+      "values":[]
+    },
+    "com.alibaba.dubbo.demo.UserRequest":{
+      "fields":{
+        "name":{
+          "name":"java.lang.String",
+          "typeArgs":[]
+        },
+        "id":{
+          "name":"java.lang.Integer",
+          "typeArgs":[]
+        },
+        "email":{
+          "name":"java.lang.String",
+          "typeArgs":[]
+        }
+      },
+      "isAbstract":false,
+      "isEnum":false,
+      "isInterface":false,
+      "methods":{
+        "setName":{
+          "formalParams":[
+            "name"
+          ],
+          "isOverride":false,
+          "params":[
+            {
+              "name":"java.lang.String",
+              "typeArgs":[]
+            }
+          ],
+          "ret":{
+            "name":"java.lang.Void"
+          },
+          "typeParams":[]
+        },
+        "getName":{
+          "formalParams":[],
+          "isOverride":false,
+          "params":[],
+          "ret":{
+            "name":"java.lang.String",
+            "typeArgs":[]
+          },
+          "typeParams":[]
+        },
+        "setEmail":{
+          "formalParams":[
+            "email"
+          ],
+          "isOverride":false,
+          "params":[
+            {
+              "name":"java.lang.String",
+              "typeArgs":[]
+            }
+          ],
+          "ret":{
+            "name":"java.lang.Void"
+          },
+          "typeParams":[]
+        },
+        "setId":{
+          "formalParams":[
+            "id"
+          ],
+          "isOverride":false,
+          "params":[
+            {
+              "name":"java.lang.Integer",
+              "typeArgs":[]
+            }
+          ],
+          "ret":{
+            "name":"java.lang.Void"
+          },
+          "typeParams":[]
+        },
+        "getEmail":{
+          "formalParams":[],
+          "isOverride":false,
+          "params":[],
+          "ret":{
+            "name":"java.lang.String",
+            "typeArgs":[]
+          },
+          "typeParams":[]
+        },
+        "getId":{
+          "formalParams":[],
+          "isOverride":false,
+          "params":[],
+          "ret":{
+            "name":"java.lang.Integer",
+            "typeArgs":[]
+          },
+          "typeParams":[]
+        },
+        "toString":{
+          "formalParams":[],
+          "isOverride":false,
+          "params":[],
+          "ret":{
+            "name":"java.lang.String",
+            "typeArgs":[]
+          },
+          "typeParams":[]
+        }
+      },
+      "name":"com.alibaba.dubbo.demo.UserRequest",
+      "privateFields":[
+        "id",
+        "name",
+        "email"
+      ],
+      "typeParams":[],
+      "values":[]
+    },
+    "com.alibaba.dubbo.demo.UserResponse":{
+      "fields":{
+        "status":{
+          "name":"java.lang.String",
+          "typeArgs":[]
+        },
+        "info":{
+          "name":"java.util.Map",
+          "typeArgs":[{
+            "isWildcard":false,
+            "type":{
+              "name":"java.lang.String",
+              "typeArgs":[]
+            }
+          },{
+            "isWildcard":false,
+            "type":{
+              "name":"java.lang.String",
+              "typeArgs":[]
+            }
+          }]
+        }
+      },
+      "isAbstract":false,
+      "isEnum":false,
+      "isInterface":false,
+      "methods":{
+        "getInfo":{
+          "formalParams":[],
+          "isOverride":false,
+          "params":[],
+          "ret":{
+            "name":"java.util.Map",
+            "typeArgs":[{
+              "isWildcard":false,
+              "type":{
+                "name":"java.lang.String",
+                "typeArgs":[]
+              }
+            },{
+              "isWildcard":false,
+              "type":{
+                "name":"java.lang.String",
+                "typeArgs":[]
+              }
+            }]
+          },
+          "typeParams":[]
+        },
+        "toString":{
+          "formalParams":[],
+          "isOverride":false,
+          "params":[],
+          "ret":{
+            "name":"java.lang.String",
+            "typeArgs":[]
+          },
+          "typeParams":[]
+        },
+        "setInfo":{
+          "formalParams":[
+            "info"
+          ],
+          "isOverride":false,
+          "params":[
+            {
+              "name":"java.util.Map",
+              "typeArgs":[{
+                "isWildcard":false,
+                "type":{
+                  "name":"java.lang.String",
+                  "typeArgs":[]
+                }
+              },{
+                "isWildcard":false,
+                "type":{
+                  "name":"java.lang.String",
+                  "typeArgs":[]
+                }
+              }]
+            }
+          ],
+          "ret":{
+            "name":"java.lang.Void"
+          },
+          "typeParams":[]
+        },
+        "getStatus":{
+          "formalParams":[],
+          "isOverride":false,
+          "params":[],
+          "ret":{
+            "name":"java.lang.String",
+            "typeArgs":[]
+          },
+          "typeParams":[]
+        },
+        "setStatus":{
+          "formalParams":[
+            "status"
+          ],
+          "isOverride":false,
+          "params":[
+            {
+              "name":"java.lang.String",
+              "typeArgs":[]
+            }
+          ],
+          "ret":{
+            "name":"java.lang.Void"
+          },
+          "typeParams":[]
+        }
+      },
+      "name":"com.alibaba.dubbo.demo.UserResponse",
+      "privateFields":[
+        "status",
+        "info"
+      ],
+      "typeParams":[],
+      "values":[]
+    }
+  },
+  "providers":[
+    "com.alibaba.dubbo.demo.DemoProvider"
+  ]
+}
+
+```
+
+
+### argumentMap
+
+ArgumentMap is a runtime assistant method whose main responsibility is to trigger data structure transformation.
+
+Main steps:
+
+1. Traversal parameters are called if _fields 2java is included.
+
+2. Delete null and undefined values;
+
+
+```typescript
+//Examples of argumentMap usage
+
+import {UserRequest} from './UserRequest';
+import {UserResponse} from './UserResponse';
+import {argumentMap, JavaString} from 'interpret-util';
+import {TDubboCallResult, Dubbo} from 'dubbo2.js';
+
+export interface IDemoProvider {
+  sayHello(name: JavaString): TDubboCallResult<string>;
+  test(): TDubboCallResult<void>;
+  echo(): TDubboCallResult<string>;
+  getUserInfo(request: UserRequest): TDubboCallResult<UserResponse>;
+}
+
+export const DemoProviderWrapper = {
+  sayHello: argumentMap,
+  test: argumentMap,
+  echo: argumentMap,
+  getUserInfo: argumentMap,
+};
+
+export function DemoProvider(dubbo: Dubbo): IDemoProvider {
+  return dubbo.proxyService<IDemoProvider>({
+    dubboInterface: 'com.alibaba.dubbo.demo.DemoProvider',
+    methods: DemoProviderWrapper,
+  });
+}
+
+//generate by interpret-cli dubbo2.js
+
+
+
+
+
+//Content of argumentMap method
+export function argumentMap() {
+  let _arguments = Array.from(arguments);
+
+  return _arguments.map(
+    argumentItem =>
+      argumentItem.__fields2java
+        ? paramEnhance(argumentItem.__fields2java())
+        : argumentItem,
+  );
+}
+
+function paramEnhance(javaParams: Array<object> | object) {
+  if (javaParams instanceof Array) {
+    for (let i = 0, ilen = javaParams.length; i < ilen; i++) {
+      let itemParam = javaParams[i];
+      minusRedundancy(itemParam);
+    }
+  } else {
+    minusRedundancy(javaParams);
+  }
+  return javaParams;
+}
+
+function minusRedundancy(itemParam: any) {
+  if (!itemParam) {
+    return;
+  }
+  for (var _key in itemParam.$) {
+    if (itemParam.$[_key] === null || itemParam.$[_key] === undefined) {
+      delete itemParam.$[_key];
+      log('删除 key %s from %j ', itemParam, _key);
+    }
+  }
+}
+
+
+```
+

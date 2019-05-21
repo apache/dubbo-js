@@ -21,6 +21,14 @@ $ npm run tsc
 $ npm start
 ```
 
+
+### Regenerate
+
+```bash
+$ npm run interpret
+```
+Note: Install MVN Java node locally;
+
 ### Npm Scripts
 
 - Use `npm run lint` to check code style
