@@ -28,6 +28,7 @@ const log = debug('dubbo:dubbo-invoker');
  */
 export class Matcher {
   private readonly _rules: Array<IRule> = [];
+  private readonly _cache: Map<string, IDubboInvokeParam> = new Map();
 
   /**
    * 匹配规则
@@ -54,6 +55,11 @@ export class Matcher {
   invokeParam(ctx: Context) {
     //获取当前context的dubbo接口
     const {dubboInterface} = ctx;
+
+    // get from cache
+    if (this._cache.has(dubboInterface)) {
+      return this._cache.get(dubboInterface);
+    }
 
     for (let rule of this._rules) {
       const {condition, invokeParam} = rule;
