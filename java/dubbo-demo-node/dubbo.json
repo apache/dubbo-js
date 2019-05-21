@@ -1,7 +1,0 @@
-{
-    "output": "/Users/dong/workbench/qmfe/dubbo2.js/java/dubbo-demo-node/src/provider",
-    "entry": "com.alibaba.dubbo.demo",
-    "entryJarPath": "/Users/dong/workbench/qmfe/dubbo2.js/java/dubbo-demo/dubbo-demo-api/target/dubbo-demo-api-2.5.7.jar",
-    "libDirPath": "/Users/dong/workbench/qmfe/dubbo2.js/java/dubbo-demo/dubbo-demo-api/target/dependency",
-    "providerSuffix": "Provider"
-}
