@@ -1,0 +1,16 @@
+{
+  "name": "dubbo-demo-node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "interpret": "interpret -c dubbo.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "interpret-dubbo2js": "0.0.22"
+  }
+}

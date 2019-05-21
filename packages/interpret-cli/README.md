@@ -88,3 +88,124 @@ showCaseProvider.show();
 **_Tip_** `npm install interpret-util dubbo2.js`;
 
 [interpret-example](https://github.com/creasy2010/interpret-example);
+
+
+
+
+## vocabulary explanation
+
+### Provider
+There are two meanings.
+
+First, Dubbo provides services interfaces, such as
+```java
+
+package com.alibaba.dubbo.demo;
+
+public interface DemoProvider {
+
+    String sayHello(String name);
+
+    String echo() ;
+
+    void test();
+
+    UserResponse getUserInfo(UserRequest request);
+}
+```
+Second,  the client for node.js, corresponding to the Dubbo service, such as
+
+```typescript
+import {UserRequest} from './UserRequest';
+import {UserResponse} from './UserResponse';
+import {argumentMap, JavaString} from 'interpret-util';
+import {TDubboCallResult, Dubbo} from 'dubbo2.js';
+
+export interface IDemoProvider {
+  sayHello(name: JavaString): TDubboCallResult<string>;
+  test(): TDubboCallResult<void>;
+  echo(): TDubboCallResult<string>;
+  getUserInfo(request: UserRequest): TDubboCallResult<UserResponse>;
+}
+
+export const DemoProviderWrapper = {
+  sayHello: argumentMap,
+  test: argumentMap,
+  echo: argumentMap,
+  getUserInfo: argumentMap,
+};
+
+export function DemoProvider(dubbo: Dubbo): IDemoProvider {
+  return dubbo.proxyService<IDemoProvider>({
+    dubboInterface: 'com.alibaba.dubbo.demo.DemoProvider',
+    methods: DemoProviderWrapper,
+  });
+}
+
+//generate by interpret-cli dubbo2.js
+```
+
+### converter
+The main responsibility of a translator is to seamlessly connect with nodejs dubbo.
+
+The main responsibility of the converter is to convert JavaScript code into JS objects in hession.JS format and then communicate with Dubbo service. for example:
+
+```java interface
+
+//dubbo-demo/dubbo-demo-api/src/main/java/com/alibaba/dubbo/demo/DemoProvider.java
+public interface DemoProvider {
+    UserResponse getUserInfo(UserRequest request);
+
+}
+
+//dubbo-demo/dubbo-demo-api/src/main/java/com/alibaba/dubbo/demo/UserRequest.java
+public class UserRequest implements Serializable {
+    private Integer id;
+    private String name;
+    private String email;
+}
+```
+
+Corresponding TS code
+```typescript
+
+//dubbo-demo-node/src/com/alibaba/dubbo/demo/UserRequest.java
+import java from 'js-to-java';
+
+//
+export interface IUserRequest {
+  name?: string;
+  id?: number;
+  email?: string;
+}
+
+export class UserRequest {
+  constructor(params: IUserRequest) {
+    this.name = params.name;
+    this.id = params.id;
+    this.email = params.email;
+  }
+
+  name?: string;
+  id?: number;
+  email?: string;
+
+  __fields2java() {
+    return {
+      $class: 'com.alibaba.dubbo.demo.UserRequest',
+      $: {
+        name: java.String(this.name),
+        id: java.Integer(this.id),
+        email: java.String(this.email),
+      },
+    };
+  }
+}
+
+//generate by interpret-cli dubbo2.js
+```
+
+###
+
+
+
