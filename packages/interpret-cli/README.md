@@ -152,7 +152,7 @@ The main responsibility of the converter is to convert JavaScript code into JS o
 
 Let's see how it works:
 
-[UserRequest.java]()
+[UserRequest.java](../../java/dubbo-demo/dubbo-demo-api/src/main/java/com/alibaba/dubbo/demo/UserRequest.java)
 ```java interface
 
 //dubbo-demo/dubbo-demo-api/src/main/java/com/alibaba/dubbo/demo/DemoProvider.java
@@ -170,7 +170,7 @@ public class UserRequest implements Serializable {
 
 Corresponding TS code
 
-[UserRequest.ts]()
+[UserRequest.ts](../../examples/hello-egg/app/dubbo/providers/com/alibaba/dubbo/demo/UserRequest.ts)
 ```typescript
 
 //
