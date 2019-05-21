@@ -16,8 +16,8 @@ dubbo2.js 打通了 node 与 dubbo 服务调用的 rpc 通道
 
 ## TODO
 
-* [ ] 接口注释信息未同步;
-* [ ] mvn 打包插件;
+* [ ] Synchronization of interface annotation information;
+* [ ] MVN packaged plug-in;
 
 ## How to Usage?
 
@@ -59,10 +59,10 @@ dubbo.json:
 
 | 参数名称     | 作用             |
 | ------------ | ---------------- |
-| output       | 生成代码保存路径 |
-| entry        | 可选过滤无关代码 |
-| entryJarPath | 接口的 jar 包    |
-| libDirPath   | 接口所依赖的     |
+| output       | 生成代码保存路径 eg: [./app/dubbo/providers](../../hello-egg/dubbo.json) |
+| entry        | 可选过滤无关代码 eg: [com.alibaba.dubbo.demo](../../hello-egg/dubbo.json) |
+| entryJarPath | 接口的 jar 包 eg:[../../java/dubbo-demo/dubbo-demo-api/target/dubbo-demo-api-2.6.3.jar](../../hello-egg/dubbo.json)   |
+| libDirPath   | 接口所依赖的   eg:  [../../java/dubbo-demo/dubbo-demo-api/target/dependency](../../hello-egg/dubbo.json)  |
 
 **_Tip_** 生成的代码可以发 npm 包供其他业务线使用或直接在项目中引用
 
