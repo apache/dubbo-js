@@ -22,9 +22,13 @@ export class TypeRequest {
     return {
       $class: 'com.alibaba.dubbo.demo.TypeRequest',
       $: {
-        bigDecimal: java.BigDecimal(this.bigDecimal.value),
+        bigDecimal: this.bigDecimal
+          ? java.BigDecimal(this.bigDecimal.value)
+          : null,
         map: java.Map(mapMapTransfer),
       },
     };
   }
 }
+
+//generate by interpret-cli dubbo2.js

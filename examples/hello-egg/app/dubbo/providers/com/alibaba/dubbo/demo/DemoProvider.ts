@@ -1,7 +1,7 @@
-import {Dubbo, TDubboCallResult} from 'dubbo2.js';
-import {argumentMap, JavaString} from 'interpret-util';
 import {UserRequest} from './UserRequest';
 import {UserResponse} from './UserResponse';
+import {argumentMap, JavaString} from 'interpret-util';
+import {TDubboCallResult, Dubbo} from 'dubbo2.js';
 
 export interface IDemoProvider {
   sayHello(name: JavaString): TDubboCallResult<string>;
@@ -23,3 +23,5 @@ export function DemoProvider(dubbo: Dubbo): IDemoProvider {
     methods: DemoProviderWrapper,
   });
 }
+
+//generate by interpret-cli dubbo2.js

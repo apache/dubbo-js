@@ -1,6 +1,6 @@
-import {Dubbo, TDubboCallResult} from 'dubbo2.js';
-import {argumentMap} from 'interpret-util';
 import {TypeRequest} from './TypeRequest';
+import {argumentMap} from 'interpret-util';
+import {TDubboCallResult, Dubbo} from 'dubbo2.js';
 
 export interface IBasicTypeProvider {
   testBasicType(request: TypeRequest): TDubboCallResult<TypeRequest>;
@@ -14,3 +14,5 @@ export function BasicTypeProvider(dubbo: Dubbo): IBasicTypeProvider {
     methods: BasicTypeProviderWrapper,
   });
 }
+
+//generate by interpret-cli dubbo2.js
