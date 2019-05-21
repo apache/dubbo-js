@@ -47,19 +47,31 @@ When zookeper session expires, it causes the dubbo2.js's zookeeper client to att
 
 dubbo2.6.3:Support implicit delivery of attachments from provider to consumer, [#889](https://github.com/apache/incubator-dubbo/issues/889)
 
-dubbo2.js@2.3.7 support the feature.
+```json
+{
+  "dependencies": {
+    "dubbo2.js": ">=2.3.7"
+  }
+}
+```
+
+support the feature.
+
+We synchronize upstream changes
 
 # Getting Started
 
 ---
+
 ```
 yarn add dubbo2.js
 ```
+
 # How to Usage?
 
 ---
 
-## dubbo2.js@2.0.4+
+## >=2.0.4
 
 ```typescript
 //=====================service.ts==================
@@ -93,7 +105,7 @@ const dubbo = new Dubbo<typeof service>({
   ({res, err} = await dubbo.service.DemoProvider.echo());
   //print {err: null, res: 'pang'}
   ({res, err} = await dubbo.service.DemoProvider.getUserInfo());
-  //status: 'ok', info: { id: '1', name: 'test' }
+  //print {status: 'ok', info: { id: '1', name: 'test' }, err: null}
 })();
 ```
 
@@ -140,7 +152,7 @@ const dubbo = new Dubbo<typeof service>({
 });
 ```
 
-## [dubbo2.js@1.xxx](https://github.com/dubbo/dubbo2.js/blob/master/README.md#dubbo2js1xxx)
+## <2.0.4
 
 ```typescript
 import {Dubbo, java, TDubboCallResult} from 'dubbo2.js';
@@ -172,7 +184,7 @@ const errorProvider = ErrorProvider(dubbo);
   ({res, err} = await demoProvider.echo());
   //print {err: null, res: 'pang'}
   ({res, err} = await demoProvider.getUserInfo());
-  //status: 'ok', info: { id: '1', name: 'test' }
+  //print {status: 'ok', info: { id: '1', name: 'test' }}
 })();
 ```
 
@@ -188,7 +200,7 @@ brew services start zookeeper
 yarn run test
 
 #Full link log tracking
-DEBUG=dubbo\* yarn run test
+DEBUG=dubbo* yarn run test
 ```
 
 # dubbo flow graph
