@@ -27,10 +27,10 @@ const log = debug('dubbo:dubbo-setting');
  * 多么想要一个ReasonML的match-pattern 😆
  */
 export class Setting {
-  private readonly _rules: Map<string, Array<IRule>> = new Map<string, Array<IRule>>()
-  .set("Array", new Array<IRule>())
-  .set("RegExp", new Array<IRule>())
-  .set("TPredictFunction", new Array<IRule>());
+  private readonly _rules: Map<string, Array<IRule>> = new Map()
+    .set('Array', new Array<IRule>())
+    .set('RegExp', new Array<IRule>())
+    .set('TPredictFunction', new Array<IRule>());
   private _cache: Map<string, IDubboSetting> = new Map();
 
   /**
@@ -51,13 +51,13 @@ export class Setting {
     log('add match rule %j', rule);
     if (isString(arg)) {
       rule.condition = [arg];
-      this._rules.get("Array").push(rule);
+      this._rules.get('Array').push(rule);
     } else if (isArray(arg)) {
-      this._rules.get("Array").push(rule);
+      this._rules.get('Array').push(rule);
     } else if (isFn(arg)) {
-      this._rules.get("TPredictFunction").push(rule);
+      this._rules.get('TPredictFunction').push(rule);
     } else if (isRegExp(arg)) {
-      this._rules.get("RegExp").push(rule);
+      this._rules.get('RegExp').push(rule);
     }
     return this;
   }
@@ -69,7 +69,7 @@ export class Setting {
     }
     let matchedRule = null;
     if (!matchedRule) {
-      for (let rule of this._rules.get("Array")) {
+      for (let rule of this._rules.get('Array')) {
         if (isArray(rule.condition) && rule.condition.indexOf(dubboInterface)) {
           matchedRule = rule;
           break;
@@ -77,7 +77,7 @@ export class Setting {
       }
     }
     if (!matchedRule) {
-      for (let rule of this._rules.get("TPredictFunction")) {
+      for (let rule of this._rules.get('TPredictFunction')) {
         if (isFn(rule.condition) && rule.condition(dubboInterface)) {
           matchedRule = rule;
           break;
@@ -86,7 +86,7 @@ export class Setting {
     }
 
     if (!matchedRule) {
-      for (let rule of this._rules.get("RegExp")) {
+      for (let rule of this._rules.get('RegExp')) {
         if (isRegExp(rule.condition) && rule.condition.test(dubboInterface)) {
           matchedRule = rule;
           break;
@@ -95,10 +95,10 @@ export class Setting {
     }
     if (matchedRule) {
       log(
-          '%s =match=> rule %s result=> %j',
-          dubboInterface,
-          matchedRule.condition,
-          matchedRule.dubboSetting,
+        '%s =match=> rule %s result=> %j',
+        dubboInterface,
+        matchedRule.condition,
+        matchedRule.dubboSetting,
       );
       this._cache.set(dubboInterface, matchedRule.dubboSetting);
       return matchedRule.dubboSetting;
