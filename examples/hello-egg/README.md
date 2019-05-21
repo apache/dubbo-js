@@ -39,4 +39,3 @@ Note: Install MVN Java node locally;
 
 - Node.js 8.x
 - Typescript 2.8+
-- Node.js 8.x
