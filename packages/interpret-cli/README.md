@@ -94,6 +94,9 @@ showCaseProvider.show();
 
 ## vocabulary explanation
 
+Note: The code snippet in the following explanation comes from
+[hello-egg-node](../../examples/hello-egg)
+
 ### Provider
 There are two meanings.
 
@@ -531,4 +534,88 @@ Let's look at the ast information for DemoProvider and UserRequest in the exampl
 ```
 
 
+### argumentMap
+
+ArgumentMap is a runtime assistant method whose main responsibility is to trigger data structure transformation.
+
+Main steps:
+
+1. Traversal parameters are called if _fields 2java is included.
+
+2. Delete null and undefined values;
+
+
+```typescript
+//Examples of argumentMap usage
+
+import {UserRequest} from './UserRequest';
+import {UserResponse} from './UserResponse';
+import {argumentMap, JavaString} from 'interpret-util';
+import {TDubboCallResult, Dubbo} from 'dubbo2.js';
+
+export interface IDemoProvider {
+  sayHello(name: JavaString): TDubboCallResult<string>;
+  test(): TDubboCallResult<void>;
+  echo(): TDubboCallResult<string>;
+  getUserInfo(request: UserRequest): TDubboCallResult<UserResponse>;
+}
+
+export const DemoProviderWrapper = {
+  sayHello: argumentMap,
+  test: argumentMap,
+  echo: argumentMap,
+  getUserInfo: argumentMap,
+};
+
+export function DemoProvider(dubbo: Dubbo): IDemoProvider {
+  return dubbo.proxyService<IDemoProvider>({
+    dubboInterface: 'com.alibaba.dubbo.demo.DemoProvider',
+    methods: DemoProviderWrapper,
+  });
+}
+
+//generate by interpret-cli dubbo2.js
+
+
+
+
+
+//Content of argumentMap method
+export function argumentMap() {
+  let _arguments = Array.from(arguments);
+
+  return _arguments.map(
+    argumentItem =>
+      argumentItem.__fields2java
+        ? paramEnhance(argumentItem.__fields2java())
+        : argumentItem,
+  );
+}
+
+function paramEnhance(javaParams: Array<object> | object) {
+  if (javaParams instanceof Array) {
+    for (let i = 0, ilen = javaParams.length; i < ilen; i++) {
+      let itemParam = javaParams[i];
+      minusRedundancy(itemParam);
+    }
+  } else {
+    minusRedundancy(javaParams);
+  }
+  return javaParams;
+}
+
+function minusRedundancy(itemParam: any) {
+  if (!itemParam) {
+    return;
+  }
+  for (var _key in itemParam.$) {
+    if (itemParam.$[_key] === null || itemParam.$[_key] === undefined) {
+      delete itemParam.$[_key];
+      log('删除 key %s from %j ', itemParam, _key);
+    }
+  }
+}
+
+
+```
 
