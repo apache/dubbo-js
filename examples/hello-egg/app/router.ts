@@ -5,6 +5,7 @@ export default (app: Application) => {
 
   router.get('/', controller.home.index);
   router.get('/hello', controller.home.sayHello);
+  router.get('/userInfo', controller.home.userInfo);
   router.get('/echo', controller.home.echo);
   router.get('/basicType', controller.home.basicType);
 };

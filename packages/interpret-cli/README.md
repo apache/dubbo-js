@@ -618,6 +618,15 @@ function minusRedundancy(itemParam: any) {
 ## FAQ:
 
 ### q1:How to integrate with the project?
+There are two ways to use it.
+
+1. Embedding projects directly;
+
+2. Publish NPM packages;
+
+The first approach is very suitable for a small number of Dubbo interfaces, single projects; see [hello-egg](../../examples/hello-egg/)
+
+The second approach is suitable for large-scale projects, especially multi-project shared interfaces; see [Automatic Translation Service] (https://github.com/creasy2010/auto-translator)
 
 **_Tip_** 生成的代码可以发 npm 包供其他业务线使用或直接在项目中引用
 

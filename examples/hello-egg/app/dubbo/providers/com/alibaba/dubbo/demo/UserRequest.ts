@@ -1,6 +1,8 @@
+import {Sex} from './Sex';
 import java from 'js-to-java';
 
 export interface IUserRequest {
+  sex?: Sex;
   name?: string;
   id?: number;
   email?: string;
@@ -8,11 +10,13 @@ export interface IUserRequest {
 
 export class UserRequest {
   constructor(params: IUserRequest) {
+    this.sex = params.sex;
     this.name = params.name;
     this.id = params.id;
     this.email = params.email;
   }
 
+  sex?: Sex;
   name?: string;
   id?: number;
   email?: string;
@@ -21,6 +25,7 @@ export class UserRequest {
     return {
       $class: 'com.alibaba.dubbo.demo.UserRequest',
       $: {
+        sex: java['enum']('com.alibaba.dubbo.demo.Sex', Sex[this.sex]),
         name: java.String(this.name),
         id: java.Integer(this.id),
         email: java.String(this.email),

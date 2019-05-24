@@ -9,6 +9,7 @@ public class UserRequest implements Serializable {
     private Integer id;
     private String name;
     private String email;
+    private Sex sex;
 
 
     public Integer getId() {
@@ -35,12 +36,22 @@ public class UserRequest implements Serializable {
         this.email = email;
     }
 
+    public Sex getSex() {
+        return sex;
+    }
+
+    public void setSex(Sex sex) {
+        this.sex = sex;
+    }
+
     @Override
     public String toString() {
         return "UserRequest{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", sex='" + sex + '\'' +
                 ", email='" + email + '\'' +
                 '}';
     }
+
 }
