@@ -2,17 +2,18 @@
 
 <img src="http://oss-hz.qianmi.com/x-site/dev/doc/dong/video2deal/xsite/interpret/鹦鹉.png" width = "100" alt="图片名称" align=center />
 
-dubbo2.js 打通了 node 与 dubbo 服务调用的 rpc 通道
+Dubbo-js uses RPC to get through node and java.
+If we can automatically generate Dubbo service interface definition, parameter conversion, and have automatic completion ability in ide, our development experience will be better.
 
-调用 dubbo 接口时, 如果能自动生成接口定义,参数的转换,代码提示 开发体验会更优秀;
+"Translator" came into being for this purpose!
 
-"Translator(翻译师)" 为此而生!!
+We will like it.
 
-**_职责_**
 
-1.  翻译 Interface 代码,生成 node 端可调用代码;
-2.  自动将参数转换为 hessian.js 能识别的对象;
-3.  接口方法及参数类型提示;
+**_Duty_**
+
+1.  Generate typescript code corresponding to Dubbo service interface;
+2.  Parametric conversion, converting JavaScript object to a format that hession. JS recognizes;
 
 ## TODO
 
@@ -21,25 +22,23 @@ dubbo2.js 打通了 node 与 dubbo 服务调用的 rpc 通道
 
 ## How to Usage?
 
-如何把一个 dubbo 接口转换为 node 客户端能调用的代码,并在项目中使用呢?我们分为 3 个步骤:
+We divide the whole process into three steps.
 
-1.  在 java 接口项目生成 jar 包及依赖文件;
-2.  从生成的 jar 字节码中提取 ast 信息,翻译师根据 ast 信息生成 typescript;
-3.  项目中调用生成代码;
+1. Generate jar packages and install dependencies in Java API projects;
 
-注:
+2. Extract ast information from generated jar bytecode, and then generate typescript based on it.
 
-具体实现 参考文档 [dubbo2js-翻译师.pdf](https://github.com/hufeng/iThink/blob/master/talk/dubbo2js-%E7%BF%BB%E8%AF%91%E5%B8%88.pdf)
+3. Calling services;
 
-### step1:从 java 项目生成 jar
+
+### step1:
 
 ```shell
-; 进入接口项目目录执行命令
 mvn package
 mvn install dependency:copy-dependencies
 ```
 
-### step2:翻译生成 typescript 代码
+### step2:
 
 ```shell
 npm install interpret-dubbo2js -g
@@ -57,14 +56,15 @@ dubbo.json:
 }
 ```
 
-| 参数名称     | 作用             |
-| ------------ | ---------------- |
-| output       | 生成代码保存路径 eg: [config example](../../examples/hello-egg/dubbo.json) |
-| entry        | 可选过滤无关代码 eg: [config example](../../examples/hello-egg/dubbo.json)|
-| entryJarPath | 接口的 jar 包  eg:  [config example](../../examples/hello-egg/dubbo.json)  |
-| libDirPath   | 接口所依赖的    eg:  [config example](../../examples/hello-egg/dubbo.json) |
+note: [Reference examples](../../examples/hello-egg);
 
-**_Tip_** 生成的代码可以发 npm 包供其他业务线使用或直接在项目中引用
+
+| parameter     | affect             |
+| ------------ | ---------------- |
+| output       | the dir to save output eg: [config example](../../examples/hello-egg/dubbo.json) |
+| entry        | package path filter eg: [config example](../../examples/hello-egg/dubbo.json)|
+| entryJarPath | jar package for dubbo api   eg:  [config example](../../examples/hello-egg/dubbo.json)  |
+| libDirPath   | the dubbo api dependencies    eg:  [config example](../../examples/hello-egg/dubbo.json) |
 
 ### step2:Use the provider
 
@@ -88,9 +88,6 @@ showCaseProvider.show();
 **_Tip_** `npm install interpret-util dubbo2.js`;
 
 [interpret-example](https://github.com/creasy2010/interpret-example);
-
-
-
 
 ## vocabulary explanation
 
@@ -618,4 +615,13 @@ function minusRedundancy(itemParam: any) {
 
 
 ```
+## FAQ:
 
+### q1:How to integrate with the project?
+
+**_Tip_** 生成的代码可以发 npm 包供其他业务线使用或直接在项目中引用
+
+## Resources
+[dubbo-js-Translator.pdf](https://github.com/hufeng/iThink/blob/master/talk/dubbo2js-%E7%BF%BB%E8%AF%91%E5%B8%88.pdf)
+
+[interpret-example](https://github.com/creasy2010/interpret-example);
