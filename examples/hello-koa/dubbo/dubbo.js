@@ -15,7 +15,7 @@ const dubboSetting = setting
 
 const dubbo = (module.exports = new Dubbo({
   application: {name: 'dubbo-node-consumer'},
-  register: 'localhost:2181',
+  register: 'localhost:2181,localhost:2182,localhost:2183',
   service,
   dubboSetting,
 }));

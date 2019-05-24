@@ -34,7 +34,7 @@ With core module [js-to-java](https://github.com/node-modules/js-to-java), and [
 
 9. Typescript type definition
 
-10. Convert java dubbo interface to typescript module by interpret tools
+10. Convert java dubbo inter face to typescript module by interpret tools
 
 11. SocketWorker was disconnected auto retry
 
@@ -184,7 +184,7 @@ const errorProvider = ErrorProvider(dubbo);
   ({res, err} = await demoProvider.echo());
   //print {err: null, res: 'pang'}
   ({res, err} = await demoProvider.getUserInfo());
-  //print {status: 'ok', info: { id: '1', name: 'test' }}
+  //print {err: null, res: {status: 'ok', info: { id: '1', name: 'test' }}
 })();
 ```
 
@@ -196,10 +196,10 @@ const errorProvider = ErrorProvider(dubbo);
 brew install zookeeper
 brew services start zookeeper
 
-#Run test example in java/dubbo-demo-provider
+# Run test example in java/dubbo-demo-provider
 yarn run test
 
-#Full link log tracking
+# Full link log tracking
 DEBUG=dubbo* yarn run test
 ```
 
@@ -644,3 +644,22 @@ import {Dubbo} from 'dubbo2.js/es6';
 ---
 
 [Click here!](https://github.com/hufeng/iThink/tree/master/talk)
+
+# How to run example
+
+```sh
+# start zookeeper cluster
+docker-compose up
+
+# start java
+cd java/dubbo-demo/dubbo-demo-provider
+mvn clean package
+java -jar target/dubbo-demo-provider-2.6.3-jar-with-dependencies.jar
+
+# start node
+cd example/hello-koa
+DEBUG=dubbo* node server.js
+
+# request /hello
+curl http://localhost:3000/hello
+```

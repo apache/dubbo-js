@@ -23,7 +23,7 @@
     <!-- 提供方应用信息，用于计算依赖关系 -->
     <dubbo:application name="demo-provider"/>
 
-    <dubbo:registry protocol="zookeeper" address="127.0.0.1:2181"/>
+    <dubbo:registry protocol="zookeeper" address="127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183"/>
 
     <dubbo:provider timeout="1500"/>
 
