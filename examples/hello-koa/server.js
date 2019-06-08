@@ -1,7 +1,7 @@
 const Koa = require('koa');
 const Router = require('koa-router');
 const dubbo = require('./dubbo/dubbo');
-const dubbo2 = require('./dubbo/dubbo-es6');
+// const dubbo2 = require('./dubbo/dubbo-es6');
 
 const app = new Koa();
 const router = new Router();

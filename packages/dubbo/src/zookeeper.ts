@@ -33,7 +33,7 @@ import {
   IRegistrySubscriber,
   IZkClientProps,
 } from './types';
-import {delay, eqSet, isDevEnv, msg, noop, traceErr, traceInfo} from './util';
+import {eqSet, isDevEnv, msg, noop, traceErr, traceInfo} from './util';
 
 const log = debug('dubbo:zookeeper');
 const ipAddress = ip.address();
@@ -181,7 +181,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
    * 这样有点Reactive的感觉，不需要考虑当中增加删除的动作
    */
   private get _allAgentAddrSet() {
-    const agentSet = new Set();
+    const agentSet = new Set() as Set<string>;
     for (let urlList of this._dubboServiceUrlMap.values()) {
       for (let url of urlList) {
         agentSet.add(url.host + ':' + url.port);
@@ -204,7 +204,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
     const {res, err} = await go(
       this._getChildren(
         dubboServicePath,
-        this._watch(dubboServicePath, dubboInterface),
+        this._watchWrap(dubboServicePath, dubboInterface),
       ),
     );
 
@@ -245,7 +245,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
     //node-zookeeper-client,有个bug，当连不上zk时会无限重连
     //手动做一个超时检测
     const {retries, sessionTimeout} = (this._client as any).options;
-    const timeId = setTimeout(() => {
+    let timeId = setTimeout(() => {
       log(`Could not connect zk ${register}， time out`);
       this._client.close();
       callback(
@@ -255,20 +255,12 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
       );
     }, retries * sessionTimeout);
 
-    //connected
     this._client.once('connected', () => {
       log(`connected to zkserver ${register}`);
       clearTimeout(timeId);
+      timeId = null;
       callback(null);
       msg.emit('sys:ready');
-    });
-
-    //in order to trace connect info
-    this._client.on('connected', () => {
-      traceInfo(
-        `connected to zkserver ${register} current state is ${this._client.getState()}`,
-      );
-      callback(null);
     });
 
     //the connection between client and server is dropped.
@@ -295,13 +287,12 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
     this._client.connect();
   };
 
-  private _watch(dubboServicePath: string, dubboInterface: string) {
-    //@ts-ignore
+  private _watchWrap(dubboServicePath: string, dubboInterface: string) {
     return async (e: zookeeper.Event) => {
       log(`trigger watch ${e}`);
 
       //会有概率性的查询节点为空，可以延时一些时间
-      await delay(2000);
+      // await delay(2000);
 
       const dubboServiceUrls = await this._getDubboServiceUrls(
         dubboServicePath,
@@ -351,11 +342,8 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
 
   private _getChildren = (
     path: string,
-    watch?: (e: zookeeper.Event) => void,
+    watch: (e: zookeeper.Event) => void,
   ): Promise<{children: Array<string>; stat: zookeeper.Stat}> => {
-    if (!watch) {
-      watch = () => {};
-    }
     return new Promise((resolve, reject) => {
       this._client.getChildren(path, watch, (err, children, stat) => {
         if (err) {
@@ -418,12 +406,14 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
       );
     const exist = await go(this._exists(consumerUrl));
     if (exist.err) {
-      log(`check consumer url: ${consumerUrl} failed`);
+      log(`check consumer url: ${decodeURIComponent(consumerUrl)} failed`);
       return;
     }
 
     if (exist.res) {
-      log(`check consumer url: ${consumerUrl} was existed.`);
+      log(
+        `check consumer url: ${decodeURIComponent(consumerUrl)} was existed.`,
+      );
       return;
     }
 

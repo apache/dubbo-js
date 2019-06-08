@@ -70,7 +70,10 @@ export class Setting {
     let matchedRule = null;
     if (!matchedRule) {
       for (let rule of this._rules.get('Array')) {
-        if (isArray(rule.condition) && rule.condition.indexOf(dubboInterface)) {
+        if (
+          isArray(rule.condition) &&
+          rule.condition.indexOf(dubboInterface) !== -1
+        ) {
           matchedRule = rule;
           break;
         }
@@ -79,6 +82,7 @@ export class Setting {
     if (!matchedRule) {
       for (let rule of this._rules.get('TPredictFunction')) {
         if (isFn(rule.condition) && rule.condition(dubboInterface)) {
+          rule.dubboSetting = rule.condition(dubboInterface);
           matchedRule = rule;
           break;
         }
