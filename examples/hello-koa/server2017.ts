@@ -1,7 +1,6 @@
-const Koa = require('koa');
-const Router = require('koa-router');
-const dubbo = require('./dubbo/dubbo');
-// const dubbo2 = require('./dubbo/dubbo-es6');
+import Koa from 'koa';
+import Router from 'koa-router';
+import dubbo from './dubbo/dubbo';
 
 const app = new Koa();
 const router = new Router();
@@ -43,7 +42,7 @@ router.get('/tracer', async ctx => {
   setTimeout(async () => {
     await dubbo.service.basicTypeProvider.testBasicType();
     process.nextTick(() => {
-      demoProvider.getUserInfo();
+      dubbo.service.demoProvider.getUserInfo();
     });
   });
 
@@ -53,9 +52,6 @@ router.get('/tracer', async ctx => {
   };
 });
 
-app
-  // .use(tracer)
-  .use(router.routes())
-  .use(router.allowedMethods());
+app.use(router.routes()).use(router.allowedMethods());
 
 app.listen(3000);

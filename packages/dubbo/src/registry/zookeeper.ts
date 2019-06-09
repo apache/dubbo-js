@@ -19,105 +19,38 @@ import debug from 'debug';
 import ip from 'ip';
 import zookeeper from 'node-zookeeper-client';
 import qs from 'querystring';
-import Context from './context';
-import DubboUrl from './dubbo-url';
+import DubboUrl from '../dubbo-url';
 import {
   ZookeeperDisconnectedError,
   ZookeeperExpiredError,
   ZookeeperTimeoutError,
-} from './err';
-import {go} from './go';
+} from '../err';
+import {go} from '../go';
 import {
   ICreateConsumerParam,
-  IObservable,
-  IRegistrySubscriber,
+  IDubboRegistryProps,
   IZkClientProps,
-} from './types';
-import {eqSet, isDevEnv, msg, noop, traceErr, traceInfo} from './util';
+} from '../types';
+import {eqSet, isDevEnv, msg, traceErr, traceInfo} from '../util';
+import Registry from './registry';
 
 const log = debug('dubbo:zookeeper');
 const ipAddress = ip.address();
 
-export type TAgentAddr = string;
-export type TDubboInterface = string;
-
-export class ZkRegistry implements IObservable<IRegistrySubscriber> {
-  private constructor(props: IZkClientProps) {
+export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
+  constructor(props: IZkClientProps & IDubboRegistryProps) {
+    super(props);
     log(`new:|> %O`, props);
-    this._props = props;
     //默认dubbo
     this._props.zkRoot = this._props.zkRoot || 'dubbo';
-    //保存dubbo接口和服务url之间的映射关系
-    this._dubboServiceUrlMap = new Map();
+    //初始化agentAddrSet
     this._agentAddrSet = new Set();
-    //初始化订阅者
-    this._subscriber = {
-      onData: noop,
-      onError: noop,
-    };
     //初始化zookeeper的client
     this._connect(this._init);
   }
 
-  private _agentAddrSet: Set<string>;
   private _client: zookeeper.Client;
-  private _subscriber: IRegistrySubscriber;
-  private readonly _props: IZkClientProps;
-  private readonly _dubboServiceUrlMap: Map<TDubboInterface, Array<DubboUrl>>;
-
-  //===========================public method=============================
-  static from(props: IZkClientProps) {
-    return new ZkRegistry(props);
-  }
-
-  /**
-   * 根据dubbo调用上下文interface, group, version等，获取负载列表
-   * @param ctx dubbo调用上下文
-   */
-  getAgentAddrList(ctx: Context) {
-    const {dubboInterface, version, group} = ctx;
-    return this._dubboServiceUrlMap
-      .get(dubboInterface)
-      .filter(serviceProp => {
-        const isSameVersion = serviceProp.version === version;
-        //如果Group为null，就默认匹配， 不检查group
-        //如果Group不为null，确保group和接口的group一致
-        const isSameGroup = !group || group === serviceProp.group;
-        return isSameGroup && isSameVersion;
-      })
-      .map(({host, port}) => `${host}:${port}`);
-  }
-
-  /**
-   * 根据dubbo调用上下文获取服务提供者的信息
-   * @param ctx
-   */
-  getDubboServiceProp(ctx: Context) {
-    let {dubboInterface, version, group, invokeHost, invokePort} = ctx;
-    const dubboServicePropList = this._dubboServiceUrlMap.get(dubboInterface);
-    for (let prop of dubboServicePropList) {
-      const isSameHost = prop.host === invokeHost;
-      const isSamePort = prop.port === invokePort;
-      const isSameVersion = prop.version === version;
-      //如果Group为null，就默认匹配， 不检查group
-      //如果Group不为null，确保group和接口的group一致
-      const isSameGroup = !group || group === prop.group;
-
-      if (isSameHost && isSamePort && isSameVersion && isSameGroup) {
-        log('getProviderProps:|> %s', prop);
-        return prop;
-      }
-    }
-  }
-
-  /**
-   * 订阅者
-   * @param subscriber
-   */
-  subscribe(subscriber: IRegistrySubscriber) {
-    this._subscriber = subscriber;
-    return this;
-  }
+  private _agentAddrSet: Set<string>;
 
   //========================private method==========================
   private _init = async (err: Error) => {
@@ -148,7 +81,6 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
 
       //init
       this._dubboServiceUrlMap.set(inf, []);
-
       for (let serviceUrl of dubboServiceUrls) {
         const url = DubboUrl.from(serviceUrl);
         this._dubboServiceUrlMap.get(inf).push(url);
@@ -168,13 +100,6 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
     this._agentAddrSet = this._allAgentAddrSet;
     this._subscriber.onData(this._allAgentAddrSet);
   };
-
-  /**
-   * get current all agent address
-   */
-  get allAgentAddrSet() {
-    return this._agentAddrSet;
-  }
 
   /**
    * 获取所有的负载列表，通过agentAddrMap聚合出来
@@ -232,7 +157,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
    * connect zookeeper
    */
   private _connect = (callback: (err: Error) => void) => {
-    const {register} = this._props;
+    const {url: register} = this._props;
     //debug log
     log(`connecting zkserver ${register}`);
     //connect
@@ -245,7 +170,7 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
     //node-zookeeper-client,有个bug，当连不上zk时会无限重连
     //手动做一个超时检测
     const {retries, sessionTimeout} = (this._client as any).options;
-    let timeId = setTimeout(() => {
+    const timeId = setTimeout(() => {
       log(`Could not connect zk ${register}， time out`);
       this._client.close();
       callback(
@@ -258,7 +183,6 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
     this._client.once('connected', () => {
       log(`connected to zkserver ${register}`);
       clearTimeout(timeId);
-      timeId = null;
       callback(null);
       msg.emit('sys:ready');
     });
@@ -478,4 +402,12 @@ export class ZkRegistry implements IObservable<IRegistrySubscriber> {
       });
     });
   };
+}
+
+export default function Zk(props: IZkClientProps) {
+  return (dubboProps: IDubboRegistryProps) =>
+    new ZkRegistry({
+      ...props,
+      ...dubboProps,
+    });
 }

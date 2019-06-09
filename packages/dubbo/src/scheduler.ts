@@ -19,9 +19,9 @@ import debug from 'debug';
 import DubboAgent from './dubbo-agent';
 import {ScheduleError, SocketError, ZookeeperTimeoutError} from './err';
 import Queue from './queue';
-import {IDubboResponse, IZkClientProps} from './types';
+import {Registry} from './registry';
+import {IDubboResponse} from './types';
 import {traceErr, traceInfo} from './util';
-import {ZkRegistry} from './zookeeper';
 
 const log = debug('dubbo:scheduler');
 const enum STATUS {
@@ -39,8 +39,8 @@ const enum STATUS {
  * 4. 接受zookeeper的变化，更新Server-agent
  */
 export default class Scheduler {
-  constructor(props: IZkClientProps, queue: Queue) {
-    log(`new:|> %O`, props);
+  constructor(registry: Registry, queue: Queue) {
+    log(`new scheduler`);
     this._status = STATUS.PADDING;
 
     this._queue = queue;
@@ -49,7 +49,7 @@ export default class Scheduler {
     this._dubboAgent = new DubboAgent();
 
     //init ZkClient and subscribe
-    this._zkClient = ZkRegistry.from(props).subscribe({
+    this._registry = registry.subscribe({
       onData: this._handleZkClientOnData,
       onError: this._handleZkClientError,
     });
@@ -57,15 +57,15 @@ export default class Scheduler {
 
   private _status: STATUS;
   private _queue: Queue;
-  private _zkClient: ZkRegistry;
+  private _registry: Registry;
   private _dubboAgent: DubboAgent;
 
   /**
    * static factory method
    * @param props
    */
-  static from(props: IZkClientProps, queue: Queue) {
-    return new Scheduler(props, queue);
+  static from(registry: Registry, queue: Queue) {
+    return new Scheduler(registry, queue);
   }
 
   /**
@@ -151,8 +151,11 @@ export default class Scheduler {
   private _handleDubboInvoke(requestId: number) {
     //get request context
     const ctx = this._queue.requestQueue.get(requestId);
+    // get agent addr map
+    const agentAddrMap = this._registry.getAgentAddrMap(ctx);
+
     //get socket agent list
-    const agentAddrList = this._zkClient.getAgentAddrList(ctx);
+    const agentAddrList = Object.keys(agentAddrMap);
     log('agentAddrSet-> %O', agentAddrList);
     const worker = this._dubboAgent.getAvailableSocketWorker(agentAddrList);
 
@@ -172,7 +175,7 @@ export default class Scheduler {
     ctx.invokeHost = worker.host;
     ctx.invokePort = worker.port;
 
-    const providerProps = this._zkClient.getDubboServiceProp(ctx);
+    const providerProps = agentAddrMap[`${ctx.invokeHost}:${ctx.invokePort}`];
     this._queue.consume(ctx.requestId, worker, providerProps);
   }
 
@@ -186,7 +189,7 @@ export default class Scheduler {
 
     for (let ctx of this._queue.requestQueue.values()) {
       if (ctx.isNotScheduled) {
-        const agentHostList = this._zkClient.getAgentAddrList(ctx);
+        const agentHostList = Object.keys(this._registry.getAgentAddrMap(ctx));
         log('agentHostList-> %O', agentHostList);
         //当前的socket是否可以处理当前的请求
         if (agentHostList.indexOf(agentHost) != -1) {
