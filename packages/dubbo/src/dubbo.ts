@@ -17,10 +17,12 @@
 
 import debug from 'debug';
 import compose from 'koa-compose';
+import {isFunction, isString} from 'util';
 import config from './config';
 import Context from './context';
 import {go} from './go';
 import Queue from './queue';
+import {Zk} from './registry';
 import Scheduler from './scheduler';
 import {
   IDubboProps,
@@ -31,17 +33,11 @@ import {
   Middleware,
   TDubboService,
 } from './types';
-import {msg, noop, traceErr, traceInfo} from './util';
+import {msg, noop, traceInfo} from './util';
 
 const log = debug('dubbo:bootstrap');
 const packageVersion = require('../package.json').version;
 log('dubbo2.js version :=> %s', packageVersion);
-
-//定位没有处理的promise
-process.on('unhandledRejection', (reason, p) => {
-  log(reason, p);
-  traceErr(new Error(reason));
-});
 
 /**
  * Dubbo
@@ -61,8 +57,14 @@ export default class Dubbo<TService = Object>
   constructor(props: IDubboProps) {
     this._props = props;
 
+    // check dubbo setting
     if (!props.dubboSetting) {
       throw new Error('Please specify dubboSetting');
+    }
+
+    // check dubbo register
+    if (!isString(props.register) && !isFunction(props.register)) {
+      throw new Error('Dubbo register must be string of function ');
     }
 
     this._interfaces = [];
@@ -93,15 +95,22 @@ export default class Dubbo<TService = Object>
     };
     //初始化消息监听
     this._initMsgListener();
+
+    //if dubbo register is string, create a zookeeper instance
+    let register = this._props.register;
+    if (isString(register)) {
+      register = Zk({
+        url: this._props.register as string,
+      });
+    }
+
     //create scheduler
     Scheduler.from(
-      {
-        zkRoot: props.zkRoot,
-        register: props.register,
+      register({
         application: props.application,
         interfaces: this._interfaces,
         dubboSetting: props.dubboSetting,
-      },
+      }),
       this._queue,
     );
   }
@@ -235,6 +244,7 @@ export default class Dubbo<TService = Object>
 
   subscribe(subscriber: IDubboSubscriber) {
     this._subscriber = subscriber;
+    return this;
   }
 
   //================private method================

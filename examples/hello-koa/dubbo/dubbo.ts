@@ -1,5 +1,5 @@
-const {Dubbo, setting} = require('dubbo2.js');
-const service = require('./service');
+import {Dubbo, setting, Zk} from 'dubbo2.js';
+import * as service from './service';
 
 const dubboSetting = setting
   .match(
@@ -13,17 +13,22 @@ const dubboSetting = setting
   )
   .match('com.alibaba.dubbo.demo.BasicTypeProvider', {version: '2.0.0'});
 
-const dubbo = (module.exports = new Dubbo({
+const dubbo = new Dubbo<typeof service>({
   application: {name: 'dubbo-node-consumer'},
-  register: 'localhost:2181,localhost:2182,localhost:2183',
   service,
   dubboSetting,
-}));
+
+  register: Zk({
+    url: 'localhost:2181,localhost:2182,localhost:2183',
+  }),
+});
 
 dubbo.use(async (ctx, next) => {
   await next();
   console.log('-providerAttachments-->', ctx.providerAttachments);
 });
+
+export default dubbo;
 
 // dubbo.ready().then(() => {
 //   console.log('dubbo was ready');

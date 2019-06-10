@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
+import {Zk} from '../registry';
 import setting from '../setting';
-import {ZkRegistry} from '../zookeeper';
 
 describe('zookeeper test suite', () => {
   it('test connect', () => {
@@ -33,17 +33,18 @@ describe('zookeeper test suite', () => {
         {version: '1.0.0'},
       );
 
-    const client = ZkRegistry.from({
-      application: {
-        name: 'node-zookeeper-test',
-      },
-      register: 'localhost:2181',
+    const client = Zk({
+      url: 'localhost:2181',
+    })({
       interfaces: [
         'com.alibaba.dubbo.demo.DemoProvider',
         'com.alibaba.dubbo.demo.BasicTypeProvider',
         'com.alibaba.dubbo.demo.ErrorProvider',
       ],
       dubboSetting,
+      application: {
+        name: 'node-zookeeper-test',
+      },
     });
 
     client.subscribe({

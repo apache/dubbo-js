@@ -20,7 +20,18 @@ import Context from './context';
 import DirectlyDubbo from './directly-dubbo';
 import Dubbo from './dubbo';
 import {go} from './go';
+import {Registry, Zk} from './registry';
 import setting from './setting';
 import {TDubboCallResult} from './types';
 
-export {Dubbo, DirectlyDubbo, java, TDubboCallResult, Context, go, setting};
+export {
+  Dubbo,
+  DirectlyDubbo,
+  java,
+  TDubboCallResult,
+  Context,
+  go,
+  setting,
+  Zk,
+  Registry,
+};

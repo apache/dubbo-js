@@ -17,9 +17,8 @@
 
 import debug from 'debug';
 import SocketWorker from './socket-worker';
-import {IObservable, ISocketSubscriber} from './types';
+import {IObservable, ISocketSubscriber, TAgentAddr} from './types';
 import {isDevEnv, noop, traceErr, traceInfo} from './util';
-import {TAgentAddr} from './zookeeper';
 
 const log = debug('dubbo:server-agent');
 
@@ -45,7 +44,7 @@ export default class DubboAgent implements IObservable<ISocketSubscriber> {
    * @param agentAddrList 负载地址列表
    */
   from = (agentAddrs: Set<string>) => {
-    log('create server-agent :|> %O', agentAddrs);
+    log('create-update server-agent :|> %O', agentAddrs);
     //获取负载host:port列表
     process.nextTick(() => {
       for (let agentAddr of agentAddrs) {

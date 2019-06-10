@@ -14,10 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import Registry from './registry/registry';
 import {Setting} from './setting';
 
+export type THostPort = string;
+export type TAgentAddr = string;
+export type TDubboInterface = string;
+
+/**
+ * dubbo对象透传给registry的类型
+ */
+export interface IDubboRegistryProps {
+  application?: {name: string};
+  interfaces: Array<string>;
+  dubboSetting: Setting;
+}
+
+export interface IRegistrySubscriber {
+  onData: (agentSet: Set<THostPort>) => void;
+  onError: (err: Error) => void;
+}
+
 export interface IObservable<T> {
-  subscribe(subscriber: T);
+  subscribe(subscriber: T): this;
 }
 
 export type TDecodeBuffSubscriber = (data: Buffer) => void;
@@ -32,11 +51,6 @@ export interface ITrace {
 
 export interface IDubboSubscriber {
   onTrace: (msg: ITrace) => void;
-}
-
-export interface IRegistrySubscriber {
-  onData: Function;
-  onError: Function;
 }
 
 export interface ISocketSubscriber {
@@ -66,17 +80,14 @@ export interface IInvokeParam {
 export interface IDubboProps {
   //当前的应用标识
   application: {name: string};
-  //zookeeper注册中心地址
-  register: string;
+  register: ((props: IDubboRegistryProps) => Registry) | string;
+  //当前要注册到dubbo容器的服务对象
+  service: Object;
   isSupportedDubbox?: boolean;
   //dubbo调用最大超时时间单位为秒，默认5s
   dubboInvokeTimeout?: number;
-  //dubbo为每个server-agent创建的socketpool数量，默认4
+  //dubbo为每个server-agent创建的socketpool数量，默认1
   dubboSocketPool?: number;
-  //zookeeper的根目录，默认/root
-  zkRoot?: string;
-  //当前要注册到dubbo容器的服务对象
-  service: Object;
   dubboSetting: Setting;
 }
 
@@ -101,11 +112,8 @@ export interface IDubboProvider {
 }
 
 export interface IZkClientProps {
-  application?: {name: string};
   zkRoot?: string;
-  register: string;
-  interfaces: Array<string>;
-  dubboSetting: Setting;
+  url: string;
 }
 
 export interface IProviderProps {
