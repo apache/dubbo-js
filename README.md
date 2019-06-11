@@ -15,7 +15,7 @@ Dubbo-js, using Node.js to embrace the Dubbo ecosystem.
 
 ## Architecture
 
-![](/docs/arch.png)
+<img src="/docs/arch.png" width="680" />
 
 ## Getting Started
 
