@@ -1,6 +1,6 @@
 # Apache Dubbo-js
 
-Dubbo-js, using Node.js to embrace the Dubbo ecosystem.
+Dubbo-js, using Node.js to embrace the Dubbo ecosystem. See this [Demo](https://github.com/apache/dubbo-js) to find how intelligent this project is.
 
 ## Features
 
@@ -15,7 +15,7 @@ Dubbo-js, using Node.js to embrace the Dubbo ecosystem.
 
 ## Architecture
 
-<img src="/docs/arch.png" width="680" />
+<img src="docs/arch.png" width="680" />
 
 ## Getting Started
 
@@ -133,6 +133,10 @@ curl http://localhost:3000/hello
 ## Reporting bugs
 
 Please follow the [template](https://github.com/apache/dubbo-js/issues/new?template=bug_report.md) for reporting any issues.
+
+## Knowledge Sharing
+
+[2019-meetup](https://github.com/dubbo/awesome-dubbo/blob/master/slides/meetup/201903%40nanjing/Dubbo2.js-from-0-to-1.pdf) by [hufeng](https://github.com/hufeng)
 
 ## Thanks
 
