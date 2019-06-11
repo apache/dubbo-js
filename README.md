@@ -128,6 +128,12 @@ DEBUG=dubbo* node server.js
 curl http://localhost:3000/hello
 ```
 
+## Next steps
+
+## Reporting bugs
+
+Please follow the [template](https://github.com/apache/dubbo-js/issues/new?template=bug_report.md) for reporting any issues.
+
 ## Thanks
 
 Dubbo-js will not work without:
@@ -136,3 +142,7 @@ Dubbo-js will not work without:
 - [hessian.js](https://github.com/node-modules/hessian.js)
 
 Many thanks to their authors [fengmk2](https://github.com/fengmk2) and [dead-horse](https://github.com/dead-horse).
+
+## License
+
+Apache Dubbo is under the Apache 2.0 license. See the [LICENSE](/LICENSE) file for details.
