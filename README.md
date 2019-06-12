@@ -116,13 +116,16 @@ docker-compose up
 # start java
 cd java/dubbo-demo
 mvn clean install
-cd dubbo-demo-provider
+cd java/dubbo-demo/dubbo-demo-provider
 mvn clean package
 java -jar target/dubbo-demo-provider-2.6.3-jar-with-dependencies.jar
 
+# build
+make
+
 # start node
 cd example/hello-koa
-DEBUG=dubbo* node server.js
+npm run debug:start
 
 # test /hello
 curl http://localhost:3000/hello
