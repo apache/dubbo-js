@@ -130,6 +130,8 @@ curl http://localhost:3000/hello
 
 ## Next steps
 
+[Guides](/docs/README.md)
+
 ## Reporting bugs
 
 Please follow the [template](https://github.com/apache/dubbo-js/issues/new?template=bug_report.md) for reporting any issues.
