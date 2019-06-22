@@ -130,37 +130,13 @@ export default class DubboAgent implements IObservable<ISocketSubscriber> {
   private _getAvailableSocketAgents(
     agentAddrList: Array<TAgentAddr>,
   ): Array<SocketWorker> {
-    let errMessage = [];
     let availableList = [];
-    let dieList = [];
 
     for (let agentAddr of agentAddrList) {
-      //die set
-      if (!this._serverAgentMap.has(agentAddr)) {
-        dieList.push(agentAddr);
-      }
-
       const socketWorker = this._serverAgentMap.get(agentAddr);
       if (socketWorker && socketWorker.isAvaliable) {
         availableList.push(socketWorker);
-      } else {
-        errMessage.push(
-          `${agentAddrList.join()}:|>${agentAddr} current state ${
-            socketWorker ? socketWorker.status : 'die'
-          }`,
-        );
       }
-    }
-
-    if (dieList.length > 0) {
-      log(`recovery dieSet ${dieList.join()}`);
-      traceInfo(`recovery dieSet ${dieList.join()}`);
-      this.from(new Set(dieList));
-    }
-
-    //trace error
-    if (errMessage.length > 0) {
-      traceErr(new Error(errMessage.join()));
     }
 
     return availableList;

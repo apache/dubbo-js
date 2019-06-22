@@ -31,7 +31,7 @@ import {
   IDubboRegistryProps,
   IZkClientProps,
 } from '../types';
-import {eqSet, isDevEnv, msg, traceErr, traceInfo} from '../util';
+import {eqSet, isDevEnv, msg, traceErr} from '../util';
 import Registry from './registry';
 
 const log = debug('dubbo:zookeeper');
@@ -74,10 +74,14 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
       //当前接口在zookeeper中的路径
       const dubboServicePath = `/${zkRoot}/${inf}/providers`;
       //当前接口路径下的dubbo url
-      const dubboServiceUrls = await this._getDubboServiceUrls(
-        dubboServicePath,
-        inf,
+      const {res: dubboServiceUrls, err} = await go(
+        this._getDubboServiceUrls(dubboServicePath, inf),
       );
+
+      if (err) {
+        log(`getChildren ${dubboServicePath} error ${err}`);
+        traceErr(err);
+      }
 
       //init
       this._dubboServiceUrlMap.set(inf, []);
@@ -126,30 +130,14 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     dubboServicePath: string,
     dubboInterface: string,
   ): Promise<Array<string>> {
-    const {res, err} = await go(
-      this._getChildren(
-        dubboServicePath,
-        this._watchWrap(dubboServicePath, dubboInterface),
-      ),
-    );
-
-    if (err) {
-      log(`getChildren ${dubboServicePath} error ${err}`);
-      traceErr(err);
-      return [];
-    }
-
-    if (!res.children || res.children.length === 0) {
-      traceErr(
-        new Error(
-          `zk get DubboSericeUrls result is empty with service path ${dubboServicePath} and interface ${dubboInterface}.`,
-        ),
-      );
-    }
-
-    return (res.children || [])
-      .map(child => decodeURIComponent(child))
-      .filter(child => child.startsWith('dubbo://'));
+    return this._getChildren(
+      dubboServicePath,
+      this._watchWrap(dubboServicePath, dubboInterface),
+    ).then(res => {
+      return (res.children || [])
+        .map(child => decodeURIComponent(child))
+        .filter(child => child.startsWith('dubbo://'));
+    });
   }
 
   //========================zookeeper helper=========================
@@ -163,13 +151,11 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     //connect
     this._client = zookeeper.createClient(register, {
       retries: 10,
-      sessionTimeout: 60 * 1000,
     });
 
     //超时检测
     //node-zookeeper-client,有个bug，当连不上zk时会无限重连
     //手动做一个超时检测
-    const {retries, sessionTimeout} = (this._client as any).options;
     const timeId = setTimeout(() => {
       log(`Could not connect zk ${register}， time out`);
       this._client.close();
@@ -178,7 +164,7 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
           `ZooKeeper was connected ${register} time out. `,
         ),
       );
-    }, retries * sessionTimeout);
+    }, 30 * 1000);
 
     this._client.once('connected', () => {
       log(`connected to zkserver ${register}`);
@@ -199,7 +185,7 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     });
 
     this._client.on('expired', () => {
-      log(`zk ${register} had disconnected`);
+      log(`zk ${register} had session expired`);
       callback(
         new ZookeeperExpiredError(
           `Zookeeper was session Expired Error current state ${this._client.getState()}`,
@@ -218,10 +204,16 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
       //会有概率性的查询节点为空，可以延时一些时间
       // await delay(2000);
 
-      const dubboServiceUrls = await this._getDubboServiceUrls(
-        dubboServicePath,
-        dubboInterface,
+      const {res: dubboServiceUrls, err} = await go(
+        this._getDubboServiceUrls(dubboServicePath, dubboInterface),
       );
+
+      // when getChildren had occur error
+      if (err) {
+        log(`getChildren ${dubboServicePath} error ${err}`);
+        traceErr(err);
+        return;
+      }
 
       //clear current dubbo interface
       const agentAddrList = [];
@@ -242,8 +234,6 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
 
       if (agentAddrList.length === 0) {
         traceErr(new Error(`trigger watch ${e} agentList is empty`));
-      } else {
-        traceInfo(`trigger watch ${e} agentList ${agentAddrList.join(',')}`);
       }
 
       if (isDevEnv) {

@@ -168,7 +168,6 @@ export default class Scheduler {
       const err = new ScheduleError(msg);
       this._handleFailed(requestId, err);
       log(err);
-      traceErr(err);
       return;
     }
 
