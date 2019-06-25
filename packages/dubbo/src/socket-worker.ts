@@ -25,7 +25,7 @@ import HeartBeat from './heartbeat';
 import {SOCKET_STATUS} from './socket-status';
 import statistics from './statistics';
 import {IObservable, ISocketSubscriber} from './types';
-import {noop, traceErr, traceInfo} from './util';
+import {noop} from './util';
 
 let pid = 0;
 //重试次数
@@ -54,7 +54,7 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     this._status = SOCKET_STATUS.PADDING;
 
     log('new SocketWorker#%d|> %s %s', pid, host + ':' + port, this._status);
-    traceInfo(`new SocketWorker#${this.pid} |> ${host + ':' + port}`);
+    // traceInfo(`new SocketWorker#${this.pid} |> ${host + ':' + port}`);
 
     //init subscriber
     this._subscriber = {
@@ -149,9 +149,9 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
   //==========================private method================================
   private _initSocket() {
     log(`SocketWorker#${this.pid} =connecting=> ${this.host}:${this.port}`);
-    traceInfo(
-      `SocketWorker#${this.pid} =connecting=> ${this.host}:${this.port}`,
-    );
+    // traceInfo(
+    //   `SocketWorker#${this.pid} =connecting=> ${this.host}:${this.port}`,
+    // );
 
     this._socket = new net.Socket();
     // Disable the Nagle algorithm.
@@ -170,9 +170,9 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
 
   private _onConnected = () => {
     log(`SocketWorker#${this.pid} <=connected=> ${this.host}:${this.port}`);
-    traceInfo(
-      `SocketWorker#${this.pid} <=connected=> ${this.host}:${this.port}`,
-    );
+    // traceInfo(
+    //   `SocketWorker#${this.pid} <=connected=> ${this.host}:${this.port}`,
+    // );
 
     //set current status
     this._status = SOCKET_STATUS.CONNECTED;
@@ -205,13 +205,13 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
         this.port
       } ${error}`,
     );
-    traceErr(
-      new Error(
-        `SocketWorker#${this.pid} <=occur error=> ${this.host}:${this.port} ${
-          error.message
-        }`,
-      ),
-    );
+    // traceErr(
+    //   new Error(
+    //     `SocketWorker#${this.pid} <=occur error=> ${this.host}:${this.port} ${
+    //       error.message
+    //     }`,
+    //   ),
+    // );
     clearInterval(this._heartBeatTimer);
   };
 
@@ -222,13 +222,13 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
       } hasError: ${hadError} retry: ${this._retry}`,
     );
 
-    traceErr(
-      new Error(
-        `SocketWorker#${this.pid} <=closed=> ${this.host}:${
-          this.port
-        } hadError: ${hadError} retry: ${this._retry}`,
-      ),
-    );
+    // traceErr(
+    //   new Error(
+    //     `SocketWorker#${this.pid} <=closed=> ${this.host}:${
+    //       this.port
+    //     } hadError: ${hadError} retry: ${this._retry}`,
+    //   ),
+    // );
 
     //clear buffer
     this._decodeBuff.clearBuffer();

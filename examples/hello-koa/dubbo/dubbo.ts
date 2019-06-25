@@ -28,6 +28,12 @@ dubbo.use(async (ctx, next) => {
   console.log('-providerAttachments-->', ctx.providerAttachments);
 });
 
+dubbo.subscribe({
+  onTrace(msg) {
+    console.log(msg);
+  },
+});
+
 export default dubbo;
 
 // dubbo.ready().then(() => {
