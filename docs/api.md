@@ -123,7 +123,7 @@ const dubbo = Dubbo.from(/*...*/);
 ```javascript
 const dubbo = Dubbo.from(/*...*/);
 
-dubbo.subcribe({
+dubbo.subscribe({
   onTrace(msg: ITrace) {
     console.log(msg);
   },
