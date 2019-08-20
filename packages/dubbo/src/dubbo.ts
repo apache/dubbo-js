@@ -98,9 +98,11 @@ export default class Dubbo<TService = Object>
 
     //if dubbo register is string, create a zookeeper instance
     let register = this._props.register;
+    const zkAuthInfo = this._props.zkAuthInfo;
     if (isString(register)) {
       register = Zk({
         url: this._props.register as string,
+        zkAuthInfo: zkAuthInfo,
       });
     }
 

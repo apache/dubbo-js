@@ -81,6 +81,7 @@ export interface IDubboProps {
   //当前的应用标识
   application: {name: string};
   register: ((props: IDubboRegistryProps) => Registry) | string;
+  zkAuthInfo?: IZKAuthInfo;
   //当前要注册到dubbo容器的服务对象
   service: Object;
   isSupportedDubbox?: boolean;
@@ -93,7 +94,7 @@ export interface IDubboProps {
 
 //magic, you should use typescript 2.8+
 export type TDubboService<T> = {
-  [k in keyof T]: T[k] extends ((dubbo: any) => infer R) ? R : any
+  [k in keyof T]: T[k] extends ((dubbo: any) => infer R) ? R : any;
 };
 
 export interface IDubboResult<T> {
@@ -111,7 +112,13 @@ export interface IDubboProvider {
   methods: {[methodName: string]: Function};
 }
 
+export interface IZKAuthInfo {
+  scheme: string;
+  auth: string;
+}
+
 export interface IZkClientProps {
+  zkAuthInfo?: IZKAuthInfo;
   zkRoot?: string;
   url: string;
 }

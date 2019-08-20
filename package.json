@@ -52,5 +52,8 @@
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
+  },
+  "dependencies": {
+    "prettier": "^1.18.2"
   }
 }
