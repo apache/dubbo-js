@@ -82,6 +82,7 @@ export interface IDubboProps {
   application: {name: string};
   register: ((props: IDubboRegistryProps) => Registry) | string;
   zkAuthInfo?: IZKAuthInfo;
+  zkRoot?: string;
   //当前要注册到dubbo容器的服务对象
   service: Object;
   isSupportedDubbox?: boolean;

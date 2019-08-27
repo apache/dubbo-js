@@ -103,6 +103,7 @@ export default class Dubbo<TService = Object>
       register = Zk({
         url: this._props.register as string,
         zkAuthInfo: zkAuthInfo,
+        zkRoot: this._props.zkRoot as string,
       });
     }
 
