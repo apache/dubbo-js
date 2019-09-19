@@ -33,7 +33,7 @@ const RETRY_NUM = 20;
 //重试频率
 const RETRY_TIME = 3000;
 //心跳频率
-const HEART_BEAT = 2000;
+const HEART_BEAT = 180 * 1000;
 const RETRY_HEARD_BEAT_TIME = 20;
 const log = debug('dubbo:socket-worker');
 
