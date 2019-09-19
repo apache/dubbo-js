@@ -19,7 +19,7 @@ import debug from 'debug';
 import net from 'net';
 import Context from './context';
 import {decode} from './decode';
-import DecodeBuffer from './decode-buffer';
+import DecodeBuffer, {DataType} from './decode-buffer';
 import DubboEncoder from './encode';
 import HeartBeat from './heartbeat';
 import {SOCKET_STATUS} from './socket-status';
@@ -33,7 +33,8 @@ const RETRY_NUM = 20;
 //重试频率
 const RETRY_TIME = 3000;
 //心跳频率
-const HEART_BEAT = 180 * 1000;
+const HEART_BEAT = 2000;
+const RETRY_HEARD_BEAT_TIME = 20;
 const log = debug('dubbo:socket-worker');
 
 /**
@@ -51,6 +52,7 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     this.host = host;
     this.port = port;
     this._retry = RETRY_NUM;
+    this._retryHeartBeat = RETRY_HEARD_BEAT_TIME;
     this._status = SOCKET_STATUS.PADDING;
 
     log('new SocketWorker#%d|> %s %s', pid, host + ':' + port, this._status);
@@ -77,6 +79,8 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
   public readonly port: number;
 
   private _retry: number;
+  private _retryTimeoutId: NodeJS.Timer;
+  private _retryHeartBeat: number;
   private _heartBeatTimer: NodeJS.Timer;
   private _socket: net.Socket;
   private _status: SOCKET_STATUS;
@@ -153,10 +157,14 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     //   `SocketWorker#${this.pid} =connecting=> ${this.host}:${this.port}`,
     // );
 
+    if (this._socket) {
+      this._socket.destroy();
+    }
+
     this._socket = new net.Socket();
     // Disable the Nagle algorithm.
-    this._socket.setNoDelay();
-
+    // this._socket.setTimeout(10 * 1000)
+    // this._socket.setKeepAlive(true)
     this._socket
       .connect(
         this.port,
@@ -179,6 +187,7 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
 
     //reset retry number
     this._retry = RETRY_NUM;
+    this._retryHeartBeat = RETRY_HEARD_BEAT_TIME;
 
     //notifiy subscriber, the socketworker was connected successfully
     this._subscriber.onConnect({
@@ -188,15 +197,26 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     });
 
     //heartbeart
+    //when network is close, the connection maybe not close, so check the heart beat times
     this._heartBeatTimer = setInterval(() => {
-      log('emit heartbeat');
-      this._socket.write(HeartBeat.encode());
+      if (this._retryHeartBeat > 0) {
+        log('emit heartbeat');
+        this._retryHeartBeat--;
+        this._socket.write(HeartBeat.encode());
+      } else {
+        this._onClose(false);
+      }
     }, HEART_BEAT);
   };
 
   private _onData = data => {
     log(`SocketWorker#${this.pid}  =receive data=> ${this.host}:${this.port}`);
-    this._decodeBuff.receive(data);
+    const dataType = this._decodeBuff.receive(data);
+    switch (dataType) {
+      case DataType.HeardBeat:
+        this._retryHeartBeat = RETRY_HEARD_BEAT_TIME; //reset heart beat times
+        break;
+    }
   };
 
   private _onError = (error: Error) => {
@@ -238,7 +258,8 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
       //set current status
       this._status = SOCKET_STATUS.RETRY;
       //retry when delay RETRY_TIME
-      setTimeout(() => {
+      clearTimeout(this._retryTimeoutId);
+      this._retryTimeoutId = setTimeout(() => {
         this._retry--;
         this._initSocket();
       }, RETRY_TIME);

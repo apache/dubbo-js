@@ -25,6 +25,11 @@ const MAGIC_HIGH = 0xda;
 const MAGIC_LOW = 0xbb;
 const HEADER_LENGTH = 16;
 const log = debug('dubbo:decode-buffer');
+export const enum DataType {
+  Noop,
+  HeardBeat,
+  Data,
+}
 
 /**
  * 在并发的tcp数据传输中，会出现少包，粘包的现象
@@ -52,7 +57,7 @@ export default class DecodeBuffer
     return new DecodeBuffer(pid);
   }
 
-  receive(data: Buffer) {
+  receive(data: Buffer): DataType {
     //concat bytes
     this._buffer = Buffer.concat([this._buffer, data]);
     let bufferLength = this._buffer.length;
@@ -78,7 +83,7 @@ export default class DecodeBuffer
 
         //没有找到magicHigh或者magicLow
         if (magicHighIndex === -1 || magicLowIndex === -1) {
-          return;
+          return DataType.Noop;
         }
 
         if (
@@ -89,7 +94,7 @@ export default class DecodeBuffer
           this._buffer = this._buffer.slice(magicHighIndex);
           bufferLength = this._buffer.length;
         }
-        return;
+        return DataType.Noop;
       }
 
       if (magicHigh === MAGIC_HIGH && magicLow === MAGIC_LOW) {
@@ -97,7 +102,7 @@ export default class DecodeBuffer
         if (bufferLength < HEADER_LENGTH) {
           //waiting
           log('bufferLength < header length');
-          return;
+          return DataType.Noop;
         }
 
         //取出头部字节
@@ -117,18 +122,19 @@ export default class DecodeBuffer
           log(`SocketWorker#${this._pid} <=receive= heartbeat data.`);
           this._buffer = this._buffer.slice(HEADER_LENGTH + bodyLength);
           bufferLength = this._buffer.length;
-          return;
+          return DataType.HeardBeat;
         }
 
         if (HEADER_LENGTH + bodyLength > bufferLength) {
           //waiting
           log('header length + body length > buffer length');
-          return;
+          return DataType.Noop;
         }
         const dataBuffer = this._buffer.slice(0, HEADER_LENGTH + bodyLength);
         this._buffer = this._buffer.slice(HEADER_LENGTH + bodyLength);
         bufferLength = this._buffer.length;
         this._subscriber(dataBuffer);
+        return DataType.Data;
       }
     }
   }
