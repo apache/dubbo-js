@@ -17,7 +17,7 @@
 
 import debug from 'debug';
 import ip from 'ip';
-import zookeeper from 'node-zookeeper-client';
+import zookeeper, {State} from 'node-zookeeper-client';
 import qs from 'querystring';
 import DubboUrl from '../dubbo-url';
 import {
@@ -36,6 +36,7 @@ import Registry from './registry';
 
 const log = debug('dubbo:zookeeper');
 const ipAddress = ip.address();
+const CHECK_TIME = 30 * 1000;
 
 export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
   constructor(props: IZkClientProps & IDubboRegistryProps) {
@@ -49,6 +50,7 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     this._connect(this._init);
   }
 
+  private _checkTimer: NodeJS.Timer;
   private _client: zookeeper.Client;
   private _agentAddrSet: Set<string>;
 
@@ -104,6 +106,35 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     this._agentAddrSet = this._allAgentAddrSet;
     this._subscriber.onData(this._allAgentAddrSet);
   };
+
+  /**
+   * 重连
+   */
+  private _reconnect() {
+    if (this._client) {
+      this._client.close();
+    }
+    this._connect(this._init);
+  }
+
+  /**
+   * 由于zk自己的监测机制不明确, 改为自主检测
+   */
+  private _monitor() {
+    clearInterval(this._checkTimer);
+    this._checkTimer = setInterval(() => {
+      const state = this._client.getState();
+      switch (state) {
+        case State.EXPIRED:
+        case State.DISCONNECTED:
+          log(`checker is error, state is ${state}, need reconnect`);
+          this._reconnect();
+          break;
+        default:
+          log(`checker is ok, state is ${state}`);
+      }
+    }, CHECK_TIME);
+  }
 
   /**
    * 获取所有的负载列表，通过agentAddrMap聚合出来
@@ -171,6 +202,7 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
       clearTimeout(timeId);
       callback(null);
       msg.emit('sys:ready');
+      this._monitor();
     });
 
     //the connection between client and server is dropped.
