@@ -257,11 +257,6 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
         urls.push(url);
       }
 
-      this._createConsumer({
-        name: this._props.application.name,
-        dubboInterface: dubboInterface,
-      }).then(() => log('create consumer finish'));
-
       this._dubboServiceUrlMap.set(dubboInterface, urls);
 
       if (agentAddrList.length === 0) {
