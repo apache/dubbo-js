@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dubbo/dubbo2.js.git"
+    "url": "https://github.com/apache/dubbo-js"
   },
   "dependencies": {
     "debug": "3.1.0",
