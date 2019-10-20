@@ -73,6 +73,9 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
 
     //获取所有provider
     for (let inf of interfaces) {
+      //init
+      this._dubboServiceUrlMap.set(inf, []);
+
       //当前接口在zookeeper中的路径
       const dubboServicePath = `/${zkRoot}/${inf}/providers`;
       //当前接口路径下的dubbo url
@@ -83,10 +86,10 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
       if (err) {
         log(`getChildren ${dubboServicePath} error ${err}`);
         traceErr(err);
+        //If an error occurs, continue
+        continue;
       }
 
-      //init
-      this._dubboServiceUrlMap.set(inf, []);
       for (let serviceUrl of dubboServiceUrls) {
         const url = DubboUrl.from(serviceUrl);
         this._dubboServiceUrlMap.get(inf).push(url);

@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 import debug from 'debug';
-import {join, parse} from 'path';
-import {Request} from './request';
 import {ensureDir} from 'fs-extra';
-import {IToImportParam, toImport} from './transfer/to-import';
-import {toTypescript} from './transfer/to-typescript';
+import {join, parse} from 'path';
 import {default as Ast, SourceFile} from 'ts-simple-ast';
-import { IDependItem, IGetTypeInfo, IJClass, ITypeSearch } from "./typings";
+import {Request} from './request';
+import {toImport} from './transfer/to-import';
+import {toTypescript} from './transfer/to-typescript';
+import {IDependItem, IGetTypeInfo, IJClass, ITypeSearch} from './typings';
 
 const log = debug('j2t:core:inteprethandle');
 const ast = new Ast();
@@ -47,7 +47,6 @@ export class IntepretHandle implements ITypeSearch {
   public sourceFile: SourceFile;
 
   private dependencies: IDependItem[] = [];
-
 
   get to(): string {
     return join(
@@ -103,7 +102,7 @@ export class IntepretHandle implements ITypeSearch {
    * @param className
    * @returns {Promise<void>}
    */
-  public async addDenpend(classPath: string) :Promise<IDependItem>{
+  public async addDenpend(classPath: string): Promise<IDependItem> {
     if (!(await this.request.hasAst(classPath))) {
       log(`No class ast found:${classPath}`);
       return;
@@ -111,16 +110,15 @@ export class IntepretHandle implements ITypeSearch {
 
     if (classPath === this.classPath) {
       log(`ignore self reference:${this.classPath}`);
-      let className  = this.getTypeInfo(classPath).className;
+      let className = this.getTypeInfo(classPath).className;
       return {
         classPath,
-        name:className,
-        importName:className
+        name: className,
+        importName: className,
       };
     }
 
     log(`Adding dependencies ${this.classPath}`);
-
 
     let dependItem = this.getDependItem(classPath);
 
@@ -135,63 +133,60 @@ export class IntepretHandle implements ITypeSearch {
         }
       }
 
-      dependItem =  this.createDependItem(classPath);
+      dependItem = this.createDependItem(classPath);
       this.dependencies.push(dependItem);
       try {
         this.sourceFile.addImport(
           toImport({
-              className:dependItem.name!=dependItem.importName?`${dependItem.name} as ${dependItem.importName}`:dependItem.name,
-              classPath,
-              packagePath:this.getTypeInfo(this.classPath).packagePath,
-            }
-          ),
+            className:
+              dependItem.name != dependItem.importName
+                ? `${dependItem.name} as ${dependItem.importName}`
+                : dependItem.name,
+            classPath,
+            packagePath: this.getTypeInfo(this.classPath).packagePath,
+          }),
         );
       } catch (err) {
         console.error(
-          `Error in adding dependencies :add ${classPath} in ${
-            this.classPath
-          }`
-        )
+          `Error in adding dependencies :add ${classPath} in ${this.classPath}`,
+        );
         console.error(err);
       }
       return dependItem;
-    }else{
+    } else {
       return dependItem;
     }
   }
 
-
-  private getDependItem(classPath:string):IDependItem |null {
-
+  private getDependItem(classPath: string): IDependItem | null {
     for (let dependItem of this.dependencies) {
-      if(dependItem.classPath===classPath){
+      if (dependItem.classPath === classPath) {
         return dependItem;
       }
     }
     return null;
   }
 
-  private createDependItem (classPath:string) :IDependItem{
-
-    let name  =this.getTypeInfo(classPath).className;
-    let importName =name;
-    let index=0;
-    while(this.isDependNameExist(importName)) {
-      importName +=index;
+  private createDependItem(classPath: string): IDependItem {
+    let name = this.getTypeInfo(classPath).className;
+    let importName = name;
+    let index = 0;
+    while (this.isDependNameExist(importName)) {
+      importName += index;
     }
 
-    return  {
+    return {
       classPath,
       name,
-      importName:importName
+      importName: importName,
     };
   }
 
-  private isDependNameExist(importName){
-    let isExist =false;
+  private isDependNameExist(importName) {
+    let isExist = false;
     for (let dependItem of this.dependencies) {
-      if(dependItem.importName===importName){
-        isExist=true;
+      if (dependItem.importName === importName) {
+        isExist = true;
       }
     }
 

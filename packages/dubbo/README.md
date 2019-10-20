@@ -5,7 +5,7 @@ nodejs 使用原生的 dubbo 协议打通了 dubbo 的 rpc 方法调用 .
 ## Getting Started
 
 ```shell
-yarn add dubbo2.js
+yarn add dubbo-js
 ```
 
 ## How to Usage?
@@ -139,13 +139,13 @@ const demoSerivce = Dubbo.proxService({
 ## FAQ
 
 ```javascript
-import {Dubbo} from 'dubbo2.js';
+import {Dubbo} from 'dubbo-js';
 ```
 
-默认导入的 dubbo2.js 是按照 es2017 进行编译的，支持 node7.10 以上。
+默认导入的 dubbo-js 是按照 es2017 进行编译的，支持 node7.10 以上。
 
 如果更低的 node 版本，可以使用
 
 ```javascript
-import {Dubbo} from 'dubbo2.js/es6';
+import {Dubbo} from 'dubbo-js/es6';
 ```

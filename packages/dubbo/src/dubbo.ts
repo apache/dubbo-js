@@ -37,7 +37,7 @@ import {msg, noop, traceInfo} from './util';
 
 const log = debug('dubbo:bootstrap');
 const packageVersion = require('../package.json').version;
-log('dubbo2.js version :=> %s', packageVersion);
+log('dubbo-js version :=> %s', packageVersion);
 
 /**
  * Dubbo

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {DirectlyDubbo, java} from 'dubbo2.js';
+import {DirectlyDubbo, java} from 'dubbo-js';
 import {
   DemoProviderWrapper,
   IDemoProvider,

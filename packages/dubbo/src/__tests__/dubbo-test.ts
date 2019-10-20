@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {Context, Dubbo, java, setting} from 'dubbo2.js';
+import {Context, Dubbo, java, setting} from 'dubbo-js';
 import {BasicTypeProvider} from './providers/com/alibaba/dubbo/demo/BasicTypeProvider';
 import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
 import {ErrorProvider} from './providers/com/alibaba/dubbo/demo/ErrorProvider';
@@ -43,7 +43,7 @@ const dubboSetting = setting
   );
 
 const dubbo = new Dubbo<typeof service>({
-  application: {name: '@qianmi/node-dubbo'},
+  application: {name: 'node-dubbo'},
   register: 'localhost:2181',
   service,
   dubboSetting,

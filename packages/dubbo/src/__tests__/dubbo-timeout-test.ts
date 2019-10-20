@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {Dubbo, java, setting} from 'dubbo2.js';
+import {Dubbo, java, setting} from 'dubbo-js';
 import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
 import {UserRequest} from './providers/com/alibaba/dubbo/demo/UserRequest';
 
