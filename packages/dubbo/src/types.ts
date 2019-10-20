@@ -112,7 +112,7 @@ export interface IDubboProvider {
 }
 
 // zookeeper acl shemes must be one of [ 'world', 'ip', 'auth', 'digest' ]
-export type IZKAuthSchemes = 'world' | 'ip' | 'auth' | 'digest';
+export type IZKAuthSchemes = 'world' | 'ip' | 'host' | 'auth' | 'digest';
 
 export interface IZKAuthInfo {
   scheme: IZKAuthSchemes;
