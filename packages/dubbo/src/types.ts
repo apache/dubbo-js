@@ -81,8 +81,6 @@ export interface IDubboProps {
   //当前的应用标识
   application: {name: string};
   register: ((props: IDubboRegistryProps) => Registry) | string;
-  zkAuthInfo?: IZKAuthInfo;
-  zkRoot?: string;
   //当前要注册到dubbo容器的服务对象
   service: Object;
   isSupportedDubbox?: boolean;
@@ -113,8 +111,11 @@ export interface IDubboProvider {
   methods: {[methodName: string]: Function};
 }
 
+// zookeeper acl shemes must be one of [ 'world', 'ip', 'auth', 'digest' ]
+export type IZKAuthSchemes = 'world' | 'ip' | 'auth' | 'digest';
+
 export interface IZKAuthInfo {
-  scheme: string;
+  scheme: IZKAuthSchemes;
   auth: string;
 }
 
