@@ -93,7 +93,7 @@ export interface IDubboProps {
 
 //magic, you should use typescript 2.8+
 export type TDubboService<T> = {
-  [k in keyof T]: T[k] extends ((dubbo: any) => infer R) ? R : any
+  [k in keyof T]: T[k] extends ((dubbo: any) => infer R) ? R : any;
 };
 
 export interface IDubboResult<T> {
@@ -111,7 +111,16 @@ export interface IDubboProvider {
   methods: {[methodName: string]: Function};
 }
 
+// zookeeper acl shemes must be one of [ 'world', 'ip', 'host', 'auth', 'digest' ]
+export type IZKAuthSchemes = 'world' | 'ip' | 'host' | 'auth' | 'digest';
+
+export interface IZKAuthInfo {
+  scheme: IZKAuthSchemes;
+  auth: string;
+}
+
 export interface IZkClientProps {
+  zkAuthInfo?: IZKAuthInfo;
   zkRoot?: string;
   url: string;
 }

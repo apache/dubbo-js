@@ -179,13 +179,17 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
    * connect zookeeper
    */
   private _connect = (callback: (err: Error) => void) => {
-    const {url: register} = this._props;
+    const {url: register, zkAuthInfo} = this._props;
     //debug log
     log(`connecting zkserver ${register}`);
     //connect
     this._client = zookeeper.createClient(register, {
       retries: 10,
     });
+
+    if (zkAuthInfo && zkAuthInfo.scheme && zkAuthInfo.auth) {
+      this._client.addAuthInfo(zkAuthInfo.scheme, Buffer.from(zkAuthInfo.auth));
+    }
 
     //超时检测
     //node-zookeeper-client,有个bug，当连不上zk时会无限重连
