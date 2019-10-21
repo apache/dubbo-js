@@ -134,9 +134,9 @@ export default class DecodeBuffer
         this._buffer = this._buffer.slice(HEADER_LENGTH + bodyLength);
         bufferLength = this._buffer.length;
         this._subscriber(dataBuffer);
-        return DataType.Data;
       }
     }
+    return DataType.Data;
   }
 
   clearBuffer() {
