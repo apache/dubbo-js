@@ -255,19 +255,16 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
       }
 
       //clear current dubbo interface
-      const agentAddrList = [];
       const urls = [];
       for (let serviceUrl of dubboServiceUrls) {
-        const url = DubboUrl.from(serviceUrl);
-        const {host, port} = url;
-        agentAddrList.push(`${host}:${port}`);
-        urls.push(url);
+        urls.push(DubboUrl.from(serviceUrl));
       }
 
       this._dubboServiceUrlMap.set(dubboInterface, urls);
 
-      if (agentAddrList.length === 0) {
+      if (urls.length === 0) {
         traceErr(new Error(`trigger watch ${e} agentList is empty`));
+        return;
       }
 
       if (isDevEnv) {
