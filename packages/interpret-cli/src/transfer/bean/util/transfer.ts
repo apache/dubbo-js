@@ -175,7 +175,7 @@ export async function fields2CtrContent(
             paramRefName: `(mapKey as any)`,
             classPath: filedAst.typeArgs[0].type.name,
           })}, ${j2Jtj(typeOption, {
-            paramRefName: `(this.${name}[mapKey as any])`,
+            paramRefName: `this.${name}[(mapKey as any)]`,
             classPath: filedAst.typeArgs[1].type.name,
           })});
           };
@@ -193,9 +193,9 @@ export async function fields2CtrContent(
             initContent += `let ${name}MapTransfer = new Map();
           for(let mapKey  in this.${name}) {
               ${name}MapTransfer.set(${j2Jtj(typeOption, {
-              paramRefName: `mapKey`,
+              paramRefName: `(mapKey as any)`,
               classPath: filedAst.typeArgs[0].type.name,
-            })}, java.List(this.${name}[mapKey].map(paramItem=>{
+            })}, java.List(this.${name}[(mapKey as any)].map(paramItem=>{
                     return ${j2Jtj(typeOption, {
                       paramRefName: 'paramItem',
                       classPath:
@@ -248,10 +248,10 @@ export function mapParseContent(
   let initContent = `let ${resultMapName} = new Map();
           for(let mapKey  in ${mapValName}){
               ${resultMapName}.set(${j2Jtj(typeOption, {
-    paramRefName: `mapKey`,
+    paramRefName: `(mapKey as any)`,
     classPath: fieldPropers.typeArgs[0].type.name,
   })}, ${j2Jtj(typeOption, {
-    paramRefName: `${mapValName}[mapKey]`,
+    paramRefName: `${mapValName}[(mapKey as any)]`,
     classPath: fieldPropers.typeArgs[1].type.name,
   })});
           };
