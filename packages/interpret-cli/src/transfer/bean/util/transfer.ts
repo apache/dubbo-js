@@ -172,10 +172,10 @@ export async function fields2CtrContent(
           initContent += `let ${name}MapTransfer = new Map();
           for(let mapKey  in this.${name}){
               ${name}MapTransfer.set(${j2Jtj(typeOption, {
-            paramRefName: `mapKey as any`,
+            paramRefName: `(mapKey as any)`,
             classPath: filedAst.typeArgs[0].type.name,
           })}, ${j2Jtj(typeOption, {
-            paramRefName: `this.${name}[mapKey as any]`,
+            paramRefName: `(this.${name}[mapKey as any])`,
             classPath: filedAst.typeArgs[1].type.name,
           })});
           };
