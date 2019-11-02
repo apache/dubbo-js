@@ -172,10 +172,10 @@ export async function fields2CtrContent(
           initContent += `let ${name}MapTransfer = new Map();
           for(let mapKey  in this.${name}){
               ${name}MapTransfer.set(${j2Jtj(typeOption, {
-            paramRefName: `(mapKey as any)`,
+            paramRefName: `mapKey`,
             classPath: filedAst.typeArgs[0].type.name,
           })}, ${j2Jtj(typeOption, {
-            paramRefName: `this.${name}[(mapKey as any)]`,
+            paramRefName: `this.${name}[mapKey]`,
             classPath: filedAst.typeArgs[1].type.name,
           })});
           };
@@ -193,9 +193,9 @@ export async function fields2CtrContent(
             initContent += `let ${name}MapTransfer = new Map();
           for(let mapKey  in this.${name}) {
               ${name}MapTransfer.set(${j2Jtj(typeOption, {
-              paramRefName: `(mapKey as any)`,
+              paramRefName: `mapKey`,
               classPath: filedAst.typeArgs[0].type.name,
-            })}, java.List(this.${name}[(mapKey as any)].map(paramItem=>{
+            })}, java.List(this.${name}[mapKey].map(paramItem=>{
                     return ${j2Jtj(typeOption, {
                       paramRefName: 'paramItem',
                       classPath:
@@ -248,10 +248,10 @@ export function mapParseContent(
   let initContent = `let ${resultMapName} = new Map();
           for(let mapKey  in ${mapValName}){
               ${resultMapName}.set(${j2Jtj(typeOption, {
-    paramRefName: `(mapKey as any)`,
+    paramRefName: `mapKey`,
     classPath: fieldPropers.typeArgs[0].type.name,
   })}, ${j2Jtj(typeOption, {
-    paramRefName: `${mapValName}[(mapKey as any)]`,
+    paramRefName: `${mapValName}[mapKey]`,
     classPath: fieldPropers.typeArgs[1].type.name,
   })});
           };
@@ -306,6 +306,12 @@ export function j2Jtj(
     return `${paramRefName}`; //时间类型 js2java可以直接识别;
   } else if (classPath === 'java.lang.Object') {
     return `(${paramRefName}&&${paramRefName}['__fields2java'])?${paramRefName}['__fields2java']():${paramRefName}`;
+  } else if (/java\.lang\.(int|short|Short|long|Long|double|Double|float|Float)/.test(classPath)) {
+    // 如果是数字就先进行转化，然后再调用java.Float之类的方法
+    // 但是可能会出现精度问题？不确定
+    return `java.${classPath.substring(
+      classPath.lastIndexOf('.') + 1,
+    )}(Number(${paramRefName}))`;
   } else if (classPath.startsWith('java.lang.')) {
     return `java.${classPath.substring(
       classPath.lastIndexOf('.') + 1,
