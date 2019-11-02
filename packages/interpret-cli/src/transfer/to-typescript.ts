@@ -17,7 +17,7 @@
 import debug from 'debug';
 import {toEnum} from './bean/to-enum';
 import {toBeanClass} from './bean/to-vo';
-import {SourceFile} from 'ts-simple-ast';
+import {SourceFile} from 'ts-morph';
 import {IntepretHandle} from '../handle';
 import {toInterface} from './provider/to-interface';
 import {toProxyFunc} from './provider/to-proxy-function';
@@ -46,12 +46,14 @@ export async function toTypescript(
     isAbstract: astJava.isAbstract,
     isInterface: astJava.isInterface,
     isClass: !astJava.isEnum && !astJava.isInterface,
-    isProvider: astJava.name.endsWith(String(intepretHandle.providerSuffix) || 'Provider'),
+    isProvider: astJava.name.endsWith(
+      String(intepretHandle.providerSuffix) || 'Provider',
+    ),
   };
   intepretHandle.request.registerTypeInfo(typeInfo);
 
-  if(astJava.isAbstract  && !typeInfo.isProvider) {
-    console.warn('warning 抽象类型要注意了.classPath:',typeInfo.classPath);
+  if (astJava.isAbstract && !typeInfo.isProvider) {
+    console.warn('warning 抽象类型要注意了.classPath:', typeInfo.classPath);
   }
 
   try {
@@ -63,7 +65,7 @@ export async function toTypescript(
         sourceFile.addVariableStatement(
           toWrapperClass(astJava, intepretHandle),
         );
-        sourceFile.addImport({
+        sourceFile.addImportDeclaration({
           moduleSpecifier: 'dubbo2.js',
           defaultImport: '{TDubboCallResult,Dubbo}',
         });
@@ -77,7 +79,7 @@ export async function toTypescript(
         );
       } else {
         sourceFile.addClass(await toBeanClass(astJava, intepretHandle));
-        sourceFile.addImport({
+        sourceFile.addImportDeclaration({
           moduleSpecifier: 'js-to-java',
           defaultImport: 'java',
         });

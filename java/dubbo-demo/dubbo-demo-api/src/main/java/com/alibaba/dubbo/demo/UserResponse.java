@@ -9,6 +9,7 @@ import java.util.Map;
 public class UserResponse implements Serializable {
     private String status;
     private Map<String, String> info;
+    private GenerticTypeResponse<Long> list;
 
     public String getStatus() {
         return status;
@@ -26,11 +27,20 @@ public class UserResponse implements Serializable {
         this.info = info;
     }
 
+    public GenerticTypeResponse<Long> getList() {
+        return list;
+    }
+
+    public void setInfo(GenerticTypeResponse<Long> list) {
+        this.list = list;
+    }
+
     @Override
     public String toString() {
         return "UserResponse{" +
                 "status='" + status + '\'' +
                 ", info=" + info +
+                ", list=" + list +
                 '}';
     }
 }

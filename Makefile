@@ -28,7 +28,7 @@ clean-demo-api:
 	@echo "clean demo-api successfully 👌\n"
 
 interpret-jar:build-demo-api
-	ts-node ./packages/interpret-cli/src/cli.ts interpret -c dubbo.json
+	npx ts-node ./packages/interpret-cli/src/cli.ts interpret -c dubbo.json
 
 build-dubbo-invoker:clean-dubbo-invoker
 	./node_modules/.bin/tsc --project ./packages/dubbo-invoker/tsconfig.json

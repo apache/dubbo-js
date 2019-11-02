@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 import {
-  VariableDeclarationType,
   VariableStatementStructure,
-} from 'ts-simple-ast';
+  StructureKind,
+  VariableDeclarationKind,
+} from 'ts-morph';
 import debug from 'debug';
 import {IntepretHandle} from '../../handle';
 import {IJClass} from '../../typings';
@@ -60,7 +61,8 @@ function toTypeWrapper(
 
   return {
     isExported: true,
-    declarationType: VariableDeclarationType.Const,
+    kind: StructureKind.VariableStatement,
+    declarationKind: VariableDeclarationKind.Const,
     declarations: [
       {
         name: typeName + 'Wrapper',

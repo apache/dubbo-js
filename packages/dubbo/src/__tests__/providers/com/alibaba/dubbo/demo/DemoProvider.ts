@@ -1,13 +1,15 @@
-import {Dubbo, TDubboCallResult} from 'dubbo2.js';
-import {argumentMap, JavaString} from 'interpret-util';
 import {UserRequest} from './UserRequest';
 import {UserResponse} from './UserResponse';
+import {argumentMap, JavaString} from 'interpret-util';
+import {TDubboCallResult, Dubbo} from 'dubbo2.js';
+
+//generate by interpret-cli dubbo2.js
 
 export interface IDemoProvider {
-  sayHello(name: JavaString): TDubboCallResult<string>;
+  sayHello(String0: JavaString): TDubboCallResult<string>;
   test(): TDubboCallResult<void>;
   echo(): TDubboCallResult<string>;
-  getUserInfo(request: UserRequest): TDubboCallResult<UserResponse>;
+  getUserInfo(UserRequest0: UserRequest): TDubboCallResult<UserResponse>;
 }
 
 export const DemoProviderWrapper = {

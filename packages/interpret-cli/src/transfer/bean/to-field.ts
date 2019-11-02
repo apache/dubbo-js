@@ -18,7 +18,7 @@ import debug from 'debug';
 import {IntepretHandle} from '../../handle';
 import {IJFieldPropers} from '../../typings';
 import {jType2Ts} from '../../util/type-parse';
-import {PropertySignatureStructure} from 'ts-simple-ast';
+import {PropertySignatureStructure, StructureKind} from 'ts-morph';
 
 const log = debug('j2t:core:toField');
 
@@ -26,7 +26,7 @@ const log = debug('j2t:core:toField');
  * 对象的field转换;  ast
  *
  * @param fieldDef
- * @returns {PropertySignatureStructure}
+ * @returns {PropertyDeclarationStructure}
  */
 export async function toField(
   fieldName: string,
@@ -38,6 +38,7 @@ export async function toField(
   let type = await jType2Ts(fieldProps, intepretHandle);
   return {
     name: fieldName,
+    kind: StructureKind.PropertySignature,
     hasQuestionToken: true,
     type,
   };

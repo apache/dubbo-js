@@ -16,12 +16,13 @@
  */
 import {
   ClassDeclarationStructure,
-  InterfaceDeclarationStructure,
   MethodDeclarationStructure,
   ParameterDeclarationStructure,
-  PropertyDeclarationStructure,
   TypeParameterDeclarationStructure,
-} from 'ts-simple-ast';
+  StructureKind,
+  PropertySignatureStructure,
+  PropertyDeclarationStructure,
+} from 'ts-morph';
 import debug from 'debug';
 import {toField} from './to-field';
 import {IntepretHandle} from '../../handle';
@@ -46,12 +47,17 @@ export async function toBeanClass(
 
   if (typeDef.typeParams) {
     typeDef.typeParams.forEach(typeParamsItem => {
-      typeParameters.push({name: typeParamsItem.name+" extends { __fields2java?(): any } = any",});
+      typeParameters.push({
+        name: typeParamsItem.name,
+        kind: StructureKind.TypeParameter,
+        constraint: '{ __fields2java?(): any }',
+        default: 'any',
+      });
     });
   }
   //获取 方法定义; 或者获取属性定义
   let methods: Array<MethodDeclarationStructure> = [],
-    properties: Array<PropertyDeclarationStructure> = [],
+    properties: Array<PropertySignatureStructure> = [],
     ctorParams: ParameterDeclarationStructure[] = [];
 
   //1.1 找到实例中的相关参数及类型
@@ -63,20 +69,24 @@ export async function toBeanClass(
       filedType = typeDef.fields[fieldName].elementType.name;
     }
 
-      let field = await toField(
-        fieldName,
-        typeDef.fields[fieldName],
-        intepretHandle,
-      );
-      properties.push(field);
-      ctorParams.push({name: field.name, type: field.type});
+    let field = await toField(
+      fieldName,
+      typeDef.fields[fieldName],
+      intepretHandle,
+    );
+    properties.push(field);
+    ctorParams.push({
+      name: field.name,
+      kind: StructureKind.Parameter,
+      type: field.type,
+    });
 
-      let filedItem = typeDef.fields[fieldName];
-      fileds.push({
-        name: fieldName,
-        type: await jType2Ts(filedItem, intepretHandle),
-        filedAst: filedItem,
-      });
+    let filedItem = typeDef.fields[fieldName];
+    fileds.push({
+      name: fieldName,
+      type: await jType2Ts(filedItem, intepretHandle),
+      filedAst: filedItem,
+    });
   }
   //添加构造函数入参interface
   //1.2 生成方法;;
@@ -96,6 +106,7 @@ export async function toBeanClass(
     intepretHandle.sourceFile.addInterface({
       typeParameters,
       isExported: true,
+      kind: StructureKind.Interface,
       name: 'I' + typeName,
       properties,
     });
@@ -103,23 +114,35 @@ export async function toBeanClass(
     console.error(`为${intepretHandle.classPath}添加Interface出错,${err}`);
   }
 
-  methods.push({name: '__fields2java', bodyText});
+  methods.push({
+    name: '__fields2java',
+    kind: StructureKind.Method,
+    statements: bodyText,
+  });
   let ctorBody = ctorParams
     .map(({name}) => `this.${name}=params.${name};`)
     .join('\n');
-
   return {
     name: typeName,
-    ctor: {
-      parameters: [
-        {
-          name: `params:${getCtorParaStr(typeName, typeParameters)}`,
-        },
-      ],
-      bodyText: ctorBody,
-    },
+    kind: StructureKind.Class,
+    ctors: [
+      {
+        kind: StructureKind.Constructor,
+        parameters: [
+          {
+            name: 'params',
+            kind: StructureKind.Parameter,
+            type: getCtorParaStr(typeName, typeParameters),
+          },
+        ],
+        statements: ctorBody,
+      },
+    ],
     typeParameters,
-    properties,
+    properties: properties.map<PropertyDeclarationStructure>(p => ({
+      ...p,
+      kind: StructureKind.Property,
+    })),
     isExported: true,
     methods,
   };

@@ -17,14 +17,14 @@
 import debug from 'debug';
 import {ensureDir} from 'fs-extra';
 import {join, parse} from 'path';
-import {default as Ast, SourceFile} from 'ts-simple-ast';
+import {Project, SourceFile} from 'ts-morph';
 import {Request} from './request';
 import {toImport} from './transfer/to-import';
 import {toTypescript} from './transfer/to-typescript';
 import {IDependItem, IGetTypeInfo, IJClass, ITypeSearch} from './typings';
 
 const log = debug('j2t:core:inteprethandle');
-const ast = new Ast();
+const ast = new Project();
 
 /**
  * Translations for individual files
@@ -73,7 +73,7 @@ export class IntepretHandle implements ITypeSearch {
    * @returns {Promise<void>}
    */
   private async prepare() {
-    ast.addSourceFileFromText(this.to, '//generate by interpret-cli dubbo2.js');
+    ast.createSourceFile(this.to, '//generate by interpret-cli dubbo2.js');
     this.sourceFile = ast.getSourceFile(this.to);
     await ensureDir(parse(this.to).dir);
   }
@@ -136,7 +136,7 @@ export class IntepretHandle implements ITypeSearch {
       dependItem = this.createDependItem(classPath);
       this.dependencies.push(dependItem);
       try {
-        this.sourceFile.addImport(
+        this.sourceFile.addImportDeclaration(
           toImport({
             className:
               dependItem.name != dependItem.importName
@@ -198,6 +198,6 @@ export class IntepretHandle implements ITypeSearch {
    */
   private async doItRecursively() {
     await toTypescript(this);
-    await ast.saveUnsavedSourceFiles();
+    await ast.save();
   }
 }

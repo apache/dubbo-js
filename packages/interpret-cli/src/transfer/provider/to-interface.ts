@@ -18,7 +18,8 @@ import {
   InterfaceDeclarationStructure,
   MethodSignatureStructure,
   PropertySignatureStructure,
-} from 'ts-simple-ast';
+  StructureKind,
+} from 'ts-morph';
 
 import debug from 'debug';
 import {toField} from '../bean/to-field';
@@ -37,9 +38,9 @@ export async function toInterface(
   let properties: PropertySignatureStructure[] = [];
 
   for (let fieldName in typeDef.fields) {
-      properties.push(
-        await toField(fieldName, typeDef.fields[fieldName], intepretHandle),
-      );
+    properties.push(
+      await toField(fieldName, typeDef.fields[fieldName], intepretHandle),
+    );
   }
 
   let filtersMethodNames = genePropsGetSet(properties.map(({name}) => name));
@@ -52,11 +53,14 @@ export async function toInterface(
     if (filtersMethodNames.includes(methodName)) {
       continue;
     }
-    let _methodName =methodName;
+    let _methodName = methodName;
 
     if (typeDef.methods[methodName].isOverride) {
-      console.log('文件是override类型::',typeDef.name,methodName);
-      _methodName = methodName.substring(0, methodName.lastIndexOf('@override'));
+      console.log('文件是override类型::', typeDef.name, methodName);
+      _methodName = methodName.substring(
+        0,
+        methodName.lastIndexOf('@override'),
+      );
     }
 
     let methodItem = await toMethod(
@@ -90,15 +94,16 @@ export async function toInterface(
     methods.push(methodItem);
   }
 
-  intepretHandle.sourceFile.addImport({
+  intepretHandle.sourceFile.addImportDeclaration({
     moduleSpecifier: 'interpret-util',
-    defaultImport: `{${extraImport.join(',')}}`,
+    namedImports: extraImport,
   });
 
   log('转换 名称::%s 属性 :%j  方法:%j', typeDef.name, properties, methods);
 
   return {
     name: 'I' + intepretHandle.getTypeInfo(typeDef.name).className,
+    kind: StructureKind.Interface,
     isExported: true,
     methods,
     properties,
@@ -106,7 +111,7 @@ export async function toInterface(
 }
 
 export function genePropsGetSet(propsNames: string[]) {
-  let filtersMethodNames = [];
+  let filtersMethodNames: string[] = [];
   propsNames.forEach(name => {
     if (name.startsWith('is')) {
       filtersMethodNames.push(name);

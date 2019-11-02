@@ -18,7 +18,11 @@ import debug from 'debug';
 import {IntepretHandle} from '../handle';
 import {IJMethodPropers} from '../typings';
 import {jType2Ts} from '../util/type-parse';
-import {MethodSignatureStructure} from 'ts-simple-ast';
+import {
+  MethodSignatureStructure,
+  StructureKind,
+  ParameterDeclarationStructure,
+} from 'ts-morph';
 
 const log = debug('j2t:core:toMethod');
 
@@ -33,7 +37,7 @@ export async function toMethod(
   intepretHandle: IntepretHandle,
 ): Promise<MethodSignatureStructure> {
   log('调用转换方法 toMethod::', methodName, methodDef);
-  let parameters = [];
+  let parameters: ParameterDeclarationStructure[] = [];
   for (var i = 0, iLen = methodDef.params.length; i < iLen; i++) {
     var paramItem = methodDef.params[i];
     if (paramItem.isArray) {
@@ -45,6 +49,7 @@ export async function toMethod(
         ) + i;
       parameters.push({
         name,
+        kind: StructureKind.Parameter,
         type: type + '[]',
       });
     } else {
@@ -54,6 +59,7 @@ export async function toMethod(
         paramItem.name.substring(paramItem.name.lastIndexOf('.') + 1) + i;
       parameters.push({
         name,
+        kind: StructureKind.Parameter,
         type,
       });
     }
@@ -63,6 +69,7 @@ export async function toMethod(
 
   return {
     name: methodName,
+    kind: StructureKind.MethodSignature,
     parameters,
     returnType: `TDubboCallResult<${returnType}>`,
   };

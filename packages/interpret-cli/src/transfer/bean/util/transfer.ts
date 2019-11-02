@@ -18,7 +18,7 @@ import debug from 'debug';
 import {IntepretHandle} from '../../../handle';
 import {jType2Ts} from '../../../util/type-parse';
 import {IJClass, IJFieldPropers, ITypeSearch} from '../../../typings';
-import {TypeParameterDeclarationStructure} from 'ts-simple-ast';
+import {TypeParameterDeclarationStructure} from 'ts-morph';
 
 const log = debug('j2t:core:toBeanClass:transfer');
 
@@ -42,7 +42,7 @@ export function getCtorParaStr(
   if (typeParameters.length === 0) {
     return 'I' + className;
   } else {
-    return `I${className}<${typeParameters.map(({name}) => name.replace(" extends { __fields2java?(): any } = any","")).join(',')}>`;
+    return `I${className}<${typeParameters.map(({name}) => name).join(',')}>`;
   }
 }
 
@@ -92,8 +92,8 @@ export async function fields2CtrContent(
         `${name}:${j2Jtj(typeOption, {
           classPath: filedAst.typeArgs[0].type.name,
           paramRefName: `this.${name}`,
-        })}`
-        );
+        })}`,
+      );
     } else if (filedAst.typeArgs && filedAst.typeArgs.length > 0) {
       let isWildcard = false;
       for (var j = 0, jLen = filedAst.typeArgs.length; j < jLen; j++) {
@@ -217,6 +217,8 @@ export async function fields2CtrContent(
           )}(${name}MapTransfer)`,
         );
       } else {
+        // 这里泛型处理还需要改进
+        console.log(filedAst.name);
         throw new Error(`暂不支持该类型转换${typeDef.name}.${name}`);
       }
     } else {
@@ -311,6 +313,6 @@ export function j2Jtj(
       classPath.lastIndexOf('.') + 1,
     )}(${paramRefName})`;
   } else {
-    return `${paramRefName}`
+    return `${paramRefName}`;
   }
 }

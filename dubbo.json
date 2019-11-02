@@ -1,7 +1,7 @@
 {
   "output": "./packages/dubbo/src/__tests__/providers",
   "entry": "com.alibaba.dubbo.demo",
-  "entryJarPath": "./java/dubbo-demo/dubbo-demo-api/target/dubbo-demo-api-2.5.7.jar",
+  "entryJarPath": "./java/dubbo-demo/dubbo-demo-api/target/dubbo-demo-api-2.6.3.jar",
   "libDirPath": "./java/dubbo-demo/dubbo-demo-api/target/dependency/",
-  "providerSuffix":"Service"
+  "providerSuffix": "Provider"
 }

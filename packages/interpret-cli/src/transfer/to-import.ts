@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 import debug from 'debug';
-import {relative,sep} from 'path';
-import {ImportDeclarationStructure} from 'ts-simple-ast';
+import {relative, sep} from 'path';
+import {ImportDeclarationStructure, StructureKind} from 'ts-morph';
 
 const log = debug('j2t:core:toImport');
 
@@ -41,12 +41,17 @@ export function toImport({
   log('调用转换方法 toImport::', className, classPath, packagePath);
 
   return {
+    kind: StructureKind.ImportDeclaration,
     moduleSpecifier:
       './' +
-      relative(
-        packagePath.split('.').join('/'),
-        classPath.split('.').join('/'),
-      ).split(sep).join("/"),
-    namedImports: [{name: className}],
+      relative(packagePath.split('.').join('/'), classPath.split('.').join('/'))
+        .split(sep)
+        .join('/'),
+    namedImports: [
+      {
+        name: className,
+        kind: StructureKind.ImportSpecifier,
+      },
+    ],
   };
 }

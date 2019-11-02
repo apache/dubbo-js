@@ -15,7 +15,11 @@
  * limitations under the License.
  */
 import debug from 'debug';
-import {EnumDeclarationStructure} from 'ts-simple-ast';
+import {
+  EnumDeclarationStructure,
+  StructureKind,
+  EnumMemberStructure,
+} from 'ts-morph';
 import {IntepretHandle} from '../../handle';
 import {IJClass} from '../../typings';
 
@@ -33,7 +37,7 @@ export function toEnum(
 ): EnumDeclarationStructure {
   log('转换 为枚举:%o', enumDef);
 
-  let members = [],
+  let members: EnumMemberStructure[] = [],
     paramNmu = 0,
     fieldIndex = 0;
   for (var fieldsKey in enumDef.fields) {
@@ -47,6 +51,7 @@ export function toEnum(
 
       members.push({
         name: fieldsKey,
+        kind: StructureKind.EnumMember,
         initializer,
       });
       fieldIndex++;
@@ -64,6 +69,7 @@ export function toEnum(
   );
   return {
     isExported: true,
+    kind: StructureKind.Enum,
     name: intepretHandle.getTypeInfo(className).className,
     members,
   };
