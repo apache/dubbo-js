@@ -1,6 +1,7 @@
 package com.alibaba.dubbo.demo;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -10,9 +11,18 @@ public class UserResponse implements Serializable {
     private String status;
     private Map<String, String> info;
     private GenerticTypeResponse<Long> list;
+    private HashMap<String, String> some;
 
     public String getStatus() {
         return status;
+    }
+
+    public HashMap<String, String> getSome() {
+        return some;
+    }
+
+    public void setSome(HashMap<String, String> some) {
+        this.some = some;
     }
 
     public void setStatus(String status) {
@@ -31,7 +41,7 @@ public class UserResponse implements Serializable {
         return list;
     }
 
-    public void setInfo(GenerticTypeResponse<Long> list) {
+    public void setList(GenerticTypeResponse<Long> list) {
         this.list = list;
     }
 
