@@ -33,7 +33,7 @@ export async function toField(
   fieldProps: IJFieldPropers,
   intepretHandle: IntepretHandle,
 ): Promise<PropertySignatureStructure> {
-  log('转换 为属性:%o', fieldProps);
+  log('转换 %s 为属性:%o', fieldName, fieldProps);
 
   let type = await jType2Ts(fieldProps, intepretHandle);
   return {
