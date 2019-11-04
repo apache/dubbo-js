@@ -216,9 +216,18 @@ export async function fields2CtrContent(
             filedAst.name.lastIndexOf('.') + 1,
           )}(${name}MapTransfer)`,
         );
-      } else {
+      } else if (
+        typeOption.hasAst(filedAst.name) &&
+        typeOption.getTypeInfo(filedAst.name)['isClass']
+      ) {
         // 这里泛型处理还需要改进
-        console.log(filedAst.name);
+        fieldTrans.push(
+          `${name}:${j2Jtj(typeOption, {
+            classPath: filedAst.name,
+            paramRefName: `this.${name}`,
+          })}`,
+        );
+      } else {
         throw new Error(`暂不支持该类型转换${typeDef.name}.${name}`);
       }
     } else {
@@ -296,18 +305,18 @@ export function j2Jtj(
       //引入类并且不是枚举类型
       return `${paramRefName}?${paramRefName}.__fields2java():null`;
     } else {
-      return `${paramRefName}['__fields2java']?${paramRefName}['__fields2java']():${paramRefName}`;
+      return recursive2J(paramRefName);
       // throw new Error('不可能出现这种的,classPathStr:' + classPath + isClass);
     }
   } else if (typeOptions.isTypeParam(classPath)) {
-    return `(${paramRefName}&&${paramRefName}['__fields2java'])?${paramRefName}['__fields2java']():${paramRefName}`;
+    return recursive2J(paramRefName);
   } else if (classPath === 'java.math.BigDecimal') {
     log('处理java BigDecimal类型,param %j,schema %j');
     return `${paramRefName}?java.BigDecimal(${paramRefName}.value):null`;
   } else if (classPath === 'java.util.Date') {
     return `${paramRefName}`; //时间类型 js2java可以直接识别;
   } else if (classPath === 'java.lang.Object') {
-    return `(${paramRefName}&&${paramRefName}['__fields2java'])?${paramRefName}['__fields2java']():${paramRefName}`;
+    return recursive2J(paramRefName);
   } else if (classPath.startsWith('java.lang.')) {
     return `java.${classPath.substring(
       classPath.lastIndexOf('.') + 1,
@@ -315,4 +324,8 @@ export function j2Jtj(
   } else {
     return `${paramRefName}`;
   }
+}
+
+function recursive2J(paramRefName: string) {
+  return `(${paramRefName}&&(${paramRefName} as { __fields2java?(): any })['__fields2java'])?(${paramRefName} as { __fields2java?(): any })['__fields2java']():${paramRefName}`;
 }

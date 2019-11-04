@@ -22,6 +22,7 @@
     "prettier": "^1.18.2",
     "pretty-quick": "^1.10.0",
     "ts-jest": "^21.2.2",
+    "ts-node": "^8.4.1",
     "typescript": "2.9.2",
     "uuid": "3.2.1"
   },

@@ -50,7 +50,7 @@ export async function toBeanClass(
       typeParameters.push({
         name: typeParamsItem.name,
         kind: StructureKind.TypeParameter,
-        constraint: '{ __fields2java?(): any }',
+        // constraint: '{ __fields2java?(): any }',
         default: 'any',
       });
     });

@@ -2,13 +2,11 @@ import java from 'js-to-java';
 
 //generate by interpret-cli dubbo2.js
 
-export interface IGenerticTypeResponse<
-  T extends {__fields2java?(): any} = any
-> {
+export interface IGenerticTypeResponse<T = any> {
   list?: Array<T>;
 }
 
-export class GenerticTypeResponse<T extends {__fields2java?(): any} = any> {
+export class GenerticTypeResponse<T = any> {
   list?: Array<T>;
 
   constructor(params: IGenerticTypeResponse<T>) {
@@ -22,8 +20,9 @@ export class GenerticTypeResponse<T extends {__fields2java?(): any} = any> {
         list: this.list
           ? java.List(
               (this.list || []).map(paramItem => {
-                return paramItem && paramItem['__fields2java']
-                  ? paramItem['__fields2java']()
+                return paramItem &&
+                  (paramItem as {__fields2java?(): any})['__fields2java']
+                  ? (paramItem as {__fields2java?(): any})['__fields2java']()
                   : paramItem;
               }),
             )
