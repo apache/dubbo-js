@@ -306,7 +306,7 @@ export function j2Jtj(
     return `${paramRefName}`; //时间类型 js2java可以直接识别;
   } else if (classPath === 'java.lang.Object') {
     return `(${paramRefName}&&${paramRefName}['__fields2java'])?${paramRefName}['__fields2java']():${paramRefName}`;
-  } else if (/java\.lang\.(int|short|Short|long|Long|double|Double|float|Float)/.test(classPath)) {
+  } else if (/java\.lang\.(int|Integer|short|Short|long|Long|double|Double|float|Float)/.test(classPath)) {
     // 如果是数字就先进行转化，然后再调用java.Float之类的方法
     // 但是可能会出现精度问题？不确定
     return `java.${classPath.substring(
