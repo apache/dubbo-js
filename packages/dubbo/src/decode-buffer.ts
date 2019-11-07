@@ -76,25 +76,36 @@ export default class DecodeBuffer
             0xda} buffer[1] is 0xbb ${magicLow == 0xbb}`,
         );
 
-        const magicHighIndex = this._buffer.indexOf(magicHigh);
-        const magicLowIndex = this._buffer.indexOf(magicLow);
+        const magicHighIndex = this._buffer.indexOf(MAGIC_HIGH);
+        const magicLowIndex = this._buffer.indexOf(MAGIC_LOW);
         log(`magicHigh index#${magicHighIndex}`);
         log(`magicLow index#${magicLowIndex}`);
 
-        //没有找到magicHigh或者magicLow
-        if (magicHighIndex === -1 || magicLowIndex === -1) {
+        if (magicHighIndex === -1) {
+          // 没有找到magicHigh,则将整个buffer清空
+          this._buffer = this._buffer.slice(bufferLength);
+        } else if (magicLowIndex === -1) {
+          if (magicHighIndex === bufferLength - 1) {
+            // 如果magicHigh是buffer最后一位，则整个buffer只保留最后一位
+            this._buffer = this._buffer.slice(magicHighIndex);
+          } else {
+            // 如果magicHigh不是buffer最后一位，而且整个buffer里没有magicLow,则清空buffer
+            this._buffer = this._buffer.slice(bufferLength);
+          }
+        } else {
+          if (magicLowIndex - magicHighIndex === 1) {
+            // magicHigh和magicLow在buffer中间相邻位置，则buffer移动到magicHigh的位置
+            this._buffer = this._buffer.slice(magicHighIndex);
+          } else {
+            // magicHigh和magicLow不相邻，则buffer移动到magicHigh的下一个位置
+            this._buffer = this._buffer.slice(magicHighIndex + 1);
+          }
+        }
+        bufferLength = this._buffer.length;
+        if (bufferLength < HEADER_LENGTH) {
           return DataType.Noop;
         }
-
-        if (
-          magicHighIndex !== -1 &&
-          magicLowIndex !== -1 &&
-          magicLowIndex - magicHighIndex === 1
-        ) {
-          this._buffer = this._buffer.slice(magicHighIndex);
-          bufferLength = this._buffer.length;
-        }
-        return DataType.Noop;
+        continue;
       }
 
       if (magicHigh === MAGIC_HIGH && magicLow === MAGIC_LOW) {
