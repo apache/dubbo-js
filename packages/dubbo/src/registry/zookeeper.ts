@@ -114,6 +114,7 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
    * 重连
    */
   private _reconnect() {
+    clearInterval(this._checkTimer);
     if (this._client) {
       this._client.close();
     }
@@ -213,23 +214,26 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     });
 
     //the connection between client and server is dropped.
-    this._client.on('disconnected', () => {
+    this._client.once('disconnected', () => {
       log(`zk ${register} had disconnected`);
       clearTimeout(timeId);
-      callback(
+      traceErr(
         new ZookeeperDisconnectedError(
           `ZooKeeper was disconnected. current state is ${this._client.getState()} `,
         ),
       );
+      this._reconnect();
     });
 
-    this._client.on('expired', () => {
+    this._client.once('expired', () => {
+      clearTimeout(timeId);
       log(`zk ${register} had session expired`);
-      callback(
+      traceErr(
         new ZookeeperExpiredError(
           `Zookeeper was session Expired Error current state ${this._client.getState()}`,
         ),
       );
+      this._client.close();
     });
 
     //connect
@@ -254,21 +258,13 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
         return;
       }
 
-      //clear current dubbo interface
-      const agentAddrList = [];
-      const urls = [];
-      for (let serviceUrl of dubboServiceUrls) {
-        const url = DubboUrl.from(serviceUrl);
-        const {host, port} = url;
-        agentAddrList.push(`${host}:${port}`);
-        urls.push(url);
-      }
-
-      this._dubboServiceUrlMap.set(dubboInterface, urls);
-
-      if (agentAddrList.length === 0) {
+      const urls = dubboServiceUrls.map(serviceUrl => DubboUrl.from(serviceUrl));
+      if (urls.length === 0) {
         traceErr(new Error(`trigger watch ${e} agentList is empty`));
+        return;
       }
+      //clear current dubbo interface
+      this._dubboServiceUrlMap.set(dubboInterface, urls);
 
       if (isDevEnv) {
         log('agentSet:|> %O', this._allAgentAddrSet);
