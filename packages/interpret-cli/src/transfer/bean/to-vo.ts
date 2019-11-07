@@ -65,7 +65,7 @@ export async function toBeanClass(
       filedType = typeDef.fields[fieldName].elementType.name;
     }
     const regex = new RegExp(
-      `^(get|set${fieldName.slice(0, 1).toUpperCase()}${fieldName.slice(1)})$`,
+      `^(get|set)${fieldName[0].toUpperCase()}${fieldName.slice(1)}$`,
     );
     if (
       typeDef.privateFields.indexOf(fieldName) !== -1 && // 在privateField中
