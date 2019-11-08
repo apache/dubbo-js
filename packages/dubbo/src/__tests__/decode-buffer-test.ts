@@ -43,7 +43,7 @@ it('test receive right data', () => {
     0x6e,
     0x67,
   ]);
-  const dBuff = DecodeBuffer.from(1).subscribe(data => {
+  const dBuff = new DecodeBuffer().subscribe(data => {
     const {requestId, res, err} = decode(data);
     expect(requestId).toEqual(2);
     expect(res).toEqual('pang');
@@ -80,7 +80,7 @@ it('test receive wrong data', () => {
     0x6e,
     0x67,
   ]);
-  const dBuff = DecodeBuffer.from(1).subscribe(data => {
+  const dBuff = new DecodeBuffer().subscribe(data => {
     const {requestId, res, err} = decode(data);
     expect(requestId).toEqual(2);
     expect(res).toEqual('pang');
