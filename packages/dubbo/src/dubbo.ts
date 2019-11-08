@@ -89,7 +89,9 @@ export default class Dubbo<TService = Object>
     this._registryService(props.service);
     log('interfaces:|>', this._interfaces);
 
-    this._readyResolve = noop;
+    this._readyPromise = new Promise(resolve => {
+      this._readyResolve = resolve;
+    });
     this._subscriber = {
       onTrace: noop,
     };
@@ -116,6 +118,7 @@ export default class Dubbo<TService = Object>
   }
 
   private _interfaces: Array<string>;
+  private _readyPromise: Promise<void>;
   private _readyResolve: Function;
   private _subscriber: IDubboSubscriber;
   private readonly _queue: Queue;
@@ -237,9 +240,7 @@ export default class Dubbo<TService = Object>
    * 其他的框架类似
    */
   ready() {
-    return new Promise(resolve => {
-      this._readyResolve = resolve;
-    });
+    return this._readyPromise;
   }
 
   subscribe(subscriber: IDubboSubscriber) {
