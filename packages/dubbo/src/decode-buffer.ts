@@ -17,7 +17,6 @@
 
 import debug from 'debug';
 import {fromBytes4} from './byte';
-import HeartBeat from './heartbeat';
 import {IObservable, TDecodeBuffSubscriber} from './types';
 import {noop} from './util';
 
@@ -25,11 +24,6 @@ const MAGIC_HIGH = 0xda;
 const MAGIC_LOW = 0xbb;
 const HEADER_LENGTH = 16;
 const log = debug('dubbo:decode-buffer');
-export const enum DataType {
-  Noop,
-  HeardBeat,
-  Data,
-}
 
 /**
  * 在并发的tcp数据传输中，会出现少包，粘包的现象
@@ -40,24 +34,17 @@ export default class DecodeBuffer
   implements IObservable<TDecodeBuffSubscriber> {
   /**
    * 初始化一个DecodeBuffer
-   * @param pid socket-worker的pid
    */
-  private constructor(pid: number) {
+  constructor() {
     log('new DecodeBuffer');
-    this._pid = pid;
     this._buffer = Buffer.alloc(0);
     this._subscriber = noop;
   }
 
-  private readonly _pid: number;
   private _buffer: Buffer;
   private _subscriber: Function;
 
-  static from(pid: number) {
-    return new DecodeBuffer(pid);
-  }
-
-  receive(data: Buffer): DataType {
+  receive(data: Buffer) {
     //concat bytes
     this._buffer = Buffer.concat([this._buffer, data]);
     let bufferLength = this._buffer.length;
@@ -76,33 +63,41 @@ export default class DecodeBuffer
             0xda} buffer[1] is 0xbb ${magicLow == 0xbb}`,
         );
 
-        const magicHighIndex = this._buffer.indexOf(magicHigh);
-        const magicLowIndex = this._buffer.indexOf(magicLow);
+        const magicHighIndex = this._buffer.indexOf(MAGIC_HIGH);
+        const magicLowIndex = this._buffer.indexOf(MAGIC_LOW);
         log(`magicHigh index#${magicHighIndex}`);
         log(`magicLow index#${magicLowIndex}`);
 
-        //没有找到magicHigh或者magicLow
-        if (magicHighIndex === -1 || magicLowIndex === -1) {
-          return DataType.Noop;
+        if (magicHighIndex === -1) {
+          // 没有找到magicHigh,则将整个buffer清空
+          this._buffer = this._buffer.slice(bufferLength);
+        } else if (magicLowIndex === -1) {
+          if (magicHighIndex === bufferLength - 1) {
+            // 如果magicHigh是buffer最后一位，则整个buffer只保留最后一位
+            this._buffer = this._buffer.slice(magicHighIndex);
+          } else {
+            // 如果magicHigh不是buffer最后一位，而且整个buffer里没有magicLow,则清空buffer
+            this._buffer = this._buffer.slice(bufferLength);
+          }
+        } else {
+          if (magicLowIndex - magicHighIndex === 1) {
+            // magicHigh和magicLow在buffer中间相邻位置，则buffer移动到magicHigh的位置
+            this._buffer = this._buffer.slice(magicHighIndex);
+          } else {
+            // magicHigh和magicLow不相邻，则buffer移动到magicHigh的下一个位置
+            this._buffer = this._buffer.slice(magicHighIndex + 1);
+          }
         }
-
-        if (
-          magicHighIndex !== -1 &&
-          magicLowIndex !== -1 &&
-          magicLowIndex - magicHighIndex === 1
-        ) {
-          this._buffer = this._buffer.slice(magicHighIndex);
-          bufferLength = this._buffer.length;
+        bufferLength = this._buffer.length;
+        if (bufferLength < HEADER_LENGTH) {
+          return;
         }
-        return DataType.Noop;
-      }
-
-      if (magicHigh === MAGIC_HIGH && magicLow === MAGIC_LOW) {
+      } else {
         //数据量还不够头部的长度
         if (bufferLength < HEADER_LENGTH) {
           //waiting
           log('bufferLength < header length');
-          return DataType.Noop;
+          return;
         }
 
         //取出头部字节
@@ -117,18 +112,10 @@ export default class DecodeBuffer
         const bodyLength = fromBytes4(bodyLengthBuff);
         log('body length', bodyLength);
 
-        //判断是不是心跳
-        if (HeartBeat.isHeartBeat(header)) {
-          log(`SocketWorker#${this._pid} <=receive= heartbeat data.`);
-          this._buffer = this._buffer.slice(HEADER_LENGTH + bodyLength);
-          bufferLength = this._buffer.length;
-          return DataType.HeardBeat;
-        }
-
         if (HEADER_LENGTH + bodyLength > bufferLength) {
           //waiting
           log('header length + body length > buffer length');
-          return DataType.Noop;
+          return;
         }
         const dataBuffer = this._buffer.slice(0, HEADER_LENGTH + bodyLength);
         this._buffer = this._buffer.slice(HEADER_LENGTH + bodyLength);
@@ -136,7 +123,6 @@ export default class DecodeBuffer
         this._subscriber(dataBuffer);
       }
     }
-    return DataType.Data;
   }
 
   clearBuffer() {
