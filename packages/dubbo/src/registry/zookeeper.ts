@@ -183,6 +183,9 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     const {url: register, zkAuthInfo} = this._props;
     //debug log
     log(`connecting zkserver ${register}`);
+    if (this._client) {
+      this._client.removeAllListeners();
+    }
     //connect
     this._client = zookeeper.createClient(register, {
       retries: 10,
