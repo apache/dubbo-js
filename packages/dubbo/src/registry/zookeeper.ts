@@ -258,9 +258,7 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
         return;
       }
 
-      const urls = dubboServiceUrls.map(serviceUrl =>
-        DubboUrl.from(serviceUrl),
-      );
+      const urls = dubboServiceUrls.map(serviceUrl => DubboUrl.from(serviceUrl));
       if (urls.length === 0) {
         traceErr(new Error(`trigger watch ${e} agentList is empty`));
         return;
