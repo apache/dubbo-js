@@ -74,7 +74,9 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     //获取所有provider
     for (let inf of interfaces) {
       //init
-      this._dubboServiceUrlMap.set(inf, []);
+      // 重连进入init后不能清空已有provider, 会导致运行中的请求找到, 报no agents错误
+      // 或者zk出现出错了, 无法获取provider, 那么之前获取的还能继续使用
+      //this._dubboServiceUrlMap.set(inf, []);
 
       //当前接口在zookeeper中的路径
       const dubboServicePath = `/${zkRoot}/${inf}/providers`;
@@ -90,10 +92,8 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
         continue;
       }
 
-      for (let serviceUrl of dubboServiceUrls) {
-        const url = DubboUrl.from(serviceUrl);
-        this._dubboServiceUrlMap.get(inf).push(url);
-      }
+      this._dubboServiceUrlMap.set(inf, dubboServiceUrls.map(serviceUrl => DubboUrl.from(serviceUrl)));
+
       //写入consumer信息
       this._createConsumer({
         name: name,
