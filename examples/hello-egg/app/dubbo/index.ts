@@ -30,6 +30,12 @@ export default (app: EggApplication) => {
     dubboSetting,
   });
 
+  dubbo.subscribe({
+    onTrace(err) {
+      console.log(err);
+    },
+  });
+
   // extends middleware
   dubbo.use(async (ctx: Context, next: any) => {
     const start = Date.now();
