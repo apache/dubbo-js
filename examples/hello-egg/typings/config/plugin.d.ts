@@ -1,4 +1,4 @@
-// This file is created by egg-ts-helper@1.25.2
+// This file is created by egg-ts-helper@1.25.6
 // Do not modify this file!!!!!!!!!
 
 import 'egg';
@@ -14,7 +14,7 @@ import 'egg-schedule';
 import 'egg-static';
 import 'egg-jsonp';
 import 'egg-view';
-import { EggPluginItem } from 'egg';
+import {EggPluginItem} from 'egg';
 declare module 'egg' {
   interface EggPlugin {
     onerror?: EggPluginItem;

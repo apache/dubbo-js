@@ -1,4 +1,4 @@
-import {Context, Dubbo, setting} from 'dubbo2.js';
+import {Context, Dubbo, setting} from 'dubbo-js';
 import {EggApplication} from 'egg';
 import service from './service';
 
@@ -8,19 +8,21 @@ declare module 'egg' {
   }
 }
 
-export default (app: EggApplication) => {
-  const dubboSetting = setting
-    .match(
-      [
-        'com.alibaba.dubbo.demo.DemoProvider',
-        'com.alibaba.dubbo.demo.ErrorProvider',
-      ],
-      {
-        version: '1.0.0',
-      },
-    )
-    .match('com.alibaba.dubbo.demo.BasicTypeProvider', {version: '2.0.0'});
+// dubbo interface setting
+const dubboSetting = setting
+  .match(
+    [
+      'com.alibaba.dubbo.demo.DemoProvider',
+      'com.alibaba.dubbo.demo.ErrorProvider',
+    ],
+    {
+      version: '1.0.0',
+    },
+  )
+  .match('com.alibaba.dubbo.demo.BasicTypeProvider', {version: '2.0.0'});
 
+export default (app: EggApplication) => {
+  // create a dubboo object
   const dubbo = new Dubbo<typeof service>({
     application: {name: 'node-egg-bff'},
     register: 'localhost:2181,localhost:2182,localhost:2183',
@@ -38,5 +40,6 @@ export default (app: EggApplication) => {
     );
   });
 
+  // mounted dubbo to app
   app.dubbo = dubbo;
 };
