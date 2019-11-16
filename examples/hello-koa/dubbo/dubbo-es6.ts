@@ -1,4 +1,4 @@
-import {Dubbo, setting} from 'dubbo2.js';
+import {Dubbo, setting, zk} from 'dubbo-js';
 import * as service from './service';
 
 const dubboSetting = setting
@@ -17,8 +17,7 @@ export default new Dubbo<typeof service>({
   application: {name: 'dubbo-node-consumer1'},
   service,
   dubboSetting,
-
-  register: 'localhost:2181,localhost:2182,localhost:2183',
+  register: zk('localhost:2181,localhost:2182,localhost:2183'),
 });
 
 //middleware
