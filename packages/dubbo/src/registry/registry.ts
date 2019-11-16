@@ -46,9 +46,8 @@ export default class Registry<T = {}> {
       .get(dubboInterface)
       .filter(serviceProp => {
         // "*" refer to default wildcard in dubbo
-        const isSameVersion = !version
-                            || version == '*' 
-                            || serviceProp.version === version;
+        const isSameVersion =
+          !version || version == '*' || serviceProp.version === version;
         //如果Group为null，就默认匹配， 不检查group
         //如果Group不为null，确保group和接口的group一致
         const isSameGroup = !group || group === serviceProp.group;

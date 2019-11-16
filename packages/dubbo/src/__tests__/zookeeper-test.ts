@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {Zk} from '../registry';
+import {zk} from '../registry';
 import setting from '../setting';
 
 describe('zookeeper test suite', () => {
@@ -33,7 +33,7 @@ describe('zookeeper test suite', () => {
         {version: '1.0.0'},
       );
 
-    const client = Zk({
+    const client = zk({
       url: 'localhost:2181',
     })({
       interfaces: [

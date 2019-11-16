@@ -73,11 +73,6 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
 
     //获取所有provider
     for (let inf of interfaces) {
-      //init
-      // 重连进入init后不能清空已有provider, 会导致运行中的请求找到, 报no agents错误
-      // 或者zk出现出错了, 无法获取provider, 那么之前获取的还能继续使用
-      //this._dubboServiceUrlMap.set(inf, []);
-
       //当前接口在zookeeper中的路径
       const dubboServicePath = `/${zkRoot}/${inf}/providers`;
       //当前接口路径下的dubbo url
@@ -85,6 +80,8 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
         this._getDubboServiceUrls(dubboServicePath, inf),
       );
 
+      // 重连进入init后不能清空已有provider, 会导致运行中的请求找到, 报no agents错误
+      // 或者zk出现出错了, 无法获取provider, 那么之前获取的还能继续使用
       if (err) {
         log(`getChildren ${dubboServicePath} error ${err}`);
         traceErr(err);
@@ -92,7 +89,8 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
         continue;
       }
 
-      this._dubboServiceUrlMap.set(inf, dubboServiceUrls.map(serviceUrl => DubboUrl.from(serviceUrl)));
+      // set dubbo interface meta info
+      this._dubboServiceUrlMap.set(inf, dubboServiceUrls.map(DubboUrl.from));
 
       //写入consumer信息
       this._createConsumer({
@@ -183,21 +181,24 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     const {url: register, zkAuthInfo} = this._props;
     //debug log
     log(`connecting zkserver ${register}`);
+
+    // remove all listeners, avoid memory leak
     if (this._client) {
       this._client.removeAllListeners();
     }
+
     //connect
     this._client = zookeeper.createClient(register, {
       retries: 10,
     });
 
+    // add auth info
     if (zkAuthInfo && zkAuthInfo.scheme && zkAuthInfo.auth) {
       this._client.addAuthInfo(zkAuthInfo.scheme, Buffer.from(zkAuthInfo.auth));
     }
 
-    //超时检测
-    //node-zookeeper-client,有个bug，当连不上zk时会无限重连
     //手动做一个超时检测
+    //node-zookeeper-client启动时候有个bug，当连不上zk时会无限重连
     const timeId = setTimeout(() => {
       log(`Could not connect zk ${register}， time out`);
       this._client.close();
@@ -261,7 +262,9 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
         return;
       }
 
-      const urls = dubboServiceUrls.map(serviceUrl => DubboUrl.from(serviceUrl));
+      const urls = dubboServiceUrls.map(serviceUrl =>
+        DubboUrl.from(serviceUrl),
+      );
       if (urls.length === 0) {
         traceErr(new Error(`trigger watch ${e} agentList is empty`));
         return;
@@ -427,7 +430,7 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
   };
 }
 
-export default function Zk(props: IZkClientProps) {
+export default function zk(props: IZkClientProps) {
   return (dubboProps: IDubboRegistryProps) =>
     new ZkRegistry({
       ...props,
