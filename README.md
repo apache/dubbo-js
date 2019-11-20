@@ -105,11 +105,12 @@ const dubbo = new Dubbo<typeof service>({
 });
 ```
 
-## For contributors
+## How to run a quick starter?
 
 If you'd like to contribute, it's a good start to follow below commands to get a locally runnable project.
 
 ```sh
+cd dubbo-js
 # start zookeeper cluster
 docker-compose up
 
@@ -129,6 +130,32 @@ npm run debug:start
 
 # test /hello
 curl http://localhost:3000/hello
+```
+
+## How to run all tests
+
+```sh
+cd dubbo-js
+# start zookeeper cluster
+docker-compose up
+
+# start java
+cd java/dubbo-demo
+mvn clean install
+cd java/dubbo-demo/dubbo-demo-provider
+mvn clean package
+java -jar target/dubbo-demo-provider-2.6.3-jar-with-dependencies.jar
+npm run test
+```
+
+## How to build dubbo-js module
+
+```sh
+git clone https://github.com/apache/dubbo-js.git
+cd dubbo-js
+npm install -g lerna
+lerna bootstrap
+make build-dubbo
 ```
 
 ## Next steps
