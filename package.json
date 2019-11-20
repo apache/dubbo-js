@@ -5,7 +5,7 @@
   ],
   "scripts": {
     "test:watch": "jest --watch -u",
-    "test": "jest --watch"
+    "test": "jest"
   },
   "devDependencies": {
     "lerna": "^2.5.1",
