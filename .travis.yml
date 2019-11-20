@@ -20,7 +20,7 @@ matrix:
       node_js:
         - v8.12.0
       before_install:
-        - npm install -g yarn bootstrap
+        - npm install -g yarn lerna
       install:
         - lerna bootstrap
       before_script:
