@@ -4,6 +4,7 @@
     "packages/*"
   ],
   "scripts": {
+    "test:watch": "jest --watch -u",
     "test": "jest --watch -u"
   },
   "devDependencies": {
