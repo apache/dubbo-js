@@ -4,26 +4,23 @@ matrix:
     - language: java
       jdk:
         - openjdk9
-      before_install:
-        - sudo apt-get install -y zookeeper-server
       install:
         - cd java/dubbo-demo
         - mvn clean install
         - cd dubbo-demo-provider
         - mvn clean package
       before_script:
-        - 'sudo service zookeeper-server init'
-        - 'sudo service zookeeper-server start'
+        - docker-compose up
       script:
         - cd java/dubbo-demo/dubbo-demo-provider
         - java -jar target/dubbo-demo-provider-2.6.3-jar-with-dependencies.jar
       after_script:
-        - 'sudo service zookeeper-server stop'
+        - docker-compose stop
     - language: node_js
       node_js:
-        - v10.15.3
+        - v8.12.0
       before_install:
-        - yarn global add lerna
+        - npm install -g yarn bootstrap
       install:
         - lerna bootstrap
       before_script:
