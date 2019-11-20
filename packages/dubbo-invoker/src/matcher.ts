@@ -16,7 +16,7 @@
  */
 
 import debug from 'debug';
-import {Context} from 'dubbo2.js';
+import {Context} from 'dubbo-js';
 import {isFn, isRegExp, isString} from './type';
 import {IDubboInvokeParam, IRule, TPredictFunction} from './types';
 
