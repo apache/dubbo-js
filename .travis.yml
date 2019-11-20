@@ -1,0 +1,43 @@
+matrix:
+  include:
+    - language: java
+      jdk:
+        - oraclejdk8
+      before_install:
+        # Add repository key
+        - 'curl -s http://archive.cloudera.com/cdh4/ubuntu/precise/amd64/cdh/archive.key | sudo apt-key add -'
+        - 'wget http://archive.cloudera.com/cdh4/one-click-install/precise/amd64/cdh4-repository_1.0_all.deb'
+        # Add Cloudera repository
+        - 'sudo dpkg -i cdh4-repository_1.0_all.deb'
+        - 'sudo apt-get update -qq'
+        # Install ZooKeeper
+        - 'sudo apt-get install -y zookeeper-server'
+      install:
+        - cd java/dubbo-demo
+        - mvn clean install
+        - cd dubbo-demo-provider
+        - mvn clean package
+      before_script:
+        - 'sudo service zookeeper-server init'
+        - 'sudo service zookeeper-server start'
+      script:
+        - cd java/dubbo-demo/dubbo-demo-provider
+        - java -jar target/dubbo-demo-provider-2.6.3-jar-with-dependencies.jar
+      after_script:
+        - 'sudo service zookeeper-server stop'
+    - language: node_js
+      node_js:
+        - v10.15.3
+      before_install:
+        - yarn global add lerna
+      install:
+        - lerna bootstrap
+      before_script:
+        - make build-dubbo
+        - make build-interpret-util
+        - make build-dubbo-invoker
+      script:
+        - yarn test
+
+notifications:
+  email: false
