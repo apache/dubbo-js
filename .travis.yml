@@ -1,8 +1,9 @@
+dist: bionic
 matrix:
   include:
     - language: java
       jdk:
-        - oraclejdk8
+        - openjdk8
       before_install:
         # Add repository key
         - 'curl -s http://archive.cloudera.com/cdh4/ubuntu/precise/amd64/cdh/archive.key | sudo apt-key add -'
@@ -38,6 +39,5 @@ matrix:
         - make build-dubbo-invoker
       script:
         - yarn test
-
 notifications:
   email: false
