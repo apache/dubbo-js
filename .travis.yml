@@ -3,16 +3,9 @@ matrix:
   include:
     - language: java
       jdk:
-        - openjdk8
+        - openjdk9
       before_install:
-        # Add repository key
-        - 'curl -s http://archive.cloudera.com/cdh4/ubuntu/precise/amd64/cdh/archive.key | sudo apt-key add -'
-        - 'wget http://archive.cloudera.com/cdh4/one-click-install/precise/amd64/cdh4-repository_1.0_all.deb'
-        # Add Cloudera repository
-        - 'sudo dpkg -i cdh4-repository_1.0_all.deb'
-        - 'sudo apt-get update -qq'
-        # Install ZooKeeper
-        - 'sudo apt-get install -y zookeeper-server'
+        - sudo apt-get install -y zookeeper-server
       install:
         - cd java/dubbo-demo
         - mvn clean install
