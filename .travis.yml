@@ -4,18 +4,10 @@ matrix:
     - language: java
       jdk:
         - openjdk9
-      install:
-        - cd java/dubbo-demo
-        - mvn clean install
-        - cd dubbo-demo-provider
-        - mvn clean package
       before_script:
-        - docker-compose up
+        - chmod 755 ./start_dubbo_service.sh
       script:
-        - cd java/dubbo-demo/dubbo-demo-provider
-        - java -jar target/dubbo-demo-provider-2.6.3-jar-with-dependencies.jar
-      after_script:
-        - docker-compose stop
+        - ./start_dubbo_service.sh
     - language: node_js
       node_js:
         - v8.12.0

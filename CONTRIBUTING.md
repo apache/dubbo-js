@@ -1,1 +1,1 @@
-欢迎各位同学的pull-request
+welcome pull-request
