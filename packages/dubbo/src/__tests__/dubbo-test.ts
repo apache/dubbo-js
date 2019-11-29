@@ -44,7 +44,7 @@ const dubboSetting = setting
 
 const dubbo = new Dubbo<typeof service>({
   application: {name: 'node-dubbo'},
-  register: 'localhost:2181',
+  register: 'localhost:2181,localhost:2181,localhost:2181',
   service,
   dubboSetting,
 });

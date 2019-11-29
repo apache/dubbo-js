@@ -20,7 +20,7 @@ Dubbo-js, using Node.js to embrace the Dubbo ecosystem. See this [Demo](https://
 ## Getting Started
 
 ```
-yarn add dubbo2.js
+yarn add dubbo-js
 ```
 
 ## Usage
@@ -67,7 +67,7 @@ The automatically translated typescript type definitions are not necessary, belo
 
 ```typescript
 // create the service to be injected
-import {Dubbo} from 'dubbo2.js';
+import {Dubbo} from 'dubbo-js';
 
 const demoProvider = dubbo =>
   dubbo.proxyService({
@@ -107,45 +107,45 @@ const dubbo = new Dubbo<typeof service>({
 
 ## How to run a quick starter?
 
+**Make sure java, maven, docker, Node, Yarn is installed locally.**
 If you'd like to contribute, it's a good start to follow below commands to get a locally runnable project.
 
 ```sh
+# cd root dir
 cd dubbo-js
-# start zookeeper cluster
-docker-compose up
 
-# start java
-cd java/dubbo-demo
-mvn clean install
-cd java/dubbo-demo/dubbo-demo-provider
-mvn clean package
-java -jar target/dubbo-demo-provider-2.6.3-jar-with-dependencies.jar
+# start java dubbo service
+chmod 755 ./start_dubbo_service.sh
+sh ./start_dubbo_service.sh
 
-# build
+# build package module
 make
 
 # start node
 cd example/hello-koa
-npm run debug:start
-
+# install node modules
+yarn
+# start web
+yarn run debug:start
 # test /hello
 curl http://localhost:3000/hello
+
+# or hello-egg example
+cd example/hello-egg
+yarn
+yarn run dev
+# test /hello
+http://127.0.0.1:7001/hello
 ```
 
 ## How to run all tests
 
 ```sh
 cd dubbo-js
-# start zookeeper cluster
-docker-compose up
-
-# start java
-cd java/dubbo-demo
-mvn clean install
-cd java/dubbo-demo/dubbo-demo-provider
-mvn clean package
-java -jar target/dubbo-demo-provider-2.6.3-jar-with-dependencies.jar
-npm run test
+sh ./start_dubbo_service.sh
+yarn
+make
+yarn run test
 ```
 
 ## How to build dubbo-js module
