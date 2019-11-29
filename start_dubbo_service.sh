@@ -25,7 +25,7 @@ mvn clean package
 # start zookeeper cluster
 docker-compose up &
 
-sleep 2
+sleep 5
 
 # start java dubbo service
 java -jar ./target/dubbo-demo-provider-2.6.3-jar-with-dependencies.jar
