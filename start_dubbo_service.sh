@@ -18,12 +18,14 @@
 
 # build java dubbo jar
 cd java/dubbo-demo
-mvn clean package
+mvn clean install 
 cd dubbo-demo-provider
 mvn clean package
 
 # start zookeeper cluster
 docker-compose up &
+
+sleep 2
 
 # start java dubbo service
 java -jar ./target/dubbo-demo-provider-2.6.3-jar-with-dependencies.jar
