@@ -11,6 +11,9 @@ public class Provider {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"META-INF/spring/dubbo-demo-provider.xml"});
         context.start();
         System.in.read(); // 按任意键退出
+        while(true) {
+            Thread.sleep(Long.MAX_VALUE);
+        }
     }
 
 }
