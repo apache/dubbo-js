@@ -5,6 +5,7 @@ matrix:
       jdk:
         - openjdk9
       before_script:
+        - docker pull zookeeper
         - chmod 755 ./start_dubbo_service.sh
       script:
         - ./start_dubbo_service.sh
