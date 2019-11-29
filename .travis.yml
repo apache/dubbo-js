@@ -1,26 +1,28 @@
 dist: bionic
-matrix:
-  include:
-    - language: java
-      jdk:
-        - openjdk9
-      before_script:
-        - docker pull zookeeper
-        - chmod 755 ./start_dubbo_service.sh
-      script:
-        - ./start_dubbo_service.sh
-    - language: node_js
-      node_js:
-        - v8.12.0
-      before_install:
-        - npm install -g yarn lerna
-      install:
-        - lerna bootstrap
-      before_script:
-        - make build-dubbo
-        - make build-interpret-util
-        - make build-dubbo-invoker
-      script:
-        - yarn test
+language: node_js
+node_js:
+  - v8.12.0
+before_install:
+  - npm install -g yarn lerna
+install:
+  - lerna bootstrap
+before_script:
+  - docker pull zookeeper:3.5.6
+  - chmod 755 ./start_dubbo_service.sh
+  - make build-dubbo
+  - make build-interpret-util
+  - make build-dubbo-invoker
+  - cd java/dubbo-demo
+  - mvn clean install
+  - cd dubbo-demo-provider
+  - mvn clean package
+  - docker-compose up &
+  - sleep 5
+  - java -jar ./target/dubbo-demo-provider-2.6.3-jar-with-dependencies.jar &
+  - cd ../../../
+  - sleep 10
+script:
+  - yarn test
+
 notifications:
   email: false
