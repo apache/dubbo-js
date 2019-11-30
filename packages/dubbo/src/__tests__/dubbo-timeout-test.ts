@@ -32,7 +32,7 @@ const dubboSetting = setting
 
 const dubbo = new Dubbo<typeof service>({
   application: {name: '@qianmi/node-dubbo'},
-  register: 'localhost:2181',
+  register: 'localhost:2181,localhost:2181,localhost:2181',
   dubboInvokeTimeout: 0.001,
   service,
   dubboSetting,

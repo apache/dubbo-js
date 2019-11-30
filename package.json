@@ -4,7 +4,8 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "jest --watch -u"
+    "test:watch": "jest --watch -u",
+    "test": "jest"
   },
   "devDependencies": {
     "lerna": "^2.5.1",

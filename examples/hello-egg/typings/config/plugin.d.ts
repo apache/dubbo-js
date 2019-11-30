@@ -2,19 +2,18 @@
 // Do not modify this file!!!!!!!!!
 
 import 'egg';
-import 'egg-onerror';
-import 'egg-session';
-import 'egg-i18n';
-import 'egg-watcher';
-import 'egg-multipart';
-import 'egg-security';
 import 'egg-development';
-import 'egg-logrotator';
-import 'egg-schedule';
-import 'egg-static';
+import 'egg-i18n';
 import 'egg-jsonp';
+import 'egg-logrotator';
+import 'egg-multipart';
+import 'egg-onerror';
+import 'egg-schedule';
+import 'egg-security';
+import 'egg-session';
+import 'egg-static';
 import 'egg-view';
-import {EggPluginItem} from 'egg';
+import 'egg-watcher';
 declare module 'egg' {
   interface EggPlugin {
     onerror?: EggPluginItem;

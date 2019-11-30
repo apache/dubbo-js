@@ -34,7 +34,7 @@ describe('zookeeper test suite', () => {
       );
 
     const client = zk({
-      url: 'localhost:2181',
+      url: 'localhost:2181,localhost:2181,localhost:2181',
     })({
       interfaces: [
         'com.alibaba.dubbo.demo.DemoProvider',

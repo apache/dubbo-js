@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Context} from 'dubbo2.js';
+import {Context} from 'dubbo-js';
 
 export type TPredictFunction = (ctx: Context) => boolean;
 

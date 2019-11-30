@@ -22,9 +22,7 @@
 
     <!-- 提供方应用信息，用于计算依赖关系 -->
     <dubbo:application name="demo-provider"/>
-
-    <dubbo:registry protocol="zookeeper" address="127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183"/>
-
+    <dubbo:registry protocol="zookeeper" address="localhost:2181,localhost:2182,localhost:2183"/>
     <dubbo:provider timeout="1500"/>
 
     <!-- 用dubbo协议在20880端口暴露服务 -->
