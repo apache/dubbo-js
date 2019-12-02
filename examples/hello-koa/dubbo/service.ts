@@ -1,4 +1,4 @@
-import {Dubbo, java, TDubboCallResult} from 'dubbo2.js';
+import {Dubbo, java, TDubboCallResult} from 'dubbo-js';
 
 //=====================types===========================
 export interface IUserResponse {

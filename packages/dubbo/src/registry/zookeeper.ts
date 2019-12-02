@@ -17,7 +17,7 @@
 
 import debug from 'debug';
 import ip from 'ip';
-import zookeeper from 'node-zookeeper-client';
+import zookeeper, {State} from 'node-zookeeper-client';
 import qs from 'querystring';
 import DubboUrl from '../dubbo-url';
 import {
@@ -36,6 +36,7 @@ import Registry from './registry';
 
 const log = debug('dubbo:zookeeper');
 const ipAddress = ip.address();
+const CHECK_TIME = 30 * 1000;
 
 export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
   constructor(props: IZkClientProps & IDubboRegistryProps) {
@@ -49,6 +50,7 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     this._connect(this._init);
   }
 
+  private _checkTimer: NodeJS.Timer;
   private _client: zookeeper.Client;
   private _agentAddrSet: Set<string>;
 
@@ -78,17 +80,18 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
         this._getDubboServiceUrls(dubboServicePath, inf),
       );
 
+      // 重连进入init后不能清空已有provider, 会导致运行中的请求找到, 报no agents错误
+      // 或者zk出现出错了, 无法获取provider, 那么之前获取的还能继续使用
       if (err) {
         log(`getChildren ${dubboServicePath} error ${err}`);
         traceErr(err);
+        //If an error occurs, continue
+        continue;
       }
 
-      //init
-      this._dubboServiceUrlMap.set(inf, []);
-      for (let serviceUrl of dubboServiceUrls) {
-        const url = DubboUrl.from(serviceUrl);
-        this._dubboServiceUrlMap.get(inf).push(url);
-      }
+      // set dubbo interface meta info
+      this._dubboServiceUrlMap.set(inf, dubboServiceUrls.map(DubboUrl.from));
+
       //写入consumer信息
       this._createConsumer({
         name: name,
@@ -104,6 +107,36 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     this._agentAddrSet = this._allAgentAddrSet;
     this._subscriber.onData(this._allAgentAddrSet);
   };
+
+  /**
+   * 重连
+   */
+  private _reconnect() {
+    clearInterval(this._checkTimer);
+    if (this._client) {
+      this._client.close();
+    }
+    this._connect(this._init);
+  }
+
+  /**
+   * 由于zk自己的监测机制不明确, 改为自主检测
+   */
+  private _monitor() {
+    clearInterval(this._checkTimer);
+    this._checkTimer = setInterval(() => {
+      const state = this._client.getState();
+      switch (state) {
+        case State.EXPIRED:
+        case State.DISCONNECTED:
+          log(`checker is error, state is ${state}, need reconnect`);
+          this._reconnect();
+          break;
+        default:
+          log(`checker is ok, state is ${state}`);
+      }
+    }, CHECK_TIME);
+  }
 
   /**
    * 获取所有的负载列表，通过agentAddrMap聚合出来
@@ -145,17 +178,27 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
    * connect zookeeper
    */
   private _connect = (callback: (err: Error) => void) => {
-    const {url: register} = this._props;
+    const {url: register, zkAuthInfo} = this._props;
     //debug log
     log(`connecting zkserver ${register}`);
+
+    // remove all listeners, avoid memory leak
+    if (this._client) {
+      this._client.removeAllListeners();
+    }
+
     //connect
     this._client = zookeeper.createClient(register, {
       retries: 10,
     });
 
-    //超时检测
-    //node-zookeeper-client,有个bug，当连不上zk时会无限重连
+    // add auth info
+    if (zkAuthInfo && zkAuthInfo.scheme && zkAuthInfo.auth) {
+      this._client.addAuthInfo(zkAuthInfo.scheme, Buffer.from(zkAuthInfo.auth));
+    }
+
     //手动做一个超时检测
+    //node-zookeeper-client启动时候有个bug，当连不上zk时会无限重连
     const timeId = setTimeout(() => {
       log(`Could not connect zk ${register}， time out`);
       this._client.close();
@@ -171,26 +214,30 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
       clearTimeout(timeId);
       callback(null);
       msg.emit('sys:ready');
+      this._monitor();
     });
 
     //the connection between client and server is dropped.
-    this._client.on('disconnected', () => {
+    this._client.once('disconnected', () => {
       log(`zk ${register} had disconnected`);
       clearTimeout(timeId);
-      callback(
+      traceErr(
         new ZookeeperDisconnectedError(
           `ZooKeeper was disconnected. current state is ${this._client.getState()} `,
         ),
       );
+      this._reconnect();
     });
 
-    this._client.on('expired', () => {
+    this._client.once('expired', () => {
+      clearTimeout(timeId);
       log(`zk ${register} had session expired`);
-      callback(
+      traceErr(
         new ZookeeperExpiredError(
           `Zookeeper was session Expired Error current state ${this._client.getState()}`,
         ),
       );
+      this._client.close();
     });
 
     //connect
@@ -215,26 +262,15 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
         return;
       }
 
-      //clear current dubbo interface
-      const agentAddrList = [];
-      const urls = [];
-      for (let serviceUrl of dubboServiceUrls) {
-        const url = DubboUrl.from(serviceUrl);
-        const {host, port} = url;
-        agentAddrList.push(`${host}:${port}`);
-        urls.push(url);
-      }
-
-      this._createConsumer({
-        name: this._props.application.name,
-        dubboInterface: dubboInterface,
-      }).then(() => log('create consumer finish'));
-
-      this._dubboServiceUrlMap.set(dubboInterface, urls);
-
-      if (agentAddrList.length === 0) {
+      const urls = dubboServiceUrls.map(serviceUrl =>
+        DubboUrl.from(serviceUrl),
+      );
+      if (urls.length === 0) {
         traceErr(new Error(`trigger watch ${e} agentList is empty`));
+        return;
       }
+      //clear current dubbo interface
+      this._dubboServiceUrlMap.set(dubboInterface, urls);
 
       if (isDevEnv) {
         log('agentSet:|> %O', this._allAgentAddrSet);
@@ -394,7 +430,7 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
   };
 }
 
-export default function Zk(props: IZkClientProps) {
+export default function zk(props: IZkClientProps) {
   return (dubboProps: IDubboRegistryProps) =>
     new ZkRegistry({
       ...props,

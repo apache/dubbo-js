@@ -22,7 +22,7 @@ import config from './config';
 import Context from './context';
 import {go} from './go';
 import Queue from './queue';
-import {Zk} from './registry';
+import {zk} from './registry';
 import Scheduler from './scheduler';
 import {
   IDubboProps,
@@ -37,7 +37,7 @@ import {msg, noop, traceInfo} from './util';
 
 const log = debug('dubbo:bootstrap');
 const packageVersion = require('../package.json').version;
-log('dubbo2.js version :=> %s', packageVersion);
+log('dubbo-js version :=> %s', packageVersion);
 
 /**
  * Dubbo
@@ -89,7 +89,9 @@ export default class Dubbo<TService = Object>
     this._registryService(props.service);
     log('interfaces:|>', this._interfaces);
 
-    this._readyResolve = noop;
+    this._readyPromise = new Promise(resolve => {
+      this._readyResolve = resolve;
+    });
     this._subscriber = {
       onTrace: noop,
     };
@@ -99,7 +101,7 @@ export default class Dubbo<TService = Object>
     //if dubbo register is string, create a zookeeper instance
     let register = this._props.register;
     if (isString(register)) {
-      register = Zk({
+      register = zk({
         url: this._props.register as string,
       });
     }
@@ -116,6 +118,7 @@ export default class Dubbo<TService = Object>
   }
 
   private _interfaces: Array<string>;
+  private _readyPromise: Promise<void>;
   private _readyResolve: Function;
   private _subscriber: IDubboSubscriber;
   private readonly _queue: Queue;
@@ -237,9 +240,7 @@ export default class Dubbo<TService = Object>
    * 其他的框架类似
    */
   ready() {
-    return new Promise(resolve => {
-      this._readyResolve = resolve;
-    });
+    return this._readyPromise;
   }
 
   subscribe(subscriber: IDubboSubscriber) {

@@ -129,9 +129,16 @@ export default class Scheduler {
    */
   private _handleZkClientError = (err: Error) => {
     log(err);
+    traceErr(err);
     //说明zookeeper连接不上
     if (err instanceof ZookeeperTimeoutError) {
-      this._status = STATUS.FAILED;
+      switch (this._status) {
+        // 当zk已经初始化完成后, 相应的provider已经找到了, 如果zk这时出现问题, 不应该让provider不允许调用
+        case STATUS.READY:
+          break;
+        default:
+          this._status = STATUS.FAILED;
+      }
     }
   };
 

@@ -21,7 +21,7 @@ describe('context test suite', () => {
   it('test default Value', () => {
     const ctx = Context.create();
     expect(ctx.requestId).toEqual(1);
-    expect(ctx.application).toEqual({name: 'dubbo2.js'});
+    expect(ctx.application).toEqual({name: 'dubbo-js'});
     expect(ctx.isNotScheduled).toEqual(true);
   });
 

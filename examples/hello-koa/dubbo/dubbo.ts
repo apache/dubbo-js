@@ -1,4 +1,4 @@
-import {Dubbo, setting, Zk} from 'dubbo2.js';
+import {Dubbo, setting, zk} from 'dubbo-js';
 import * as service from './service';
 
 const dubboSetting = setting
@@ -18,7 +18,7 @@ const dubbo = new Dubbo<typeof service>({
   service,
   dubboSetting,
 
-  register: Zk({
+  register: zk({
     url: 'localhost:2181,localhost:2182,localhost:2183',
   }),
 });

@@ -46,7 +46,9 @@ export async function toBeanClass(
 
   if (typeDef.typeParams) {
     typeDef.typeParams.forEach(typeParamsItem => {
-      typeParameters.push({name: typeParamsItem.name+" extends { __fields2java?(): any } = any",});
+      typeParameters.push({
+        name: typeParamsItem.name + ' extends { __fields2java?(): any } = any',
+      });
     });
   }
   //获取 方法定义; 或者获取属性定义
@@ -62,21 +64,30 @@ export async function toBeanClass(
     if (typeDef.fields[fieldName].isArray) {
       filedType = typeDef.fields[fieldName].elementType.name;
     }
+    const regex = new RegExp(
+      `^(get|set)${fieldName[0].toUpperCase()}${fieldName.slice(1)}$`,
+    );
+    if (
+      typeDef.privateFields.indexOf(fieldName) !== -1 && // 在privateField中
+      Object.keys(typeDef.methods || {}).findIndex(n => regex.test(n)) === -1 // 并且没有getter和setter
+    ) {
+      continue; // 跳过不翻译
+    }
 
-      let field = await toField(
-        fieldName,
-        typeDef.fields[fieldName],
-        intepretHandle,
-      );
-      properties.push(field);
-      ctorParams.push({name: field.name, type: field.type});
+    let field = await toField(
+      fieldName,
+      typeDef.fields[fieldName],
+      intepretHandle,
+    );
+    properties.push(field);
+    ctorParams.push({name: field.name, type: field.type});
 
-      let filedItem = typeDef.fields[fieldName];
-      fileds.push({
-        name: fieldName,
-        type: await jType2Ts(filedItem, intepretHandle),
-        filedAst: filedItem,
-      });
+    let filedItem = typeDef.fields[fieldName];
+    fileds.push({
+      name: fieldName,
+      type: await jType2Ts(filedItem, intepretHandle),
+      filedAst: filedItem,
+    });
   }
   //添加构造函数入参interface
   //1.2 生成方法;;

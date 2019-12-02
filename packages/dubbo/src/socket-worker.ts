@@ -34,6 +34,7 @@ const RETRY_NUM = 20;
 const RETRY_TIME = 3000;
 //心跳频率
 const HEART_BEAT = 180 * 1000;
+const RETRY_HEARD_BEAT_TIME = 20;
 const log = debug('dubbo:socket-worker');
 
 /**
@@ -64,7 +65,7 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     };
 
     //init decodeBuffer
-    this._decodeBuff = DecodeBuffer.from(pid).subscribe(
+    this._decodeBuff = new DecodeBuffer().subscribe(
       this._onSubscribeDecodeBuff,
     );
 
@@ -77,11 +78,14 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
   public readonly port: number;
 
   private _retry: number;
+  private _retryTimeoutId: NodeJS.Timer;
   private _heartBeatTimer: NodeJS.Timer;
   private _socket: net.Socket;
   private _status: SOCKET_STATUS;
   private _decodeBuff: DecodeBuffer;
   private _subscriber: ISocketSubscriber;
+  private _lastReadTimestamp: number = -1;
+  private _lastWriteTimestamp: number = -1;
 
   //==================================public method==========================
 
@@ -106,6 +110,7 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     //when current worker close, fail dubbo request
     ctx.pid = this.pid;
     const encoder = new DubboEncoder(ctx);
+    this.setWriteTimestamp();
     this._socket.write(encoder.encode());
   }
 
@@ -153,10 +158,15 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     //   `SocketWorker#${this.pid} =connecting=> ${this.host}:${this.port}`,
     // );
 
-    this._socket = new net.Socket();
-    // Disable the Nagle algorithm.
-    this._socket.setNoDelay();
+    if (this._socket) {
+      this._socket.destroy();
+    }
 
+    this._socket = new net.Socket();
+    this._socket.setNoDelay();
+    // Disable the Nagle algorithm.
+    // this._socket.setTimeout(10 * 1000)
+    // this._socket.setKeepAlive(true)
     this._socket
       .connect(
         this.port,
@@ -179,6 +189,8 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
 
     //reset retry number
     this._retry = RETRY_NUM;
+    this.setReadTimestamp();
+    this.setWriteTimestamp();
 
     //notifiy subscriber, the socketworker was connected successfully
     this._subscriber.onConnect({
@@ -188,14 +200,22 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     });
 
     //heartbeart
+    //when network is close, the connection maybe not close, so check the heart beat times
     this._heartBeatTimer = setInterval(() => {
-      log('emit heartbeat');
-      this._socket.write(HeartBeat.encode());
+      const now = Date.now();
+      if (now - this._lastReadTimestamp > HEART_BEAT * RETRY_HEARD_BEAT_TIME) {
+        this._onClose(false);
+      } else if ((now - this._lastWriteTimestamp > HEART_BEAT) ||  (now - this._lastReadTimestamp > HEART_BEAT)){
+        log('SocketWorker#${this.pid} emit heartbeat');
+        this.setWriteTimestamp();
+        this._socket.write(HeartBeat.encode());
+      }
     }, HEART_BEAT);
   };
 
   private _onData = data => {
     log(`SocketWorker#${this.pid}  =receive data=> ${this.host}:${this.port}`);
+    this.setReadTimestamp();
     this._decodeBuff.receive(data);
   };
 
@@ -233,12 +253,15 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     //clear buffer
     this._decodeBuff.clearBuffer();
     clearInterval(this._heartBeatTimer);
+    this._lastReadTimestamp = -1;
+    this._lastWriteTimestamp = -1;
 
     if (this._retry > 0) {
       //set current status
       this._status = SOCKET_STATUS.RETRY;
       //retry when delay RETRY_TIME
-      setTimeout(() => {
+      clearTimeout(this._retryTimeoutId);
+      this._retryTimeoutId = setTimeout(() => {
         this._retry--;
         this._initSocket();
       }, RETRY_TIME);
@@ -255,8 +278,21 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
   };
 
   private _onSubscribeDecodeBuff = (data: Buffer) => {
-    const json = decode(data);
-    log(`SocketWorker#${this.pid} <=received=> dubbo result %O`, json);
-    this._subscriber.onData(json);
+    if (HeartBeat.isHeartBeat(data)) {
+      log(`SocketWorker#${this.pid} <=receive= heartbeat data.`);
+    } else {
+      const json = decode(data);
+      log(`SocketWorker#${this.pid} <=received=> dubbo result %O`, json);
+      this._subscriber.onData(json);
+    }
   };
+
+  private setReadTimestamp() {
+    this._lastReadTimestamp = Date.now();
+  }
+
+  private setWriteTimestamp() {
+    this._lastReadTimestamp = Date.now();
+  }
+
 }

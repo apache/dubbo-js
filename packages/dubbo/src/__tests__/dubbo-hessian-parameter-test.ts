@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {Dubbo, setting} from 'dubbo2.js';
+import {Dubbo, setting} from 'dubbo-js';
 import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
 
 const service = {
