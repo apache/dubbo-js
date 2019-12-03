@@ -168,7 +168,7 @@ export default class Scheduler {
     log('agentAddrSet-> %O', agentAddrList);
     let finalAddrList = agentAddrList;
     if (this._dubboFilter) {
-      finalAddrList = this._dubboFilter(finalAddrList);
+      finalAddrList = this._dubboFilter(finalAddrList, ctx);
 
       // if this._dubboFilter(finalAddrList) return false or undefined, finalAddrList is agentAddrList
       if (!finalAddrList) {
