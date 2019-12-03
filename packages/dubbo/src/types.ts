@@ -89,11 +89,12 @@ export interface IDubboProps {
   //dubbo为每个server-agent创建的socketpool数量，默认1
   dubboSocketPool?: number;
   dubboSetting: Setting;
+  dubboInvokeFilter?: Function;
 }
 
 //magic, you should use typescript 2.8+
 export type TDubboService<T> = {
-  [k in keyof T]: T[k] extends ((dubbo: any) => infer R) ? R : any;
+  [k in keyof T]: T[k] extends (dubbo: any) => infer R ? R : any;
 };
 
 export interface IDubboResult<T> {

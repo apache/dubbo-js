@@ -39,7 +39,7 @@ const enum STATUS {
  * 4. 接受zookeeper的变化，更新Server-agent
  */
 export default class Scheduler {
-  constructor(registry: Registry, queue: Queue) {
+  constructor(registry: Registry, queue: Queue, dubboInvokeFilter?: Function) {
     log(`new scheduler`);
     this._status = STATUS.PADDING;
 
@@ -47,6 +47,7 @@ export default class Scheduler {
     this._queue.subscribe(this._handleQueueRequest);
 
     this._dubboAgent = new DubboAgent();
+    this._dubboFilter = dubboInvokeFilter;
 
     //init ZkClient and subscribe
     this._registry = registry.subscribe({
@@ -59,13 +60,14 @@ export default class Scheduler {
   private _queue: Queue;
   private _registry: Registry;
   private _dubboAgent: DubboAgent;
+  private _dubboFilter: Function;
 
   /**
    * static factory method
    * @param props
    */
-  static from(registry: Registry, queue: Queue) {
-    return new Scheduler(registry, queue);
+  static from(registry: Registry, queue: Queue, dubboInvokeFilter?: Function) {
+    return new Scheduler(registry, queue, dubboInvokeFilter);
   }
 
   /**
@@ -164,7 +166,16 @@ export default class Scheduler {
     //get socket agent list
     const agentAddrList = Object.keys(agentAddrMap);
     log('agentAddrSet-> %O', agentAddrList);
-    const worker = this._dubboAgent.getAvailableSocketWorker(agentAddrList);
+    let finalAddrList = agentAddrList;
+    if (this._dubboFilter) {
+      finalAddrList = this._dubboFilter(finalAddrList);
+
+      // if this._dubboFilter(finalAddrList) return false or undefined, finalAddrList is agentAddrList
+      if (!finalAddrList) {
+        finalAddrList = agentAddrList;
+      }
+    }
+    const worker = this._dubboAgent.getAvailableSocketWorker(finalAddrList);
 
     //if could not find any available socket agent worker
     if (!worker) {

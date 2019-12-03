@@ -22,7 +22,7 @@ import config from './config';
 import Context from './context';
 import {go} from './go';
 import Queue from './queue';
-import {zk} from './registry';
+import {zk, Registry} from './registry';
 import Scheduler from './scheduler';
 import {
   IDubboProps,
@@ -78,7 +78,7 @@ export default class Dubbo<TService = Object>
     //全局超时时间(最大熔断时间)类似<dubbo:consumer timeout="sometime"/>
     //对应consumer客户端来说，用户设置了接口级别的超时时间，就使用接口级别的
     //如果用户没有设置用户级别，默认就是最大超时时间
-    const {dubboInvokeTimeout, dubboSocketPool} = props;
+    const {dubboInvokeTimeout, dubboSocketPool, dubboInvokeFilter} = props;
     config.dubboInvokeTimeout = dubboInvokeTimeout || config.dubboInvokeTimeout;
     config.dubboSocketPool = dubboSocketPool || config.dubboSocketPool;
 
@@ -106,15 +106,20 @@ export default class Dubbo<TService = Object>
       });
     }
 
-    //create scheduler
-    Scheduler.from(
+    let schedulerConfig: [Registry, Queue, any?] = [
       register({
         application: props.application,
         interfaces: this._interfaces,
         dubboSetting: props.dubboSetting,
       }),
       this._queue,
-    );
+    ];
+
+    if (dubboInvokeFilter) {
+      schedulerConfig.push(dubboInvokeFilter);
+    }
+    //create scheduler
+    Scheduler.from(...schedulerConfig);
   }
 
   private _interfaces: Array<string>;
