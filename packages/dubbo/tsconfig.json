@@ -6,7 +6,8 @@
     "declaration": true,
     "declarationDir": "./es7/typings",
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "allowJs": true
   },
   "exclude": ["./src/__tests__/**"]
 }

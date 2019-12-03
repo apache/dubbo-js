@@ -1,6 +1,6 @@
 {
-  "name": "dubbo-js",
-  "version": "3.0.0",
+  "name": "dubbo-js-inner",
+  "version": "3.0.2",
   "main": "./es7/index.js",
   "types": "./es7/typings/index.d.ts",
   "license": "Apache Licence 2.0",
@@ -18,5 +18,8 @@
     "koa-compose": "4.0.0",
     "js-to-java": "2.4.0",
     "node-zookeeper-client": "0.2.2"
+  },
+  "devDependencies": {
+    "prettier": "^1.19.1"
   }
 }
