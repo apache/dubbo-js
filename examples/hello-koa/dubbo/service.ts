@@ -46,7 +46,7 @@ export interface IErrorProvider {
 //========================provider=======================
 export const demoProvider = (dubbo: Dubbo): IDemoProvider =>
   dubbo.proxyService({
-    dubboInterface: 'com.alibaba.dubbo.demo.DemoProvider',
+    dubboInterface: 'org.apache.dubbo.demo.DemoProvider',
     methods: {
       sayHello(name: string) {
         return [java.String(name)];
@@ -58,7 +58,7 @@ export const demoProvider = (dubbo: Dubbo): IDemoProvider =>
 
       getUserInfo() {
         return [
-          java.combine('com.alibaba.dubbo.demo.UserRequest', {
+          java.combine('org.apache.dubbo.demo.UserRequest', {
             id: 1,
             name: 'nodejs',
             email: 'node@qianmi.com',
@@ -70,11 +70,11 @@ export const demoProvider = (dubbo: Dubbo): IDemoProvider =>
 
 export const basicTypeProvider = (dubbo: Dubbo): IBasicTypeProvider =>
   dubbo.proxyService({
-    dubboInterface: 'com.alibaba.dubbo.demo.BasicTypeProvider',
+    dubboInterface: 'org.apache.dubbo.demo.BasicTypeProvider',
     methods: {
       testBasicType() {
         return [
-          java.combine('com.alibaba.dubbo.demo.TypeRequest', {
+          java.combine('org.apache.dubbo.demo.TypeRequest', {
             map: java.Map({name: 'test'}),
             bigDecimal: java.BigDecimal('1000.0000'),
           }),
@@ -85,7 +85,7 @@ export const basicTypeProvider = (dubbo: Dubbo): IBasicTypeProvider =>
 
 export const errorProvider = (dubbo: Dubbo): IErrorProvider =>
   dubbo.proxyService({
-    dubboInterface: 'com.alibaba.dubbo.demo.ErrorProvider',
+    dubboInterface: 'org.apache.dubbo.demo.ErrorProvider',
     methods: {
       errorTest() {
         return [];

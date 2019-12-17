@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {join} from 'path';
-import {pathExists} from 'fs-extra';
 import {spawn} from 'child_process';
+import {pathExists} from 'fs-extra';
+import {join} from 'path';
 import {IDubboExtInfo, IExtraResult} from '../typings';
 
 const startFlag = 'Output at:';

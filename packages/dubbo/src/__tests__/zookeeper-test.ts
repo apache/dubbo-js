@@ -22,13 +22,13 @@ describe('zookeeper test suite', () => {
   it('test connect', () => {
     //dubbo-setting
     const dubboSetting = setting
-      .match('com.alibaba.dubbo.demo.BasicTypeProvider', {
+      .match('org.apache.dubbo.demo.BasicTypeProvider', {
         version: '2.0.0',
       })
       .match(
         [
-          'com.alibaba.dubbo.demo.DemoProvider',
-          'com.alibaba.dubbo.demo.ErrorProvider',
+          'org.apache.dubbo.demo.DemoProvider',
+          'org.apache.dubbo.demo.ErrorProvider',
         ],
         {version: '1.0.0'},
       );
@@ -37,9 +37,9 @@ describe('zookeeper test suite', () => {
       url: 'localhost:2181,localhost:2181,localhost:2181',
     })({
       interfaces: [
-        'com.alibaba.dubbo.demo.DemoProvider',
-        'com.alibaba.dubbo.demo.BasicTypeProvider',
-        'com.alibaba.dubbo.demo.ErrorProvider',
+        'org.apache.dubbo.demo.DemoProvider',
+        'org.apache.dubbo.demo.BasicTypeProvider',
+        'org.apache.dubbo.demo.ErrorProvider',
       ],
       dubboSetting,
       application: {

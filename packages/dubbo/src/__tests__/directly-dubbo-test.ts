@@ -19,8 +19,8 @@ import {DirectlyDubbo, java} from 'dubbo-js';
 import {
   DemoProviderWrapper,
   IDemoProvider,
-} from './providers/com/alibaba/dubbo/demo/DemoProvider';
-import {UserRequest} from './providers/com/alibaba/dubbo/demo/UserRequest';
+} from './providers/org/apache/dubbo/demo/DemoProvider';
+import {UserRequest} from './providers/org/apache/dubbo/demo/UserRequest';
 
 const dubbo = DirectlyDubbo.from({
   dubboAddress: 'localhost:20880',
@@ -29,7 +29,7 @@ const dubbo = DirectlyDubbo.from({
 });
 
 const demoService = dubbo.proxyService<IDemoProvider>({
-  dubboInterface: 'com.alibaba.dubbo.demo.DemoProvider',
+  dubboInterface: 'org.apache.dubbo.demo.DemoProvider',
   methods: DemoProviderWrapper,
   version: '1.0.0',
 });
