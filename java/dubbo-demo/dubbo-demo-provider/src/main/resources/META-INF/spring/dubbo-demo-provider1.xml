@@ -32,16 +32,16 @@
     <dubbo:protocol name="dubbo" port="20881"/>
 
     <!-- 和本地bean一样实现服务 -->
-    <bean id="demoProvider" class="com.alibaba.dubbo.demo.provider.DemoProviderImpl"/>
-    <bean id="basicTypeProvider" class="com.alibaba.dubbo.demo.provider.BasicTypeProviderImpl"/>
-    <bean id="errorProvider" class="com.alibaba.dubbo.demo.provider.ErrorProviderImpl"/>
+    <bean id="demoProvider" class="org.apache.dubbo.demo.provider.DemoProviderImpl"/>
+    <bean id="basicTypeProvider" class="org.apache.dubbo.demo.provider.BasicTypeProviderImpl"/>
+    <bean id="errorProvider" class="org.apache.dubbo.demo.provider.ErrorProviderImpl"/>
 
     <!-- 声明需要暴露的服务接口 -->
-    <dubbo:service interface="com.alibaba.dubbo.demo.DemoProvider" ref="demoProvider" version="1.0.0" timeout="10000">
+    <dubbo:service interface="org.apache.dubbo.demo.DemoProvider" ref="demoProvider" version="1.0.0" timeout="10000">
         <dubbo:method name="sayHello" timeout="8000"/>
     </dubbo:service>
 
-    <dubbo:service interface="com.alibaba.dubbo.demo.BasicTypeProvider" ref="basicTypeProvider" version="2.0.0"/>
-    <dubbo:service interface="com.alibaba.dubbo.demo.ErrorProvider" ref="errorProvider" version="1.0.0"/>
+    <dubbo:service interface="org.apache.dubbo.demo.BasicTypeProvider" ref="basicTypeProvider" version="2.0.0"/>
+    <dubbo:service interface="org.apache.dubbo.demo.ErrorProvider" ref="errorProvider" version="1.0.0"/>
 
 </beans>

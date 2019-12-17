@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import debug from 'debug';
 import {
   ClassDeclarationStructure,
   InterfaceDeclarationStructure,
@@ -22,11 +23,10 @@ import {
   PropertyDeclarationStructure,
   TypeParameterDeclarationStructure,
 } from 'ts-simple-ast';
-import debug from 'debug';
-import {toField} from './to-field';
 import {IntepretHandle} from '../../handle';
-import {jType2Ts} from '../../util/type-parse';
 import {IJClass} from '../../typings';
+import {jType2Ts} from '../../util/type-parse';
+import {toField} from './to-field';
 import {fields2CtrContent, getCtorParaStr} from './util/transfer';
 
 const log = debug('j2t:core:toBeanClass');

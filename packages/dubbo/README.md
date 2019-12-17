@@ -31,16 +31,16 @@ interface IDemoService {
 
 //创建dubbo对象
 const dubbo = new Dubbo({
-  application: {name: 'node-dubbo'},
+  application: {name: 'dubbo-js'},
   //zookeeper address
   register: 'localhost:2181',
   dubboVersion: '2.0.0',
-  interfaces: ['com.alibaba.dubbo.demo.DemoService'],
+  interfaces: ['org.apache.dubbo.demo.DemoService'],
 });
 
 //代理本地对象->dubbo对象
 const demoService = dubbo.proxyService<IDemoService>({
-  dubboInterface: 'com.alibaba.dubbo.demo.DemoService',
+  dubboInterface: 'org.apache.dubbo.demo.DemoService',
   version: '1.0.0',
   methods: {
     sayHello(name) {

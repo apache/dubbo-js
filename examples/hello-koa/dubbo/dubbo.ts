@@ -21,14 +21,14 @@ import * as service from './service';
 const dubboSetting = setting
   .match(
     [
-      'com.alibaba.dubbo.demo.DemoProvider',
-      'com.alibaba.dubbo.demo.ErrorProvider',
+      'org.apache.dubbo.demo.DemoProvider',
+      'org.apache.dubbo.demo.ErrorProvider',
     ],
     {
       version: '1.0.0',
     },
   )
-  .match('com.alibaba.dubbo.demo.BasicTypeProvider', {version: '2.0.0'});
+  .match('org.apache.dubbo.demo.BasicTypeProvider', {version: '2.0.0'});
 
 const dubbo = new Dubbo<typeof service>({
   application: {name: 'dubbo-node-consumer'},

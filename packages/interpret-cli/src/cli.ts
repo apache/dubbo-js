@@ -15,15 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import klaw from 'klaw';
-import {to} from './to';
-import debug from 'debug';
-import {extra} from './ext';
-import Config from './config';
 import program from 'commander';
-import prettier from 'prettier';
-import {Request} from './request';
+import debug from 'debug';
 import {readFile, writeFile} from 'fs-extra';
+import klaw from 'klaw';
+import prettier from 'prettier';
+import Config from './config';
+import {extra} from './ext';
+import {Request} from './request';
+import {to} from './to';
 
 const log = debug('j2t:cli');
 

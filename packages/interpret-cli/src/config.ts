@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {to} from './to';
 import {readJson} from 'fs-extra';
 import {isAbsolute, join} from 'path';
+import {to} from './to';
 import {IConfig} from './typings';
 
 export default class Config {

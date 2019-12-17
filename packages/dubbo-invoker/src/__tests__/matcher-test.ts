@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {Context} from 'dubbo2.js';
+import {Context} from 'dubbo-js';
 import matcher from '../matcher';
 
 describe('matcher test suite', () => {

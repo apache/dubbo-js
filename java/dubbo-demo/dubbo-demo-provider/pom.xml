@@ -107,7 +107,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.alibaba.dubbo.demo.provider.Provider</mainClass>
+                            <mainClass>org.apache.dubbo.demo.provider.Provider</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

@@ -17,9 +17,9 @@
 
 import {java} from 'dubbo-js';
 import {Controller} from 'egg';
-import {Sex} from '../dubbo/providers/com/alibaba/dubbo/demo/Sex';
-import {TypeRequest} from '../dubbo/providers/com/alibaba/dubbo/demo/TypeRequest';
-import {UserRequest} from '../dubbo/providers/com/alibaba/dubbo/demo/UserRequest';
+import {Sex} from '../dubbo/providers/org/apache/dubbo/demo/Sex';
+import {TypeRequest} from '../dubbo/providers/org/apache/dubbo/demo/TypeRequest';
+import {UserRequest} from '../dubbo/providers/org/apache/dubbo/demo/UserRequest';
 
 export default class HomeController extends Controller {
   async index() {
