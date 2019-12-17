@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import {BasicTypeProvider} from './providers/com/alibaba/dubbo/demo/BasicTypeProvider';
-import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
-import {ErrorProvider} from './providers/com/alibaba/dubbo/demo/ErrorProvider';
+import {BasicTypeProvider} from './providers/org/apache/dubbo/demo/BasicTypeProvider';
+import {DemoProvider} from './providers/org/apache/dubbo/demo/DemoProvider';
+import {ErrorProvider} from './providers/org/apache/dubbo/demo/ErrorProvider';
 
 export default {
   DemoProvider,

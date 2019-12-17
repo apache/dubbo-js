@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {fields2CtrContent, getCtorParaStr, j2Jtj} from '../transfer';
 import {TypeInfoI} from '../../../../typings';
+import {fields2CtrContent, getCtorParaStr, j2Jtj} from '../transfer';
 
 /**
  * @desc
@@ -26,7 +26,10 @@ import {TypeInfoI} from '../../../../typings';
  * @Date    2018/4/8
  **/
 
-let enums = ['com.qianmi.yxtc.enums.BusiTypeEnum','com.qianmi.gavin.comm.Phone'],
+let enums = [
+    'com.qianmi.yxtc.enums.BusiTypeEnum',
+    'com.qianmi.gavin.comm.Phone',
+  ],
   beans = ['com.qianmi.yxtc.domain.PayMethodInfo'];
 let typeInfo: Map<string, TypeInfoI> = new Map();
 
@@ -63,9 +66,9 @@ let typeOptions = {
   },
   addDenpend: async (classPath: string) => {
     return {
-      classPath:"",
-      name:"",
-      importName:"",
+      classPath: '',
+      name: '',
+      importName: '',
     };
   },
   getTypeInfo: (classPath: string) => {
@@ -151,10 +154,11 @@ describe('基础转换生成', () => {
       paramRefName: 'this.initPrice',
       classPath: 'java.math.BigDecimal',
     });
-    expect(content).toEqual('this.initPrice?java.BigDecimal(this.initPrice.value):null');
+    expect(content).toEqual(
+      'this.initPrice?java.BigDecimal(this.initPrice.value):null',
+    );
   });
 });
-
 
 describe('集合显示问题 ', () => {
   it('java.util.Collection', async () => {
@@ -190,9 +194,8 @@ describe('数组显示问题 string[]', () => {
   });
 });
 
-
 describe('枚举类型转换', () => {
-  it('Enum<Phone> 用法的支持',async ()=>{
+  it('Enum<Phone> 用法的支持', async () => {
     let {fieldTrans, initContent} = await fields2CtrContent(
       [
         {
@@ -204,9 +207,7 @@ describe('枚举类型转换', () => {
       typeDef,
     );
     expect(fieldTrans).toMatchSnapshot('枚举类型转换');
-
-  })
-
+  });
 });
 
 describe('map<string,List<string>>转换方法', () => {
@@ -245,9 +246,9 @@ describe('map<string,List<string>>转换方法', () => {
 
 const typeDef = {
   fields: {
-    "initPrice":{
-      "name":"java.math.BigDecimal",
-      "typeArgs":[]
+    initPrice: {
+      name: 'java.math.BigDecimal',
+      typeArgs: [],
     },
     skuIds: {
       name: 'java.util.Collection',
@@ -268,15 +269,17 @@ const typeDef = {
       },
       isArray: true,
     },
-    "type":{
-      "name":"java.lang.Enum",
-      "typeArgs":[{
-        "isWildcard":false,
-        "type":{
-          "name":"com.qianmi.gavin.comm.Phone",
-          "typeArgs":[]
-        }
-      }]
+    type: {
+      name: 'java.lang.Enum',
+      typeArgs: [
+        {
+          isWildcard: false,
+          type: {
+            name: 'com.qianmi.gavin.comm.Phone',
+            typeArgs: [],
+          },
+        },
+      ],
     },
     cats: {
       isArray: false,

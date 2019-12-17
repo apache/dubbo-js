@@ -29,8 +29,8 @@
 
     <!-- 生成远程服务代理，可以和本地bean一样使用demoService -->
     <dubbo:reference id="demoProvider" url="dubbo://localhost:20880" check="false"
-                     interface="com.alibaba.dubbo.demo.DemoProvider" version="1.0.0"/>
+                     interface="org.apache.dubbo.demo.DemoProvider" version="1.0.0"/>
 
-    <dubbo:reference id="basicTypeProvider" check="false" interface="com.alibaba.dubbo.demo.BasicTypeProvider"
+    <dubbo:reference id="basicTypeProvider" check="false" interface="org.apache.dubbo.demo.BasicTypeProvider"
                      version="2.0.0"/>
 </beans>
