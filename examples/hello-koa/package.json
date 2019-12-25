@@ -11,7 +11,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "Apache Licence 2.0",
   "devDependencies": {
     "koa": "^2.4.1",
     "koa-router": "^7.3.0"
