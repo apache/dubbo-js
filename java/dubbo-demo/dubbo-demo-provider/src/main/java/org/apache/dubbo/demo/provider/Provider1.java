@@ -19,9 +19,6 @@ package org.apache.dubbo.demo.provider;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-/**
- * Created by ken.lj on 2017/7/31.
- */
 public class Provider1 {
 
     public static void main(String[] args) throws Exception {

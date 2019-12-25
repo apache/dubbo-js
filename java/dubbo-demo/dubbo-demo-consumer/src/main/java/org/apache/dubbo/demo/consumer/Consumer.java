@@ -20,9 +20,6 @@ package org.apache.dubbo.demo.consumer;
 import org.apache.dubbo.demo.DemoProvider;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-/**
- * Created by ken.lj on 2017/7/31.
- */
 public class Consumer {
 
     public static void main(String[] args) {
