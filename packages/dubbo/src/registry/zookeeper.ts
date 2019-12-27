@@ -270,8 +270,23 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
         return;
       }
       //clear current dubbo interface
+      const existedDubboUrls = this._dubboServiceUrlMap.get(dubboInterface);
+      const existedAgentAddrs = existedDubboUrls
+        ? existedDubboUrls.map(dubboUrl => `${dubboUrl.host}:${dubboUrl.port}`)
+        : [];
+      const newAgentAddrs = urls.map(
+        dubboUrl => `${dubboUrl.host}:${dubboUrl.port}`,
+      );
+      const deletedAgentAddrs = existedAgentAddrs.filter(
+        agent => newAgentAddrs.indexOf(agent) === -1,
+      );
+      if (
+        deletedAgentAddrs.length > 0 &&
+        deletedAgentAddrs.length < existedAgentAddrs.length
+      ) {
+        this._subscriber.onDelete(new Set(deletedAgentAddrs));
+      }
       this._dubboServiceUrlMap.set(dubboInterface, urls);
-
       if (isDevEnv) {
         log('agentSet:|> %O', this._allAgentAddrSet);
         log(

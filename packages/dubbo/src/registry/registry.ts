@@ -24,6 +24,7 @@ export default class Registry<T = {}> {
     this._subscriber = {
       onData: noop,
       onError: noop,
+      onDelete: noop,
     };
   }
 

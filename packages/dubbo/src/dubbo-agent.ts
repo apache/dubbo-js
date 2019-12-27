@@ -19,6 +19,7 @@ import debug from 'debug';
 import SocketWorker from './socket-worker';
 import {IObservable, ISocketSubscriber, TAgentAddr} from './types';
 import {isDevEnv, noop, traceErr, traceInfo} from './util';
+import {SOCKET_STATUS} from './socket-status';
 
 const log = debug('dubbo:server-agent');
 
@@ -122,6 +123,31 @@ export default class DubboAgent implements IObservable<ISocketSubscriber> {
     this._subscriber = subscriber;
     return this;
   }
+
+  /**
+   *  移除下线的agent
+   * @param agentAddrs
+   */
+  remove = (agentAddrs: Set<string>) => {
+    agentAddrs.forEach(agentAddr => {
+      const socketWorker = this._serverAgentMap.get(agentAddr);
+      if (!socketWorker) {
+        return;
+      }
+      this._serverAgentMap.delete(agentAddr);
+      if (socketWorker.status !== SOCKET_STATUS.CLOSED) {
+        if (socketWorker.isBusy()) {
+          setTimeout(() => {
+            if (socketWorker.status !== SOCKET_STATUS.CLOSED) {
+              socketWorker.close();
+            }
+          }, 3000);
+        } else {
+          socketWorker.close();
+        }
+      }
+    });
+  };
 
   /**
    * 查询一组负载可用的agent

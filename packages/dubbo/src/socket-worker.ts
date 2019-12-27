@@ -151,6 +151,13 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     return this;
   }
 
+  /**
+   * 是否有请求还未返回
+   */
+  public isBusy() {
+    return this._lastWriteTimestamp > this._lastReadTimestamp;
+  }
+
   //==========================private method================================
   private _initSocket() {
     log(`SocketWorker#${this.pid} =connecting=> ${this.host}:${this.port}`);
@@ -159,6 +166,7 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     // );
 
     if (this._socket) {
+      this._socket.removeAllListeners();
       this._socket.destroy();
     }
 
@@ -205,7 +213,10 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
       const now = Date.now();
       if (now - this._lastReadTimestamp > HEART_BEAT * RETRY_HEARD_BEAT_TIME) {
         this._onClose(false);
-      } else if ((now - this._lastWriteTimestamp > HEART_BEAT) ||  (now - this._lastReadTimestamp > HEART_BEAT)){
+      } else if (
+        now - this._lastWriteTimestamp > HEART_BEAT ||
+        now - this._lastReadTimestamp > HEART_BEAT
+      ) {
         log('SocketWorker#${this.pid} emit heartbeat');
         this.setWriteTimestamp();
         this._socket.write(HeartBeat.encode());
@@ -234,6 +245,17 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     // );
     clearInterval(this._heartBeatTimer);
   };
+
+  public close() {
+    clearInterval(this._heartBeatTimer);
+    clearTimeout(this._retryTimeoutId);
+    this._retry = 0;
+    if (this._socket) {
+      this._socket.removeAllListeners();
+      this._socket.destroy();
+    }
+    this._onClose(false);
+  }
 
   private _onClose = (hadError: boolean) => {
     log(
@@ -294,5 +316,4 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
   private setWriteTimestamp() {
     this._lastReadTimestamp = Date.now();
   }
-
 }

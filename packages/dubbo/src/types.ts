@@ -32,6 +32,7 @@ export interface IDubboRegistryProps {
 
 export interface IRegistrySubscriber {
   onData: (agentSet: Set<THostPort>) => void;
+  onDelete: (agentSet: Set<THostPort>) => void;
   onError: (err: Error) => void;
 }
 
@@ -93,7 +94,7 @@ export interface IDubboProps {
 
 //magic, you should use typescript 2.8+
 export type TDubboService<T> = {
-  [k in keyof T]: T[k] extends ((dubbo: any) => infer R) ? R : any;
+  [k in keyof T]: T[k] extends ((dubbo: any) => infer R) ? R : any
 };
 
 export interface IDubboResult<T> {

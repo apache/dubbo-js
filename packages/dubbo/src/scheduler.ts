@@ -52,6 +52,7 @@ export default class Scheduler {
     this._registry = registry.subscribe({
       onData: this._handleZkClientOnData,
       onError: this._handleZkClientError,
+      onDelete: this._handleZkClientOnDelete,
     });
   }
 
@@ -122,6 +123,13 @@ export default class Scheduler {
       onData: this._handleOnData,
       onClose: this._handleOnClose,
     });
+  };
+
+  private _handleZkClientOnDelete = (agentSet: Set<string>) => {
+    if (agentSet.size === 0) {
+      return;
+    }
+    this._dubboAgent.remove(agentSet);
   };
 
   /**
