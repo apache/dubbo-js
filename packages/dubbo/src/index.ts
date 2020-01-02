@@ -20,7 +20,7 @@ import Context from './context';
 import DirectlyDubbo from './directly-dubbo';
 import Dubbo from './dubbo';
 import {go} from './go';
-import {Registry, Zk} from './registry';
+import {Registry, zk} from './registry';
 import setting from './setting';
 import {TDubboCallResult} from './types';
 
@@ -32,6 +32,6 @@ export {
   Context,
   go,
   setting,
-  Zk,
+  zk,
   Registry,
 };

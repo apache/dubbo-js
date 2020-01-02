@@ -22,7 +22,7 @@ import config from './config';
 import Context from './context';
 import {go} from './go';
 import Queue from './queue';
-import {Zk} from './registry';
+import {zk} from './registry';
 import Scheduler from './scheduler';
 import {
   IDubboProps,
@@ -101,7 +101,7 @@ export default class Dubbo<TService = Object>
     //if dubbo register is string, create a zookeeper instance
     let register = this._props.register;
     if (isString(register)) {
-      register = Zk({
+      register = zk({
         url: this._props.register as string,
       });
     }

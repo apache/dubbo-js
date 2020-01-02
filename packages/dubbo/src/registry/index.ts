@@ -1,4 +1,4 @@
 import Registry from './registry';
-import Zk from './zookeeper';
+import zk from './zookeeper';
 
-export {Registry, Zk};
+export {Registry, zk};
