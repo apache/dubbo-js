@@ -15,7 +15,6 @@ Dubbo-js, using Node.js to embrace the Dubbo ecosystem. See this [Demo](https://
 
 ## Architecture
 
-<img src="docs/arch.png" width="680" />
 
 ## Getting Started
 
@@ -151,6 +150,10 @@ Dubbo-js will not work without:
 - [hessian.js](https://github.com/node-modules/hessian.js)
 
 Many thanks to their authors [fengmk2](https://github.com/fengmk2) and [dead-horse](https://github.com/dead-horse).
+
+## contact us  
+
+<img src="docs/ding-ding.jpeg" width="680" />
 
 ## License
 
