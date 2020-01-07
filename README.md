@@ -15,6 +15,7 @@ Dubbo-js, using Node.js to embrace the Dubbo ecosystem. See this [Demo](https://
 
 ## Architecture
 
+<img src="docs/arch.png" width="680" />
 
 ## Getting Started
 
