@@ -31,7 +31,7 @@ import {
   IDubboRegistryProps,
   IZkClientProps,
 } from '../types';
-import {eqSet, isDevEnv, msg, traceErr} from '../util';
+import {isDevEnv, msg, traceErr} from '../util';
 import Registry from './registry';
 
 const log = debug('dubbo:zookeeper');
@@ -52,6 +52,7 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
 
   private _checkTimer: NodeJS.Timer;
   private _client: zookeeper.Client;
+  //@ts-ignore
   private _agentAddrSet: Set<string>;
 
   //========================private method==========================
@@ -281,12 +282,15 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
         );
       }
 
-      if (!eqSet(this._agentAddrSet, this._allAgentAddrSet)) {
-        this._agentAddrSet = this._allAgentAddrSet;
-        this._subscriber.onData(this._allAgentAddrSet);
-      } else {
-        log('no agent change');
-      }
+      // serviceWorker如果由于心跳出错被关闭后, 再次启动通知zk后, 这边会收到消息
+      // 但是因为断开通知有可能没有发送, 导致agentAddrSet没有移除, 导致这边不会判断还是一致
+      // 不会通知dubbo-agent去创建
+      // if (!eqSet(this._agentAddrSet, this._allAgentAddrSet)) {
+      this._agentAddrSet = this._allAgentAddrSet;
+      this._subscriber.onData(this._allAgentAddrSet);
+      // } else {
+      // log('no agent change');
+      // }
     };
   }
 
