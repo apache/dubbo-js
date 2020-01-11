@@ -31,7 +31,7 @@ import {
   IDubboRegistryProps,
   IZkClientProps,
 } from '../types';
-import {eqSet, isDevEnv, msg, traceErr} from '../util';
+import {isDevEnv, msg, traceErr} from '../util';
 import Registry from './registry';
 
 const log = debug('dubbo:zookeeper');
@@ -44,15 +44,12 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     log(`new:|> %O`, props);
     //默认dubbo
     this._props.zkRoot = this._props.zkRoot || 'dubbo';
-    //初始化agentAddrSet
-    this._agentAddrSet = new Set();
     //初始化zookeeper的client
     this._connect(this._init);
   }
 
   private _checkTimer: NodeJS.Timer;
   private _client: zookeeper.Client;
-  private _agentAddrSet: Set<string>;
 
   //========================private method==========================
   private _init = async (err: Error) => {
@@ -104,7 +101,6 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
       log('dubboServiceUrl:|> %O', this._dubboServiceUrlMap);
     }
 
-    this._agentAddrSet = this._allAgentAddrSet;
     this._subscriber.onData(this._allAgentAddrSet);
   };
 
@@ -281,12 +277,7 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
         );
       }
 
-      if (!eqSet(this._agentAddrSet, this._allAgentAddrSet)) {
-        this._agentAddrSet = this._allAgentAddrSet;
-        this._subscriber.onData(this._allAgentAddrSet);
-      } else {
-        log('no agent change');
-      }
+      this._subscriber.onData(this._allAgentAddrSet);
     };
   }
 
