@@ -31,7 +31,7 @@ import {
   IDubboRegistryProps,
   IZkClientProps,
 } from '../types';
-import {isDevEnv, msg, traceErr} from '../util';
+import {delay, isDevEnv, msg, traceErr} from '../util';
 import Registry from './registry';
 
 const log = debug('dubbo:zookeeper');
@@ -294,23 +294,37 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     };
   }
 
-  private _getChildren = (
+  private _getChildren = async (
     path: string,
     watch: (e: zookeeper.Event) => void,
   ): Promise<{children: Array<string>; stat: zookeeper.Stat}> => {
-    return new Promise((resolve, reject) => {
-      this._client.getChildren(path, watch, (err, children, stat) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-
-        resolve({
-          children,
-          stat,
-        });
-      });
+    const [err, children, stat]: [
+      Error | zookeeper.Exception,
+      string[],
+      zookeeper.Stat
+    ] = await new Promise(resolve => {
+      this._client.getChildren(path, watch, (...args) => resolve(args));
     });
+
+    if (err) {
+      if (
+        (err as zookeeper.Exception).getCode &&
+        (err as zookeeper.Exception).getCode() ===
+          zookeeper.Exception.CONNECTION_LOSS
+      ) {
+        // 连接丢失会导致监视点注册不成功, 需要进行重试.
+        await delay(500);
+        const retryValue = await this._getChildren(path, watch);
+        return retryValue;
+      } else {
+        throw err;
+      }
+    }
+    const result = {
+      children,
+      stat,
+    };
+    return result;
   };
 
   /**
