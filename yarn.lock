@@ -2372,6 +2372,11 @@ jest@^21.2.1:
   dependencies:
     jest-cli "^21.2.1"
 
+jexpose@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npm.taobao.org/jexpose/download/jexpose-1.0.1.tgz#18dd066772ffe48b68483f2157ad9c7cf3de1eb3"
+  integrity sha1-GN0GZ3L/5ItoSD8hV62cfPPeHrM=
+
 js-to-java@2.4.0:
   version "2.4.0"
   resolved "http://registry.npm.taobao.org/js-to-java/download/js-to-java-2.4.0.tgz#b275f2ddfeb2f71e6bd0c41cb74573187f201a50"
