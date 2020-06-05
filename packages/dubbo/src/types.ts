@@ -93,7 +93,7 @@ export interface IDubboProps {
 
 //magic, you should use typescript 2.8+
 export type TDubboService<T> = {
-  [k in keyof T]: T[k] extends ((dubbo: any) => infer R) ? R : any;
+  [k in keyof T]: T[k] extends ((dubbo: any) => infer R) ? R : any
 };
 
 export interface IDubboResult<T> {
@@ -170,6 +170,11 @@ export interface IQueryObj {
   methods: string;
   version: string;
   group: string;
+  //
+  category: string;
+  dynamic: string;
+  enabled: string;
+  weight: string;
 }
 
 export type TQueueObserver = Function;

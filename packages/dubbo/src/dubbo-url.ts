@@ -33,13 +33,14 @@ const log = debug('dubbo:dubbo-url');
  * &application=demo-provider&default.timeout=10000&dubbo=2.4.10
  * &environment=product&interface=com.ofpay.demo.api.UserProvider
  * &methods=getUser,queryAll,queryUser,isLimit&owner=wenwu&pid=61578&side=provider&timestamp=1428904600188
+ *
+ *
  */
 export default class DubboUrl {
   private constructor(providerUrl: string) {
     log('DubboUrl from -> %s', providerUrl);
     this._url = url.parse(providerUrl);
     this._query = qs.parse(providerUrl) as any;
-
     this.host = this._url.hostname;
     this.port = Number(this._url.port);
     this.path = this._url.pathname.substring(1);
@@ -47,6 +48,10 @@ export default class DubboUrl {
     this.version =
       this._query.version || this._query['default.version'] || '0.0.0';
     this.group = this._query.group || this._query['default.group'] || '';
+
+    //
+    this.enable = this._query.enabled ? this._query.enabled == 'true' : true;
+    this.weight = this._query.weight ? parseInt(this._query.weight) : 100;
   }
 
   private readonly _url: Url;
@@ -59,6 +64,18 @@ export default class DubboUrl {
   public readonly dubboVersion: string;
   public readonly version: string;
   public readonly group: string;
+
+  public readonly enable: boolean; //是否可用
+  public readonly weight: number; //权重
+
+  public isEnable(): boolean {
+    const r = this.enable && this.weight != 0; //不可用或者权重为0
+    return r;
+  }
+
+  public toString(): string {
+    return `${this._url.pathname}:${this.host}:${this.port}:`;
+  }
 
   static from(providerUrl: string) {
     return new DubboUrl(providerUrl);

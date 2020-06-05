@@ -19,6 +19,7 @@ import debug from 'debug';
 import ip from 'ip';
 import zookeeper, {State} from 'node-zookeeper-client';
 import qs from 'querystring';
+import url from 'url';
 import DubboUrl from '../dubbo-url';
 import {
   ZookeeperDisconnectedError,
@@ -66,47 +67,17 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     }
 
     //zookeeper connected（may be occur many times）
-    const {
-      zkRoot,
-      application: {name},
-      interfaces,
-    } = this._props;
+    const {interfaces} = this._props;
 
     //获取所有provider
     for (let inf of interfaces) {
-      //当前接口在zookeeper中的路径
-      const dubboServicePath = `/${zkRoot}/${inf}/providers`;
-      //当前接口路径下的dubbo url
-      const {res: dubboServiceUrls, err} = await go(
-        this._getDubboServiceUrls(dubboServicePath, inf),
-      );
-
-      // 重连进入init后不能清空已有provider, 会导致运行中的请求找到, 报no agents错误
-      // 或者zk出现出错了, 无法获取provider, 那么之前获取的还能继续使用
-      if (err) {
-        log(`getChildren ${dubboServicePath} error ${err}`);
-        traceErr(err);
-        //If an error occurs, continue
-        continue;
-      }
-
-      // set dubbo interface meta info
-      this._dubboServiceUrlMap.set(inf, dubboServiceUrls.map(DubboUrl.from));
-
-      //写入consumer信息
-      this._createConsumer({
-        name: name,
-        dubboInterface: inf,
-      }).then(() => log('create Consumer finish'));
+      this._buildDubboUrl(inf, true);
     }
 
     if (isDevEnv) {
       log('agentAddrSet: %O', this._allAgentAddrSet);
       log('dubboServiceUrl:|> %O', this._dubboServiceUrlMap);
     }
-
-    this._agentAddrSet = this._allAgentAddrSet;
-    this._subscriber.onData(this._allAgentAddrSet);
   };
 
   /**
@@ -154,23 +125,92 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
   }
 
   /**
-   * 获取所有的provider列表
-   * @param {string} dubboServicePath
-   * @param dubboInterface
-   * @returns {Promise<Array<string>>}
-   * @private
+   * 获取zk中数据描述
+   * @param inf
+   * @param init
    */
-  private async _getDubboServiceUrls(
-    dubboServicePath: string,
-    dubboInterface: string,
-  ): Promise<Array<string>> {
-    return this._getChildren(
-      dubboServicePath,
-      this._watchWrap(dubboServicePath, dubboInterface),
-    ).then(res => {
-      return (res.children || [])
-        .map(child => decodeURIComponent(child))
-        .filter(child => child.startsWith('dubbo://'));
+  private async _buildDubboUrl(
+    inf: string,
+    init = false,
+  ): Promise<Array<DubboUrl>> {
+    //当前接口路径下的dubbo url
+    const {res: providerUrls, err} = await go(this._getDubboServiceUrls(inf));
+
+    // 重连进入init后不能清空已有provider, 会导致运行中的请求找到, 报no agents错误
+    // 或者zk出现出错了, 无法获取provider, 那么之前获取的还能继续使用
+    if (err) {
+      log(`getChildren ${inf} error ${err}`);
+      traceErr(err);
+      return;
+    }
+
+    // set dubbo interface meta info
+    if (providerUrls.length == 0) {
+      log(`getChildren ${inf} is empty`);
+      return;
+    }
+    this._dubboServiceUrlMap.set(
+      inf,
+      providerUrls.map(DubboUrl.from).filter(du => {
+        const isEnable = du.isEnable();
+        log(`[ ${du} ] ==> enable [ ${isEnable} ]`);
+        return isEnable;
+      }), //过滤掉不可用的
+    );
+
+    //写入consumer信息
+    if (init) {
+      this._createConsumer({
+        name: this._props.application.name,
+        dubboInterface: inf,
+      }).then(() => log('create Consumer finish'));
+    }
+    // 通知变更
+    this._agentAddrSet = this._allAgentAddrSet;
+    this._subscriber.onData(this._allAgentAddrSet);
+  }
+
+  /**
+   * 获取所有的provider和config列表
+   * @param inf 接口
+   */
+  private async _getDubboServiceUrls(inf: string): Promise<Array<string>> {
+    const get = (path: string, filter: string) => {
+      const watch = () => {
+        this._buildDubboUrl(inf); //有变动刷新一下
+      };
+      return this._getChildren(path, watch).then(
+        ({children}): Array<string> => {
+          return (children || [])
+            .map(path => decodeURIComponent(path)) //转码
+            .filter(path => path.startsWith(filter)); //过滤非法的
+        },
+      );
+    };
+    const providerPath = `/${this._props.zkRoot}/${inf}/providers`;
+    const configPath = `/${this._props.zkRoot}/${inf}/configurators`;
+    return Promise.all([
+      get(providerPath, 'dubbo'),
+      get(configPath, 'override'),
+    ]).then(([providerUrls, configUrls]) => {
+      // 根据host:ip 做匹配, 把configurations的参数叠加到provider上
+      return providerUrls.map(providerUrl => {
+        const pu = url.parse(providerUrl);
+        const key = pu.hostname + pu.port;
+        configUrls.forEach(configUrl => {
+          const cu = url.parse(configUrl);
+          const ck = cu.hostname + cu.port;
+          if (key == ck) {
+            providerUrl = `${providerUrl}&${cu.query}`;
+            log(
+              `[${pu.pathname}:${pu.hostname}:${
+                pu.port
+              }] 匹配到configuration => ${cu.query}`,
+            );
+          }
+        });
+        return providerUrl;
+      });
     });
   }
 
@@ -245,54 +285,54 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     this._client.connect();
   };
 
-  private _watchWrap(dubboServicePath: string, dubboInterface: string) {
-    return async (e: zookeeper.Event) => {
-      log(`trigger watch ${e}`);
+  // private _watchWrap(dubboServicePath: string, dubboInterface: string) {
+  //   return async (e: zookeeper.Event) => {
+  //     log(`trigger watch ${e}`);
 
-      //会有概率性的查询节点为空，可以延时一些时间
-      // await delay(2000);
+  //     //会有概率性的查询节点为空，可以延时一些时间
+  //     // await delay(2000);
 
-      const {res: dubboServiceUrls, err} = await go(
-        this._getDubboServiceUrls(dubboServicePath, dubboInterface),
-      );
+  //     const {res: dubboServiceUrls, err} = await go(
+  //       this._getDubboServiceUrls(dubboServicePath, dubboInterface),
+  //     );
 
-      // when getChildren had occur error
-      if (err) {
-        log(`getChildren ${dubboServicePath} error ${err}`);
-        traceErr(err);
-        return;
-      }
+  //     // when getChildren had occur error
+  //     if (err) {
+  //       log(`getChildren ${dubboServicePath} error ${err}`);
+  //       traceErr(err);
+  //       return;
+  //     }
 
-      const urls = dubboServiceUrls.map(serviceUrl =>
-        DubboUrl.from(serviceUrl),
-      );
-      if (urls.length === 0) {
-        traceErr(new Error(`trigger watch ${e} agentList is empty`));
-        return;
-      }
-      //clear current dubbo interface
-      this._dubboServiceUrlMap.set(dubboInterface, urls);
+  //     const urls = dubboServiceUrls.map(serviceUrl =>
+  //       DubboUrl.from(serviceUrl),
+  //     );
+  //     if (urls.length === 0) {
+  //       traceErr(new Error(`trigger watch ${e} agentList is empty`));
+  //       return;
+  //     }
+  //     //clear current dubbo interface
+  //     this._dubboServiceUrlMap.set(dubboInterface, urls);
 
-      if (isDevEnv) {
-        log('agentSet:|> %O', this._allAgentAddrSet);
-        log(
-          'update dubboInterface %s providerList %O',
-          dubboInterface,
-          this._dubboServiceUrlMap.get(dubboInterface),
-        );
-      }
+  //     if (isDevEnv) {
+  //       log('agentSet:|> %O', this._allAgentAddrSet);
+  //       log(
+  //         'update dubboInterface %s providerList %O',
+  //         dubboInterface,
+  //         this._dubboServiceUrlMap.get(dubboInterface),
+  //       );
+  //     }
 
-      // serviceWorker如果由于心跳出错被关闭后, 再次启动通知zk后, 这边会收到消息
-      // 但是因为断开通知有可能没有发送, 导致agentAddrSet没有移除, 导致这边不会判断还是一致
-      // 不会通知dubbo-agent去创建
-      // if (!eqSet(this._agentAddrSet, this._allAgentAddrSet)) {
-      this._agentAddrSet = this._allAgentAddrSet;
-      this._subscriber.onData(this._allAgentAddrSet);
-      // } else {
-      // log('no agent change');
-      // }
-    };
-  }
+  //     // serviceWorker如果由于心跳出错被关闭后, 再次启动通知zk后, 这边会收到消息
+  //     // 但是因为断开通知有可能没有发送, 导致agentAddrSet没有移除, 导致这边不会判断还是一致
+  //     // 不会通知dubbo-agent去创建
+  //     // if (!eqSet(this._agentAddrSet, this._allAgentAddrSet)) {
+  //     this._agentAddrSet = this._allAgentAddrSet;
+  //     this._subscriber.onData(this._allAgentAddrSet);
+  //     // } else {
+  //     // log('no agent change');
+  //     // }
+  //   };
+  // }
 
   private _getChildren = (
     path: string,
@@ -304,7 +344,6 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
           reject(err);
           return;
         }
-
         resolve({
           children,
           stat,
