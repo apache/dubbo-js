@@ -45,13 +45,16 @@ export default class DubboUrl {
     this.port = Number(this._url.port);
     this.path = this._url.pathname.substring(1);
     this.dubboVersion = this._query.dubbo || '';
-    this.version =
-      this._query.version || this._query['default.version'] || '0.0.0';
-    this.group = this._query.group || this._query['default.group'] || '';
+    this.version = this.getParam(
+      'version',
+      this._query['default.version'] || '0.0.0',
+    );
+    this.group = this.getParam('group', this._query['default.group'] || '');
 
     //
-    this.enable = this._query.enabled ? this._query.enabled == 'true' : true;
-    this.weight = this._query.weight ? parseInt(this._query.weight) : 100;
+    this.enable = this.getParam('enabled', 'true') == 'true';
+    this.weight = parseInt(this.getParam('weight', '100'));
+    log(' ==> ', this.version, this.group, this.enable, this.weight);
   }
 
   private readonly _url: Url;
@@ -69,12 +72,32 @@ export default class DubboUrl {
   public readonly weight: number; //权重
 
   public isEnable(): boolean {
-    const r = this.enable && this.weight != 0; //不可用或者权重为0
-    return r;
+    return this.enable && this.weight != 0; //不可用或者权重为0
   }
 
-  public toString(): string {
-    return `${this._url.pathname}:${this.host}:${this.port}:`;
+  public isMatch(version: string | null, group: string | null): boolean {
+    // "*" refer to default wildcard in dubbo
+    const isSameVersion =
+      !version || version == '*' || this.version === version;
+    //如果Group为null，就默认匹配， 不检查group
+    //如果Group不为null，确保group和接口的group一致
+    const isSameGroup = !group || group === this.group;
+    return isSameGroup && isSameVersion;
+  }
+
+  /**
+   * 多个参数返回第一个
+   * @param key
+   * @param def
+   */
+  private getParam(key: keyof IQueryObj, def): string {
+    //没有参数, 使用默认
+    if (!this._query[key]) {
+      return def;
+    }
+    return Array.isArray(this._query[key])
+      ? this._query[key][0]
+      : this._query[key];
   }
 
   static from(providerUrl: string) {

@@ -149,14 +149,7 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
       log(`getChildren ${inf} is empty`);
       return;
     }
-    this._dubboServiceUrlMap.set(
-      inf,
-      providerUrls.map(DubboUrl.from).filter(du => {
-        const isEnable = du.isEnable();
-        log(`[ ${du} ] ==> enable [ ${isEnable} ]`);
-        return isEnable;
-      }), //过滤掉不可用的
-    );
+    this._dubboServiceUrlMap.set(inf, providerUrls.map(DubboUrl.from));
 
     //写入consumer信息
     if (init) {
