@@ -165,14 +165,21 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
 
   /**
    * 获取所有的provider和config列表
+   * zk的close的不会清空已有的watch, 而zk里面的watchManager判断已有是用引用判断,所以缓存一下每个provider的watch,
+   * 避免内存泄露
    * @param inf 接口
    */
+  private _cacheWatch = {};
+  private _getWatch(inf: string) {
+    return (this._cacheWatch[inf] =
+      this._cacheWatch[inf] ||
+      (() => {
+        this._buildDubboUrl(inf);
+      }));
+  }
   private async _getDubboServiceUrls(inf: string): Promise<Array<string>> {
     const get = (path: string, filter: string) => {
-      const watch = () => {
-        this._buildDubboUrl(inf); //有变动刷新一下
-      };
-      return this._getChildren(path, watch).then(
+      return this._getChildren(path, this._getWatch(inf)).then(
         ({children}): Array<string> => {
           return (children || [])
             .map(path => decodeURIComponent(path)) //转码
