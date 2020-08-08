@@ -52,12 +52,6 @@ node_modules
 lib
 
 .DS_Store
-node_modules
-lib
 temp
-logs
-*.log
-*.iml
-target
 es6
 es7
