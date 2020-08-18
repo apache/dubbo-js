@@ -89,7 +89,7 @@ export default class Dubbo<TService = Object>
     this._registryService(props.service);
     log('interfaces:|>', this._interfaces);
 
-    this._readyPromise = new Promise(resolve => {
+    this._readyPromise = new Promise((resolve) => {
       this._readyResolve = resolve;
     });
     this._subscriber = {
@@ -161,7 +161,7 @@ export default class Dubbo<TService = Object>
     }
 
     //proxy methods
-    Object.keys(methods).forEach(name => {
+    Object.keys(methods).forEach((name) => {
       proxyObj[name] = async (...args: any[]) => {
         log('%s create context', name);
         //创建dubbo调用的上下文
@@ -183,7 +183,7 @@ export default class Dubbo<TService = Object>
           ...this._middleware,
           //handle request middleware
           async function handleRequest(ctx) {
-            log('start middleware handle dubbo Request');
+            log('start middleware handle dubbo request');
             ctx.body = await go(self._queue.add(ctx));
             log('end handle dubbo request');
           },
