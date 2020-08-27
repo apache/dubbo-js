@@ -33,10 +33,10 @@ const enum STATUS {
 
 /**
  * scheduler
- * 1. 初始化zookeeper和socket-agent
+ * 1. 初始化zookeeper和dubbo-agent
  * 2. 接受所有的socket-worker的事件
  * 3. 处理用户的请求
- * 4. 接受zookeeper的变化，更新Server-agent
+ * 4. 接受zookeeper的变化，更新dubbo-agent
  */
 export default class Scheduler {
   constructor(registry: Registry, queue: Queue) {
@@ -72,7 +72,7 @@ export default class Scheduler {
    * handle request in queue
    * @param requestId
    */
-  private _handleQueueRequest = requestId => {
+  private _handleQueueRequest = (requestId) => {
     //record current status
     log(`handle requestId ${requestId}, current status: ${this._status}`);
 
