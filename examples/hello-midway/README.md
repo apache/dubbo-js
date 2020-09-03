@@ -5,11 +5,10 @@
 ```bash
 $ cd ../../
 $ sh start_dubbo_service.sh
-$ cd examples/hello-egg
+$ cd examples/hello-midway
 $ yarn
-$ yarn interpret
 $ yarn dev
-$ open http://localhost:7001/
+$ open http://localhost:7001/hello
 ```
 
 ### Requirement

@@ -15,54 +15,36 @@
  * limitations under the License.
  */
 
-import {Context, Dubbo, setting} from 'apache-dubbo-js';
-import {EggApplication} from 'egg';
+import {Dubbo, setting} from 'apache-dubbo-js';
+import {Application, Context} from 'midway';
 import service from './service';
 
-declare module 'egg' {
-  export interface EggApplication {
-    dubbo: Dubbo<typeof service>;
-  }
-}
-
-// dubbo interface setting
-const dubboSetting = setting
-  .match(
-    [
-      'org.apache.dubbo.demo.DemoProvider',
-      'org.apache.dubbo.demo.ErrorProvider',
-    ],
-    {
-      version: '1.0.0',
-    },
-  )
-  .match('org.apache.dubbo.demo.BasicTypeProvider', {version: '2.0.0'});
-
-export default (app: EggApplication) => {
-  // create a dubboo object
+export default async (app: Application) => {
+  const {application, register} = app.config.dubbo;
+  const dubboSetting = setting
+    .match(
+      [
+        'org.apache.dubbo.demo.DemoProvider',
+        'org.apache.dubbo.demo.ErrorProvider',
+      ],
+      {
+        version: '1.0.0',
+      },
+    )
+    .match('org.apache.dubbo.demo.BasicTypeProvider', {version: '2.0.0'});
   const dubbo = new Dubbo<typeof service>({
-    application: {name: 'node-egg-bff'},
-    register: 'localhost:2181,localhost:2182,localhost:2183',
+    application,
+    register,
     service,
     dubboSetting,
   });
 
-  dubbo.subscribe({
-    onTrace(err) {
-      console.log(err);
-    },
-  });
-
-  // extends middleware
   dubbo.use(async (ctx: Context, next: any) => {
     const start = Date.now();
     await next();
     const end = Date.now();
-    app.coreLogger.info(
-      `${ctx.dubboInterface} was invoked, cost-time ${end - start}`,
-    );
+    console.log(`${ctx.dubboInterface} was invoked, cost-time ${end - start}`);
   });
 
-  // mounted dubbo to app
   app.dubbo = dubbo;
 };

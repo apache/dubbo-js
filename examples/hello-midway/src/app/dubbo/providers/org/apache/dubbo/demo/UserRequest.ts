@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import java from 'js-to-java';
+import {java} from 'apache-dubbo-js';
 import {Sex} from './Sex';
 
 export interface IUserRequest {

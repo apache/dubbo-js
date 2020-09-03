@@ -15,40 +15,21 @@
  * limitations under the License.
  */
 
-import java from 'js-to-java';
-import {Sex} from './Sex';
+/* tslint:disable */
+const {app, assert} = require('midway-mock/bootstrap');
+/* tslint:enable */
 
-export interface IUserRequest {
-  sex?: Sex;
-  name?: string;
-  id?: number;
-  email?: string;
-}
+describe('test/app/controller/home.test.ts', () => {
+  it('should assert', async () => {
+    const pkg = require('../../../package.json');
+    assert(app.config.keys.startsWith(pkg.name));
+  });
 
-export class UserRequest {
-  constructor(params: IUserRequest) {
-    this.sex = params.sex;
-    this.name = params.name;
-    this.id = params.id;
-    this.email = params.email;
-  }
-
-  sex?: Sex;
-  name?: string;
-  id?: number;
-  email?: string;
-
-  __fields2java() {
-    return {
-      $class: 'org.apache.dubbo.demo.UserRequest',
-      $: {
-        sex: java['enum']('org.apache.dubbo.demo.Sex', Sex[this.sex]),
-        name: java.String(this.name),
-        id: java.Integer(this.id),
-        email: java.String(this.email),
-      },
-    };
-  }
-}
-
-//generate by interpret-cli apache-dubbo-js
+  it('should GET /', () => {
+    return app
+      .httpRequest()
+      .get('/')
+      .expect('Welcome to midwayjs!')
+      .expect(200);
+  });
+});

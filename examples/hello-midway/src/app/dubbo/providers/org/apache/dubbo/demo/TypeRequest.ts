@@ -15,37 +15,34 @@
  * limitations under the License.
  */
 
-import java from 'js-to-java';
-import {Sex} from './Sex';
+import {java} from 'apache-dubbo-js';
 
-export interface IUserRequest {
-  sex?: Sex;
-  name?: string;
-  id?: number;
-  email?: string;
+export interface ITypeRequest {
+  bigDecimal?: {value: string};
+  map?: {[name: string]: string};
 }
 
-export class UserRequest {
-  constructor(params: IUserRequest) {
-    this.sex = params.sex;
-    this.name = params.name;
-    this.id = params.id;
-    this.email = params.email;
+export class TypeRequest {
+  constructor(params: ITypeRequest) {
+    this.bigDecimal = params.bigDecimal;
+    this.map = params.map;
   }
 
-  sex?: Sex;
-  name?: string;
-  id?: number;
-  email?: string;
+  bigDecimal?: {value: string};
+  map?: {[name: string]: string};
 
   __fields2java() {
+    let mapMapTransfer = new Map();
+    for (let mapKey in this.map) {
+      mapMapTransfer.set(java.String(mapKey), java.String(this.map[mapKey]));
+    }
     return {
-      $class: 'org.apache.dubbo.demo.UserRequest',
+      $class: 'org.apache.dubbo.demo.TypeRequest',
       $: {
-        sex: java['enum']('org.apache.dubbo.demo.Sex', Sex[this.sex]),
-        name: java.String(this.name),
-        id: java.Integer(this.id),
-        email: java.String(this.email),
+        bigDecimal: this.bigDecimal
+          ? java.BigDecimal(this.bigDecimal.value)
+          : null,
+        map: java.Map(mapMapTransfer),
       },
     };
   }

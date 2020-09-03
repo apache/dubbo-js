@@ -15,40 +15,23 @@
  * limitations under the License.
  */
 
-import java from 'js-to-java';
-import {Sex} from './Sex';
+import {EggAppConfig, EggAppInfo, PowerPartial} from 'midway';
 
-export interface IUserRequest {
-  sex?: Sex;
-  name?: string;
-  id?: number;
-  email?: string;
-}
+export type DefaultConfig = PowerPartial<EggAppConfig>;
 
-export class UserRequest {
-  constructor(params: IUserRequest) {
-    this.sex = params.sex;
-    this.name = params.name;
-    this.id = params.id;
-    this.email = params.email;
-  }
+export default (appInfo: EggAppInfo) => {
+  const config = {} as DefaultConfig;
 
-  sex?: Sex;
-  name?: string;
-  id?: number;
-  email?: string;
+  // use for cookie sign key, should change to your own and keep security
+  config.keys = appInfo.name + '_1599135676543_3920';
 
-  __fields2java() {
-    return {
-      $class: 'org.apache.dubbo.demo.UserRequest',
-      $: {
-        sex: java['enum']('org.apache.dubbo.demo.Sex', Sex[this.sex]),
-        name: java.String(this.name),
-        id: java.Integer(this.id),
-        email: java.String(this.email),
-      },
-    };
-  }
-}
+  // add your config here
+  config.middleware = [];
 
-//generate by interpret-cli apache-dubbo-js
+  config.dubbo = {
+    application: 'hello-midway',
+    register: 'localhost:2181,localhost:2182,localhost:2183',
+  };
+
+  return config;
+};

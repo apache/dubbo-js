@@ -15,38 +15,30 @@
  * limitations under the License.
  */
 
-import java from 'js-to-java';
-import {Sex} from './Sex';
+import {java} from 'apache-dubbo-js';
 
-export interface IUserRequest {
-  sex?: Sex;
-  name?: string;
-  id?: number;
-  email?: string;
+export interface IUserResponse {
+  status?: string;
+  info?: {[name: string]: string};
 }
 
-export class UserRequest {
-  constructor(params: IUserRequest) {
-    this.sex = params.sex;
-    this.name = params.name;
-    this.id = params.id;
-    this.email = params.email;
+export class UserResponse {
+  constructor(params: IUserResponse) {
+    this.status = params.status;
+    this.info = params.info;
   }
 
-  sex?: Sex;
-  name?: string;
-  id?: number;
-  email?: string;
+  status?: string;
+  info?: {[name: string]: string};
 
   __fields2java() {
+    let infoMapTransfer = new Map();
+    for (let mapKey in this.info) {
+      infoMapTransfer.set(java.String(mapKey), java.String(this.info[mapKey]));
+    }
     return {
-      $class: 'org.apache.dubbo.demo.UserRequest',
-      $: {
-        sex: java['enum']('org.apache.dubbo.demo.Sex', Sex[this.sex]),
-        name: java.String(this.name),
-        id: java.Integer(this.id),
-        email: java.String(this.email),
-      },
+      $class: 'org.apache.dubbo.demo.UserResponse',
+      $: {status: java.String(this.status), info: java.Map(infoMapTransfer)},
     };
   }
 }

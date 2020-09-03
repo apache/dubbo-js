@@ -15,40 +15,11 @@
  * limitations under the License.
  */
 
-import java from 'js-to-java';
-import {Sex} from './Sex';
+import dubbo from '../../app/dubbo';
+declare module 'egg' {}
 
-export interface IUserRequest {
-  sex?: Sex;
-  name?: string;
-  id?: number;
-  email?: string;
+interface IDubbo {
+  app: {
+    dubbo: any;
+  };
 }
-
-export class UserRequest {
-  constructor(params: IUserRequest) {
-    this.sex = params.sex;
-    this.name = params.name;
-    this.id = params.id;
-    this.email = params.email;
-  }
-
-  sex?: Sex;
-  name?: string;
-  id?: number;
-  email?: string;
-
-  __fields2java() {
-    return {
-      $class: 'org.apache.dubbo.demo.UserRequest',
-      $: {
-        sex: java['enum']('org.apache.dubbo.demo.Sex', Sex[this.sex]),
-        name: java.String(this.name),
-        id: java.Integer(this.id),
-        email: java.String(this.email),
-      },
-    };
-  }
-}
-
-//generate by interpret-cli apache-dubbo-js

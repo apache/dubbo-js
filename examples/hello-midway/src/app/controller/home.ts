@@ -15,40 +15,26 @@
  * limitations under the License.
  */
 
-import java from 'js-to-java';
-import {Sex} from './Sex';
+import {Context, inject, controller, get, provide} from 'midway';
+import {IDubbo} from '../../typings/app/index';
+import {java} from 'apache-dubbo-js';
 
-export interface IUserRequest {
-  sex?: Sex;
-  name?: string;
-  id?: number;
-  email?: string;
-}
+@provide()
+@controller('/')
+export class HomeController {
+  @inject()
+  ctx: Context;
 
-export class UserRequest {
-  constructor(params: IUserRequest) {
-    this.sex = params.sex;
-    this.name = params.name;
-    this.id = params.id;
-    this.email = params.email;
+  @get('/')
+  async index() {
+    this.ctx.body = `Welcome to midwayjs!`;
   }
 
-  sex?: Sex;
-  name?: string;
-  id?: number;
-  email?: string;
-
-  __fields2java() {
-    return {
-      $class: 'org.apache.dubbo.demo.UserRequest',
-      $: {
-        sex: java['enum']('org.apache.dubbo.demo.Sex', Sex[this.sex]),
-        name: java.String(this.name),
-        id: java.Integer(this.id),
-        email: java.String(this.email),
-      },
-    };
+  @get('/hello')
+  async dubboTest(ctx: Context & IDubbo) {
+    const {res, err} = await ctx.app.dubbo.service.DemoProvider.sayHello(
+      java.String('hello from node world'),
+    );
+    this.ctx.body = err ? err.message : res;
   }
 }
-
-//generate by interpret-cli apache-dubbo-js

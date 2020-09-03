@@ -48,4 +48,4 @@ export class TypeRequest {
   }
 }
 
-//generate by interpret-cli dubbo2.js
+//generate by interpret-cli apache-dubbo-js

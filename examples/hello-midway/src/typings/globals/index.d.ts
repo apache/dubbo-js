@@ -15,40 +15,23 @@
  * limitations under the License.
  */
 
-import java from 'js-to-java';
-import {Sex} from './Sex';
+type ExtendInterface<T> = {[P in keyof T]: T[P]};
 
-export interface IUserRequest {
-  sex?: Sex;
-  name?: string;
-  id?: number;
-  email?: string;
+interface GlobalMiddlewareNameObject {
+  //
 }
 
-export class UserRequest {
-  constructor(params: IUserRequest) {
-    this.sex = params.sex;
-    this.name = params.name;
-    this.id = params.id;
-    this.email = params.email;
-  }
-
-  sex?: Sex;
-  name?: string;
-  id?: number;
-  email?: string;
-
-  __fields2java() {
-    return {
-      $class: 'org.apache.dubbo.demo.UserRequest',
-      $: {
-        sex: java['enum']('org.apache.dubbo.demo.Sex', Sex[this.sex]),
-        name: java.String(this.name),
-        id: java.Integer(this.id),
-        email: java.String(this.email),
-      },
-    };
-  }
+interface GlobalControllerRouterOptions {
+  sensitive?: boolean;
+  middleware: GlobalMiddlewareNames;
 }
 
-//generate by interpret-cli apache-dubbo-js
+type GlobalMiddlewareNames = (keyof GlobalMiddlewareNameObject)[] | undefined;
+
+interface GlobalValidateIdentifierObject {
+  //
+}
+
+interface AnyObject {
+  [k: string]: any;
+}
