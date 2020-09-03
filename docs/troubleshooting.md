@@ -5,15 +5,15 @@ sidebar_label: Troubleshooting
 ---
 
 ```javascript
-import {Dubbo} from 'dubbo2.js';
+import {Dubbo} from 'apache-dubbo-js';
 ```
 
-默认导入的 dubbo2.js 是按照 es2017 进行编译的，支持 node7.10 以上。
+默认导入的 apache-dubbo-js 是按照 es2017 进行编译的，支持 node7.10 以上。
 
 如果更低的 node 版本，可以使用
 
 ```javascript
-import {Dubbo} from 'dubbo2.js/es6';
+import {Dubbo} from 'apache-dubbo-js/es6';
 ```
 
 ## 报错了，为什么呢？

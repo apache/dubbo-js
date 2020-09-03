@@ -6,16 +6,16 @@ sidebar_label: Getting started
 
 ## Install
 
-Install dubbo2.js using npm:
+Install apache-dubbo-js using npm:
 
 ```sh
-npm install dubbo2.js
+npm install apache-dubbo-js
 ```
 
-Or Via yarn:
+Or
 
 ```sh
-yarn add dubbo2.js
+yarn add apache-dubbo-js
 ```
 
 ## How to Usage?
@@ -34,7 +34,7 @@ export default {
 };
 
 //===============dubbo.ts========================
-import {Dubbo} from 'dubbo2.js';
+import {Dubbo} from 'apache-dubbo-js';
 import service from './service';
 
 //create dubbo object, it like a service container

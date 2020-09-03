@@ -6,11 +6,11 @@ sidebar_label: Preface
 
 ![love dubbo](https://raw.githubusercontent.com/dubbo/dubbo2.js/master/resources/dubbo-love.png)
 
-[![NPM](https://nodei.co/npm/dubbo2.js.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/dubbo2.js)
+[![NPM](https://nodei.co/npm/apache-dubbo-js.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/apache-dubbo-js)
 
-## dubbo2.js
+## apache-dubbo-js
 
-dubbo2.js = Nodejs connected Java Dubbo RPC service by dubbo protocol (dubbo head + hessian body)
+apache-dubbo-js = Nodejs connected Java Dubbo RPC service by dubbo protocol (dubbo head + hessian body)
 
 多年期盼，一朝梦圆！ We love dubbo 👏
 

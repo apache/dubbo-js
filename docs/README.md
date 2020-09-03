@@ -1,6 +1,6 @@
 # Docs
 
-Here are some guides to provide a slightly deeper look into dubbo-js.
+Here are some guides to provide a slightly deeper look into apache-dubbo-js.
 
 - [Introduction](preface.md)
 - [Getting started](getting-started.md)
