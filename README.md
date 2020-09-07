@@ -152,6 +152,10 @@ Dubbo-js will not work without:
 
 Many thanks to their authors [fengmk2](https://github.com/fengmk2) and [dead-horse](https://github.com/dead-horse).
 
+## contact us  
+
+<img src="docs/ding-ding.jpeg" width="680" />
+
 ## License
 
 Apache Dubbo is under the Apache 2.0 license. See the [LICENSE](/LICENSE) file for details.
