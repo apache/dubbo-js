@@ -1,8 +1,0 @@
-{
-  "docs": {
-    "Introduction": ["preface", "getting-started"],
-    "Api Reference": ["api", "middleware"],
-    "Java to TS": ["interpret"],
-    "Guides": ["troubleshooting", "contributing"]
-  }
-}

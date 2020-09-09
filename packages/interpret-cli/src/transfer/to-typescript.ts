@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 import debug from 'debug';
-import {toEnum} from './bean/to-enum';
-import {toBeanClass} from './bean/to-vo';
 import {SourceFile} from 'ts-simple-ast';
 import {IntepretHandle} from '../handle';
+import {toEnum} from './bean/to-enum';
+import {toBeanClass} from './bean/to-vo';
 import {toInterface} from './provider/to-interface';
 import {toProxyFunc} from './provider/to-proxy-function';
 import {toWrapperClass} from './provider/to-wrapper-class';
@@ -46,12 +46,14 @@ export async function toTypescript(
     isAbstract: astJava.isAbstract,
     isInterface: astJava.isInterface,
     isClass: !astJava.isEnum && !astJava.isInterface,
-    isProvider: astJava.name.endsWith(String(intepretHandle.providerSuffix) || 'Provider'),
+    isProvider: astJava.name.endsWith(
+      String(intepretHandle.providerSuffix) || 'Provider',
+    ),
   };
   intepretHandle.request.registerTypeInfo(typeInfo);
 
-  if(astJava.isAbstract  && !typeInfo.isProvider) {
-    console.warn('warning 抽象类型要注意了.classPath:',typeInfo.classPath);
+  if (astJava.isAbstract && !typeInfo.isProvider) {
+    console.warn('warning 抽象类型要注意了.classPath:', typeInfo.classPath);
   }
 
   try {
@@ -64,7 +66,7 @@ export async function toTypescript(
           toWrapperClass(astJava, intepretHandle),
         );
         sourceFile.addImport({
-          moduleSpecifier: 'dubbo2.js',
+          moduleSpecifier: 'dubbo-js',
           defaultImport: '{TDubboCallResult,Dubbo}',
         });
         sourceFile.addFunction(

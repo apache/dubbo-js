@@ -86,14 +86,14 @@ export interface IDubboProps {
   isSupportedDubbox?: boolean;
   //dubbo调用最大超时时间单位为秒，默认5s
   dubboInvokeTimeout?: number;
-  //dubbo为每个server-agent创建的socketpool数量，默认1
+  //dubbo为每个dubbo-agent创建的socketpool数量，默认1
   dubboSocketPool?: number;
   dubboSetting: Setting;
 }
 
 //magic, you should use typescript 2.8+
 export type TDubboService<T> = {
-  [k in keyof T]: T[k] extends ((dubbo: any) => infer R) ? R : any;
+  [k in keyof T]: T[k] extends (dubbo: any) => infer R ? R : any;
 };
 
 export interface IDubboResult<T> {

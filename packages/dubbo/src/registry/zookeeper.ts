@@ -44,16 +44,12 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     log(`new:|> %O`, props);
     //默认dubbo
     this._props.zkRoot = this._props.zkRoot || 'dubbo';
-    //初始化agentAddrSet
-    this._agentAddrSet = new Set();
     //初始化zookeeper的client
     this._connect(this._init);
   }
 
   private _checkTimer: NodeJS.Timer;
   private _client: zookeeper.Client;
-  //@ts-ignore
-  private _agentAddrSet: Set<string>;
 
   //========================private method==========================
   private _init = async (err: Error) => {
@@ -105,7 +101,6 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
       log('dubboServiceUrl:|> %O', this._dubboServiceUrlMap);
     }
 
-    this._agentAddrSet = this._allAgentAddrSet;
     this._subscriber.onData(this._allAgentAddrSet);
   };
 
@@ -282,15 +277,7 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
         );
       }
 
-      // serviceWorker如果由于心跳出错被关闭后, 再次启动通知zk后, 这边会收到消息
-      // 但是因为断开通知有可能没有发送, 导致agentAddrSet没有移除, 导致这边不会判断还是一致
-      // 不会通知dubbo-agent去创建
-      // if (!eqSet(this._agentAddrSet, this._allAgentAddrSet)) {
-      this._agentAddrSet = this._allAgentAddrSet;
       this._subscriber.onData(this._allAgentAddrSet);
-      // } else {
-      // log('no agent change');
-      // }
     };
   }
 

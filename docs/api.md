@@ -31,7 +31,7 @@ const dubbo = Dubbo.from({
 })
 
 
-//dubbo的代理服务
+//dubbo 的代理服务
 const demoSerivce = dubbo.proxService({
   //代理的服务接口 - string 必传
   dubboInterface: 'com.alibaba.dubbo.demo.DemoService',
@@ -66,7 +66,7 @@ const demoSerivce = dubbo.proxService({
 ### connect dubbo directly
 
 ```typescript
-import {DirectlyDubbo, java} from 'dubbo2.js';
+import {DirectlyDubbo, java} from 'apache-dubbo-js';
 import {
   DemoProvider,
   DemoProviderWrapper,

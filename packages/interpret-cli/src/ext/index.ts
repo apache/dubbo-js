@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {join} from 'path';
-import {pathExists} from 'fs-extra';
 import {spawn} from 'child_process';
+import {pathExists} from 'fs-extra';
+import {join} from 'path';
 import {IDubboExtInfo, IExtraResult} from '../typings';
 
 const startFlag = 'Output at:';
@@ -32,7 +32,7 @@ export async function extra(extraParam: IDubboExtInfo): Promise<IExtraResult> {
   return new Promise<IExtraResult>(async (resolve, reject) => {
     let execCmd = spawn(`java`, [
       '-jar',
-      join(__dirname, '../../ext/jexpose-1.3.jar'),
+      require.resolve('jexpose/jexpose-1.3.jar'),
       extraParam.entry,
       extraParam.entryJarPath,
       extraParam.libDirPath,

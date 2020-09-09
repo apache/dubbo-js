@@ -28,7 +28,7 @@ const DUBBO_HEADER_LENGTH = 16;
 // magic header.
 const DUBBO_MAGIC_HEADER = 0xdabb;
 // message flag.
-const FLAG_REQEUST = 0x80;
+const FLAG_REQUEST = 0x80;
 const FLAG_TWOWAY = 0x40;
 const FLAG_EVENT = 0x20;
 
@@ -47,7 +47,7 @@ export default class HeartBeat {
 
     // set request and serialization flag.
     buffer[2] =
-      FLAG_REQEUST |
+      FLAG_REQUEST |
       HESSIAN2_SERIALIZATION_CONTENT_ID |
       FLAG_TWOWAY |
       FLAG_EVENT;

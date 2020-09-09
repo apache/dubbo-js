@@ -33,7 +33,7 @@ const DUBBO_HEADER_LENGTH = 16;
 // magic header.
 const DUBBO_MAGIC_HEADER = 0xdabb;
 // message flag.
-const FLAG_REQEUST = 0x80;
+const FLAG_REQUEST = 0x80;
 const FLAG_TWOWAY = 0x40;
 
 //com.alibaba.dubbo.common.serialize.support.hessian.Hessian2Serialization中定义
@@ -83,7 +83,7 @@ export default class DubboEncoder {
     header[1] = DUBBO_MAGIC_HEADER & 0xff;
 
     // set request and serialization flag.
-    header[2] = FLAG_REQEUST | HESSIAN2_SERIALIZATION_CONTENT_ID | FLAG_TWOWAY;
+    header[2] = FLAG_REQUEST | HESSIAN2_SERIALIZATION_CONTENT_ID | FLAG_TWOWAY;
 
     //requestId
     this.setRequestId(header);

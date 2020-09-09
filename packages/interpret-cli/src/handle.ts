@@ -73,7 +73,7 @@ export class IntepretHandle implements ITypeSearch {
    * @returns {Promise<void>}
    */
   private async prepare() {
-    ast.addSourceFileFromText(this.to, '//generate by interpret-cli dubbo2.js');
+    ast.addSourceFileFromText(this.to, '//generate by dubbo-js');
     this.sourceFile = ast.getSourceFile(this.to);
     await ensureDir(parse(this.to).dir);
   }

@@ -28,7 +28,7 @@ const log = debug('dubbo:decode-buffer');
 /**
  * 在并发的tcp数据传输中，会出现少包，粘包的现象
  * 好在tcp的传输是可以保证顺序的
- * 我们需要抽取一个buff来统一处理这些数据
+ * 我们需要抽取一个buffer来统一处理这些数据
  */
 export default class DecodeBuffer
   implements IObservable<TDecodeBuffSubscriber> {
@@ -59,8 +59,9 @@ export default class DecodeBuffer
         log(this._buffer);
 
         log(
-          `receive server data error, buffer[0] is 0xda ${magicHigh ==
-            0xda} buffer[1] is 0xbb ${magicLow == 0xbb}`,
+          `receive server data error, buffer[0] is 0xda ${
+            magicHigh == 0xda
+          } buffer[1] is 0xbb ${magicLow == 0xbb}`,
         );
 
         const magicHighIndex = this._buffer.indexOf(MAGIC_HIGH);

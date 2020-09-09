@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- - Copyright 1999-2011 Alibaba Group.
- -
- - Licensed under the Apache License, Version 2.0 (the "License");
- - you may not use this file except in compliance with the License.
- - You may obtain a copy of the License at
- -
- -      http://www.apache.org/licenses/LICENSE-2.0
- -
- - Unless required by applicable law or agreed to in writing, software
- - distributed under the License is distributed on an "AS IS" BASIS,
- - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- - See the License for the specific language governing permissions and
- - limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
 -->
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
@@ -22,25 +23,23 @@
 
     <!-- 提供方应用信息，用于计算依赖关系 -->
     <dubbo:application name="demo-provider"/>
-
-    <dubbo:registry protocol="zookeeper" address="127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183"/>
-
+    <dubbo:registry protocol="zookeeper" address="localhost:2181,localhost:2182,localhost:2183"/>
     <dubbo:provider timeout="1500"/>
 
     <!-- 用dubbo协议在20880端口暴露服务 -->
     <dubbo:protocol name="dubbo" port="20880"/>
 
     <!-- 和本地bean一样实现服务 -->
-    <bean id="demoProvider" class="com.alibaba.dubbo.demo.provider.DemoProviderImpl"/>
-    <bean id="basicTypeProvider" class="com.alibaba.dubbo.demo.provider.BasicTypeProviderImpl"/>
-    <bean id="errorProvider" class="com.alibaba.dubbo.demo.provider.ErrorProviderImpl"/>
+    <bean id="demoProvider" class="org.apache.dubbo.demo.provider.DemoProviderImpl"/>
+    <bean id="basicTypeProvider" class="org.apache.dubbo.demo.provider.BasicTypeProviderImpl"/>
+    <bean id="errorProvider" class="org.apache.dubbo.demo.provider.ErrorProviderImpl"/>
 
     <!-- 声明需要暴露的服务接口 -->
-    <dubbo:service interface="com.alibaba.dubbo.demo.DemoProvider" ref="demoProvider" version="1.0.0" timeout="10000">
+    <dubbo:service interface="org.apache.dubbo.demo.DemoProvider" ref="demoProvider" version="1.0.0" timeout="10000">
         <dubbo:method name="sayHello" timeout="8000"/>
     </dubbo:service>
 
-    <dubbo:service interface="com.alibaba.dubbo.demo.BasicTypeProvider" ref="basicTypeProvider" version="2.0.0"/>
-    <dubbo:service interface="com.alibaba.dubbo.demo.ErrorProvider" ref="errorProvider" version="1.0.0"/>
+    <dubbo:service interface="org.apache.dubbo.demo.BasicTypeProvider" ref="basicTypeProvider" version="2.0.0"/>
+    <dubbo:service interface="org.apache.dubbo.demo.ErrorProvider" ref="errorProvider" version="1.0.0"/>
 
 </beans>

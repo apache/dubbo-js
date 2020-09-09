@@ -16,11 +16,11 @@
  */
 
 import {Context, Dubbo, java, setting} from 'dubbo-js';
-import {BasicTypeProvider} from './providers/com/alibaba/dubbo/demo/BasicTypeProvider';
-import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
-import {ErrorProvider} from './providers/com/alibaba/dubbo/demo/ErrorProvider';
-import {TypeRequest} from './providers/com/alibaba/dubbo/demo/TypeRequest';
-import {UserRequest} from './providers/com/alibaba/dubbo/demo/UserRequest';
+import {BasicTypeProvider} from './providers/org/apache/dubbo/demo/BasicTypeProvider';
+import {DemoProvider} from './providers/org/apache/dubbo/demo/DemoProvider';
+import {ErrorProvider} from './providers/org/apache/dubbo/demo/ErrorProvider';
+import {TypeRequest} from './providers/org/apache/dubbo/demo/TypeRequest';
+import {UserRequest} from './providers/org/apache/dubbo/demo/UserRequest';
 
 //==============init dubbo==============
 const service = {
@@ -31,20 +31,20 @@ const service = {
 
 //dubbo-setting
 const dubboSetting = setting
-  .match('com.alibaba.dubbo.demo.BasicTypeProvider', {
+  .match('org.apache.dubbo.demo.BasicTypeProvider', {
     version: '2.0.0',
   })
   .match(
     [
-      'com.alibaba.dubbo.demo.DemoProvider',
-      'com.alibaba.dubbo.demo.ErrorProvider',
+      'org.apache.dubbo.demo.DemoProvider',
+      'org.apache.dubbo.demo.ErrorProvider',
     ],
     {version: '1.0.0'},
   );
 
 const dubbo = new Dubbo<typeof service>({
   application: {name: 'node-dubbo'},
-  register: 'localhost:2181',
+  register: 'localhost:2181,localhost:2181,localhost:2181',
   service,
   dubboSetting,
 });

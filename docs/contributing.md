@@ -22,7 +22,7 @@ sidebar_label: Contributing
 brew install zookeeper
 brew services start zookeeper
 
-#运行java/dubbo-demo-provider下面的例子
+# 运行 java/dubbo-demo-provider 下面的例子
 
 yarn run test
 
