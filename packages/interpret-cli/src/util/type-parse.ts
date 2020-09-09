@@ -83,15 +83,15 @@ export async function jType2Ts(
   } else if (typePropers.isArray) {
     let subType = await jType2Ts(typePropers.elementType, typeOptions);
     return `${subType}[]`;
-  }else if(typePropers.name==='java.lang.Enum') {
+  } else if (typePropers.name === 'java.lang.Enum') {
     //枚举类型处理
-    let enumClassPath =typePropers.typeArgs[0].type.name;
-    return classPath2TypeName(enumClassPath, typeOptions)
+    let enumClassPath = typePropers.typeArgs[0].type.name;
+    return classPath2TypeName(enumClassPath, typeOptions);
   } else if (
     typePropers.name === 'java.util.Map' &&
     typePropers.typeArgs.length === 0
   ) {
-    return 'any';//直接返回any
+    return 'any'; //直接返回any
   } else if (typePropers.typeArgs && typePropers.typeArgs.length > 0) {
     //泛型处理
     let type = await classPath2TypeName(typePropers.name, typeOptions);
@@ -113,7 +113,7 @@ export async function jType2Ts(
       result = type
         .replace('${nameType}', nameType)
         .replace('${value}', valueType);
-    } else if(type === 'any') {
+    } else if (type === 'any') {
       return 'any';
     } else {
       let subTypes = [];
@@ -158,14 +158,14 @@ export async function classPath2TypeName(
     return result;
   } else if (typeOptions.hasAst(classPath)) {
     let denpendItem = await typeOptions.addDenpend(classPath);
-    if(denpendItem){
+    if (denpendItem) {
       return denpendItem.importName;
-    }else{
-      console.warn('warning: not find class Type for :'+classPath);
-      return "any";
+    } else {
+      console.warn('warning: not find class Type for :' + classPath);
+      return 'any';
     }
   } else {
-    return "any";
+    return 'any';
     // throw new Error(`未找到类${classPath},在typescript中的信息; `);
   }
 }

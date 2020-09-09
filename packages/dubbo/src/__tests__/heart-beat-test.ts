@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import HeartBeat from '../heartbeat';
 
 it('心跳值测试e2', () => {

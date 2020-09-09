@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 import debug from 'debug';
+import {MethodSignatureStructure} from 'ts-simple-ast';
 import {IntepretHandle} from '../handle';
 import {IJMethodPropers} from '../typings';
 import {jType2Ts} from '../util/type-parse';
-import {MethodSignatureStructure} from 'ts-simple-ast';
 
 const log = debug('j2t:core:toMethod');
 

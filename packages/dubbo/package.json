@@ -1,9 +1,11 @@
 {
-  "name": "dubbo-js",
-  "version": "3.0.0",
+  "name": "apache-dubbo-js",
+  "version": "3.0.0-rc6",
   "main": "./es7/index.js",
   "types": "./es7/typings/index.d.ts",
   "license": "Apache Licence 2.0",
+  "description": "Aapche dubbo & dubbo-js",
+  "author": "hufeng@apache.org, xiaodongyang@apache.org",
   "engines": {
     "node": ">=6.0.0"
   },

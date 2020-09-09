@@ -16,23 +16,23 @@
  */
 
 import {Dubbo, java, setting} from 'dubbo-js';
-import {DemoProvider} from './providers/com/alibaba/dubbo/demo/DemoProvider';
-import {UserRequest} from './providers/com/alibaba/dubbo/demo/UserRequest';
+import {DemoProvider} from './providers/org/apache/dubbo/demo/DemoProvider';
+import {UserRequest} from './providers/org/apache/dubbo/demo/UserRequest';
 
 const service = {
   DemoProvider,
 };
 
 const dubboSetting = setting
-  .match('com.alibaba.dubbo.demo.BasicTypeProvider', {
+  .match('org.apache.dubbo.demo.BasicTypeProvider', {
     version: '2.0.0',
   })
-  .match('com.alibaba.dubbo.demo.DemoProvider', {version: '1.0.0'})
-  .match('com.alibaba.dubbo.demo.ErrorProvider', {version: '1.0.0'});
+  .match('org.apache.dubbo.demo.DemoProvider', {version: '1.0.0'})
+  .match('org.apache.dubbo.demo.ErrorProvider', {version: '1.0.0'});
 
 const dubbo = new Dubbo<typeof service>({
-  application: {name: '@qianmi/node-dubbo'},
-  register: 'localhost:2181',
+  application: {name: 'dubbo-js'},
+  register: 'localhost:2181,localhost:2181,localhost:2181',
   dubboInvokeTimeout: 0.001,
   service,
   dubboSetting,
@@ -74,7 +74,7 @@ describe('dubbo timeout test suite', () => {
       new UserRequest({
         id: 1,
         name: 'nodejs',
-        email: 'node@qianmi.com',
+        email: 'dubbo-js',
       }),
     );
     expect(res).toEqual(null);

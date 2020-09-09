@@ -1,79 +1,104 @@
 <!--
- - Copyright 1999-2011 Alibaba Group.
- -
- - Licensed under the Apache License, Version 2.0 (the "License");
- - you may not use this file except in compliance with the License.
- - You may obtain a copy of the License at
- -
- -      http://www.apache.org/licenses/LICENSE-2.0
- -
- - Unless required by applicable law or agreed to in writing, software
- - distributed under the License is distributed on an "AS IS" BASIS,
- - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- - See the License for the specific language governing permissions and
- - limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
 -->
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.alibaba</groupId>
-        <artifactId>dubbo-demo</artifactId>
-        <version>2.6.3</version>
-    </parent>
     <artifactId>dubbo-demo-provider</artifactId>
+    <groupId>org.apache.dubbo</groupId>
+    <version>2.7.4.1</version>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
     <description>The demo provider module of dubbo project</description>
     <properties>
+        <dubbo.version>2.7.4.1</dubbo.version>
+        <javassist_version>3.20.0-GA</javassist_version>
+        <netty_version>3.2.5.Final</netty_version>
+        <zookeeper_version>3.4.9</zookeeper_version>
+        <zkclient_version>0.2</zkclient_version>
+        <curator_version>2.12.0</curator_version>
+        <fastjson_version>1.2.31</fastjson_version>
+        <log4j_version>1.2.16</log4j_version>
+        <slf4j_version>1.7.25</slf4j_version>
+        <spring_version>4.3.10.RELEASE</spring_version>
+
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
         <skip_maven_deploy>false</skip_maven_deploy>
     </properties>
     <dependencies>
         <dependency>
-            <groupId>com.alibaba</groupId>
+            <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo-demo-api</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${dubbo.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.alibaba</groupId>
+            <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${dubbo.version}</version>
         </dependency>
         <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
+            <version>${javassist_version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.netty</groupId>
             <artifactId>netty</artifactId>
+            <version>${netty_version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.zookeeper</groupId>
             <artifactId>zookeeper</artifactId>
+            <version>${zookeeper_version}</version>
         </dependency>
         <dependency>
             <groupId>com.101tec</groupId>
             <artifactId>zkclient</artifactId>
+            <version>${zkclient_version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-framework</artifactId>
+            <version>${curator_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
+        <version>${curator_version}</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
+            <version>${fastjson_version}</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
+            <version>${log4j_version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <version>${slf4j_version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
+            <version>${spring_version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -90,9 +115,9 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>com.alibaba</groupId>
+                                    <groupId>org.apache.dubbo</groupId>
                                     <artifactId>dubbo</artifactId>
-                                    <version>${project.parent.version}</version>
+                                    <version>${dubbo.version}</version>
                                     <outputDirectory>${project.build.directory}/dubbo</outputDirectory>
                                     <includes>META-INF/assembly/**</includes>
                                 </artifactItem>
@@ -106,7 +131,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.alibaba.dubbo.demo.provider.Provider</mainClass>
+                            <mainClass>org.apache.dubbo.demo.provider.Provider</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 import debug from 'debug';
+import {PropertySignatureStructure} from 'ts-simple-ast';
 import {IntepretHandle} from '../../handle';
 import {IJFieldPropers} from '../../typings';
 import {jType2Ts} from '../../util/type-parse';
-import {PropertySignatureStructure} from 'ts-simple-ast';
 
 const log = debug('j2t:core:toField');
 

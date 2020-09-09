@@ -38,7 +38,7 @@ sidebar_label: Interpret
 
 ### step1:从 java 项目生成 jar
 
-```shell
+```sh
 ; 进入接口项目目录执行命令
 mvn package
 mvn install dependency:copy-dependencies
@@ -46,7 +46,7 @@ mvn install dependency:copy-dependencies
 
 ### step2:翻译生成 typescript 代码
 
-```shell
+```sh
 npm install interpret-dubbo2js -g
 interpret -c dubbo.json
 ```
@@ -93,6 +93,7 @@ const dubbo = new Dubbo({
 })();
 ``
 
-**_Tip_** `npm install interpret-util dubbo2.js`;
+**_Tip_** `npm install interpret-util apache-dubbo-js`;
 
 [interpret-example](https://github.com/creasy2010/interpret-example);
+```

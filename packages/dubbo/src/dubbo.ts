@@ -183,7 +183,7 @@ export default class Dubbo<TService = Object>
           ...this._middleware,
           //handle request middleware
           async function handleRequest(ctx) {
-            log('start middleware handle dubbo Request');
+            log('start middleware handle dubbo request');
             ctx.body = await go(self._queue.add(ctx));
             log('end handle dubbo request');
           },
