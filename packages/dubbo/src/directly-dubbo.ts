@@ -81,10 +81,17 @@ export default class DirectlyDubbo {
   }
 
   proxyService<T extends Object>(invokeParam: IInvokeParam): T {
-    const {dubboInterface, methods, timeout, group, version} = invokeParam;
+    const {
+      dubboInterface,
+      methods,
+      timeout,
+      group,
+      version,
+      attachments = {},
+    } = invokeParam;
     const proxy = Object.create(null);
 
-    Object.keys(methods).forEach(methodName => {
+    Object.keys(methods).forEach((methodName) => {
       proxy[methodName] = (...args: Array<IHessianType>) => {
         return go(
           new Promise((resolve, reject) => {
@@ -102,6 +109,7 @@ export default class DirectlyDubbo {
             ctx.group = group;
             ctx.timeout = timeout;
             ctx.version = version;
+            ctx.attachments = attachments;
 
             //check param
             //param should be hessian data type

@@ -75,6 +75,7 @@ export interface IInvokeParam {
   group?: string;
   version?: string;
   timeout?: number;
+  attachments?: object;
 }
 
 export interface IDubboProps {
