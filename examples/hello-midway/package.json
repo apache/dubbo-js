@@ -4,9 +4,7 @@
   "description": "",
   "private": true,
   "dependencies": {
-    "apache-dubbo-js": "^3.0.0-rc6",
     "egg-scripts": "^2.10.0",
-    "interpret-util": "^0.0.6",
     "midway": "^1.0.0"
   },
   "devDependencies": {

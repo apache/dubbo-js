@@ -19,10 +19,11 @@ import {Application} from 'midway';
 import dubbo from './app/dubbo';
 
 export default async (app: Application) => {
-  dubbo(app);
-  await app.dubbo.ready();
   app.beforeStart(async () => {
     console.log('🚀 Your awesome APP is launching...');
+    dubbo(app);
+    await app.dubbo.ready();
+    console.log('dubbo was ready..');
     console.log('✅  Your awesome APP launched');
   });
 };

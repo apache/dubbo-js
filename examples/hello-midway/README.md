@@ -4,6 +4,7 @@
 
 ```bash
 $ cd ../../
+$ make
 $ sh start_dubbo_service.sh
 $ cd examples/hello-midway
 $ yarn
