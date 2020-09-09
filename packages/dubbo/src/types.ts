@@ -76,6 +76,7 @@ export interface IInvokeParam {
   version?: string;
   timeout?: number;
   attachments?: object;
+  isSupportedDubbox?: boolean;
 }
 
 export interface IDubboProps {

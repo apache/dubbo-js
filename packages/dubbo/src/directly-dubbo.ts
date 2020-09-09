@@ -88,6 +88,7 @@ export default class DirectlyDubbo {
       group,
       version,
       attachments = {},
+      isSupportedDubbox = false,
     } = invokeParam;
     const proxy = Object.create(null);
 
@@ -110,6 +111,7 @@ export default class DirectlyDubbo {
             ctx.timeout = timeout;
             ctx.version = version;
             ctx.attachments = attachments;
+            ctx.isSupportedDubbox = isSupportedDubbox;
 
             //check param
             //param should be hessian data type
