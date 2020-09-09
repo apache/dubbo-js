@@ -20,7 +20,7 @@ Dubbo-js, using Node.js to embrace the Dubbo ecosystem. See this [Demo](https://
 ## Getting Started
 
 ```
-yarn add dubbo-js
+yarn add apache-dubbo-js
 ```
 
 ## Usage
