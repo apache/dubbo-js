@@ -110,7 +110,6 @@ export interface IDubboProvider {
   timeout?: number;
   group?: string;
   methods: {[methodName: string]: Function};
-  attachment: object;
 }
 
 // zookeeper acl shemes must be one of [ 'world', 'ip', 'host', 'auth', 'digest' ]
