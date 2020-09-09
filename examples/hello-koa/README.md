@@ -13,7 +13,7 @@ $ open http://localhost:3000/hello
 
 ### Requirement
 
-- Node.js 8.x
+- Node.js 8.x +
 - Typescript 2.8+
 
 ### Attention

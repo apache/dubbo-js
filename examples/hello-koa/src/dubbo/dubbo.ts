@@ -18,6 +18,9 @@
 import {Dubbo, setting, zk} from 'apache-dubbo-js';
 import * as service from './service';
 
+/**
+ * setting dubbo invoke params, such version, group etc.
+ */
 const dubboSetting = setting
   .match(
     [
@@ -30,21 +33,29 @@ const dubboSetting = setting
   )
   .match('org.apache.dubbo.demo.BasicTypeProvider', {version: '2.0.0'});
 
+/**
+ * create dubbo instance, it create proxyService
+ */
 const dubbo = new Dubbo<typeof service>({
   application: {name: 'dubbo-node-consumer'},
   service,
   dubboSetting,
-
   register: zk({
     url: 'localhost:2181,localhost:2182,localhost:2183',
   }),
 });
 
+/**
+ * apache-dubbo-js middleware Extension mechanism the same as koa middleware
+ */
 dubbo.use(async (ctx, next) => {
   await next();
   console.log('-providerAttachments-->', ctx.providerAttachments);
 });
 
+/**
+ * subscribe apache-dubbo-js inner message
+ */
 dubbo.subscribe({
   onTrace(msg) {
     console.log(msg);
