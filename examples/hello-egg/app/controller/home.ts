@@ -23,8 +23,7 @@ import {UserRequest} from '../dubbo/providers/org/apache/dubbo/demo/UserRequest'
 
 export default class HomeController extends Controller {
   async index() {
-    const {ctx} = this;
-    ctx.body = await ctx.service.test.sayHi('egg');
+    this.ctx.body = await this.ctx.service.test.sayHi('egg');
   }
 
   async userInfo() {

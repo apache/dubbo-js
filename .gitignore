@@ -55,3 +55,5 @@ lib
 temp
 es6
 es7
+
+examples/hello-egg/typings

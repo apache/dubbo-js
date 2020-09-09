@@ -23,7 +23,6 @@
     "clean": "ets clean"
   },
   "dependencies": {
-    "apache-dubbo-js": "^3.0.0-rc6",
     "egg": "^2.11.2",
     "egg-scripts": "^2.9.1",
     "interpret-util": "^0.0.6"
