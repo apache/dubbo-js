@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {Context, Dubbo, setting} from 'dubbo-js';
+import {Context, Dubbo, setting} from 'apache-dubbo-js';
 import {EggApplication} from 'egg';
 import service from './service';
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {Dubbo, java, TDubboCallResult} from 'dubbo-js';
+import {Dubbo, java, TDubboCallResult} from 'apache-dubbo-js';
 
 //=====================types===========================
 export interface IUserResponse {

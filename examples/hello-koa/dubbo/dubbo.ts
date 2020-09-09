@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {Dubbo, setting, zk} from 'dubbo-js';
+import {Dubbo, setting, zk} from 'apache-dubbo-js';
 import * as service from './service';
 
 const dubboSetting = setting
@@ -52,36 +52,3 @@ dubbo.subscribe({
 });
 
 export default dubbo;
-
-// dubbo.ready().then(() => {
-//   console.log('dubbo was ready');
-// });
-
-// dubbo.subscribe({
-//   onTrace: msg => {
-//     console.log(msg);
-//   },
-// });
-
-//cost middleware
-/*dubbo.use(async function costTime(ctx, next) {
-  console.log('before dubbo cost middleware');
-  const startTime = Date.now();
-  await next();
-  const endTime = Date.now();
-  console.log('end makecostTime->', endTime - startTime);
-});
-*/
-
-// dubbo.use(async function trace(ctx, next) {
-//   const uuid = Date.now();
-//   ctx.attachments = {
-//     uuid,
-//   };
-
-//   ctx.attachments = {
-//     userId: uuid,
-//   };
-
-//   await next();
-// });

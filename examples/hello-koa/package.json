@@ -4,10 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "debug:start": "DEBUG=dubbo* ts-node server2017.ts",
-    "start": "ts-node server2017.ts",
-    "debug:start:5": "DEBUG=dubbo* ts-node server2015.ts",
-    "start:5": "ts-node server2015.ts"
+    "debug:start": "DEBUG=dubbo* ts-node server.ts",
+    "start": "ts-node server.ts"
   },
   "keywords": [],
   "author": "",
@@ -15,5 +13,8 @@
   "devDependencies": {
     "koa": "^2.4.1",
     "koa-router": "^7.3.0"
+  },
+  "dependencies": {
+    "apache-dubbo-js": "^3.0.0-rc6"
   }
 }

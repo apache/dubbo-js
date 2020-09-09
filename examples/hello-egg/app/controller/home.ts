@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {java} from 'dubbo-js';
+import {java} from 'apache-dubbo-js';
 import {Controller} from 'egg';
 import {Sex} from '../dubbo/providers/org/apache/dubbo/demo/Sex';
 import {TypeRequest} from '../dubbo/providers/org/apache/dubbo/demo/TypeRequest';

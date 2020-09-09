@@ -15,33 +15,15 @@
  * limitations under the License.
  */
 
-import {Dubbo, setting} from 'dubbo-js';
-import * as service from './service';
-
-const dubboSetting = setting
-  .match(
-    [
-      'org.apache.dubbo.demo.DemoProvider',
-      'org.apache.dubbo.demo.ErrorProvider',
-    ],
-    {
-      version: '1.0.0',
-    },
-  )
-  .match('org.apache.dubbo.demo.BasicTypeProvider', {version: '2.0.0'});
-
-export default new Dubbo<typeof service>({
-  application: {name: 'dubbo-node-consumer1'},
-  service,
-  dubboSetting,
-  register: 'localhost:2181,localhost:2182,localhost:2183',
-});
-
-//middleware
-// dubbo.use(async function costTime(ctx, next) {
-//   console.log('before dubbo cost middleware');
-//   const startTime = Date.now();
-//   await next();
-//   const endTime = Date.now();
-//   console.log('end makecostTime->', endTime - startTime);
-// });
+export const development = {
+  watchDirs: [
+    'app',
+    'lib',
+    'service',
+    'config',
+    'app.ts',
+    'agent.ts',
+    'interface.ts',
+  ],
+  overrideDefault: true,
+};
