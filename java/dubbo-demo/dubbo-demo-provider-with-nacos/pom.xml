@@ -17,29 +17,37 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>dubbo-demo-provider</artifactId>
+    <artifactId>dubbo-demo-provider-with-nacos</artifactId>
     <groupId>org.apache.dubbo</groupId>
     <version>2.7.4.1</version>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
     <description>The demo provider module of dubbo project</description>
     <properties>
+        <nacos.version>2.7.6</nacos.version>
         <dubbo.version>2.7.4.1</dubbo.version>
         <javassist_version>3.20.0-GA</javassist_version>
         <netty_version>3.2.5.Final</netty_version>
-        <zookeeper_version>3.4.9</zookeeper_version>
-        <zkclient_version>0.2</zkclient_version>
         <curator_version>2.12.0</curator_version>
         <fastjson_version>1.2.31</fastjson_version>
         <log4j_version>1.2.16</log4j_version>
+        <slf4j_version>1.6.1</slf4j_version>
         <spring_version>4.3.10.RELEASE</spring_version>
-        <slf4j_version>1.7.7</slf4j_version>
-
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <skip_maven_deploy>false</skip_maven_deploy>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>dubbo-registry-nacos</artifactId>
+            <version>${nacos.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-client</artifactId>
+            <version>1.4.0</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo-demo-api</artifactId>
@@ -48,7 +56,7 @@
         <dependency>
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo</artifactId>
-            <version>${dubbo.version}</version>
+            <version>${nacos.version}</version>
         </dependency>
         <dependency>
             <groupId>org.javassist</groupId>
@@ -60,16 +68,7 @@
             <artifactId>netty</artifactId>
             <version>${netty_version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.zookeeper</groupId>
-            <artifactId>zookeeper</artifactId>
-            <version>${zookeeper_version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.101tec</groupId>
-            <artifactId>zkclient</artifactId>
-            <version>${zkclient_version}</version>
-        </dependency>
+
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-framework</artifactId>
@@ -88,17 +87,22 @@
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>${log4j_version}</version>
+            <version>1.2.17</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j_version}</version>
+            <version>1.7.7</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.spring</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>1.0.11</version>
         </dependency>
     </dependencies>
     <build>
