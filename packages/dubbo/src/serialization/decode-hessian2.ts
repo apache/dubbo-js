@@ -17,13 +17,18 @@
 
 import debug from 'debug';
 import Hessian from 'hessian.js';
-import {fromBytes8} from './byte';
-import {DubboDecodeError} from './err';
-import {IDubboResponse} from './types';
+import {fromBytes8} from '../common/byte';
+import {DubboDecodeError} from '../common/err';
+import {IDubboRequest, IDubboResponse} from '../types';
 
 const log = debug('dubbo:hessian:DecoderV2');
+
 //dubbo response header length
 const HEADER_LENGTH = 16;
+// message flag
+const FLAG_REQUEST = 0x80;
+const FLAG_TWOWAY = 0x40;
+const DEFAULT_DUBBO_PROTOCOL_VERSION = '2.0.2';
 
 //com.alibaba.dubbo.remoting.exchange.Response
 enum DUBBO_RESPONSE_STATUS {
@@ -49,8 +54,47 @@ enum DUBBO_RESPONSE_BODY_FLAG {
   RESPONSE_NULL_VALUE_WITH_ATTACHMENTS = 5,
 }
 
+export function decodeDubboRequest(buff: Buffer): IDubboRequest {
+  let req = null;
+  const flag = buff[2];
+
+  // decode request
+  if ((flag & FLAG_REQUEST) !== 0) {
+    // get requestId
+    const requestId = fromBytes8(buff.slice(4, 12));
+    log('decode requestId -> ', requestId);
+    const twoWay = (flag & FLAG_TWOWAY) !== 0;
+    const body = new Hessian.DecoderV2(buff.slice(HEADER_LENGTH));
+    const dubboVersion = body.read() || DEFAULT_DUBBO_PROTOCOL_VERSION;
+    const dubboInterface = body.read();
+    const version = body.read();
+    const methodName = body.read();
+    const parameterTypes: string = body.read();
+    const len: number = parameterTypes.split(';').filter(Boolean).length;
+    const args: Array<any> = [];
+    for (let i = 0; i < len; i++) {
+      args.push(body.read());
+    }
+    const attachments = body.read();
+
+    req = {
+      requestId,
+      twoWay,
+      dubboVersion,
+      dubboInterface,
+      version,
+      methodName,
+      parameterTypes,
+      args,
+      attachments,
+    };
+  }
+
+  return req;
+}
+
 //com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec.encodeResponse/decode
-export function decode<T>(bytes: Buffer): IDubboResponse<T> {
+export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
   let res = null;
   let err = null;
   let attachments = {};

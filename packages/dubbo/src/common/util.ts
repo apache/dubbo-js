@@ -17,7 +17,7 @@
 
 import {EventEmitter} from 'events';
 import ip from 'ip';
-import {ITrace} from './types';
+import {ITrace} from '../types';
 
 const pid = process.pid;
 const ipAddr = ip.address();

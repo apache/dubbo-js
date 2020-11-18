@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import Context from '../context';
-import DubboUrl from '../dubbo-url';
+import {noop} from '../common/util';
+import Context from '../consumer/context';
+import DubboUrl from '../consumer/dubbo-url';
 import {IRegistrySubscriber} from '../types';
-import {noop} from '../util';
 
 export type TAgentAddr = string;
 export type TDubboInterface = string;
@@ -27,12 +27,12 @@ export type TDubboInterface = string;
  * 抽取注册中心的基类
  */
 export default class Registry<T = {}> {
-  protected _props: T;
+  protected _dubboProps: T;
   protected _subscriber: IRegistrySubscriber;
   protected readonly _dubboServiceUrlMap: Map<TDubboInterface, Array<DubboUrl>>;
 
   constructor(props: T) {
-    this._props = props;
+    this._dubboProps = props;
 
     //保存dubbo接口和服务url之间的映射关系
     this._dubboServiceUrlMap = new Map();

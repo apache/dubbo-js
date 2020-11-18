@@ -16,8 +16,7 @@
  */
 
 import debug from 'debug';
-import {isArray} from 'util';
-import {isFn, isRegExp, isString} from './type';
+import {isArray, isFn, isRegExp, isString} from './type';
 import {IDubboSetting, IRule, TPredictFunction} from './types';
 
 const log = debug('dubbo:dubbo-setting');

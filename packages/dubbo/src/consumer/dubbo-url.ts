@@ -18,7 +18,7 @@
 import debug from 'debug';
 import qs from 'querystring';
 import url, {Url} from 'url';
-import {IQueryObj} from './types';
+import {IQueryObj} from '../types';
 
 const log = debug('dubbo:dubbo-url');
 

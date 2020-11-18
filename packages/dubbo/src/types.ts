@@ -24,10 +24,16 @@ export type TDubboInterface = string;
 /**
  * dubbo对象透传给registry的类型
  */
-export interface IDubboRegistryProps {
+export interface IDubboConsumerRegistryProps {
+  type: 'consumer';
   application?: {name: string};
   interfaces: Array<string>;
   dubboSetting: Setting;
+}
+
+export interface IDubboProviderRegistryProps {
+  type: 'provider';
+  services: Array<[string, string]>;
 }
 
 export interface IRegistrySubscriber {
@@ -82,7 +88,7 @@ export interface IInvokeParam {
 export interface IDubboProps {
   //当前的应用标识
   application: {name: string};
-  register: ((props: IDubboRegistryProps) => Registry) | string;
+  register: ((props: IDubboConsumerRegistryProps) => Registry) | string;
   //当前要注册到dubbo容器的服务对象
   service: Object;
   isSupportedDubbox?: boolean;
@@ -95,7 +101,7 @@ export interface IDubboProps {
 
 //magic, you should use typescript 2.8+
 export type TDubboService<T> = {
-  [k in keyof T]: T[k] extends (dubbo: any) => infer R ? R : any;
+  [k in keyof T]: T[k] extends (dubbo: any) => infer R ? R : any
 };
 
 export interface IDubboResult<T> {
@@ -179,4 +185,50 @@ export type TQueueObserver = Function;
 export interface ICreateConsumerParam {
   name: string;
   dubboInterface: string;
+}
+
+export interface IDubboResponseContext {
+  isHeartbeat: boolean;
+  status: number;
+  data: Object;
+  requestId: number;
+}
+
+export interface IDubboRequest {
+  requestId: number;
+  twoWay: boolean;
+  dubboVersion: string;
+  dubboInterface: string;
+  version: string;
+  methodName: string;
+  args: Array<any>;
+  attachments: {
+    requestId: number;
+    path: string;
+    dubboInterface: string;
+    group: string;
+    timeout: number;
+    version: number;
+    application: {name: string};
+    attachments: Object;
+  };
+}
+
+export interface IDubboService {
+  clazz: string;
+  version: string;
+  group?: string;
+  method: {[key in string]: Function};
+}
+
+export interface IDubboServerProps {
+  port?: number;
+  registry: IZkClientProps | string | Function;
+  services: Array<IDubboService>;
+}
+
+export interface IHeartBeatProps {
+  label: string;
+  transport: Socket;
+  onTimeout?: Function;
 }

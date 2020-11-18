@@ -17,11 +17,11 @@
 
 import debug from 'debug';
 import DubboAgent from './dubbo-agent';
-import {ScheduleError, SocketError, ZookeeperTimeoutError} from './err';
+import {ScheduleError, SocketError, ZookeeperTimeoutError} from '../common/err';
 import Queue from './queue';
-import {Registry} from './registry';
-import {IDubboResponse} from './types';
-import {traceErr, traceInfo} from './util';
+import {Registry} from '../registry';
+import {IDubboResponse} from '../types';
+import {traceErr, traceInfo} from '../common/util';
 
 const log = debug('dubbo:scheduler');
 const enum STATUS {
@@ -72,7 +72,7 @@ export default class Scheduler {
    * handle request in queue
    * @param requestId
    */
-  private _handleQueueRequest = (requestId) => {
+  private _handleQueueRequest = requestId => {
     //record current status
     log(`handle requestId ${requestId}, current status: ${this._status}`);
 

@@ -17,15 +17,15 @@
 
 import debug from 'debug';
 import net from 'net';
+import {noop} from '../common/util';
+import DecodeBuffer from '../serialization/decode-buffer';
+import {decodeDubboResponse} from '../serialization/decode-hessian2';
+import {DubboRequestEncoder} from '../serialization/encode-hessian2';
+import HeartBeat from '../serialization/heartbeat';
+import {IObservable, ISocketSubscriber} from '../types';
 import Context from './context';
-import {decode} from './decode';
-import DecodeBuffer from './decode-buffer';
-import DubboEncoder from './encode';
-import HeartBeat from './heartbeat';
 import {SOCKET_STATUS} from './socket-status';
 import statistics from './statistics';
-import {IObservable, ISocketSubscriber} from './types';
-import {noop} from './util';
 
 let pid = 0;
 //重试次数
@@ -55,7 +55,6 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     this._status = SOCKET_STATUS.PADDING;
 
     log('new SocketWorker#%d|> %s %s', pid, host + ':' + port, this._status);
-    // traceInfo(`new SocketWorker#${this.pid} |> ${host + ':' + port}`);
 
     //init subscriber
     this._subscriber = {
@@ -109,7 +108,7 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     //current dubbo context record the pid
     //when current worker close, fail dubbo request
     ctx.pid = this.pid;
-    const encoder = new DubboEncoder(ctx);
+    const encoder = new DubboRequestEncoder(ctx);
     this.setWriteTimestamp();
     this._socket.write(encoder.encode());
   }
@@ -205,7 +204,10 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
       const now = Date.now();
       if (now - this._lastReadTimestamp > HEART_BEAT * RETRY_HEARD_BEAT_TIME) {
         this._onClose(false);
-      } else if ((now - this._lastWriteTimestamp > HEART_BEAT) ||  (now - this._lastReadTimestamp > HEART_BEAT)){
+      } else if (
+        now - this._lastWriteTimestamp > HEART_BEAT ||
+        now - this._lastReadTimestamp > HEART_BEAT
+      ) {
         log('SocketWorker#${this.pid} emit heartbeat');
         this.setWriteTimestamp();
         this._socket.write(HeartBeat.encode());
@@ -225,13 +227,6 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
         this.port
       } ${error}`,
     );
-    // traceErr(
-    //   new Error(
-    //     `SocketWorker#${this.pid} <=occur error=> ${this.host}:${this.port} ${
-    //       error.message
-    //     }`,
-    //   ),
-    // );
     clearInterval(this._heartBeatTimer);
   };
 
@@ -241,14 +236,6 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
         this.port
       } hasError: ${hadError} retry: ${this._retry}`,
     );
-
-    // traceErr(
-    //   new Error(
-    //     `SocketWorker#${this.pid} <=closed=> ${this.host}:${
-    //       this.port
-    //     } hadError: ${hadError} retry: ${this._retry}`,
-    //   ),
-    // );
 
     //clear buffer
     this._decodeBuff.clearBuffer();
@@ -281,7 +268,7 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     if (HeartBeat.isHeartBeat(data)) {
       log(`SocketWorker#${this.pid} <=receive= heartbeat data.`);
     } else {
-      const json = decode(data);
+      const json = decodeDubboResponse(data);
       log(`SocketWorker#${this.pid} <=received=> dubbo result %O`, json);
       this._subscriber.onData(json);
     }
@@ -294,5 +281,4 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
   private setWriteTimestamp() {
     this._lastReadTimestamp = Date.now();
   }
-
 }

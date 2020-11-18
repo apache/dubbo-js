@@ -17,8 +17,8 @@
 
 import debug from 'debug';
 import SocketWorker from './socket-worker';
-import {IObservable, ISocketSubscriber, TAgentAddr} from './types';
-import {isDevEnv, noop, traceErr, traceInfo} from './util';
+import {IObservable, ISocketSubscriber, TAgentAddr} from '../types';
+import {isDevEnv, noop, traceErr, traceInfo} from '../common/util';
 
 const log = debug('dubbo:dubbo-agent');
 

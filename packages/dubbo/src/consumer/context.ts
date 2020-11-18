@@ -17,7 +17,7 @@
 
 import debug from 'debug';
 import {id} from './request-id';
-import {IContextRequestParam, IDubboResult, IHessianType} from './types';
+import {IContextRequestParam, IDubboResult, IHessianType} from '../types';
 
 const NO_PID = -1;
 const log = debug('dubbo:context');

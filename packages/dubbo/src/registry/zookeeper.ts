@@ -19,37 +19,45 @@ import debug from 'debug';
 import ip from 'ip';
 import zookeeper, {State} from 'node-zookeeper-client';
 import qs from 'querystring';
-import DubboUrl from '../dubbo-url';
+import DubboUrl from '../consumer/dubbo-url';
 import {
   ZookeeperDisconnectedError,
   ZookeeperExpiredError,
   ZookeeperTimeoutError,
-} from '../err';
-import {go} from '../go';
+} from '../common/err';
+import {go} from '../common/go';
 import {
   ICreateConsumerParam,
-  IDubboRegistryProps,
+  IDubboConsumerRegistryProps,
+  IDubboProviderRegistryProps,
   IZkClientProps,
 } from '../types';
-import {isDevEnv, msg, traceErr} from '../util';
+import {isDevEnv, msg, traceErr} from '../common/util';
 import Registry from './registry';
 
 const log = debug('dubbo:zookeeper');
 const ipAddress = ip.address();
 const CHECK_TIME = 30 * 1000;
 
-export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
-  constructor(props: IZkClientProps & IDubboRegistryProps) {
-    super(props);
-    log(`new:|> %O`, props);
+export class ZkRegistry extends Registry<
+  IDubboConsumerRegistryProps | IDubboProviderRegistryProps
+> {
+  constructor(
+    zkProps: IZkClientProps,
+    dubboProp: IDubboConsumerRegistryProps | IDubboProviderRegistryProps,
+  ) {
+    super(dubboProp);
+    this._zkProps = zkProps;
+    log(`new:|> %O`, {...this._zkProps, ...dubboProp});
     //默认dubbo
-    this._props.zkRoot = this._props.zkRoot || 'dubbo';
+    this._zkProps.zkRoot = this._zkProps.zkRoot || 'dubbo';
     //初始化zookeeper的client
     this._connect(this._init);
   }
 
   private _checkTimer: NodeJS.Timer;
   private _client: zookeeper.Client;
+  private _zkProps: IZkClientProps;
 
   //========================private method==========================
   private _init = async (err: Error) => {
@@ -61,12 +69,18 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
       return;
     }
 
+    // if current zk call from dubbo provider, registry provider service to zookeeper
+    if (this._dubboProps.type === 'provider') {
+      this._registryProviderServices();
+      return;
+    }
+
     //zookeeper connected（may be occur many times）
+    const {zkRoot} = this._zkProps;
     const {
-      zkRoot,
       application: {name},
       interfaces,
-    } = this._props;
+    } = this._dubboProps;
 
     //获取所有provider
     for (let inf of interfaces) {
@@ -174,7 +188,7 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
    * connect zookeeper
    */
   private _connect = (callback: (err: Error) => void) => {
-    const {url: register, zkAuthInfo} = this._props;
+    const {url: register, zkAuthInfo} = this._zkProps;
     //debug log
     log(`connecting zkserver ${register}`);
 
@@ -300,13 +314,51 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     });
   };
 
+  private async _registryProviderServices() {
+    const {zkRoot} = this._zkProps;
+    const services = (this._dubboProps as IDubboProviderRegistryProps).services;
+
+    for (let [dubboInterface, dubboUrl] of services) {
+      const providerRoot = `/${zkRoot}/${dubboInterface}/providers`;
+
+      // create provider root path
+      const err = await this._createDubboRootPath(providerRoot);
+      if (err) {
+        log(`create root provider ${providerRoot} %o`, err);
+        continue;
+      }
+
+      dubboUrl = `${providerRoot}/${dubboUrl}`;
+      const existProviderPath = await go(this._exists(dubboUrl));
+      if (existProviderPath.err) {
+        log(
+          `check ${dubboUrl} err: %o , exists: %s`,
+          existProviderPath.err,
+          existProviderPath.res,
+        );
+        continue;
+      }
+      const create = await go(
+        this._create(dubboUrl, zookeeper.CreateMode.EPHEMERAL),
+      );
+
+      if (create.err) {
+        log(`${decodeURIComponent(dubboUrl)} 创建失败 %o`, create.err);
+        return;
+      }
+
+      log(`create successfully provider url: ${decodeURIComponent(dubboUrl)}`);
+    }
+  }
+
   /**
    * com.alibaba.dubbo.registry.zookeeper.ZookeeperRegistry
    */
   private async _createConsumer(params: ICreateConsumerParam) {
     let {name, dubboInterface} = params;
 
-    const dubboSetting = this._props.dubboSetting.getDubboSetting(
+    const dubboSetting = (this
+      ._dubboProps as IDubboConsumerRegistryProps).dubboSetting.getDubboSetting(
       dubboInterface,
     );
 
@@ -329,8 +381,8 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     };
 
     //create root comsumer
-    const consumerRoot = `/${this._props.zkRoot}/${dubboInterface}/consumers`;
-    const err = await this._createRootConsumer(consumerRoot);
+    const consumerRoot = `/${this._zkProps.zkRoot}/${dubboInterface}/consumers`;
+    const err = await this._createDubboRootPath(consumerRoot);
     if (err) {
       log('create root consumer: error %o', err);
       return;
@@ -375,8 +427,8 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     log(`create successfully consumer url: ${decodeURIComponent(consumerUrl)}`);
   }
 
-  private async _createRootConsumer(consumer: string) {
-    let {res, err} = await go(this._exists(consumer));
+  private async _createDubboRootPath(dir: string) {
+    let {res, err} = await go(this._exists(dir));
     //check error
     if (err) {
       return err;
@@ -388,12 +440,12 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
     }
 
     //create current consumer path
-    ({err} = await go(this._create(consumer, zookeeper.CreateMode.PERSISTENT)));
+    ({err} = await go(this._mkdirp(dir)));
     if (err) {
       return err;
     }
 
-    log('create root comsumer %s successfull', consumer);
+    log('create root path %s successfull', dir);
   }
 
   private _create = (path: string, mode: number): Promise<string> => {
@@ -419,12 +471,22 @@ export class ZkRegistry extends Registry<IZkClientProps & IDubboRegistryProps> {
       });
     });
   };
+
+  private _mkdirp(dir: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this._client.mkdirp(dir, (err, path) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(path);
+      });
+    });
+  }
 }
 
 export default function zk(props: IZkClientProps) {
-  return (dubboProps: IDubboRegistryProps) =>
-    new ZkRegistry({
-      ...props,
-      ...dubboProps,
-    });
+  return (
+    dubboProps: IDubboConsumerRegistryProps | IDubboProviderRegistryProps,
+  ) => new ZkRegistry(props, dubboProps);
 }

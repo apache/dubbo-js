@@ -16,9 +16,9 @@
  */
 
 import debug from 'debug';
-import {fromBytes4} from './byte';
-import {IObservable, TDecodeBuffSubscriber} from './types';
-import {noop} from './util';
+import {fromBytes4} from '../common/byte';
+import {IObservable, TDecodeBuffSubscriber} from '../types';
+import {noop} from '../common/util';
 
 const MAGIC_HIGH = 0xda;
 const MAGIC_LOW = 0xbb;
@@ -59,9 +59,8 @@ export default class DecodeBuffer
         log(this._buffer);
 
         log(
-          `receive server data error, buffer[0] is 0xda ${
-            magicHigh == 0xda
-          } buffer[1] is 0xbb ${magicLow == 0xbb}`,
+          `receive server data error, buffer[0] is 0xda ${magicHigh ==
+            0xda} buffer[1] is 0xbb ${magicLow == 0xbb}`,
         );
 
         const magicHighIndex = this._buffer.indexOf(MAGIC_HIGH);

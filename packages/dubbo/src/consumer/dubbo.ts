@@ -18,11 +18,11 @@
 import debug from 'debug';
 import compose from 'koa-compose';
 import {isFunction, isString} from 'util';
-import config from './config';
+import config from '../common/config';
 import Context from './context';
-import {go} from './go';
+import {go} from '../common/go';
 import Queue from './queue';
-import {zk} from './registry';
+import {zk} from '../registry';
 import Scheduler from './scheduler';
 import {
   IDubboProps,
@@ -32,11 +32,11 @@ import {
   ITrace,
   Middleware,
   TDubboService,
-} from './types';
-import {msg, noop, traceInfo} from './util';
+} from '../types';
+import {msg, noop, traceInfo} from '../common/util';
 
 const log = debug('dubbo:bootstrap');
-const packageVersion = require('../package.json').version;
+const packageVersion = require('../../package.json').version;
 log('dubbo-js version :=> %s', packageVersion);
 
 /**
@@ -109,6 +109,7 @@ export default class Dubbo<TService = Object>
     //create scheduler
     Scheduler.from(
       register({
+        type: 'consumer',
         application: props.application,
         interfaces: this._interfaces,
         dubboSetting: props.dubboSetting,

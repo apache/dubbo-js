@@ -16,14 +16,17 @@
  */
 
 import debug from 'debug';
-import config from './config';
+import config from '../common/config';
 import Context from './context';
 import DubboUrl from './dubbo-url';
-import {DubboMethodParamHessianTypeError, DubboTimeoutError} from './err';
+import {
+  DubboMethodParamHessianTypeError,
+  DubboTimeoutError,
+} from '../common/err';
 import SocketWorker from './socket-worker';
 import statistics from './statistics';
-import {IObservable, TQueueObserver, TRequestId} from './types';
-import {isDevEnv, noop, traceErr} from './util';
+import {IObservable, TQueueObserver, TRequestId} from '../types';
+import {isDevEnv, noop, traceErr} from '../common/util';
 
 const log = debug('dubbo:queue');
 
