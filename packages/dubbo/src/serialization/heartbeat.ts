@@ -81,9 +81,7 @@ export default class HeartBeat {
         now - this._lastWriteTimestamp > HEART_BEAT ||
         now - this._lastReadTimestamp > HEART_BEAT
       ) {
-        log(`${this._label} emit heartbeat`);
-        this.setWriteTimestamp();
-        this._transport.write(HeartBeat.encode());
+        this.emit();
       }
     }, HEART_BEAT);
 
@@ -96,6 +94,12 @@ export default class HeartBeat {
       });
   };
 
+  emit() {
+    log(`${this._label} emit heartbeat`);
+    this.setWriteTimestamp();
+    this._transport.write(HeartBeat.encode());
+  }
+
   private destroy = () => {
     clearTimeout(this._heartBeatTimer);
     this._transport = null;
@@ -103,11 +107,11 @@ export default class HeartBeat {
     this._lastWriteTimestamp = -1;
   };
 
-  private setReadTimestamp() {
+  setReadTimestamp() {
     this._lastReadTimestamp = Date.now();
   }
 
-  private setWriteTimestamp() {
+  setWriteTimestamp() {
     this._lastWriteTimestamp = Date.now();
   }
 

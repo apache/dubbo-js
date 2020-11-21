@@ -41,6 +41,7 @@ export default class DubboServer {
   private _services: Array<IDubboService>;
   private _serviceRoute: Map<DubboServiceClazzName, IDubboService>;
   private _server: net.Server;
+  private _heartBeat: HeartBeat;
 
   constructor(props: IDubboServerProps) {
     log('init dubbo-server with: %O', props);
@@ -61,16 +62,16 @@ export default class DubboServer {
     log('start dubbo-server with port %d', this._port);
     this._server = net
       .createServer(socket => {
-        // allocate decodeBuff to each socket connection
-        const decodeBuff = new DecodeBuffer();
-        decodeBuff.subscribe(this._subscribeDecodeBuff(socket));
-
         // init heartbeat
-        HeartBeat.from({
+        this._heartBeat = HeartBeat.from({
           label: 'dubbo-server',
           transport: socket,
           onTimeout: () => socket.destroy(),
         });
+
+        // allocate decodeBuff to each socket connection
+        const decodeBuff = new DecodeBuffer();
+        decodeBuff.subscribe(this._subscribeDecodeBuff(socket));
 
         socket
           .on('data', data => {
@@ -94,8 +95,11 @@ export default class DubboServer {
   }
 
   private _subscribeDecodeBuff = (socket: net.Socket) => (data: Buffer) => {
+    // if current request is heartbeat, reply heartbeat
     if (HeartBeat.isHeartBeat(data)) {
       log(`receive socket client heartbeat`);
+      // send heartbeat
+      this._heartBeat.emit();
       return;
     }
 
@@ -114,6 +118,9 @@ export default class DubboServer {
       args,
       data,
     });
+
+    // update heartbeat lastWriteTimeStamp
+    this._heartBeat.setWriteTimestamp();
 
     // send response
     socket.write(
