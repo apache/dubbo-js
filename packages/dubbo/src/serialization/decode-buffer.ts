@@ -19,10 +19,12 @@ import debug from 'debug';
 import {fromBytes4} from '../common/byte';
 import {IObservable, TDecodeBuffSubscriber} from '../types';
 import {noop} from '../common/util';
+import {
+  DUBBO_HEADER_LENGTH,
+  DUBBO_MAGIC_HIGH,
+  DUBBO_MAGIC_LOW,
+} from './constants';
 
-const MAGIC_HIGH = 0xda;
-const MAGIC_LOW = 0xbb;
-const HEADER_LENGTH = 16;
 const log = debug('dubbo:decode-buffer');
 
 /**
@@ -49,13 +51,13 @@ export default class DecodeBuffer
     this._buffer = Buffer.concat([this._buffer, data]);
     let bufferLength = this._buffer.length;
 
-    while (bufferLength >= HEADER_LENGTH) {
+    while (bufferLength >= DUBBO_HEADER_LENGTH) {
       //判断buffer 0, 1 是不是dubbo的magic high , magic low
       const magicHigh = this._buffer[0];
       const magicLow = this._buffer[1];
 
       //如果不是magichight magiclow 做个容错
-      if (magicHigh != MAGIC_HIGH || magicLow != MAGIC_LOW) {
+      if (magicHigh != DUBBO_MAGIC_HIGH || magicLow != DUBBO_MAGIC_LOW) {
         log(this._buffer);
 
         log(
@@ -63,8 +65,8 @@ export default class DecodeBuffer
             0xda} buffer[1] is 0xbb ${magicLow == 0xbb}`,
         );
 
-        const magicHighIndex = this._buffer.indexOf(MAGIC_HIGH);
-        const magicLowIndex = this._buffer.indexOf(MAGIC_LOW);
+        const magicHighIndex = this._buffer.indexOf(DUBBO_MAGIC_HIGH);
+        const magicLowIndex = this._buffer.indexOf(DUBBO_MAGIC_LOW);
         log(`magicHigh index#${magicHighIndex}`);
         log(`magicLow index#${magicLowIndex}`);
 
@@ -89,19 +91,19 @@ export default class DecodeBuffer
           }
         }
         bufferLength = this._buffer.length;
-        if (bufferLength < HEADER_LENGTH) {
+        if (bufferLength < DUBBO_HEADER_LENGTH) {
           return;
         }
       } else {
         //数据量还不够头部的长度
-        if (bufferLength < HEADER_LENGTH) {
+        if (bufferLength < DUBBO_HEADER_LENGTH) {
           //waiting
           log('bufferLength < header length');
           return;
         }
 
         //取出头部字节
-        const header = this._buffer.slice(0, HEADER_LENGTH);
+        const header = this._buffer.slice(0, DUBBO_HEADER_LENGTH);
         //计算body的长度字节位置[12-15]
         const bodyLengthBuff = Buffer.from([
           header[12],
@@ -112,13 +114,16 @@ export default class DecodeBuffer
         const bodyLength = fromBytes4(bodyLengthBuff);
         log('body length', bodyLength);
 
-        if (HEADER_LENGTH + bodyLength > bufferLength) {
+        if (DUBBO_HEADER_LENGTH + bodyLength > bufferLength) {
           //waiting
           log('header length + body length > buffer length');
           return;
         }
-        const dataBuffer = this._buffer.slice(0, HEADER_LENGTH + bodyLength);
-        this._buffer = this._buffer.slice(HEADER_LENGTH + bodyLength);
+        const dataBuffer = this._buffer.slice(
+          0,
+          DUBBO_HEADER_LENGTH + bodyLength,
+        );
+        this._buffer = this._buffer.slice(DUBBO_HEADER_LENGTH + bodyLength);
         bufferLength = this._buffer.length;
         this._subscriber(dataBuffer);
       }

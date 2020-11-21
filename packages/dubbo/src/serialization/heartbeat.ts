@@ -19,29 +19,25 @@ import debug from 'debug';
 import {Socket} from 'net';
 import {noop} from '../common/util';
 import {IHeartBeatProps} from '../types';
+import {
+  DUBBO_MAGIC_HEADER,
+  DUBBO_FLAG_REQUEST,
+  DUBBO_FLAG_TWOWAY,
+  DUBBO_HEADER_LENGTH,
+  DUBBO_FLAG_EVENT,
+  HESSIAN2_SERIALIZATION_CONTENT_ID,
+} from './constants';
 
 const log = debug('dubbo:heartbeat');
 
-//dubbo的序列化协议
+// Reference
 //com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec
 //encodeRequest
-
-//header length
-const DUBBO_HEADER_LENGTH = 16;
-// magic header.
-const DUBBO_MAGIC_HEADER = 0xdabb;
-// message flag.
-const FLAG_REQUEST = 0x80;
-const FLAG_TWOWAY = 0x40;
-const FLAG_EVENT = 0x20;
 
 //心跳频率
 const HEART_BEAT = 60 * 1000;
 // retry heartbeat
 const RETRY_HEARD_BEAT_TIME = 3;
-
-//com.alibaba.dubbo.common.serialize.support.hessian.Hessian2Serialization中定义
-const HESSIAN2_SERIALIZATION_CONTENT_ID = 2;
 
 /**
  * Heartbeat Manager
@@ -131,10 +127,10 @@ export default class HeartBeat {
 
     // set request and serialization flag.
     buffer[2] =
-      FLAG_REQUEST |
+      DUBBO_FLAG_REQUEST |
       HESSIAN2_SERIALIZATION_CONTENT_ID |
-      FLAG_TWOWAY |
-      FLAG_EVENT;
+      DUBBO_FLAG_TWOWAY |
+      DUBBO_FLAG_EVENT;
 
     //set request id
     //暂时不设置
@@ -152,6 +148,6 @@ export default class HeartBeat {
   static isHeartBeat(buf: Buffer) {
     //获取标记位
     const flag = buf[2];
-    return (flag & FLAG_EVENT) !== 0;
+    return (flag & DUBBO_FLAG_EVENT) !== 0;
   }
 }

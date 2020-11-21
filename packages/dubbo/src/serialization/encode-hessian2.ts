@@ -22,29 +22,23 @@ import Context from '../consumer/context';
 import {DubboEncodeError} from '../common/err';
 import {IDubboResponseContext} from '../types';
 import {isDevEnv} from '../common/util';
+import {
+  DUBBO_MAGIC_HEADER,
+  DUBBO_FLAG_REQUEST,
+  DUBBO_FLAG_TWOWAY,
+  DUBBO_FLAG_EVENT,
+  DUBBO_HEADER_LENGTH,
+  DUBBO_DEFAULT_PAY_LOAD,
+  HESSIAN2_SERIALIZATION_ID,
+  HESSIAN2_SERIALIZATION_CONTENT_ID,
+  DUBBO_RESPONSE_BODY_FLAG,
+} from './constants';
 
 const log = debug('dubbo:hessian:encoderV2');
 
 //dubbo hessian serialization
 //com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec
 //encodeRequest
-
-//header length
-const DUBBO_HEADER_LENGTH = 16;
-// magic header.
-const DUBBO_MAGIC_HEADER = 0xdabb;
-// message flag.
-const FLAG_REQUEST = 0x80;
-const FLAG_TWOWAY = 0x40;
-const HESSIAN2_SERIALIZATION_ID = 2;
-const FLAG_EVENT = 0x20;
-
-//com.alibaba.dubbo.common.serialize.support.hessian.Hessian2Serialization中定义
-const HESSIAN2_SERIALIZATION_CONTENT_ID = 2;
-
-//dubbo最大的body序列化数据的大小
-//com.alibaba.dubbo.common.Constants.DEAULT_PAY_LOAD
-const DUBBO_DEFAULT_PAY_LOAD = 8 * 1024 * 1024; // 8M
 
 export class DubboRequestEncoder {
   constructor(ctx: Context) {
@@ -86,7 +80,10 @@ export class DubboRequestEncoder {
     header[1] = DUBBO_MAGIC_HEADER & 0xff;
 
     // set request and serialization flag.
-    header[2] = FLAG_REQUEST | HESSIAN2_SERIALIZATION_CONTENT_ID | FLAG_TWOWAY;
+    header[2] =
+      DUBBO_FLAG_REQUEST |
+      HESSIAN2_SERIALIZATION_CONTENT_ID |
+      DUBBO_FLAG_TWOWAY;
 
     //requestId
     this.setRequestId(header);
@@ -246,6 +243,10 @@ export class DubboRequestEncoder {
   }
 }
 
+// link
+// src/main/java/org/apache/dubbo/remoting/exchange/support/header/HeaderExchangeHandler.java
+//com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec
+//encodeRequest
 export class DubboResponseEncoder {
   private readonly _ctx: IDubboResponseContext;
 
@@ -269,7 +270,7 @@ export class DubboResponseEncoder {
     header[2] = HESSIAN2_SERIALIZATION_ID;
 
     if (this._ctx.isHeartbeat) {
-      header[2] |= FLAG_EVENT;
+      header[2] |= DUBBO_FLAG_EVENT;
     }
 
     // set response status
@@ -292,13 +293,35 @@ export class DubboResponseEncoder {
 
   encodeBody() {
     const encoder = new Hessian.EncoderV2();
+    // TODO 算法支持
+    const isSupportAttachment = true;
 
-    if (this._ctx.data === null) {
-      encoder.write(2);
+    if (this._ctx.err) {
+      encoder.write(
+        isSupportAttachment
+          ? DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION_WITH_ATTACHMENTS
+          : DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION,
+      );
+      encoder.write(this._ctx.err);
     } else {
-      encoder.write(1);
-      encoder.write(this._ctx.data);
+      if (this._ctx.data === null) {
+        encoder.write(
+          isSupportAttachment
+            ? DUBBO_RESPONSE_BODY_FLAG.RESPONSE_NULL_VALUE_WITH_ATTACHMENTS
+            : DUBBO_RESPONSE_BODY_FLAG.RESPONSE_NULL_VALUE,
+        );
+      } else {
+        encoder.write(
+          isSupportAttachment
+            ? DUBBO_RESPONSE_BODY_FLAG.RESPONSE_VALUE_WITH_ATTACHMENTS
+            : DUBBO_RESPONSE_BODY_FLAG.RESPONSE_VALUE,
+        );
+        encoder.write(this._ctx.data);
+      }
     }
+
+    // TODO check payload length
+
     return encoder.byteBuffer._bytes.slice(0, encoder.byteBuffer._offset);
   }
 }

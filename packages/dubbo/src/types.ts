@@ -191,6 +191,7 @@ export interface IDubboResponseContext {
   isHeartbeat: boolean;
   status: number;
   data: Object;
+  err: Error;
   requestId: number;
 }
 
