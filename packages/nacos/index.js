@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import Registry from './registry';
-import zk from './zookeeper';
-import nacos from './nacos';
+'use strict';
 
-export {Registry, zk, nacos};
+exports.NacosNamingClient = require('./lib/naming/client');

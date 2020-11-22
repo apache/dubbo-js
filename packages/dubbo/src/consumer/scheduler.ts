@@ -17,7 +17,7 @@
 
 import debug from 'debug';
 import DubboAgent from './dubbo-agent';
-import {ScheduleError, SocketError, ZookeeperTimeoutError} from '../common/err';
+import {ScheduleError, SocketError, ClientTimeoutError} from '../common/err';
 import Queue from './queue';
 import {Registry} from '../registry';
 import {IDubboResponse} from '../types';
@@ -50,8 +50,8 @@ export default class Scheduler {
 
     //init ZkClient and subscribe
     this._registry = registry.subscribe({
-      onData: this._handleZkClientOnData,
-      onError: this._handleZkClientError,
+      onData: this._handleClientOnData,
+      onError: this._handleClientError,
     });
   }
 
@@ -102,7 +102,7 @@ export default class Scheduler {
   /**
    * 处理zookeeper的数据
    */
-  private _handleZkClientOnData = (agentSet: Set<string>) => {
+  private _handleClientOnData = (agentSet: Set<string>) => {
     //获取负载列表
     log(`get agent address:=> %O`, agentSet);
 
@@ -127,11 +127,11 @@ export default class Scheduler {
   /**
    * 处理zookeeper的错误
    */
-  private _handleZkClientError = (err: Error) => {
+  private _handleClientError = (err: Error) => {
     log(err);
     traceErr(err);
     //说明zookeeper连接不上
-    if (err instanceof ZookeeperTimeoutError) {
+    if (err instanceof ClientTimeoutError) {
       switch (this._status) {
         // 当zk已经初始化完成后, 相应的provider已经找到了, 如果zk这时出现问题, 不应该让provider不允许调用
         case STATUS.READY:

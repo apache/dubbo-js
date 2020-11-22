@@ -133,6 +133,11 @@ export interface IZkClientProps {
   url: string;
 }
 
+export interface INaocsClientProps {
+  nacosRoot?: string;
+  url: string;
+}
+
 export interface IProviderProps {
   host: string;
   port: number;

@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -15,8 +15,21 @@
  * limitations under the License.
  */
 
-import Registry from './registry';
-import zk from './zookeeper';
-import nacos from './nacos';
+'ues strict';
 
-export {Registry, zk, nacos};
+module.exports = {
+  write: true,
+  prefix: '^',
+  devprefix: '^',
+  exclude: ['test/fixtures'],
+  devdep: [
+    'autod',
+    'egg-ci',
+    'egg-bin',
+    'eslint',
+    'eslint-config-egg',
+    'contributors',
+  ],
+  keep: [],
+  semver: [],
+};

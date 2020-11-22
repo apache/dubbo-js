@@ -58,3 +58,6 @@ es7
 
 examples/hello-egg/typings
 examples/hello-midway/src/typings
+
+nacos-docker/example/standalone-logs/
+nacos-docker/example/cluster-logs/

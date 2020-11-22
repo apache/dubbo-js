@@ -19,11 +19,11 @@ import {Dubbo, setting} from 'apache-dubbo-js';
 import {Application, Context} from 'midway';
 import service from './service';
 
-declare module 'egg' {
-  export interface EggApplication {
-    dubbo: Dubbo<typeof service>;
-  }
-}
+// declare module 'egg' {
+//   export interface EggApplication {
+//     dubbo: Dubbo<typeof service>;
+//   }
+// }
 
 export default async (app: Application) => {
   /**
