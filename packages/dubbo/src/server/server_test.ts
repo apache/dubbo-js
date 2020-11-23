@@ -7,7 +7,7 @@ const server = new DubboServer({
     {
       clazz: 'com.alibaba.dubbo.demo.DemoService',
       version: '1.0.0',
-      method: {
+      methods: {
         sayHello(name: string, rest: boolean) {
           return {name, rest};
         },
@@ -17,6 +17,11 @@ const server = new DubboServer({
       },
     },
   ],
+});
+
+server.use(async (ctx, next) => {
+  console.log(ctx.request.requestId);
+  await next();
 });
 
 server.start();

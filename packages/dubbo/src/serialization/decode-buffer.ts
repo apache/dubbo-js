@@ -24,6 +24,7 @@ import {
   DUBBO_MAGIC_HIGH,
   DUBBO_MAGIC_LOW,
 } from './constants';
+import {Socket} from 'net';
 
 const log = debug('dubbo:decode-buffer');
 
@@ -34,17 +35,28 @@ const log = debug('dubbo:decode-buffer');
  */
 export default class DecodeBuffer
   implements IObservable<TDecodeBuffSubscriber> {
-  /**
-   * 初始化一个DecodeBuffer
-   */
-  constructor() {
+  private _buffer: Buffer;
+  private _transport: Socket;
+  private _subscriber: Function;
+
+  constructor(transport: Socket) {
     log('new DecodeBuffer');
-    this._buffer = Buffer.alloc(0);
     this._subscriber = noop;
+    this._buffer = Buffer.alloc(0);
+    this._transport = transport;
+
+    process.nextTick(() => {
+      this._transport
+        .on('data', (data: Buffer) => this.receive(data))
+        .on('close', () => {
+          this.clearBuffer();
+        });
+    });
   }
 
-  private _buffer: Buffer;
-  private _subscriber: Function;
+  static from(transport: Socket) {
+    return new DecodeBuffer(transport);
+  }
 
   receive(data: Buffer) {
     //concat bytes

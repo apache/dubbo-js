@@ -16,7 +16,7 @@
  */
 
 import java from 'js-to-java';
-import Context from './consumer/context';
+import RequestContext from './consumer/request-context';
 import DirectlyDubbo from './consumer/directly-dubbo';
 import Dubbo from './consumer/dubbo';
 import {go} from './common/go';
@@ -32,7 +32,7 @@ export {
   DirectlyDubbo,
   // tools
   java,
-  Context,
+  RequestContext as Context,
   go,
   setting,
   // registry

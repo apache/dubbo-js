@@ -26,7 +26,7 @@ const sleep = (delay: number) =>
     }, delay);
   });
 
-let server = null;
+let server: DubboServer = null;
 beforeAll(async () => {
   server = new DubboServer({
     port: 20880,
@@ -35,16 +35,21 @@ beforeAll(async () => {
       {
         clazz: 'com.alibaba.dubbo.demo.DemoService',
         version: '1.0.0',
-        method: {
+        methods: {
           sayHello(name: string, rest: boolean) {
             return {name, rest};
           },
-          getUserInfo(userInfo: Object) {
+          async getUserInfo(userInfo: Object) {
             return userInfo;
           },
         },
       },
     ],
+  });
+
+  server.use(async (ctx, next) => {
+    console.log(`dubbo-server receive requestId:`, ctx.request.requestId);
+    await next();
   });
   server.start();
 
@@ -136,6 +141,12 @@ it('test dubbo invoke', async () => {
     dubboSetting,
     service,
   });
+
+  dubbo.use(async (ctx, next) => {
+    console.log(`dubbo consumer send request:` + ctx.requestId);
+    await next();
+  });
+
   expect(await dubbo.service.demoService.sayHello('hello world', 1)).toEqual({
     err: null,
     res: {

@@ -16,7 +16,7 @@
  */
 
 import debug from 'debug';
-import Context from './context';
+import RequestContext from './request-context';
 import {go} from '../common/go';
 import {SOCKET_STATUS} from './socket-status';
 import SocketWorker from './socket-worker';
@@ -73,7 +73,7 @@ export default class DirectlyDubbo {
 
   private readonly _props: IDirectlyDubboProps;
   private readonly _socketWorker: SocketWorker;
-  private readonly _queue: Map<number, Context>;
+  private readonly _queue: Map<number, RequestContext>;
   private _socketStatus: SOCKET_STATUS;
 
   static from(props: IDirectlyDubboProps) {
@@ -96,7 +96,7 @@ export default class DirectlyDubbo {
       proxy[methodName] = (...args: Array<IHessianType>) => {
         return go(
           new Promise((resolve, reject) => {
-            const ctx = Context.create();
+            const ctx = RequestContext.create();
             ctx.resolve = resolve;
             ctx.reject = reject;
 
@@ -173,7 +173,7 @@ export default class DirectlyDubbo {
     this._queue.delete(requestId);
   }
 
-  private addQueue(ctx: Context) {
+  private addQueue(ctx: RequestContext) {
     const {requestId} = ctx;
     this._queue.set(requestId, ctx);
 

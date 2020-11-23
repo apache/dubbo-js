@@ -190,11 +190,12 @@ export interface ICreateConsumerParam {
 }
 
 export interface IDubboResponseContext {
-  isHeartbeat: boolean;
   status: number;
   data: Object;
   err: Error;
   requestId: number;
+  version: string;
+  attachments: Object;
 }
 
 export interface IDubboRequest {
@@ -221,7 +222,7 @@ export interface IDubboService {
   clazz: string;
   version: string;
   group?: string;
-  method: {[key in string]: Function};
+  methods: {[key in string]: Function};
 }
 
 export interface IDubboServerProps {

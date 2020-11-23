@@ -17,7 +17,6 @@
 
 import debug from 'debug';
 import Hessian from 'hessian.js';
-import {DubboServer} from '..';
 import {fromBytes8} from '../common/byte';
 import {DubboDecodeError} from '../common/err';
 import {IDubboResponse} from '../types';
@@ -26,10 +25,8 @@ import {
   DUBBO_RESPONSE_BODY_FLAG,
   DUBBO_RESPONSE_STATUS,
   DUBBO_FLAG_REQUEST,
-  DUBBO_FLAG_TWOWAY,
   DUBBO_HEADER_LENGTH,
   HESSIAN2_SERIALIZATION_CONTENT_ID,
-  DUBBO_FLAG_EVENT,
 } from './constants';
 import Request from './request';
 
@@ -45,23 +42,18 @@ export function decodeDubboRequest(buff: Buffer): Request {
   // decode request
   if ((flag & DUBBO_FLAG_REQUEST) !== 0) {
     req.version = DEFAULT_DUBBO_PROTOCOL_VERSION;
-    req.twoWay = (flag & DUBBO_FLAG_TWOWAY) !== 0;
-    if ((flag & DUBBO_FLAG_EVENT) !== 0) {
-      req.event = true;
-    }
 
     const decoder = new Hessian.DecoderV2(buff.slice(DUBBO_HEADER_LENGTH));
     // decode request
     const dubboVersion = decoder.read();
     req.version = dubboVersion;
-
-    req.attachment.set('dubbo', DubboServer);
+    req.attachment.dubbo = dubboVersion;
 
     const path = decoder.read();
-    req.attachment.set('path', path);
+    req.attachment.path = path;
 
     const version = decoder.read();
-    req.attachment.set('version', version);
+    req.attachment.version = version;
 
     const methodName = decoder.read();
     req.methodName = methodName;
@@ -81,10 +73,10 @@ export function decodeDubboRequest(buff: Buffer): Request {
     }
 
     // merge attachment
-    const attachmentMap = decoder.read();
-    if (attachmentMap !== null) {
-      Object.keys(attachmentMap).forEach(k => {
-        req.attachment[k] = attachmentMap[k];
+    const attachment = decoder.read();
+    if (attachment !== null) {
+      Object.keys(attachment).forEach(k => {
+        req.attachment[k] = attachment[k];
       });
     }
   }

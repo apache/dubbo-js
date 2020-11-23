@@ -22,7 +22,7 @@ import {IContextRequestParam, IDubboResult, IHessianType} from '../types';
 const NO_PID = -1;
 const log = debug('dubbo:context');
 
-export default class Context<T = any> {
+export default class RequestContext<T = any> {
   private constructor() {
     log('new Context');
     //trace id
@@ -106,12 +106,12 @@ export default class Context<T = any> {
   private _providerAttachments: Object;
 
   static create<T = any>() {
-    return new Context<T>();
+    return new RequestContext<T>();
   }
 
   get isMethodArgsHessianType() {
     const {methodArgs} = this._request;
-    return methodArgs.every(Context._checkHessianParam);
+    return methodArgs.every(RequestContext._checkHessianParam);
   }
 
   get request() {

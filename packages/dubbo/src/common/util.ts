@@ -78,3 +78,64 @@ export const delay = (timeout: number) => {
     setTimeout(resolve, timeout);
   });
 };
+
+export class Version {
+  private static version2Int = new Map<string, number>();
+  static LEGACY_DUBBO_PROTOCOL_VERSION = 10000;
+  static LOWEST_VERSION_FOR_RESPONSE_ATTACHMENT = 2000200; // 2.0.2
+  static HIGHEST_PROTOCOL_VERSION = 2009900; // 2.0.99
+
+  static isSupportResponseAttachment(version: string) {
+    if (!version) {
+      return false;
+    }
+    const v = Version.getIntVersion(version);
+    if (
+      v >= Version.LOWEST_VERSION_FOR_RESPONSE_ATTACHMENT &&
+      v <= Version.HIGHEST_PROTOCOL_VERSION
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  static getIntVersion(version: string) {
+    let v = Version.version2Int.get(version);
+    if (!v) {
+      try {
+        v = Version.parseInt(version);
+        if (version.split('.').length == 3) {
+          v = v * 100;
+        }
+      } catch (err) {
+        console.error(
+          'Please make sure your version value has the right format: ' +
+            '\n 1. only contains digital number: 2.0.0; \n 2. with string suffix: 2.6.7-stable. ' +
+            '\nIf you are using Dubbo before v2.6.2, the version value is the same with the jar version.',
+        );
+        v = this.LEGACY_DUBBO_PROTOCOL_VERSION;
+      }
+      this.version2Int.set(version, v);
+    }
+    return v;
+  }
+
+  static parseInt(version: string) {
+    let v = 0;
+    const vArr = version.split('.');
+    const len = vArr.length;
+    for (let i = 0; i < len; i++) {
+      const subv = Version.getPrefixDigits(vArr[i]);
+      if (subv) {
+        v += parseInt(subv) * Math.pow(10, (len - i - 1) * 2);
+      }
+    }
+    return v;
+  }
+
+  static getPrefixDigits(v: string): string {
+    const match = v.match(/^([0-9]*).*/);
+    return match ? match[1] : '';
+  }
+}

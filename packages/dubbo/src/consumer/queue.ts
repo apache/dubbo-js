@@ -17,7 +17,7 @@
 
 import debug from 'debug';
 import config from '../common/config';
-import Context from './context';
+import RequestContext from './request-context';
 import DubboUrl from './dubbo-url';
 import {
   DubboMethodParamHessianTypeError,
@@ -50,7 +50,7 @@ export default class Queue implements IObservable<TQueueObserver> {
   //订阅者
   private _subscriber: Function;
   //请求队列
-  private readonly _requestQueue: Map<TRequestId, Context>;
+  private readonly _requestQueue: Map<TRequestId, RequestContext>;
 
   private _clear(requestId) {
     log(`clear invoke and schedule queue #${requestId}`);
@@ -68,7 +68,7 @@ export default class Queue implements IObservable<TQueueObserver> {
     return new Queue();
   }
 
-  add = (ctx: Context) => {
+  add = (ctx: RequestContext) => {
     return new Promise((resolve, reject) => {
       ctx.resolve = resolve;
       ctx.reject = reject;
@@ -207,7 +207,7 @@ export default class Queue implements IObservable<TQueueObserver> {
    * 检测方法参数是不是都是hessian格式
    * @param ctx
    */
-  private static _checkMethodArgsHessianType(ctx: Context) {
+  private static _checkMethodArgsHessianType(ctx: RequestContext) {
     if (ctx.isMethodArgsHessianType) {
       return true;
     }
@@ -233,7 +233,7 @@ export default class Queue implements IObservable<TQueueObserver> {
    * 超时检测
    * @param ctx
    */
-  private _checkTimeout(ctx: Context) {
+  private _checkTimeout(ctx: RequestContext) {
     //先获取上下文设置的超时时间，如果没有设置就获取最大超时时间
     const timeout = (ctx.timeout || config.dubboInvokeTimeout) * 1000;
     log('check timeout: ctx.timeout-> %d @timeout: %d', ctx.timeout, timeout);
