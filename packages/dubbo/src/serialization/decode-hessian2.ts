@@ -9,7 +9,7 @@
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * distributed under the License is distributed on an "AS IS" BASIS
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
@@ -17,6 +17,7 @@
 
 import debug from 'debug';
 import Hessian from 'hessian.js';
+import {DubboServer} from '..';
 import {fromBytes8} from '../common/byte';
 import {DubboDecodeError} from '../common/err';
 import {IDubboResponse} from '../types';
@@ -32,9 +33,9 @@ import {
 } from './constants';
 import Request from './request';
 
-const log = debug('dubbo:hessian:DecoderV2');
-
 export function decodeDubboRequest(buff: Buffer): Request {
+  const log = debug('dubbo:decodeDubboRequest');
+
   const flag = buff[2];
   // get requestId
   const requestId = fromBytes8(buff.slice(4, 12));
@@ -50,42 +51,42 @@ export function decodeDubboRequest(buff: Buffer): Request {
     }
 
     const decoder = new Hessian.DecoderV2(buff.slice(DUBBO_HEADER_LENGTH));
+    // decode request
+    const dubboVersion = decoder.read();
+    req.version = dubboVersion;
 
-    if (req.event) {
-      // decode event
-    } else {
-      // decode request
-      const dubboVersion = decoder.read();
-      req.version = dubboVersion;
+    req.attachment.set('dubbo', DubboServer);
 
-      const attachments = new Map();
-      const path = decoder.read();
-      const version = decoder.read();
-      const methodName = decoder.read();
-      const desc = decoder.read();
+    const path = decoder.read();
+    req.attachment.set('path', path);
+
+    const version = decoder.read();
+    req.attachment.set('version', version);
+
+    const methodName = decoder.read();
+    req.methodName = methodName;
+
+    const desc: string = decoder.read();
+    req.parameterTypeDesc = desc;
+
+    if (desc.length > 0) {
+      const paramaterTypes: Array<string> = desc.split(';').filter(Boolean);
+      req.parameterTypes = paramaterTypes;
+      const len = paramaterTypes.length;
+      const args = [];
+      for (let i = 0; i < len; i++) {
+        args.push(decoder.read());
+      }
+      req.args = args;
     }
-    // const dubboInterface = body.read();
-    // const version = body.read();
-    // const methodName = body.read();
-    // const parameterTypes: string = body.read();
-    // const len: number = parameterTypes.split(';').filter(Boolean).length;
-    // const args: Array<any> = [];
-    // for (let i = 0; i < len; i++) {
-    //   args.push(body.read());
-    // }
-    // const attachments = body.read();
 
-    // req = {
-    //   requestId,
-    //   twoWay,
-    //   dubboVersion,
-    //   dubboInterface,
-    //   version,
-    //   methodName,
-    //   parameterTypes,
-    //   args,
-    //   attachments,
-    // };
+    // merge attachment
+    const attachmentMap = decoder.read();
+    if (attachmentMap !== null) {
+      Object.keys(attachmentMap).forEach(k => {
+        req.attachment[k] = attachmentMap[k];
+      });
+    }
   }
 
   return req;
@@ -93,6 +94,8 @@ export function decodeDubboRequest(buff: Buffer): Request {
 
 //com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec.encodeResponse/decode
 export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
+  const log = debug('dubbo:decodeDubboResponse');
+
   let res = null;
   let err = null;
   let attachments = {};

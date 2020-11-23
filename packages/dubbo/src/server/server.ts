@@ -108,6 +108,9 @@ export default class DubboServer {
     const {requestId, methodName, dubboInterface, args} = decodeDubboRequest(
       data,
     );
+
+    // TODO methodName判断是不是存在
+    // 不存在 就报ServiceNotFound with path methodName
     const service = this._serviceRoute.get(dubboInterface);
     const fn = service.method[methodName];
     const ret = fn.apply(service, args);

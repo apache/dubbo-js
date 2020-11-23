@@ -26,12 +26,13 @@ import {
   DUBBO_MAGIC_HEADER,
   DUBBO_FLAG_REQUEST,
   DUBBO_FLAG_TWOWAY,
-  DUBBO_FLAG_EVENT,
   DUBBO_HEADER_LENGTH,
   DUBBO_DEFAULT_PAY_LOAD,
   HESSIAN2_SERIALIZATION_ID,
   HESSIAN2_SERIALIZATION_CONTENT_ID,
   DUBBO_RESPONSE_BODY_FLAG,
+  DUBBO_MAGIC_HIGH,
+  DUBBO_MAGIC_LOW,
 } from './constants';
 
 const log = debug('dubbo:hessian:encoderV2');
@@ -101,7 +102,7 @@ export class DubboRequestEncoder {
     return header;
   }
 
-  private setRequestId(header) {
+  private setRequestId(header: Buffer) {
     const {requestId} = this._ctx;
     log(`encode header requestId: ${requestId}`);
     const buffer = toBytes8(requestId);
@@ -243,7 +244,6 @@ export class DubboRequestEncoder {
   }
 }
 
-// link
 // src/main/java/org/apache/dubbo/remoting/exchange/support/header/HeaderExchangeHandler.java
 //com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec
 //encodeRequest
@@ -263,29 +263,25 @@ export class DubboResponseEncoder {
   encodeHead(payload: number) {
     const header = Buffer.alloc(DUBBO_HEADER_LENGTH);
     // set magic number
-    header[0] = DUBBO_MAGIC_HEADER >>> 8;
-    header[1] = DUBBO_MAGIC_HEADER & 0xff;
+    header[0] = DUBBO_MAGIC_HIGH;
+    header[1] = DUBBO_MAGIC_LOW;
 
     // set request and serialization flag.
     header[2] = HESSIAN2_SERIALIZATION_ID;
-
-    if (this._ctx.isHeartbeat) {
-      header[2] |= DUBBO_FLAG_EVENT;
-    }
 
     // set response status
     header[3] = 20;
 
     //set requestId
-    const buffer = toBytes8(this._ctx.requestId);
-    header[4] = buffer[0];
-    header[5] = buffer[1];
-    header[6] = buffer[2];
-    header[7] = buffer[3];
-    header[8] = buffer[4];
-    header[9] = buffer[5];
-    header[10] = buffer[6];
-    header[11] = buffer[7];
+    const reqIdBuf = toBytes8(this._ctx.requestId);
+    header[4] = reqIdBuf[0];
+    header[5] = reqIdBuf[1];
+    header[6] = reqIdBuf[2];
+    header[7] = reqIdBuf[3];
+    header[8] = reqIdBuf[4];
+    header[9] = reqIdBuf[5];
+    header[10] = reqIdBuf[6];
+    header[11] = reqIdBuf[7];
 
     header.writeUInt32BE(payload, 12);
     return header;

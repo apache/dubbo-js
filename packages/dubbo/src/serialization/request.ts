@@ -9,6 +9,11 @@ export default class Request {
   _event: boolean;
   broken: boolean;
   data: Object | string;
+  methodName: string;
+  parameterTypeDesc: string;
+  parameterTypes: Array<string>;
+  args: Array<any>;
+  attachment: Map<string, Object> = new Map();
 
   constructor(requestId: number) {
     this.requestId = requestId;

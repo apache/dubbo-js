@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import net from 'net';
 import Registry from './registry/registry';
 import {Setting} from './setting';
 
@@ -229,7 +231,7 @@ export interface IDubboServerProps {
 }
 
 export interface IHeartBeatProps {
-  label: string;
-  transport: Socket;
+  type: 'request' | 'response';
+  transport: net.Socket;
   onTimeout?: Function;
 }
