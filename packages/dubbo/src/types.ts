@@ -93,12 +93,16 @@ export interface IDubboProps {
   register: ((props: IDubboConsumerRegistryProps) => Registry) | string;
   //当前要注册到dubbo容器的服务对象
   service: Object;
+  dubboSetting: Setting;
   isSupportedDubbox?: boolean;
   //dubbo调用最大超时时间单位为秒，默认5s
   dubboInvokeTimeout?: number;
   //dubbo为每个dubbo-agent创建的socketpool数量，默认1
   dubboSocketPool?: number;
-  dubboSetting: Setting;
+  /**
+   * dubbo protocal version
+   */
+  dubboVersion?: string;
 }
 
 //magic, you should use typescript 2.8+

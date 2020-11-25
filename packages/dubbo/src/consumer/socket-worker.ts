@@ -168,7 +168,6 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     DecodeBuffer.from(this._socket).subscribe(data => {
       if (HeartBeat.isHeartBeat(data)) {
         log(`SocketWorker#${this.pid} <=receive= heartbeat data.`);
-        this._heartBeat.emit();
       } else {
         const json = decodeDubboResponse(data);
         log(`SocketWorker#${this.pid} <=received=> dubbo result %O`, json);

@@ -27,6 +27,7 @@ import SocketWorker from './socket-worker';
 import statistics from './statistics';
 import {IObservable, TQueueObserver, TRequestId} from '../types';
 import {isDevEnv, noop, traceErr} from '../common/util';
+import {DEFAULT_DUBBO_PROTOCOL_VERSION} from '../serialization/constants';
 
 const log = debug('dubbo:queue');
 
@@ -169,7 +170,10 @@ export default class Queue implements IObservable<TQueueObserver> {
     log(`staring schedule ${requestId}#${dubboInterface}#${version}`);
 
     //merge dubboVersion timeout group
-    request.dubboVersion = providerMeta.dubboVersion;
+    request.dubboVersion =
+      request.dubboVersion ||
+      providerMeta.dubboVersion ||
+      DEFAULT_DUBBO_PROTOCOL_VERSION;
     request.group = request.group || providerMeta.group;
     request.path = providerMeta.path;
     try {

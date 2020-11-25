@@ -168,6 +168,9 @@ export default class Dubbo<TService = Object>
         ctx.application = application;
         ctx.isSupportedDubbox = isSupportedDubbox;
 
+        // set dubbo version
+        ctx.dubboVersion = this._props.dubboVersion;
+
         const method = methods[name];
         ctx.methodName = name;
         ctx.methodArgs = method.call(provider, ...args) || [];

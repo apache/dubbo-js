@@ -168,7 +168,7 @@ export default class Scheduler {
 
     //if could not find any available socket agent worker
     if (!worker) {
-      const {requestId, dubboInterface, version, group} = ctx;
+      const {dubboInterface, version, group} = ctx;
       const msg = `requestId#${requestId}:Could not find any agent worker with ${dubboInterface}#${version}#${group} agentList: ${agentAddrList.join(
         ',',
       )}`;

@@ -300,7 +300,6 @@ export class DubboResponseEncoder {
       const isSupportAttachment = Version.isSupportResponseAttachment(
         this._ctx.request.version,
       );
-
       if (this._ctx.body.err) {
         encoder.write(
           isSupportAttachment
