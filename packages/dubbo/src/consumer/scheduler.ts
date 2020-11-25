@@ -158,18 +158,42 @@ export default class Scheduler {
   private _handleDubboInvoke(requestId: number) {
     //get request context
     const ctx = this._queue.requestQueue.get(requestId);
+
+    // match any agent?
+    const hasAgent = this._registry.hasAgentAddr(ctx);
+    if (!hasAgent) {
+      const {dubboInterface} = ctx;
+      const err = new ScheduleError(
+        `requestId#${requestId}:Could not find any agent worker with ${dubboInterface}`,
+      );
+      this._handleFailed(requestId, err);
+      log(err);
+      return;
+    }
+
     // get agent addr map
     const agentAddrMap = this._registry.getAgentAddrMap(ctx);
 
     //get socket agent list
     const agentAddrList = Object.keys(agentAddrMap);
     log('agentAddrSet-> %O', agentAddrList);
+
+    if (agentAddrList.length === 0) {
+      const {dubboInterface, version, group} = ctx;
+      const msg = `requestId#${requestId} Could not find any match service with ${dubboInterface}#${version}#${group ||
+        ''}`;
+      const err = new ScheduleError(msg);
+      this._handleFailed(requestId, err);
+      log(err);
+      return;
+    }
+
     const worker = this._dubboAgent.getAvailableSocketWorker(agentAddrList);
 
     //if could not find any available socket agent worker
     if (!worker) {
       const {dubboInterface, version, group} = ctx;
-      const msg = `requestId#${requestId}:Could not find any agent worker with ${dubboInterface}#${version}#${group} agentList: ${agentAddrList.join(
+      const msg = `requestId#${requestId}:Could not find any available agent worker with ${dubboInterface}#${version}#${group} agentList: ${agentAddrList.join(
         ',',
       )}`;
       const err = new ScheduleError(msg);

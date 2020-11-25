@@ -59,6 +59,7 @@ export default class Registry<T = {}> {
    */
   getAgentAddrMap(ctx: RequestContext): {[name: string]: DubboUrl} {
     const {dubboInterface, version, group} = ctx;
+
     return this._dubboServiceUrlMap
       .get(dubboInterface)
       .filter(serviceProp => {
@@ -75,5 +76,10 @@ export default class Registry<T = {}> {
         reducer[`${host}:${port}`] = prop;
         return reducer;
       }, Object.create(null));
+  }
+
+  hasAgentAddr(ctx: RequestContext) {
+    const agentAddr = this._dubboServiceUrlMap.get(ctx.dubboInterface);
+    return agentAddr && agentAddr.length > 0;
   }
 }
