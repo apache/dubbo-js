@@ -26,7 +26,6 @@ import HeartBeat from '../serialization/heartbeat';
 import DecodeBuffer from '../serialization/decode-buffer';
 import ResponseContext, {ResponseStatus} from './response-context';
 import Request from '../serialization/request';
-import {go} from '../common/go';
 import compose from 'koa-compose';
 
 import {
@@ -141,7 +140,7 @@ export default class DubboServer {
         let err = null;
         let res = null;
         try {
-          res = await method.apply(service, [...request.args, ctx]);
+          res = await method.apply(service, [...(request.args || []), ctx]);
         } catch (error) {
           err = error;
         }
@@ -151,6 +150,7 @@ export default class DubboServer {
         };
       },
     ];
+
     log('middleware->', middlewares);
     const fn = compose(middlewares);
 
