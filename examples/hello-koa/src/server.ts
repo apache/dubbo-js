@@ -17,7 +17,7 @@
 
 import Koa from 'koa';
 import Router from 'koa-router';
-import dubbo from './dubbo/dubbo';
+import dubbo from './dubbo/consumer/dubbo';
 
 const app = new Koa();
 const router = new Router();
@@ -43,13 +43,13 @@ router.get('/echo', async ctx => {
 
 router.get('/type', async ctx => {
   const {res, err} = await dubbo.service.basicTypeProvider.testBasicType();
-  ctx.body = res;
+  ctx.body = res || err.message;
 });
 
 router.get('/exp', async ctx => {
-  const {err, res} = await dubbo.service.errorProvider.errorTest();
-  console.log(err);
-  ctx.body = 'ok';
+  const {res, err} = await dubbo.service.errorProvider.errorTest();
+  console.log(res);
+  ctx.body = err.message;
 });
 
 router.get('/tracer', async ctx => {

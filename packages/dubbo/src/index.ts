@@ -22,7 +22,7 @@ import Dubbo from './consumer/dubbo';
 import {go} from './common/go';
 import {Registry, zk} from './registry';
 import setting from './setting';
-import {TDubboCallResult} from './types';
+import {IDubboService, TDubboCallResult} from './types';
 import DubboServer from './server/server';
 
 export {
@@ -40,4 +40,5 @@ export {
   Registry,
   // types
   TDubboCallResult,
+  IDubboService,
 };
