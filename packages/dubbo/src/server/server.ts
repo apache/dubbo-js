@@ -116,7 +116,7 @@ export default class DubboServer {
   private async _invokeRequest(data: Buffer) {
     const request = decodeDubboRequest(data);
     const service = this.matchService(request);
-    const ctx = new ResponseContext(request);
+    const context = new ResponseContext(request);
 
     const {
       methodName,
@@ -125,11 +125,11 @@ export default class DubboServer {
 
     // service not found
     if (!service) {
-      ctx.status = ResponseStatus.SERVICE_NOT_FOUND;
-      ctx.body.err = new Error(
+      context.status = ResponseStatus.SERVICE_NOT_FOUND;
+      context.body.err = new Error(
         `Service not found with ${path} and ${methodName}, group:${group}, version:${version}`,
       );
-      return ctx;
+      return context;
     }
 
     const middlewares = [
@@ -155,13 +155,13 @@ export default class DubboServer {
     const fn = compose(middlewares);
 
     try {
-      await fn(ctx);
+      await fn(context);
     } catch (err) {
       log(err);
-      ctx.status = ResponseStatus.SERVER_ERROR;
-      ctx.body.err = err;
+      context.status = ResponseStatus.SERVER_ERROR;
+      context.body.err = err;
     }
-    return ctx;
+    return context;
   }
 
   private _registerServices() {
@@ -199,6 +199,14 @@ export default class DubboServer {
           group,
           version,
           method: methodName,
+          side: 'provider',
+          pid: process.pid,
+          generic: false,
+          protocal: 'dubbo',
+          dynamic: true,
+          category: 'providers',
+          anyhost: true,
+          timestamp: Date.now(),
         }),
     );
   }

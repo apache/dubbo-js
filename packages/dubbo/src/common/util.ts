@@ -23,13 +23,8 @@ const pid = process.pid;
 const ipAddr = ip.address();
 
 export const msg = new EventEmitter();
-
-export const isDevEnv = process.env.NODE_ENV !== 'production';
-
-/**
- * yes, just do nothing.
- */
 export const noop = () => {};
+export const isDevEnv = process.env.NODE_ENV !== 'production';
 
 /**
  * trace log
@@ -79,6 +74,9 @@ export const delay = (timeout: number) => {
   });
 };
 
+/**
+ * Dubbo Version
+ */
 export class Version {
   private static version2Int = new Map<string, number>();
   static LEGACY_DUBBO_PROTOCOL_VERSION = 10000;
