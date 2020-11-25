@@ -306,7 +306,7 @@ export class DubboResponseEncoder {
             ? DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION_WITH_ATTACHMENTS
             : DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION,
         );
-        encoder.write(this._ctx.body.err);
+        encoder.write(this._ctx.body.err.message);
       } else {
         if (this._ctx.body.res === null) {
           encoder.write(

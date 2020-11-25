@@ -18,7 +18,7 @@
 import debug from 'debug';
 import Hessian from 'hessian.js';
 import {fromBytes8} from '../common/byte';
-import {DubboDecodeError} from '../common/err';
+import {DubboDecodeError, DubboServiceError} from '../common/err';
 import {IDubboResponse} from '../types';
 import {
   DEFAULT_DUBBO_PROTOCOL_VERSION,
@@ -118,17 +118,19 @@ export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
     }`,
   );
 
+  //com.alibaba.dubbo.rpc.protocol.dubbo.DecodeableRpcResult
+  const body = new Hessian.DecoderV2(bytes.slice(DUBBO_HEADER_LENGTH));
+
   if (status != DUBBO_RESPONSE_STATUS.OK) {
     return {
-      err: new DubboDecodeError(bytes.slice(DUBBO_HEADER_LENGTH).toString()),
+      err: new DubboServiceError(body.read()),
       res: null,
       attachments,
       requestId,
     };
   }
 
-  //com.alibaba.dubbo.rpc.protocol.dubbo.DecodeableRpcResult
-  const body = new Hessian.DecoderV2(bytes.slice(DUBBO_HEADER_LENGTH));
+  // current status flag
   const flag = body.readInt();
 
   log(
@@ -153,7 +155,7 @@ export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
       err =
         exception instanceof Error
           ? exception
-          : new DubboDecodeError(exception);
+          : new DubboServiceError(exception);
       res = null;
       attachments = {};
       break;
@@ -169,7 +171,7 @@ export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
       break;
     case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION_WITH_ATTACHMENTS:
       const exp = body.read();
-      err = exp instanceof Error ? exp : new DubboDecodeError(exp);
+      err = exp instanceof Error ? exp : new DubboServiceError(exp);
       res = null;
       attachments = body.read();
       break;
@@ -180,10 +182,5 @@ export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
       res = null;
   }
 
-  return {
-    requestId,
-    err,
-    res,
-    attachments,
-  };
+  return {requestId, err, res, attachments};
 }
