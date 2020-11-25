@@ -49,14 +49,20 @@ export default class DubboServer {
   private readonly _middlewares: Array<Middleware<ResponseContext>>;
 
   constructor(props: IDubboServerProps) {
-    log('init dubbo-server with: %O', props);
-
     const {port, services} = props;
     this._port = port || 20880;
     this._registry = props.registry;
     this._middlewares = [];
     this._services = services || [];
     this._serviceMap = new Map();
+
+    // debug log
+    log(`init service with port: %d`, this._port);
+    for (let service of this._services) {
+      const methods = Object.keys(service.methods);
+      const s = {...service, methods};
+      log('registry services %j', s);
+    }
   }
 
   public static from(props: IDubboServerProps) {
@@ -65,10 +71,10 @@ export default class DubboServer {
 
   start = () => {
     // TODO 完善promise机制
-    log('start dubbo-server with port %d', this._port);
     this._server = net
       .createServer(this._handleSocketRequest)
       .listen(this._port, () => {
+        log('start dubbo-server with port %d', this._port);
         this._registerServices();
       });
   };
@@ -151,7 +157,7 @@ export default class DubboServer {
       },
     ];
 
-    log('middleware->', middlewares);
+    log('middleware stack =>', middlewares);
     const fn = compose(middlewares);
 
     try {
