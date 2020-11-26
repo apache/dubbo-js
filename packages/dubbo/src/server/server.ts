@@ -174,7 +174,7 @@ export default class DubboServer {
     const services = this._services;
     // init serviceMap
     for (let service of services) {
-      this._serviceMap.set(service.clazz, service);
+      this._serviceMap.set(service.dubboInterface, service);
     }
 
     const registryService = [];
@@ -184,7 +184,7 @@ export default class DubboServer {
       // dubbo://127.0.0.1:3000/org.apache.dubbo.js.HelloWorld?group=fe&version=1.0.0&method=sayHello,sayWorld
       const url = this._urlBuilder(service);
       // write to zookeeper
-      registryService.push([service.clazz, url]);
+      registryService.push([service.dubboInterface, url]);
     }
 
     const registyFactory = this._getRegistryFactory();
@@ -196,11 +196,11 @@ export default class DubboServer {
 
   private _urlBuilder(service: IDubboService) {
     const ipAddr = ip.address();
-    const {clazz, group = '', version, methods} = service;
+    const {dubboInterface, group = '', version, methods} = service;
     const methodName = Object.keys(methods).join();
 
     return encodeURIComponent(
-      `dubbo://${ipAddr}:${this._port}/${clazz}?` +
+      `dubbo://${ipAddr}:${this._port}/${dubboInterface}?` +
         qs.stringify({
           group,
           version,

@@ -223,7 +223,7 @@ export interface IDubboRequest {
 }
 
 export interface IDubboService {
-  clazz: string;
+  dubboInterface: string;
   version: string;
   group?: string;
   methods: {[key in string]: Function};

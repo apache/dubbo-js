@@ -18,7 +18,7 @@ const sleep = (delay: number = 1000) => {
     registry: 'localhost:2181',
     services: [
       {
-        clazz: 'org.apache.dubbo.service.HelloService',
+        dubboInterface: 'org.apache.dubbo.service.HelloService',
         version: '1.0.0',
         methods: {
           sayHello(ctx: ResponseContext) {

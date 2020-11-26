@@ -38,7 +38,7 @@ class TypeRequest {
 //========================provider=======================
 
 class DemoProvider implements IDubboService {
-  clazz = 'org.apache.dubbo.demo.DemoProvider';
+  dubboInterface = 'org.apache.dubbo.demo.DemoProvider';
   version = '1.0.0';
   methods = {
     sayHello(name: string) {
@@ -67,17 +67,17 @@ class DemoProvider implements IDubboService {
 }
 
 const basicTypeProvider = {
-  clazz: 'org.apache.dubbo.demo.BasicTypeProvider',
-  version: '1.0.0',
+  dubboInterface: 'org.apache.dubbo.demo.BasicTypeProvider',
+  version: '2.0.0',
   methods: {
     testBasicType(req: TypeRequest) {
       return req;
     },
   },
-};
+} as IDubboService;
 
 class ErrorProvider implements IDubboService {
-  clazz = 'org.apache.dubbo.demo.ErrorProvider';
+  dubboInterface = 'org.apache.dubbo.demo.ErrorProvider';
   version = '1.0.0';
 
   methods = {

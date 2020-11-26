@@ -5,7 +5,8 @@
   "scripts": {
     "debug:start": "DEBUG=dubbo* ts-node ./src/server.ts",
     "start": "ts-node ./src/server.ts",
-    "dubbo-server": "DEBUG=dubbo* ts-node ./src/dubbo/provider/dubbo.ts"
+    "dubbo-server": "ts-node ./src/dubbo/provider/dubbo.ts",
+    "debug:dubbo-server": "DEBUG=dubbo* ts-node ./src/dubbo/provider/dubbo.ts"
   },
   "keywords": [
     "apache-dubbo-js"
