@@ -16,7 +16,6 @@
  */
 
 import debug from 'debug';
-// import { go } from '../common/go';
 import {traceErr} from '../common/util';
 import {
   IDubboConsumerRegistryProps,
@@ -26,46 +25,41 @@ import {
 import Registry from './registry';
 
 const NacosNamingClient = require('nacos').NacosNamingClient;
-// const NacosNamingClient = require('nacos')
+// nacos debug
 const log = debug('dubbo:nacos');
 export class Nacos extends Registry<
   IDubboConsumerRegistryProps | IDubboProviderRegistryProps
 > {
   constructor(
     nacosProps: INaocsClientProps,
-    dubboProp: IDubboConsumerRegistryProps | IDubboProviderRegistryProps,
+    dubboProps: IDubboConsumerRegistryProps | IDubboProviderRegistryProps,
   ) {
-    super(dubboProp);
+    super(dubboProps);
     this._nacosProps = nacosProps;
-    log(`new:|> %O`, {...this._nacosProps, ...dubboProp});
+    log(`new:|> %O`, {...this._nacosProps, ...dubboProps});
     this._nacosProps.nacosRoot = this._nacosProps.nacosRoot || 'dubbo';
-    // 初始化nacos的client
+    // init nacos client
     this._connect(this._init);
   }
-  // nacos 属性
+  // nacos props
   private _nacosProps: INaocsClientProps;
   private _client: any;
 
-  // nacos 连接
-  private async _connect(callback: (err: Error) => void) {
+  // nacos connect
+  private _connect = async (callback: (err: Error) => void) => {
     const {url: register} = this._nacosProps;
     let u = register.split('nacos://')[1];
     log(`connecting nacosserver ${u}`);
-
     this._client = new NacosNamingClient({
       logger: console,
       serverList: u,
       namespace: 'public',
     });
-    // const serviceName = 'providers:org.apache.dubbo.demo.DemoProvider:1.0.0:';
-    // const hosts = await this._client.getAllInstances(serviceName);
-    // const status = await this._client.getServerStatus();
-    // console.log('0--------------------', hosts);
-    // console.log('1--------------------', status);
-  }
+    this._client.ready();
+    callback(null);
+  };
 
-  private async _init(err: Error) {
-    log(`88888888-------`);
+  private _init = async (err: Error) => {
     // nacos occur error
     if (err) {
       log(err);
@@ -74,67 +68,44 @@ export class Nacos extends Registry<
       return;
     }
 
+    // if current nacos call from dubbo provider, registry provider service to nacos
     if (this._dubboProps.type === 'provider') {
       log(`this._dubboProps.type=${this._dubboProps.type}`);
       return;
     }
 
     // nacos connected
-    const {nacosRoot} = this._nacosProps;
-    const {
-      application: {name},
-      interfaces,
-    } = this._dubboProps;
+    let {interfaces, dubboSetting} = this._dubboProps;
 
     log(`this._dubboProps=${this._dubboProps}`);
 
-    //获取所有 provider
-    for (let inf of interfaces) {
-      // 当前接口在 nacos 中的路径
-      const dubboServicePath = `/${nacosRoot}/${inf}/providers`;
-      log(`dubboServicePath=${dubboServicePath}`);
-      // 当前接口路径下的 dubbo url
-      // const {res: dubboServiceUrls, err} = await go(
-      //   this._getDubboServiceUrls(dubboServicePath, inf),
-      // );
-
-      // 重连进入init后不能清空已有provider, 会导致运行中的请求找到, 报no agents错误
-      // 或者zk出现出错了, 无法获取provider, 那么之前获取的还能继续使用
-      if (err) {
-        log(`getChildren ${dubboServicePath} error ${err}`);
-        traceErr(err);
-        //If an error occurs, continue
-        continue;
-      }
-
+    // 获取所有 provider
+    for (let item of interfaces) {
+      let obj = await dubboSetting.getDubboSetting(item);
+      // providers:org.apache.dubbo.demo.DemoProvider:1.0.0:
+      let inf = 'providers:' + item + ':' + obj.version + ':';
+      const dubboServiceUrls = await this._client.getAllInstances(inf);
       // set dubbo interface meta info
-      // this._dubboServiceUrlMap.set(inf, dubboServiceUrls.map(DubboUrl.from));
-
-      //写入 consumer 信息
-      // this._createConsumer({
-      //   name: name,
-      //   dubboInterface: inf,
-      // }).then(() => log('create Consumer finish'));
+      for (let {ip, port, metadata} of dubboServiceUrls) {
+        this._dubboServiceUrlMap.set(metadata.path, {...metadata, ip, port});
+      }
     }
+    log(`this._dubboServiceUrlMap=${this._dubboServiceUrlMap}`);
     this._subscriber.onData(this._allAgentAddrSet);
-  }
+  };
 
   /**
-   * 获取所有的负载列表，通过agentAddrMap聚合出来
-   * 这样有点Reactive的感觉，不需要考虑当中增加删除的动作
+   * 获取所有的负载列表，通过 agentAddrMap 聚合出来
    */
   private get _allAgentAddrSet() {
     const agentSet = new Set() as Set<string>;
-    for (let urlList of this._dubboServiceUrlMap.values()) {
-      for (let url of urlList) {
-        agentSet.add(url.host + ':' + url.port);
-      }
+    for (let metaData of (this._dubboServiceUrlMap as any).values()) {
+      agentSet.add(metaData.ip + ':' + metaData.port);
     }
     return agentSet;
   }
 }
 
-// nacos属性 dubbo属性
 export default function nacos(props: INaocsClientProps) {
   return (
     dubboProps: IDubboProviderRegistryProps | IDubboConsumerRegistryProps,

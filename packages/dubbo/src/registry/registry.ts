@@ -18,7 +18,7 @@
 import {noop} from '../common/util';
 import Context from '../consumer/context';
 import DubboUrl from '../consumer/dubbo-url';
-import {IRegistrySubscriber} from '../types';
+import {INacosMetaData, IRegistrySubscriber} from '../types';
 
 export type TAgentAddr = string;
 export type TDubboInterface = string;
@@ -29,7 +29,10 @@ export type TDubboInterface = string;
 export default class Registry<T = {}> {
   protected _dubboProps: T;
   protected _subscriber: IRegistrySubscriber;
-  protected readonly _dubboServiceUrlMap: Map<TDubboInterface, Array<DubboUrl>>;
+  protected readonly _dubboServiceUrlMap: Map<
+    TDubboInterface,
+    Array<DubboUrl> | Array<INacosMetaData>
+  >;
 
   constructor(props: T) {
     this._dubboProps = props;

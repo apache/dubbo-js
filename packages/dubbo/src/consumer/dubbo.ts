@@ -245,7 +245,6 @@ export default class Dubbo<TService = Object>
    * 其他的框架类似
    */
   ready() {
-    console.log('9---------------');
     return this._readyPromise;
   }
 

@@ -138,6 +138,28 @@ export interface INaocsClientProps {
   url: string;
 }
 
+export interface INacosMetaData {
+  side?: string;
+  methods?: string;
+  release?: string;
+  deprecated?: string;
+  dubbo?: string;
+  pid?: string;
+  interface?: string;
+  version?: string;
+  generic?: string;
+  timeout?: string;
+  revision?: string;
+  path?: string;
+  protocol?: string;
+  application?: string;
+  dynamic?: string;
+  category?: string;
+  anyhost?: string;
+  ip: string;
+  port: number;
+}
+
 export interface IProviderProps {
   host: string;
   port: number;

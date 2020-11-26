@@ -30,8 +30,10 @@ export default (appInfo: EggAppInfo) => {
 
   config.dubbo = {
     application: 'hello-midway',
-    register: 'localhost:2181,localhost:2182,localhost:2183',
-    // register: 'nacos://localhost:8848',
+    // zookeeper 的链接
+    // register: 'localhost:2181,localhost:2182,localhost:2183',
+    // nacos 的链接 要以 nacos:// 开头
+    register: 'nacos://localhost:8848',
   };
 
   return config;
