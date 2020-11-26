@@ -49,7 +49,7 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
     this._retry = RETRY_NUM;
     this._status = SOCKET_STATUS.PADDING;
 
-    log('new SocketWorker#%d|> %s %s', pid, host + ':' + port, this._status);
+    log('new socket-worker#%d|> %s %s', pid, host + ':' + port, this._status);
 
     //init subscriber
     this._subscriber = {
@@ -89,7 +89,7 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
    * @param ctx dubbo context
    */
   write(ctx: RequestContext) {
-    log(`SocketWorker#${this.pid} =invoked=> ${ctx.requestId}`);
+    log(`socket-worker#${this.pid} =invoked=> ${ctx.requestId}`);
     statistics['pid#' + this.pid] = ++statistics['pid#' + this.pid];
 
     // update heartbeat lastWriteTimestamp
@@ -141,7 +141,7 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
 
   //==========================private method================================
   private _initSocket() {
-    log(`SocketWorker#${this.pid} =connecting=> ${this.host}:${this.port}`);
+    log(`socket-worker#${this.pid} =connecting=> ${this.host}:${this.port}`);
 
     if (this._socket) {
       this._socket.destroy();
@@ -158,26 +158,30 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
       )
       .on('data', () => {
         log(
-          `SocketWorker#${this.pid}  =receive data=> ${this.host}:${this.port}`,
+          `socket-worker#${this.pid}  =receive data=> ${this.host}:${
+            this.port
+          }`,
         );
       })
       .on('error', this._onError)
       .on('close', this._onClose);
 
     // init decode
-    DecodeBuffer.from(this._socket).subscribe(data => {
-      if (HeartBeat.isHeartBeat(data)) {
-        log(`SocketWorker#${this.pid} <=receive= heartbeat data.`);
-      } else {
-        const json = decodeDubboResponse(data);
-        log(`SocketWorker#${this.pid} <=received=> dubbo result %O`, json);
-        this._subscriber.onData(json);
-      }
-    });
+    DecodeBuffer.from(this._socket, `socket-worker#${this.pid}`).subscribe(
+      data => {
+        if (HeartBeat.isHeartBeat(data)) {
+          log(`socket-worker#${this.pid} <=receive= heartbeat data.`);
+        } else {
+          const json = decodeDubboResponse(data);
+          log(`socket-worker#${this.pid} <=received=> dubbo result %O`, json);
+          this._subscriber.onData(json);
+        }
+      },
+    );
   }
 
   private _onConnected = () => {
-    log(`SocketWorker#${this.pid} <=connected=> ${this.host}:${this.port}`);
+    log(`socket-worker#${this.pid} <=connected=> ${this.host}:${this.port}`);
 
     //set current status
     this._status = SOCKET_STATUS.CONNECTED;
@@ -200,7 +204,7 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
 
   private _onError = (error: Error) => {
     log(
-      `SocketWorker#${this.pid} <=occur error=> ${this.host}:${
+      `socket-worker#${this.pid} <=occur error=> ${this.host}:${
         this.port
       } ${error}`,
     );
@@ -208,7 +212,7 @@ export default class SocketWorker implements IObservable<ISocketSubscriber> {
 
   private _onClose = (hadError: boolean) => {
     log(
-      `SocketWorker#${this.pid} <=closed=> ${this.host}:${
+      `socket-worker#${this.pid} <=closed=> ${this.host}:${
         this.port
       } hasError: ${hadError} retry: ${this._retry}`,
     );

@@ -187,7 +187,7 @@ export default class DirectlyDubbo {
         this._socketWorker.write(ctx);
         break;
       case SOCKET_STATUS.CLOSED:
-        this.fail(requestId, new Error(`SocketWorker had closed.`));
+        this.fail(requestId, new Error(`socket-worker had closed.`));
         break;
     }
   }
@@ -210,7 +210,7 @@ export default class DirectlyDubbo {
   };
 
   private onClose = () => {
-    log('SocketWorker was closed');
+    log('socket-worker was closed');
     this._socketStatus = SOCKET_STATUS.CLOSED;
     //failed all
     for (let ctx of this._queue.values()) {

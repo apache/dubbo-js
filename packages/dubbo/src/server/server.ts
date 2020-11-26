@@ -100,6 +100,7 @@ export default class DubboServer {
   }
 
   private _handleSocketRequest = (socket: Socket) => {
+    log('tcp socket establish connection');
     // init heartbeat
     const heartbeat = HeartBeat.from({
       type: 'response',
@@ -107,7 +108,7 @@ export default class DubboServer {
       onTimeout: () => socket.destroy(),
     });
 
-    DecodeBuffer.from(socket).subscribe(async data => {
+    DecodeBuffer.from(socket, 'dubbo-server').subscribe(async data => {
       if (HeartBeat.isHeartBeat(data)) {
         log(`receive socket client heartbeat`);
         heartbeat.emit();

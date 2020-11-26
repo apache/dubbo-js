@@ -39,8 +39,8 @@ export default class DecodeBuffer
   private _transport: Socket;
   private _subscriber: Function;
 
-  constructor(transport: Socket) {
-    log('new DecodeBuffer');
+  constructor(transport: Socket, private flag: string) {
+    log('%s new DecodeBuffer', this.flag);
     this._subscriber = noop;
     this._buffer = Buffer.alloc(0);
     this._transport = transport;
@@ -54,8 +54,8 @@ export default class DecodeBuffer
     });
   }
 
-  static from(transport: Socket) {
-    return new DecodeBuffer(transport);
+  static from(transport: Socket, flag: string) {
+    return new DecodeBuffer(transport, flag);
   }
 
   receive(data: Buffer) {
@@ -70,17 +70,16 @@ export default class DecodeBuffer
 
       //如果不是magichight magiclow 做个容错
       if (magicHigh != DUBBO_MAGIC_HIGH || magicLow != DUBBO_MAGIC_LOW) {
-        log(this._buffer);
-
         log(
-          `receive server data error, buffer[0] is 0xda ${magicHigh ==
+          `%s receive server data error, buffer[0] is 0xda ${magicHigh ==
             0xda} buffer[1] is 0xbb ${magicLow == 0xbb}`,
+          this.flag,
         );
 
         const magicHighIndex = this._buffer.indexOf(DUBBO_MAGIC_HIGH);
         const magicLowIndex = this._buffer.indexOf(DUBBO_MAGIC_LOW);
-        log(`magicHigh index#${magicHighIndex}`);
-        log(`magicLow index#${magicLowIndex}`);
+        log(`%s magicHigh index#${magicHighIndex}`, this.flag);
+        log(`%s magicLow index#${magicLowIndex}`, this.flag);
 
         if (magicHighIndex === -1) {
           // 没有找到magicHigh,则将整个buffer清空
@@ -110,7 +109,7 @@ export default class DecodeBuffer
         //数据量还不够头部的长度
         if (bufferLength < DUBBO_HEADER_LENGTH) {
           //waiting
-          log('bufferLength < header length');
+          log('%s bufferLength < header length', this.flag);
           return;
         }
 
@@ -124,11 +123,11 @@ export default class DecodeBuffer
           header[15],
         ]);
         const bodyLength = fromBytes4(bodyLengthBuff);
-        log('body length', bodyLength);
+        log('%s body length %d', this.flag, bodyLength);
 
         if (DUBBO_HEADER_LENGTH + bodyLength > bufferLength) {
           //waiting
-          log('header length + body length > buffer length');
+          log('%s header length + body length > buffer length', this.flag);
           return;
         }
         const dataBuffer = this._buffer.slice(

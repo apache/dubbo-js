@@ -59,6 +59,9 @@ export default class HeartBeat {
     this._transport = transport;
     this._onTimeout = onTimeout || noop;
 
+    const who = this._type === 'request' ? 'dubbo-consumer' : 'dubbo-server';
+    log('%s init heartbeat manager', who);
+
     // init heartbaet
     this.init();
   }
@@ -123,7 +126,8 @@ export default class HeartBeat {
    * encode heartbeat
    */
   encode(): Buffer {
-    log('encode heartbeat');
+    const who = this._type === 'request' ? 'dubbo-consumer' : 'dubbo-server';
+    log('%s encode heartbeat', who);
 
     const buffer = Buffer.alloc(DUBBO_HEADER_LENGTH + 1);
 

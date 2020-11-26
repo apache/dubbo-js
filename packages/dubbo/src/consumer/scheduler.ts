@@ -210,11 +210,11 @@ export default class Scheduler {
   }
 
   private _handleOnConnect = ({pid, host, port}) => {
-    log(`scheduler receive SocketWorker connect pid#${pid} ${host}:${port}`);
+    log(`scheduler receive socket-worker connect pid#${pid} ${host}:${port}`);
     const agentHost = `${host}:${port}`;
     this._status = STATUS.READY;
     traceInfo(
-      `scheduler receive SocketWorker connect pid#${pid} ${host}:${port}`,
+      `scheduler receive socket-worker connect pid#${pid} ${host}:${port}`,
     );
 
     for (let ctx of this._queue.requestQueue.values()) {
@@ -249,7 +249,7 @@ export default class Scheduler {
    * 处理某一个SocketWorker被关闭的状态
    */
   private _handleOnClose = ({pid}) => {
-    log(`SocketWorker#${pid} was close`);
+    log(`socket-worker#${pid} was close`);
 
     //查询之前哪些接口的方法被pid调用, 然后直接failfast
     const {requestQueue} = this._queue;
@@ -257,7 +257,7 @@ export default class Scheduler {
       if (ctx.pid === pid) {
         this._handleFailed(
           requestId,
-          new SocketError(`SocketWorker#${pid} had closed.`),
+          new SocketError(`socket-worker#${pid} had closed.`),
         );
       }
     }
