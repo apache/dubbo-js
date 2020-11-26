@@ -15,21 +15,26 @@
  * limitations under the License.
  */
 
-import net from 'net';
+import net, {Socket} from 'net';
 import qs from 'querystring';
 import ip from 'ip';
 import debug from 'debug';
 import {decodeDubboRequest} from '../serialization/decode-hessian2';
 import {DubboResponseEncoder} from '../serialization/encode-hessian2';
 import zk from '../registry/zookeeper';
+import HeartBeat from '../serialization/heartbeat';
+import DecodeBuffer from '../serialization/decode-buffer';
+import ResponseContext, {ResponseStatus} from './response-context';
+import Request from '../serialization/request';
+import compose from 'koa-compose';
+
 import {
   IDubboProviderRegistryProps,
   IDubboServerProps,
   IDubboService,
   IZkClientProps,
+  Middleware,
 } from '../types';
-import HeartBeat from '../serialization/heartbeat';
-import DecodeBuffer from '../serialization/decode-buffer';
 
 const log = debug('dubbo-server');
 
@@ -37,54 +42,42 @@ type DubboServiceClazzName = string;
 
 export default class DubboServer {
   private _port: number;
+  private _server: net.Server;
   private _registry: IZkClientProps | string | Function;
   private _services: Array<IDubboService>;
-  private _serviceRoute: Map<DubboServiceClazzName, IDubboService>;
-  private _server: net.Server;
+  private _serviceMap: Map<DubboServiceClazzName, IDubboService>;
+  private readonly _middlewares: Array<Middleware<ResponseContext>>;
 
   constructor(props: IDubboServerProps) {
-    log('init dubbo-server with: %O', props);
-
     const {port, services} = props;
     this._port = port || 20880;
     this._registry = props.registry;
+    this._middlewares = [];
     this._services = services || [];
-    this._serviceRoute = new Map();
+    this._serviceMap = new Map();
+
+    // debug log
+    log(`init service with port: %d`, this._port);
+    for (let service of this._services) {
+      const methods = Object.keys(service.methods);
+      const s = {...service, methods};
+      log('registry services %j', s);
+    }
   }
 
   public static from(props: IDubboServerProps) {
     return new DubboServer(props);
   }
 
-  start() {
+  start = () => {
     // TODO 完善promise机制
-    log('start dubbo-server with port %d', this._port);
     this._server = net
-      .createServer(socket => {
-        // allocate decodeBuff to each socket connection
-        const decodeBuff = new DecodeBuffer();
-        decodeBuff.subscribe(this._subscribeDecodeBuff(socket));
-
-        // init heartbeat
-        HeartBeat.from({
-          label: 'dubbo-server',
-          transport: socket,
-          onTimeout: () => socket.destroy(),
-        });
-
-        socket
-          .on('data', data => {
-            decodeBuff.receive(data);
-          })
-          .on('close', () => {
-            log('socket close');
-            decodeBuff.clearBuffer();
-          });
-      })
+      .createServer(this._handleSocketRequest)
       .listen(this._port, () => {
+        log('start dubbo-server with port %d', this._port);
         this._registerServices();
       });
-  }
+  };
 
   close() {
     this._server &&
@@ -93,44 +86,96 @@ export default class DubboServer {
       });
   }
 
-  private _subscribeDecodeBuff = (socket: net.Socket) => (data: Buffer) => {
-    if (HeartBeat.isHeartBeat(data)) {
-      log(`receive socket client heartbeat`);
-      return;
+  /**
+   * extends middleware
+   * @param fn
+   */
+  use(fn: Middleware<ResponseContext>) {
+    if (typeof fn != 'function') {
+      throw new TypeError('middleware must be a function');
     }
+    log('use middleware %s', (fn as any)._name || fn.name || '-');
+    this._middlewares.push(fn);
+    return this;
+  }
 
-    // TODO code review
-    // decode dubbo request
-    const {requestId, methodName, dubboInterface, args} = decodeDubboRequest(
-      data,
-    );
-    const service = this._serviceRoute.get(dubboInterface);
-    const fn = service.method[methodName];
-    const ret = fn.apply(service, args);
-    log(`receive dubbo request, decode params:=>`, {
-      requestId,
-      methodName,
-      dubboInterface,
-      args,
-      data,
+  private _handleSocketRequest = (socket: Socket) => {
+    log('tcp socket establish connection');
+    // init heartbeat
+    const heartbeat = HeartBeat.from({
+      type: 'response',
+      transport: socket,
+      onTimeout: () => socket.destroy(),
     });
 
-    // send response
-    socket.write(
-      new DubboResponseEncoder({
-        isHeartbeat: false,
-        status: 20,
-        data: ret,
-        requestId,
-      }).encode(),
-    );
+    DecodeBuffer.from(socket, 'dubbo-server').subscribe(async data => {
+      if (HeartBeat.isHeartBeat(data)) {
+        log(`receive socket client heartbeat`);
+        heartbeat.emit();
+        return;
+      }
+      const ctx = await this._invokeRequest(data);
+      heartbeat.setWriteTimestamp();
+      socket.write(new DubboResponseEncoder(ctx).encode());
+    });
   };
+
+  private async _invokeRequest(data: Buffer) {
+    const request = decodeDubboRequest(data);
+    const service = this.matchService(request);
+    const context = new ResponseContext(request);
+
+    const {
+      methodName,
+      attachment: {path, group, version},
+    } = request;
+
+    // service not found
+    if (!service) {
+      context.status = ResponseStatus.SERVICE_NOT_FOUND;
+      context.body.err = new Error(
+        `Service not found with ${path} and ${methodName}, group:${group}, version:${version}`,
+      );
+      return context;
+    }
+
+    const middlewares = [
+      ...this._middlewares,
+      async function handleRequest(ctx: ResponseContext) {
+        const method = service.methods[request.methodName];
+        ctx.status = ResponseStatus.OK;
+        let err = null;
+        let res = null;
+        try {
+          res = await method.apply(service, [...(request.args || []), ctx]);
+        } catch (error) {
+          err = error;
+        }
+        ctx.body = {
+          res,
+          err,
+        };
+      },
+    ];
+
+    log('middleware stack =>', middlewares);
+    const fn = compose(middlewares);
+
+    try {
+      await fn(context);
+    } catch (err) {
+      log(err);
+      context.status = ResponseStatus.SERVER_ERROR;
+      context.body.err = err;
+    }
+    return context;
+  }
 
   private _registerServices() {
     const services = this._services;
     // init serviceMap
     for (let service of services) {
-      this._serviceRoute.set(service.clazz, service);
+      this._serviceMap.set(service.dubboInterface, service);
     }
 
     const registryService = [];
@@ -140,7 +185,7 @@ export default class DubboServer {
       // dubbo://127.0.0.1:3000/org.apache.dubbo.js.HelloWorld?group=fe&version=1.0.0&method=sayHello,sayWorld
       const url = this._urlBuilder(service);
       // write to zookeeper
-      registryService.push([service.clazz, url]);
+      registryService.push([service.dubboInterface, url]);
     }
 
     const registyFactory = this._getRegistryFactory();
@@ -152,15 +197,23 @@ export default class DubboServer {
 
   private _urlBuilder(service: IDubboService) {
     const ipAddr = ip.address();
-    const {clazz, group = '', version, method} = service;
-    const methodName = Object.keys(method).join();
+    const {dubboInterface, group = '', version, methods} = service;
+    const methodName = Object.keys(methods).join();
 
     return encodeURIComponent(
-      `dubbo://${ipAddr}:${this._port}/${clazz}?` +
+      `dubbo://${ipAddr}:${this._port}/${dubboInterface}?` +
         qs.stringify({
           group,
           version,
           method: methodName,
+          side: 'provider',
+          pid: process.pid,
+          generic: false,
+          protocal: 'dubbo',
+          dynamic: true,
+          category: 'providers',
+          anyhost: true,
+          timestamp: Date.now(),
         }),
     );
   }
@@ -177,5 +230,23 @@ export default class DubboServer {
     //   return this._registry;
     // }
     return zk({url: this._registry as string});
+  }
+
+  private matchService(request: Request) {
+    const {methodName} = request;
+    const {
+      attachment: {path, group, version},
+    } = request;
+
+    const service = this._serviceMap.get(path);
+    if (
+      !service ||
+      (service.methods[methodName] === undefined ||
+        service.group !== group ||
+        service.version !== version)
+    ) {
+      return null;
+    }
+    return service;
   }
 }

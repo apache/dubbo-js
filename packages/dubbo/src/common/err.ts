@@ -22,6 +22,8 @@ export class ZookeeperDisconnectedError extends Error {}
 
 export class DubboDecodeError extends Error {}
 
+export class DubboServiceError extends Error {}
+
 export class DubboEncodeError extends Error {}
 
 export class DubboTimeoutError extends Error {}

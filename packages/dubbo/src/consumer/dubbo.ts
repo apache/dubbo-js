@@ -19,7 +19,7 @@ import debug from 'debug';
 import compose from 'koa-compose';
 import {isFunction, isString} from 'util';
 import config from '../common/config';
-import Context from './context';
+import RequestContext from './request-context';
 import {go} from '../common/go';
 import Queue from './queue';
 import {zk, nacos} from '../registry';
@@ -92,9 +92,7 @@ export default class Dubbo<TService = Object>
     this._readyPromise = new Promise(resolve => {
       this._readyResolve = resolve;
     });
-    this._subscriber = {
-      onTrace: noop,
-    };
+    this._subscriber = {onTrace: noop};
     //初始化消息监听
     this._initMsgListener();
 
@@ -128,7 +126,7 @@ export default class Dubbo<TService = Object>
   private _subscriber: IDubboSubscriber;
   private readonly _queue: Queue;
   private readonly _props: IDubboProps;
-  private readonly _middleware: Array<Middleware<Context>>;
+  private readonly _middleware: Array<Middleware<RequestContext>>;
   private readonly _service: TDubboService<TService>;
 
   //========================public method===================
@@ -170,9 +168,12 @@ export default class Dubbo<TService = Object>
       proxyObj[name] = async (...args: any[]) => {
         log('%s create context', name);
         //创建dubbo调用的上下文
-        const ctx = Context.create();
+        const ctx = RequestContext.create();
         ctx.application = application;
         ctx.isSupportedDubbox = isSupportedDubbox;
+
+        // set dubbo version
+        ctx.dubboVersion = this._props.dubboVersion;
 
         const method = methods[name];
         ctx.methodName = name;
@@ -185,8 +186,7 @@ export default class Dubbo<TService = Object>
 
         const self = this;
         const middlewares = [
-          ...this._middleware,
-          //handle request middleware
+          ...this._middleware, //handle request middleware
           async function handleRequest(ctx) {
             log('start middleware handle dubbo request');
             ctx.body = await go(self._queue.add(ctx));
@@ -214,11 +214,11 @@ export default class Dubbo<TService = Object>
    * extends middleware, api: the same as koa
    * @param fn
    */
-  use(fn) {
+  use(fn: Middleware<RequestContext>) {
     if (typeof fn != 'function') {
       throw new TypeError('middleware must be a function');
     }
-    log('use middleware %s', fn._name || fn.name || '-');
+    log('use middleware %s', (fn as any)._name || fn.name || '-');
     this._middleware.push(fn);
     return this;
   }

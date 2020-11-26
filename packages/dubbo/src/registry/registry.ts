@@ -16,7 +16,7 @@
  */
 
 import {noop} from '../common/util';
-import Context from '../consumer/context';
+import RequestContext from '../consumer/request-context';
 import DubboUrl from '../consumer/dubbo-url';
 import {INacosMetaData, IRegistrySubscriber} from '../types';
 
@@ -60,8 +60,9 @@ export default class Registry<T = {}> {
    * 获取可以处理上下文context中的dubbo接口信息map
    * @param ctx
    */
-  getAgentAddrMap(ctx: Context): {[name: string]: DubboUrl} {
+  getAgentAddrMap(ctx: RequestContext): {[name: string]: DubboUrl} {
     const {dubboInterface, version, group} = ctx;
+
     return this._dubboServiceUrlMap
       .get(dubboInterface)
       .filter(serviceProp => {
@@ -78,5 +79,10 @@ export default class Registry<T = {}> {
         reducer[`${host}:${port}`] = prop;
         return reducer;
       }, Object.create(null));
+  }
+
+  hasAgentAddr(ctx: RequestContext) {
+    const agentAddr = this._dubboServiceUrlMap.get(ctx.dubboInterface);
+    return agentAddr && agentAddr.length > 0;
   }
 }

@@ -17,37 +17,36 @@
 
 import debug from 'debug';
 import {Socket} from 'net';
+import Hessian from 'hessian.js';
 import {noop} from '../common/util';
 import {IHeartBeatProps} from '../types';
 
+import {
+  DUBBO_FLAG_REQUEST,
+  DUBBO_FLAG_TWOWAY,
+  DUBBO_HEADER_LENGTH,
+  DUBBO_FLAG_EVENT,
+  HESSIAN2_SERIALIZATION_CONTENT_ID,
+  DUBBO_MAGIC_HIGH,
+  DUBBO_MAGIC_LOW,
+} from './constants';
+
 const log = debug('dubbo:heartbeat');
 
-//dubbo的序列化协议
+// Reference
 //com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec
 //encodeRequest
-
-//header length
-const DUBBO_HEADER_LENGTH = 16;
-// magic header.
-const DUBBO_MAGIC_HEADER = 0xdabb;
-// message flag.
-const FLAG_REQUEST = 0x80;
-const FLAG_TWOWAY = 0x40;
-const FLAG_EVENT = 0x20;
 
 //心跳频率
 const HEART_BEAT = 60 * 1000;
 // retry heartbeat
 const RETRY_HEARD_BEAT_TIME = 3;
 
-//com.alibaba.dubbo.common.serialize.support.hessian.Hessian2Serialization中定义
-const HESSIAN2_SERIALIZATION_CONTENT_ID = 2;
-
 /**
  * Heartbeat Manager
  */
 export default class HeartBeat {
-  private _label: string;
+  private _type: 'request' | 'response';
   private _transport: Socket;
   private _onTimeout: Function;
   private _heartBeatTimer: NodeJS.Timer;
@@ -55,10 +54,13 @@ export default class HeartBeat {
   private _lastWriteTimestamp: number = -1;
 
   constructor(props: IHeartBeatProps) {
-    const {transport, onTimeout, label} = props;
+    const {transport, onTimeout, type} = props;
+    this._type = type;
     this._transport = transport;
     this._onTimeout = onTimeout || noop;
-    this._label = label;
+
+    const who = this._type === 'request' ? 'dubbo-consumer' : 'dubbo-server';
+    log('%s init heartbeat manager', who);
 
     // init heartbaet
     this.init();
@@ -81,9 +83,7 @@ export default class HeartBeat {
         now - this._lastWriteTimestamp > HEART_BEAT ||
         now - this._lastReadTimestamp > HEART_BEAT
       ) {
-        log(`${this._label} emit heartbeat`);
-        this.setWriteTimestamp();
-        this._transport.write(HeartBeat.encode());
+        this.emit();
       }
     }, HEART_BEAT);
 
@@ -96,6 +96,13 @@ export default class HeartBeat {
       });
   };
 
+  emit() {
+    const who = this._type === 'request' ? 'dubbo-consumer' : 'dubbo-server';
+    log(`${who} emit heartbeat`);
+    this.setWriteTimestamp();
+    this._transport.write(this.encode());
+  }
+
   private destroy = () => {
     clearTimeout(this._heartBeatTimer);
     this._transport = null;
@@ -103,11 +110,11 @@ export default class HeartBeat {
     this._lastWriteTimestamp = -1;
   };
 
-  private setReadTimestamp() {
+  setReadTimestamp() {
     this._lastReadTimestamp = Date.now();
   }
 
-  private setWriteTimestamp() {
+  setWriteTimestamp() {
     this._lastWriteTimestamp = Date.now();
   }
 
@@ -115,22 +122,33 @@ export default class HeartBeat {
   static from(props: IHeartBeatProps) {
     return new HeartBeat(props);
   }
-
-  static encode(): Buffer {
-    log('encode heartbeat');
+  /**
+   * encode heartbeat
+   */
+  encode(): Buffer {
+    const who = this._type === 'request' ? 'dubbo-consumer' : 'dubbo-server';
+    log('%s encode heartbeat', who);
 
     const buffer = Buffer.alloc(DUBBO_HEADER_LENGTH + 1);
 
     //magic header
-    buffer[0] = DUBBO_MAGIC_HEADER >>> 8;
-    buffer[1] = DUBBO_MAGIC_HEADER & 0xff;
+    buffer[0] = DUBBO_MAGIC_HIGH;
+    buffer[1] = DUBBO_MAGIC_LOW;
 
     // set request and serialization flag.
-    buffer[2] =
-      FLAG_REQUEST |
-      HESSIAN2_SERIALIZATION_CONTENT_ID |
-      FLAG_TWOWAY |
-      FLAG_EVENT;
+
+    if (this._type === 'request') {
+      buffer[2] =
+        DUBBO_FLAG_REQUEST |
+        HESSIAN2_SERIALIZATION_CONTENT_ID |
+        DUBBO_FLAG_TWOWAY |
+        DUBBO_FLAG_EVENT;
+    } else if (this._type === 'response') {
+      buffer[2] =
+        HESSIAN2_SERIALIZATION_CONTENT_ID |
+        DUBBO_FLAG_TWOWAY |
+        DUBBO_FLAG_EVENT;
+    }
 
     //set request id
     //暂时不设置
@@ -138,7 +156,8 @@ export default class HeartBeat {
     //set body length
     buffer[15] = 1;
 
-    //body new Hessian.EncoderV2().write(null);
+    //body
+    // new Hessian.EncoderV2().write(null);
     buffer[16] = 0x4e;
 
     return buffer;
@@ -146,8 +165,13 @@ export default class HeartBeat {
 
   //com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec.decodeBody
   static isHeartBeat(buf: Buffer) {
-    //获取标记位
+    // get flag position
     const flag = buf[2];
-    return (flag & FLAG_EVENT) !== 0;
+    if ((flag & DUBBO_FLAG_EVENT) !== 0) {
+      const decoder = new Hessian.DecoderV2(buf.slice(DUBBO_HEADER_LENGTH));
+      const data = decoder.read();
+      return data === null;
+    }
+    return false;
   }
 }

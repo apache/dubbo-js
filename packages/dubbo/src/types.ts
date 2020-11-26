@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import net from 'net';
 import Registry from './registry/registry';
 import {Setting} from './setting';
 
@@ -91,12 +93,16 @@ export interface IDubboProps {
   register: ((props: IDubboConsumerRegistryProps) => Registry) | string;
   //当前要注册到dubbo容器的服务对象
   service: Object;
+  dubboSetting: Setting;
   isSupportedDubbox?: boolean;
   //dubbo调用最大超时时间单位为秒，默认5s
   dubboInvokeTimeout?: number;
   //dubbo为每个dubbo-agent创建的socketpool数量，默认1
   dubboSocketPool?: number;
-  dubboSetting: Setting;
+  /**
+   * dubbo protocal version
+   */
+  dubboVersion?: string;
 }
 
 //magic, you should use typescript 2.8+
@@ -215,10 +221,12 @@ export interface ICreateConsumerParam {
 }
 
 export interface IDubboResponseContext {
-  isHeartbeat: boolean;
   status: number;
   data: Object;
+  err: Error;
   requestId: number;
+  version: string;
+  attachments: Object;
 }
 
 export interface IDubboRequest {
@@ -242,10 +250,10 @@ export interface IDubboRequest {
 }
 
 export interface IDubboService {
-  clazz: string;
+  dubboInterface: string;
   version: string;
   group?: string;
-  method: {[key in string]: Function};
+  methods: {[key in string]: Function};
 }
 
 export interface IDubboServerProps {
@@ -255,7 +263,7 @@ export interface IDubboServerProps {
 }
 
 export interface IHeartBeatProps {
-  label: string;
-  transport: Socket;
+  type: 'request' | 'response';
+  transport: net.Socket;
   onTimeout?: Function;
 }
