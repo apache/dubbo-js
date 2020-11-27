@@ -41,10 +41,10 @@ export default async (app: Application) => {
     )
     .match('org.apache.dubbo.demo.BasicTypeProvider', {version: '2.0.0'});
 
-  const {application, register} = app.config.dubbo;
+  const {application, registry} = app.config.dubbo;
   const dubbo = new Dubbo<typeof service>({
     application,
-    register,
+    registry,
     service,
     dubboSetting,
   });

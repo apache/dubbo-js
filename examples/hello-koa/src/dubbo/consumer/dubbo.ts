@@ -43,7 +43,7 @@ const dubbo = new Dubbo<typeof service>({
   service,
   dubboSetting,
   // default zookeeper
-  register: `localhost:2181`,
+  registry: `localhost:2181`,
   // register: nacos({
   //   url: 'nacos:localhost:8848',
   // }),

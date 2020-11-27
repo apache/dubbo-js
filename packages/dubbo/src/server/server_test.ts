@@ -61,7 +61,7 @@ const sleep = (delay: number = 1000) => {
 
   const dubbo = new Dubbo<typeof service>({
     application: {name: 'node-consumer'},
-    register: 'localhost:2181',
+    registry: 'localhost:2181',
     dubboSetting,
     service,
   });

@@ -63,7 +63,7 @@ export default class Dubbo<TService = Object>
     }
 
     // check dubbo register
-    if (!isString(props.register) && !isFunction(props.register)) {
+    if (!isString(props.registry) && !isFunction(props.registry)) {
       throw new Error('Dubbo register must be string of function ');
     }
 
@@ -97,14 +97,14 @@ export default class Dubbo<TService = Object>
     this._initMsgListener();
 
     //if dubbo register is string, create a zookeeper instance
-    let register = this._props.register;
+    let register = this._props.registry;
     if (isString(register) && register.startsWith('nacos://')) {
       register = nacos({
-        url: this._props.register as string,
+        url: this._props.registry as string,
       });
     } else {
       register = zk({
-        url: this._props.register as string,
+        url: this._props.registry as string,
       });
     }
     log('constructor -> register', register);

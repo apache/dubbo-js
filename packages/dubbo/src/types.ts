@@ -90,7 +90,7 @@ export interface IInvokeParam {
 export interface IDubboProps {
   //当前的应用标识
   application: {name: string};
-  register: ((props: IDubboConsumerRegistryProps) => Registry) | string;
+  registry: ((props: IDubboConsumerRegistryProps) => Registry) | string;
   //当前要注册到dubbo容器的服务对象
   service: Object;
   dubboSetting: Setting;
