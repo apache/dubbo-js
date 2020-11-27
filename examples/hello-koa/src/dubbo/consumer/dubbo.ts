@@ -16,7 +16,7 @@
  */
 
 // import {Dubbo, setting, zk} from 'apache-dubbo-js';
-import {Dubbo, setting, nacos} from 'apache-dubbo-js';
+import {Dubbo, setting, zk} from 'apache-dubbo-js';
 import * as service from './service';
 
 /**
@@ -37,17 +37,15 @@ const dubboSetting = setting
 /**
  * create dubbo instance, it create proxyService
  */
-console.log('nacos-----', nacos);
+// console.log('nacos-----', nacos);
 const dubbo = new Dubbo<typeof service>({
   application: {name: 'dubbo-node-consumer'},
   service,
   dubboSetting,
-  // register: zk({
-  //   url: 'localhost:2181,localhost:2182,localhost:2183',
+  register: `localhost:2181`,
+  // register: nacos({
+  //   url: 'nacos:localhost:8848',
   // }),
-  register: nacos({
-    url: 'nacos:localhost:8848',
-  }),
 });
 
 /**
