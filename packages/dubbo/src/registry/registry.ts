@@ -38,10 +38,7 @@ export default class Registry<T = {}> {
     this._dubboServiceUrlMap = new Map();
 
     //初始化订阅者
-    this._subscriber = {
-      onData: noop,
-      onError: noop,
-    };
+    this._subscriber = {onData: noop, onError: noop};
   }
 
   /**

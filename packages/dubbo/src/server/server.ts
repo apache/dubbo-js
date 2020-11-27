@@ -21,22 +21,16 @@ import ip from 'ip';
 import debug from 'debug';
 import {decodeDubboRequest} from '../serialization/decode-hessian2';
 import {DubboResponseEncoder} from '../serialization/encode-hessian2';
-import zk from '../registry/zookeeper';
 import HeartBeat from '../serialization/heartbeat';
 import DecodeBuffer from '../serialization/decode-buffer';
 import ResponseContext, {ResponseStatus} from './response-context';
 import Request from '../serialization/request';
 import compose from 'koa-compose';
 
-import {
-  IDubboProviderRegistryProps,
-  IDubboServerProps,
-  IDubboService,
-  IZkClientProps,
-  Middleware,
-} from '../types';
+import {IDubboServerProps, IDubboService, Middleware} from '../types';
 import {checkHessianParam} from '../common/util';
 import {isBoolean, isNumber, isString} from 'util';
+import {fromRegistry} from '../registry';
 
 type DubboServiceClazzName = string;
 
@@ -47,7 +41,7 @@ const isMap = (val: any): val is Map<any, any> =>
 export default class DubboServer {
   private _port: number;
   private _server: net.Server;
-  private _registry: IZkClientProps | string | Function;
+  private _registry: string | Function;
   private _services: Array<IDubboService>;
   private _serviceMap: Map<DubboServiceClazzName, IDubboService>;
   private readonly _middlewares: Array<Middleware<ResponseContext>>;
@@ -198,8 +192,9 @@ export default class DubboServer {
       registryService.push([service.dubboInterface, url]);
     }
 
-    const registyFactory = this._getRegistryFactory();
-    registyFactory({
+    const registry = fromRegistry(this._registry);
+
+    registry({
       type: 'provider',
       services: registryService,
     });
@@ -226,20 +221,6 @@ export default class DubboServer {
           timestamp: Date.now(),
         }),
     );
-  }
-
-  private _getRegistryFactory(): (props: IDubboProviderRegistryProps) => void {
-    // if (isString(this._registry) && this._registry.startsWith('zk://')) {
-    //   return zk({url: this._registry});
-    // } else if (
-    //   isObject(this._registry) &&
-    //   this._registry.url.startsWith('zk://')
-    // ) {
-    //   return zk(this._registry);
-    // } else if (isFunction(this._registry)) {
-    //   return this._registry;
-    // }
-    return zk({url: this._registry as string});
   }
 
   private matchService(request: Request) {

@@ -248,7 +248,6 @@ export interface IDubboRequest {
     attachments: Object;
   };
 }
-
 export interface IDubboService {
   dubboInterface: string;
   version: string;
@@ -258,7 +257,7 @@ export interface IDubboService {
 
 export interface IDubboServerProps {
   port?: number;
-  registry: IZkClientProps | string | Function;
+  registry: string | Function;
   services: Array<IDubboService>;
 }
 

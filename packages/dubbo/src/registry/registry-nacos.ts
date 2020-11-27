@@ -98,7 +98,7 @@ export class Nacos extends Registry<
    * 获取所有的负载列表，通过 agentAddrMap 聚合出来
    */
   private get _allAgentAddrSet() {
-    const agentSet = new Set() as Set<string>;
+    const agentSet = new Set<string>();
     for (let metaData of (this._dubboServiceUrlMap as any).values()) {
       agentSet.add(metaData.ip + ':' + metaData.port);
     }

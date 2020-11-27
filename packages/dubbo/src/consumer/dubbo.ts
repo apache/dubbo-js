@@ -22,7 +22,7 @@ import config from '../common/config';
 import RequestContext from './request-context';
 import {go} from '../common/go';
 import Queue from './queue';
-import {zk, nacos} from '../registry';
+import {fromRegistry} from '../registry';
 import Scheduler from './scheduler';
 import {
   IDubboProps,
@@ -96,18 +96,9 @@ export default class Dubbo<TService = Object>
     //初始化消息监听
     this._initMsgListener();
 
-    //if dubbo register is string, create a zookeeper instance
-    let register = this._props.registry;
-    if (isString(register) && register.startsWith('nacos://')) {
-      register = nacos({
-        url: this._props.registry as string,
-      });
-    } else {
-      register = zk({
-        url: this._props.registry as string,
-      });
-    }
-    log('constructor -> register', register);
+    // get registry center
+    let register = fromRegistry(this._props.registry);
+
     //create scheduler
     Scheduler.from(
       register({
