@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2015",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "rootDir": "./src",
+    "outDir": "./es6",
+    "declaration": true,
+    "declarationDir": "./es6/typings"
+  },
+  "exclude": ["./src/__tests__/**"]
+}
