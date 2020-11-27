@@ -42,6 +42,7 @@ const dubbo = new Dubbo<typeof service>({
   application: {name: 'dubbo-node-consumer'},
   service,
   dubboSetting,
+  // default zookeeper
   register: `localhost:2181`,
   // register: nacos({
   //   url: 'nacos:localhost:8848',

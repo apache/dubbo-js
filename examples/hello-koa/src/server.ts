@@ -22,6 +22,7 @@ import dubbo from './dubbo/consumer/dubbo';
 const app = new Koa();
 const router = new Router();
 
+// ~~~~~~~~~~~~~~~~~~ router ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 router.get('/', ctx => {
   ctx.body = 'hello, dubbo.js';
 });
@@ -69,6 +70,8 @@ router.get('/tracer', async ctx => {
   };
 });
 
+// use route
 app.use(router.routes()).use(router.allowedMethods());
 
+// listen server
 app.listen(4000);
