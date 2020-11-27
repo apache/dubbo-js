@@ -54,5 +54,8 @@
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
+  },
+  "dependencies": {
+    "nacos": "^2.0.0"
   }
 }

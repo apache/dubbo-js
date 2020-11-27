@@ -16,6 +16,7 @@
  */
 
 export class ZookeeperTimeoutError extends Error {}
+export class ClientTimeoutError extends Error {}
 
 export class ZookeeperDisconnectedError extends Error {}
 

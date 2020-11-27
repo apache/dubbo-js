@@ -82,6 +82,8 @@ export class ZkRegistry extends Registry<
       interfaces,
     } = this._dubboProps;
 
+    log(`this._dubboProps=${this._dubboProps.interfaces}`);
+
     //获取所有provider
     for (let inf of interfaces) {
       //当前接口在zookeeper中的路径

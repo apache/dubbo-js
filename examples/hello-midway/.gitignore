@@ -10,6 +10,7 @@ dist/
 run/
 .github/
 .DS_Store
+.travis.yml
 *.sw*
 *.un~
 .tsbuildinfo

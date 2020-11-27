@@ -20,7 +20,7 @@ import RequestContext from './consumer/request-context';
 import DirectlyDubbo from './consumer/directly-dubbo';
 import Dubbo from './consumer/dubbo';
 import {go} from './common/go';
-import {Registry, zk} from './registry';
+import {Registry, zk, nacos} from './registry';
 import setting from './setting';
 import {IDubboService, TDubboCallResult} from './types';
 import DubboServer from './server/server';
@@ -37,6 +37,7 @@ export {
   setting,
   // registry
   zk,
+  nacos,
   Registry,
   // types
   TDubboCallResult,
