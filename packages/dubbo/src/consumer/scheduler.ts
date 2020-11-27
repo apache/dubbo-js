@@ -17,11 +17,11 @@
 
 import debug from 'debug';
 import DubboAgent from './dubbo-agent';
-import {ScheduleError, SocketError, ClientTimeoutError} from '../common/err';
 import Queue from './queue';
 import {Registry} from '../registry';
 import {IDubboResponse} from '../types';
 import {traceErr, traceInfo} from '../common/util';
+import {ScheduleError, SocketError, ClientTimeoutError} from '../common/err';
 
 const log = debug('dubbo:scheduler');
 const enum STATUS {

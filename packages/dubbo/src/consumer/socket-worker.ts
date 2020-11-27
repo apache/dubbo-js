@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-import debug from 'debug';
 import net from 'net';
+import debug from 'debug';
 import {noop} from '../common/util';
 import DecodeBuffer from '../serialization/decode-buffer';
 import {decodeDubboResponse} from '../serialization/decode-hessian2';
 import {DubboRequestEncoder} from '../serialization/encode-hessian2';
 import HeartBeat from '../serialization/heartbeat';
-import {IObservable, ISocketSubscriber} from '../types';
 import RequestContext from './request-context';
 import {SOCKET_STATUS} from './socket-status';
 import statistics from './statistics';
+import {IObservable, ISocketSubscriber} from '../types';
 
 let pid = 0;
 const RETRY_NUM = 20;
