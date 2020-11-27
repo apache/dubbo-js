@@ -17,7 +17,7 @@
 
 import {EventEmitter} from 'events';
 import ip from 'ip';
-import {ITrace} from '../types';
+import {IHessianType, ITrace} from '../types';
 
 const pid = process.pid;
 const ipAddr = ip.address();
@@ -25,6 +25,18 @@ const ipAddr = ip.address();
 export const msg = new EventEmitter();
 export const noop = () => {};
 export const isDevEnv = process.env.NODE_ENV !== 'production';
+
+/**
+ * check param is hessian type
+ * @param param
+ */
+export function checkHessianParam(param: any): param is IHessianType {
+  return (
+    typeof param === 'object' &&
+    typeof param['$class'] !== 'undefined' &&
+    typeof param['$'] !== 'undefined'
+  );
+}
 
 /**
  * trace log

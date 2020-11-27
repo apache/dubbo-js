@@ -14,25 +14,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {IDubboService} from 'apache-dubbo-js';
 import ip from 'ip';
+import java from 'js-to-java';
+import {IDubboService} from 'apache-dubbo-js';
+
+enum Sex {
+  male,
+  female,
+}
 
 interface IUserRequest {
   id: number;
   name: string;
   email: string;
-  sex: number;
+  sex: Sex;
 }
 
 class UserResponse {
   status: string;
   info: Map<string, string>;
+
+  __fields2java() {
+    return java('org.apache.dubbo.demo.UserResponse', {
+      status: java.String(this.status),
+      info: this.info,
+    });
+  }
 }
 
 class TypeRequest {
   map: Map<string, string>;
-  bigDecimal: {value: number};
+  bigDecimal: {value: string};
+
+  __fields2java() {
+    return java('org.apache.dubbo.demo.TypeRequest', {
+      map: this.map,
+      bigDecimal: java.BigDecimal(this.bigDecimal.value),
+    });
+  }
 }
 
 //========================provider=======================
@@ -42,7 +61,9 @@ class DemoProvider implements IDubboService {
   version = '1.0.0';
   methods = {
     sayHello(name: string) {
-      return `Hello ${name}, response from provider ${ip.address()}`;
+      return java.String(
+        `Hello ${name}, response from provider ${ip.address()}`,
+      );
     },
 
     echo() {
@@ -71,7 +92,12 @@ const basicTypeProvider = {
   version: '2.0.0',
   methods: {
     testBasicType(req: TypeRequest) {
-      return req;
+      const response = new TypeRequest();
+      response.bigDecimal = {value: '100.00'};
+      const map = new Map();
+      map.set('hello', 'world');
+      response.map = map;
+      return response;
     },
   },
 } as IDubboService;

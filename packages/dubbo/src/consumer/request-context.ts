@@ -18,6 +18,7 @@
 import debug from 'debug';
 import {id} from './request-id';
 import {IContextRequestParam, IDubboResult, IHessianType} from '../types';
+import {checkHessianParam} from '../common/util';
 
 const NO_PID = -1;
 const log = debug('dubbo:context');
@@ -111,7 +112,7 @@ export default class RequestContext<T = any> {
 
   get isMethodArgsHessianType() {
     const {methodArgs} = this._request;
-    return methodArgs.every(RequestContext._checkHessianParam);
+    return methodArgs.every(checkHessianParam);
   }
 
   get request() {
@@ -338,14 +339,5 @@ export default class RequestContext<T = any> {
    */
   get providerAttachments() {
     return this._providerAttachments;
-  }
-
-  //===============private method==========================
-  private static _checkHessianParam(param: any): param is IHessianType {
-    return (
-      typeof param === 'object' &&
-      typeof param['$class'] !== 'undefined' &&
-      typeof param['$'] !== 'undefined'
-    );
   }
 }

@@ -35,10 +35,14 @@ import {
   IZkClientProps,
   Middleware,
 } from '../types';
-
-const log = debug('dubbo-server');
+import {checkHessianParam} from '../common/util';
+import {isBoolean, isNumber, isString} from 'util';
 
 type DubboServiceClazzName = string;
+
+const log = debug('dubbo-server');
+const isMap = (val: any): val is Map<any, any> =>
+  Object.prototype.toString.call(val);
 
 export default class DubboServer {
   private _port: number;
@@ -148,6 +152,12 @@ export default class DubboServer {
         let res = null;
         try {
           res = await method.apply(service, [...(request.args || []), ctx]);
+          // check hessian type
+          if (!DubboServer.checkRetValHessian(res)) {
+            throw new Error(
+              `${path}#${methodName} return value not hessian type`,
+            );
+          }
         } catch (error) {
           err = error;
         }
@@ -248,5 +258,24 @@ export default class DubboServer {
       return null;
     }
     return service;
+  }
+
+  /**
+   * check hessian
+   * @param res
+   */
+  private static checkRetValHessian(res: any) {
+    // allow method return undefined, boolean, number, string, map directly
+    if (
+      typeof res === 'undefined' ||
+      isBoolean(res) ||
+      isNumber(res) ||
+      isString(res) ||
+      isMap(res)
+    ) {
+      return true;
+    }
+    const hessian = res.__fields2java ? res.__fields2java() : res;
+    return checkHessianParam(hessian);
   }
 }
