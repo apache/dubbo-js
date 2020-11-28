@@ -28,6 +28,17 @@ export default (appInfo: EggAppInfo) => {
   // add your config here
   config.middleware = [];
 
+  /**
+   * dubbo config
+   *
+   * application 当前的应用标识
+   * register 注册中心地址
+   *   support registry mode
+   *     1、 zookeeper  'localhost:2181,localhost:2182,localhost:2183'
+   *     2、 nacos      'nacos://localhost:2181'
+   *       nacos 注册地址要以 nacos:// 开头
+   *
+   */
   config.dubbo = {
     application: 'hello-midway',
     // zookeeper 的链接
