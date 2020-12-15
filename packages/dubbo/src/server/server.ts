@@ -226,7 +226,7 @@ export default class DubboServer {
   private matchService(request: Request) {
     const {methodName} = request;
     const {
-      attachment: {path, group, version},
+      attachment: {path, group = '', version},
     } = request;
 
     const service = this._serviceMap.get(path);
