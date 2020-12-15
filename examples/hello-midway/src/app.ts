@@ -21,7 +21,7 @@ import dubbo from './app/dubbo';
 export default async (app: Application) => {
   console.log('🚀 Your awesome APP is launching...');
   await dubbo(app);
-  await app.dubbo.ready();
   console.log('dubbo was ready..');
+  await app.dubbo.ready();
   console.log('✅  Your awesome APP launched');
 };
