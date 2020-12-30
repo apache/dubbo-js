@@ -19,11 +19,11 @@ import {Dubbo, setting} from 'apache-dubbo-js';
 import {Application, Context} from 'midway';
 import service from './service';
 
-declare module 'egg' {
-  export interface EggApplication {
-    dubbo: Dubbo<typeof service>;
-  }
-}
+// declare module 'egg' {
+//   export interface EggApplication {
+//     dubbo: Dubbo<typeof service>;
+//   }
+// }
 
 export default async (app: Application) => {
   /**
@@ -41,10 +41,10 @@ export default async (app: Application) => {
     )
     .match('org.apache.dubbo.demo.BasicTypeProvider', {version: '2.0.0'});
 
-  const {application, register} = app.config.dubbo;
+  const {application, registry} = app.config.dubbo;
   const dubbo = new Dubbo<typeof service>({
     application,
-    register,
+    registry,
     service,
     dubboSetting,
   });

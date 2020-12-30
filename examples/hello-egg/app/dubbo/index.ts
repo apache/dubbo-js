@@ -42,7 +42,7 @@ export default (app: EggApplication) => {
   // create a dubboo object
   const dubbo = new Dubbo<typeof service>({
     application: {name: 'node-egg-bff'},
-    register: 'localhost:2181,localhost:2182,localhost:2183',
+    registry: 'localhost:2181,localhost:2182,localhost:2183',
     service,
     dubboSetting,
   });

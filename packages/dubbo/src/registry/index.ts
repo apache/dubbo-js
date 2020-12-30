@@ -16,6 +16,40 @@
  */
 
 import Registry from './registry';
-import zk from './zookeeper';
+import zk from './registry-zookeeper';
+import nacos from './registry-nacos';
+import {isString, isFunction} from 'util';
+import {
+  IDubboProviderRegistryProps,
+  IDubboConsumerRegistryProps,
+} from '../types';
 
-export {Registry, zk};
+/**
+ * parse registry
+ *
+ * we support registry mode
+ *
+ * 1. url string, such as
+ *  - localhost:2181 // default as zookeeper
+ *  - nacos://localhost:2181
+ *
+ * 2. factory function
+ *  - zk('') => (props: IDubboProviderRegistryProps) => void
+ *  - nacos() => (props: IDubboProviderRegistryProps) => void
+ * @param param
+ */
+function fromRegistry(
+  param: string | Function,
+): (
+  props: IDubboProviderRegistryProps | IDubboConsumerRegistryProps,
+) => Registry {
+  if (isString(param) && param.startsWith('nacos://')) {
+    return nacos({url: param});
+  } else if (isString(param)) {
+    return zk({url: param});
+  } else if (isFunction(param)) {
+    return param as any;
+  }
+}
+
+export {fromRegistry, Registry, zk, nacos};

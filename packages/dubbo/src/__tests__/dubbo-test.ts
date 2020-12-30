@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {Context, Dubbo, java, setting} from 'dubbo-js';
+import {Context, Dubbo, java, setting} from 'apache-dubbo-js';
 import {BasicTypeProvider} from './providers/org/apache/dubbo/demo/BasicTypeProvider';
 import {DemoProvider} from './providers/org/apache/dubbo/demo/DemoProvider';
 import {ErrorProvider} from './providers/org/apache/dubbo/demo/ErrorProvider';

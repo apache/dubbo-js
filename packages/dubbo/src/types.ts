@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import net from 'net';
 import Registry from './registry/registry';
 import {Setting} from './setting';
 
@@ -24,10 +26,16 @@ export type TDubboInterface = string;
 /**
  * dubbo对象透传给registry的类型
  */
-export interface IDubboRegistryProps {
+export interface IDubboConsumerRegistryProps {
+  type: 'consumer';
   application?: {name: string};
   interfaces: Array<string>;
   dubboSetting: Setting;
+}
+
+export interface IDubboProviderRegistryProps {
+  type: 'provider';
+  services: Array<[string, string]>;
 }
 
 export interface IRegistrySubscriber {
@@ -82,20 +90,24 @@ export interface IInvokeParam {
 export interface IDubboProps {
   //当前的应用标识
   application: {name: string};
-  register: ((props: IDubboRegistryProps) => Registry) | string;
+  registry: ((props: IDubboConsumerRegistryProps) => Registry) | string;
   //当前要注册到dubbo容器的服务对象
   service: Object;
+  dubboSetting: Setting;
   isSupportedDubbox?: boolean;
   //dubbo调用最大超时时间单位为秒，默认5s
   dubboInvokeTimeout?: number;
   //dubbo为每个dubbo-agent创建的socketpool数量，默认1
   dubboSocketPool?: number;
-  dubboSetting: Setting;
+  /**
+   * dubbo protocal version
+   */
+  dubboVersion?: string;
 }
 
 //magic, you should use typescript 2.8+
 export type TDubboService<T> = {
-  [k in keyof T]: T[k] extends (dubbo: any) => infer R ? R : any;
+  [k in keyof T]: T[k] extends (dubbo: any) => infer R ? R : any
 };
 
 export interface IDubboResult<T> {
@@ -125,6 +137,33 @@ export interface IZkClientProps {
   zkAuthInfo?: IZKAuthInfo;
   zkRoot?: string;
   url: string;
+}
+
+export interface INaocsClientProps {
+  nacosRoot?: string;
+  url: string;
+}
+
+export interface INacosMetaData {
+  side?: string;
+  methods?: string;
+  release?: string;
+  deprecated?: string;
+  dubbo?: string;
+  pid?: string;
+  interface?: string;
+  version?: string;
+  generic?: string;
+  timeout?: string;
+  revision?: string;
+  path?: string;
+  protocol?: string;
+  application?: string;
+  dynamic?: string;
+  category?: string;
+  anyhost?: string;
+  ip: string;
+  port: number;
 }
 
 export interface IProviderProps {
@@ -179,4 +218,51 @@ export type TQueueObserver = Function;
 export interface ICreateConsumerParam {
   name: string;
   dubboInterface: string;
+}
+
+export interface IDubboResponseContext {
+  status: number;
+  data: Object;
+  err: Error;
+  requestId: number;
+  version: string;
+  attachments: Object;
+}
+
+export interface IDubboRequest {
+  requestId: number;
+  twoWay: boolean;
+  dubboVersion: string;
+  dubboInterface: string;
+  version: string;
+  methodName: string;
+  args: Array<any>;
+  attachments: {
+    requestId: number;
+    path: string;
+    dubboInterface: string;
+    group: string;
+    timeout: number;
+    version: number;
+    application: {name: string};
+    attachments: Object;
+  };
+}
+export interface IDubboService {
+  dubboInterface: string;
+  version: string;
+  group?: string;
+  methods: {[key in string]: Function};
+}
+
+export interface IDubboServerProps {
+  port?: number;
+  registry: string | Function;
+  services: Array<IDubboService>;
+}
+
+export interface IHeartBeatProps {
+  type: 'request' | 'response';
+  transport: net.Socket;
+  onTimeout?: Function;
 }

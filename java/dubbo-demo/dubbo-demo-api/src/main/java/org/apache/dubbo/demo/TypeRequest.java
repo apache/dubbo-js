@@ -40,4 +40,12 @@ public class TypeRequest implements Serializable {
     public void setBigDecimal(BigDecimal bigDecimal) {
         this.bigDecimal = bigDecimal;
     }
+
+    @Override
+    public String toString() {
+        return "TypeRequest{" +
+                "map=" + map +
+                ", bigDecimal=" + bigDecimal +
+                '}';
+    }
 }

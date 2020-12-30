@@ -16,22 +16,30 @@
  */
 
 import java from 'js-to-java';
-import Context from './context';
-import DirectlyDubbo from './directly-dubbo';
-import Dubbo from './dubbo';
-import {go} from './go';
-import {Registry, zk} from './registry';
+import RequestContext from './consumer/request-context';
+import DirectlyDubbo from './consumer/directly-dubbo';
+import Dubbo from './consumer/dubbo';
+import {go} from './common/go';
+import {Registry, zk, nacos} from './registry';
 import setting from './setting';
-import {TDubboCallResult} from './types';
+import {IDubboService, TDubboCallResult} from './types';
+import DubboServer from './server/server';
 
 export {
+  // top level object
+  DubboServer,
   Dubbo,
   DirectlyDubbo,
+  // tools
   java,
-  TDubboCallResult,
-  Context,
+  RequestContext as Context,
   go,
   setting,
+  // registry
   zk,
+  nacos,
   Registry,
+  // types
+  TDubboCallResult,
+  IDubboService,
 };

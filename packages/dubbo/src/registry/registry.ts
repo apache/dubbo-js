@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import Context from '../context';
-import DubboUrl from '../dubbo-url';
+import {noop} from '../common/util';
+import RequestContext from '../consumer/request-context';
+import DubboUrl from '../consumer/dubbo-url';
 import {IRegistrySubscriber} from '../types';
-import {noop} from '../util';
 
 export type TAgentAddr = string;
 export type TDubboInterface = string;
@@ -27,21 +27,18 @@ export type TDubboInterface = string;
  * 抽取注册中心的基类
  */
 export default class Registry<T = {}> {
-  protected _props: T;
+  protected _dubboProps: T;
   protected _subscriber: IRegistrySubscriber;
   protected readonly _dubboServiceUrlMap: Map<TDubboInterface, Array<DubboUrl>>;
 
   constructor(props: T) {
-    this._props = props;
+    this._dubboProps = props;
 
     //保存dubbo接口和服务url之间的映射关系
     this._dubboServiceUrlMap = new Map();
 
     //初始化订阅者
-    this._subscriber = {
-      onData: noop,
-      onError: noop,
-    };
+    this._subscriber = {onData: noop, onError: noop};
   }
 
   /**
@@ -57,8 +54,9 @@ export default class Registry<T = {}> {
    * 获取可以处理上下文context中的dubbo接口信息map
    * @param ctx
    */
-  getAgentAddrMap(ctx: Context): {[name: string]: DubboUrl} {
+  getAgentAddrMap(ctx: RequestContext): {[name: string]: DubboUrl} {
     const {dubboInterface, version, group} = ctx;
+
     return this._dubboServiceUrlMap
       .get(dubboInterface)
       .filter(serviceProp => {
@@ -75,5 +73,10 @@ export default class Registry<T = {}> {
         reducer[`${host}:${port}`] = prop;
         return reducer;
       }, Object.create(null));
+  }
+
+  hasAgentAddr(ctx: RequestContext) {
+    const agentAddr = this._dubboServiceUrlMap.get(ctx.dubboInterface);
+    return agentAddr && agentAddr.length > 0;
   }
 }

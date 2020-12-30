@@ -4,7 +4,9 @@
   "description": "A simple demo",
   "scripts": {
     "debug:start": "DEBUG=dubbo* ts-node ./src/server.ts",
-    "start": "ts-node ./src/server.ts"
+    "start": "ts-node ./src/server.ts",
+    "dubbo-server": "ts-node ./src/dubbo/provider/dubbo.ts",
+    "debug:dubbo-server": "DEBUG=dubbo* ts-node ./src/dubbo/provider/dubbo.ts"
   },
   "keywords": [
     "apache-dubbo-js"
@@ -16,6 +18,7 @@
     "@types/koa-router": "^7.4.1"
   },
   "dependencies": {
+    "ip": "^1.1.5",
     "koa": "^2.4.1",
     "koa-router": "^7.3.0"
   }
