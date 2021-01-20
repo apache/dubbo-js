@@ -45,8 +45,13 @@ export async function extra(extraParam: IDubboExtInfo): Promise<IExtraResult> {
     execCmd.stderr.setEncoding('utf8');
     execCmd.stdout.on('data', (rowData: Buffer) => {
       let output = rowData.toString('utf8');
-      if (output.includes(startFlag)) {
-        jarDir = output.match(/Output at :(.*)(\nelapsed.*?s)?/)[1];
+      // reg maybe error
+//       if (output.includes(startFlag)) {
+//         jarDir = output.match(/Output at :(.*)(\nelapsed.*?s)?/)[1];
+//       }
+      let m = /\/tmp\/jexpose\d+/.exec(output);
+      if (m) {
+        jarDir = m[0];
       }
     });
 
