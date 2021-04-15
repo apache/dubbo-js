@@ -5,6 +5,15 @@ node_js:
   - '12'
 before_install:
   - npm i npminstall -g
+  # Install zookeeper
+  - wget https://archive.apache.org/dist/zookeeper/zookeeper-3.4.9/zookeeper-3.4.9.tar.gz
+  - tar xzf zookeeper-3.4.9.tar.gz
+  - echo "tickTime=2000" > zookeeper-3.4.9/conf/zoo.cfg
+  - echo "dataDir=/tmp/zookeeper" >> zookeeper-3.4.9/conf/zoo.cfg
+  - echo "clientPort=2181" >> zookeeper-3.4.9/conf/zoo.cfg
+  - mkdir /tmp/zookeeper
+  - zookeeper-3.4.9/bin/zkServer.sh start
+  - jps | grep -v Jps
 install:
   - npminstall
 script:
