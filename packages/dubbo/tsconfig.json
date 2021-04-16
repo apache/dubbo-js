@@ -2,9 +2,9 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./es7",
+    "outDir": "./lib",
     "declaration": true,
-    "declarationDir": "./es7/typings",
+    "declarationDir": "./lib/typings",
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },

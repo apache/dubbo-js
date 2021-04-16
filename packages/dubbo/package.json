@@ -1,13 +1,13 @@
 {
   "name": "apache-dubbo-js",
   "version": "3.0.0-rc6",
-  "main": "./es7/index.js",
-  "types": "./es7/typings/index.d.ts",
+  "main": "./lib/index.js",
+  "types": "./lib/typings/index.d.ts",
   "license": "Apache Licence 2.0",
   "description": "Aapche dubbo & dubbo-js",
   "author": "hufeng@apache.org, xiaodongyang@apache.org",
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=10.0.0"
   },
   "repository": {
     "type": "git",

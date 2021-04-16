@@ -18,12 +18,10 @@ default: build-interpret-util build-dubbo
 
 build-dubbo: clean-dubbo
 	./node_modules/.bin/tsc --project ./packages/dubbo/tsconfig.json
-	./node_modules/.bin/tsc --project ./packages/dubbo/tsconfig-es6.json
 	@echo "compile duboo successfully 👌\n"
 
 clean-dubbo:
-	rm -rf ./packages/dubbo/es6
-	rm -rf ./packages/dubbo/es7
+	rm -rf ./packages/dubbo/lib
 	@echo "clean dubbo successfully 👌\n"
 
 build-interpret-util:clean-interpret-util
