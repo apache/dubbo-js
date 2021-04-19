@@ -19,7 +19,7 @@
     "ip": "1.1.5",
     "js-to-java": "2.4.0",
     "koa-compose": "4.0.0",
-    "nacos": "^2.0.0",
+    "nacos": "2.0.0",
     "node-zookeeper-client": "0.2.2"
   }
 }
