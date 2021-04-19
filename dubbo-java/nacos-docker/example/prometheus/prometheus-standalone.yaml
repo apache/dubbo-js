@@ -1,6 +1,6 @@
 # my global config
 global:
-  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
   evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
   # scrape_timeout is set to the global default (10s).
 
@@ -8,11 +8,11 @@ global:
 alerting:
   alertmanagers:
     - static_configs:
-        - targets:
+        - ? targets
           # - alertmanager:9093
 
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
-rule_files:
+? rule_files
 # - "first_rules.yml"
 # - "second_rules.yml"
 
@@ -31,4 +31,4 @@ scrape_configs:
   - job_name: 'nacos'
     metrics_path: '/nacos/actuator/prometheus'
     static_configs:
-      - targets: ["nacos1:8848","nacos2:8848","nacos3:8848"]
+      - targets: ['nacos:8848']

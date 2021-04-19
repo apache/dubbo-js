@@ -17,8 +17,8 @@
 #!/usr/bin/env sh
 
 # build java dubbo jar
-cd java/dubbo-demo
-mvn clean install 
+cd ./dubbo-demo
+mvn clean install
 cd dubbo-demo-provider
 mvn clean package
 

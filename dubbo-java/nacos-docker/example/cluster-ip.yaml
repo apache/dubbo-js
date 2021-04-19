@@ -1,4 +1,4 @@
-version: "2"
+version: '2'
 services:
   nacos1:
     image: nacos/nacos-server:latest
@@ -9,8 +9,8 @@ services:
     volumes:
       - ./cluster-logs/nacos1:/home/nacos/logs
     ports:
-      - "8848:8848"
-      - "9555:9555"
+      - '8848:8848'
+      - '9555:9555'
     env_file:
       - ../env/nacos-ip.env
     restart: on-failure
@@ -26,7 +26,7 @@ services:
     volumes:
       - ./cluster-logs/nacos2:/home/nacos/logs
     ports:
-      - "8849:8848"
+      - '8849:8848'
     env_file:
       - ../env/nacos-ip.env
     restart: always
@@ -41,7 +41,7 @@ services:
     volumes:
       - ./cluster-logs/nacos2:/home/nacos/logs
     ports:
-      - "8850:8848"
+      - '8850:8848'
     env_file:
       - ../env/nacos-ip.env
     restart: always
@@ -58,7 +58,7 @@ services:
     volumes:
       - ./mysql:/var/lib/mysql
     ports:
-      - "3306:3306"
+      - '3306:3306'
 networks:
   nacos_net:
     driver: bridge
