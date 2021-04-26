@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "debug": "3.1.0",
+    "get-port": "^5.1.1",
     "hessian.js": "2.5.0",
     "ip": "1.1.5",
     "js-to-java": "2.4.0",

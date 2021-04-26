@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-import java from 'js-to-java';
-import RequestContext from './consumer/request-context';
-import DirectlyDubbo from './consumer/directly-dubbo';
-import Dubbo from './consumer/dubbo';
-import {go} from './common/go';
-import {Registry, zk, nacos} from './registry';
-import setting from './setting';
-import {IDubboService, TDubboCallResult} from './types';
-import DubboServer from './server/server';
+import java from 'js-to-java'
+import RequestContext from './consumer/request-context'
+import DirectlyDubbo from './consumer/directly-dubbo'
+import Dubbo from './consumer/dubbo'
+import {go} from './common/go'
+import {Registry, zk, nacos} from './registry'
+import setting from './setting'
+import DubboServer from './server/dubbo-server'
+import {IDubboService, TDubboCallResult} from './types'
 
 export {
   // top level object
@@ -42,4 +42,4 @@ export {
   // types
   TDubboCallResult,
   IDubboService,
-};
+}

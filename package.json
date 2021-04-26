@@ -49,7 +49,8 @@
   "prettier": {
     "bracketSpacing": false,
     "singleQuote": true,
-    "trailingComma": "all"
+    "trailingComma": "all",
+    "semi": false
   },
   "husky": {
     "hooks": {
