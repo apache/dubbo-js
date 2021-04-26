@@ -5,9 +5,9 @@ import {Setting} from '../setting';
 import ResponseContext from './response-context';
 
 const sleep = (delay: number = 1000) => {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(() => {
-      resolve();
+      resolve(null);
     }, delay);
   });
 };
