@@ -19,28 +19,28 @@
 // 3ks hsiaosiyuan0
 
 export const toBytes4 = (num: number) => {
-  const buf = Buffer.allocUnsafe(4);
-  buf.writeUInt32BE(num, 0);
-  return buf;
-};
+  const buf = Buffer.allocUnsafe(4)
+  buf.writeUInt32BE(num, 0)
+  return buf
+}
 
 export const fromBytes4 = (buf: Buffer) => {
-  return buf.readUInt32BE(0);
-};
+  return buf.readUInt32BE(0)
+}
 
 export const toBytes8 = (num: number) => {
-  const buf = Buffer.allocUnsafe(8);
+  const buf = Buffer.allocUnsafe(8)
   //2 ** 32 = 4294967296
-  const high = Math.floor(num / 4294967296);
-  const low = (num & 0xffffffff) >>> 0;
-  buf.writeUInt32BE(high, 0);
-  buf.writeUInt32BE(low, 4);
-  return buf;
-};
+  const high = Math.floor(num / 4294967296)
+  const low = (num & 0xffffffff) >>> 0
+  buf.writeUInt32BE(high, 0)
+  buf.writeUInt32BE(low, 4)
+  return buf
+}
 
 export const fromBytes8 = (buf: Buffer) => {
-  const high = buf.readUInt32BE(0);
-  const low = buf.readUInt32BE(4);
+  const high = buf.readUInt32BE(0)
+  const low = buf.readUInt32BE(4)
   //Math.pow(2, 32) = 4294967296
-  return high * 4294967296 + low;
-};
+  return high * 4294967296 + low
+}

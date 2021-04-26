@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-import debug from 'debug';
-import compose from 'koa-compose';
-import {isFunction, isString} from 'util';
-import config from '../common/config';
-import RequestContext from './request-context';
-import {go} from '../common/go';
-import Queue from './queue';
-import {fromRegistry} from '../registry';
-import Scheduler from './scheduler';
+import debug from 'debug'
+import compose from 'koa-compose'
+import {isFunction, isString} from 'util'
+import config from '../common/config'
+import RequestContext from './request-context'
+import {go} from '../common/go'
+import Queue from './queue'
+import {fromRegistry} from '../registry'
+import Scheduler from './scheduler'
 import {
   IDubboProps,
   IDubboProvider,
@@ -32,12 +32,12 @@ import {
   ITrace,
   Middleware,
   TDubboService,
-} from '../types';
-import {msg, noop, traceInfo} from '../common/util';
+} from '../types'
+import {msg, noop, traceInfo} from '../common/util'
 
-const log = debug('dubbo:bootstrap');
-const packageVersion = require('../../package.json').version;
-log('dubbo-js version :=> %s', packageVersion);
+const log = debug('dubbo:bootstrap')
+const packageVersion = require('../../package.json').version
+log('dubbo-js version :=> %s', packageVersion)
 
 /**
  * Dubbo
@@ -55,49 +55,49 @@ log('dubbo-js version :=> %s', packageVersion);
 export default class Dubbo<TService = Object>
   implements IObservable<IDubboSubscriber> {
   constructor(props: IDubboProps) {
-    this._props = props;
+    this._props = props
 
     // check dubbo setting
     if (!props.dubboSetting) {
-      throw new Error('Please specify dubboSetting');
+      throw new Error('Please specify dubboSetting')
     }
 
     // check dubbo register
     if (!isString(props.registry) && !isFunction(props.registry)) {
-      throw new Error('Dubbo register must be string of function ');
+      throw new Error('Dubbo register must be string of function ')
     }
 
-    this._interfaces = [];
-    this._middleware = [];
-    this._service = <TDubboService<TService>>{};
+    this._interfaces = []
+    this._middleware = []
+    this._service = <TDubboService<TService>>{}
 
     //初始化队列
-    this._queue = Queue.create();
+    this._queue = Queue.create()
 
     //初始化config
     //全局超时时间(最大熔断时间)类似<dubbo:consumer timeout="sometime"/>
     //对应consumer客户端来说，用户设置了接口级别的超时时间，就使用接口级别的
     //如果用户没有设置用户级别，默认就是最大超时时间
-    const {dubboInvokeTimeout, dubboSocketPool} = props;
-    config.dubboInvokeTimeout = dubboInvokeTimeout || config.dubboInvokeTimeout;
-    config.dubboSocketPool = dubboSocketPool || config.dubboSocketPool;
+    const {dubboInvokeTimeout, dubboSocketPool} = props
+    config.dubboInvokeTimeout = dubboInvokeTimeout || config.dubboInvokeTimeout
+    config.dubboSocketPool = dubboSocketPool || config.dubboSocketPool
 
-    log(`initial:|> %O`, props);
-    log('config:|> %O', config);
+    log(`initial:|> %O`, props)
+    log('config:|> %O', config)
 
     //注册dubbo需要处理接口服务
-    this._registryService(props.service);
-    log('interfaces:|>', this._interfaces);
+    this._registryService(props.service)
+    log('interfaces:|>', this._interfaces)
 
-    this._readyPromise = new Promise(resolve => {
-      this._readyResolve = resolve;
-    });
-    this._subscriber = {onTrace: noop};
+    this._readyPromise = new Promise((resolve) => {
+      this._readyResolve = resolve
+    })
+    this._subscriber = {onTrace: noop}
     //初始化消息监听
-    this._initMsgListener();
+    this._initMsgListener()
 
     // get registry center
-    let register = fromRegistry(this._props.registry);
+    let register = fromRegistry(this._props.registry)
 
     //create scheduler
     Scheduler.from(
@@ -108,17 +108,17 @@ export default class Dubbo<TService = Object>
         dubboSetting: props.dubboSetting,
       }),
       this._queue,
-    );
+    )
   }
 
-  private _interfaces: Array<string>;
-  private _readyPromise: Promise<void>;
-  private _readyResolve: Function;
-  private _subscriber: IDubboSubscriber;
-  private readonly _queue: Queue;
-  private readonly _props: IDubboProps;
-  private readonly _middleware: Array<Middleware<RequestContext>>;
-  private readonly _service: TDubboService<TService>;
+  private _interfaces: Array<string>
+  private _readyPromise: Promise<void>
+  private _readyResolve: Function
+  private _subscriber: IDubboSubscriber
+  private readonly _queue: Queue
+  private readonly _props: IDubboProps
+  private readonly _middleware: Array<Middleware<RequestContext>>
+  private readonly _service: TDubboService<TService>
 
   //========================public method===================
   /**
@@ -126,80 +126,80 @@ export default class Dubbo<TService = Object>
    * @param props
    */
   static from(props: IDubboProps) {
-    return new Dubbo(props);
+    return new Dubbo(props)
   }
 
   /**
    * get service from dubbo container
    */
   get service() {
-    return this._service;
+    return this._service
   }
 
   /**
    * 代理dubbo的服务
    */
   proxyService = <T>(provider: IDubboProvider): T => {
-    const {application, isSupportedDubbox, dubboSetting} = this._props;
-    const {dubboInterface, methods, timeout} = provider;
-    const proxyObj = Object.create(null);
+    const {application, isSupportedDubbox, dubboSetting} = this._props
+    const {dubboInterface, methods, timeout} = provider
+    const proxyObj = Object.create(null)
 
     //collect interface
-    this._interfaces.push(dubboInterface);
+    this._interfaces.push(dubboInterface)
     //get interface setting such as group, version
-    const setting = dubboSetting.getDubboSetting(dubboInterface);
+    const setting = dubboSetting.getDubboSetting(dubboInterface)
     if (!setting) {
       throw new Error(
         `Could not find any group or version for ${dubboInterface}, Please specify dubboSetting`,
-      );
+      )
     }
 
     //proxy methods
-    Object.keys(methods).forEach(name => {
+    Object.keys(methods).forEach((name) => {
       proxyObj[name] = async (...args: any[]) => {
-        log('%s create context', name);
+        log('%s create context', name)
         //创建dubbo调用的上下文
-        const ctx = RequestContext.create();
-        ctx.application = application;
-        ctx.isSupportedDubbox = isSupportedDubbox;
+        const ctx = RequestContext.create()
+        ctx.application = application
+        ctx.isSupportedDubbox = isSupportedDubbox
 
         // set dubbo version
-        ctx.dubboVersion = this._props.dubboVersion;
+        ctx.dubboVersion = this._props.dubboVersion
 
-        const method = methods[name];
-        ctx.methodName = name;
-        ctx.methodArgs = method.call(provider, ...args) || [];
+        const method = methods[name]
+        ctx.methodName = name
+        ctx.methodArgs = method.call(provider, ...args) || []
 
-        ctx.dubboInterface = dubboInterface;
-        ctx.version = setting.version;
-        ctx.timeout = timeout;
-        ctx.group = setting.group || '';
+        ctx.dubboInterface = dubboInterface
+        ctx.version = setting.version
+        ctx.timeout = timeout
+        ctx.group = setting.group || ''
 
-        const self = this;
+        const self = this
         const middlewares = [
           ...this._middleware, //handle request middleware
           async function handleRequest(ctx) {
-            log('start middleware handle dubbo request');
-            ctx.body = await go(self._queue.add(ctx));
-            log('end handle dubbo request');
+            log('start middleware handle dubbo request')
+            ctx.body = await go(self._queue.add(ctx))
+            log('end handle dubbo request')
           },
-        ];
+        ]
 
-        log('middleware->', middlewares);
-        const fn = compose(middlewares);
+        log('middleware->', middlewares)
+        const fn = compose(middlewares)
 
         try {
-          await fn(ctx);
+          await fn(ctx)
         } catch (err) {
-          log(err);
+          log(err)
         }
 
-        return ctx.body;
-      };
-    });
+        return ctx.body
+      }
+    })
 
-    return proxyObj;
-  };
+    return proxyObj
+  }
 
   /**
    * extends middleware, api: the same as koa
@@ -207,11 +207,11 @@ export default class Dubbo<TService = Object>
    */
   use(fn: Middleware<RequestContext>) {
     if (typeof fn != 'function') {
-      throw new TypeError('middleware must be a function');
+      throw new TypeError('middleware must be a function')
     }
-    log('use middleware %s', (fn as any)._name || fn.name || '-');
-    this._middleware.push(fn);
-    return this;
+    log('use middleware %s', (fn as any)._name || fn.name || '-')
+    this._middleware.push(fn)
+    return this
   }
 
   /**
@@ -236,12 +236,12 @@ export default class Dubbo<TService = Object>
    * 其他的框架类似
    */
   ready() {
-    return this._readyPromise;
+    return this._readyPromise
   }
 
   subscribe(subscriber: IDubboSubscriber) {
-    this._subscriber = subscriber;
-    return this;
+    this._subscriber = subscriber
+    return this
   }
 
   //================private method================
@@ -249,14 +249,14 @@ export default class Dubbo<TService = Object>
     process.nextTick(() => {
       msg
         .addListener('sys:trace', (msg: ITrace) => {
-          this._subscriber.onTrace(msg);
+          this._subscriber.onTrace(msg)
         })
         .addListener('sys:ready', () => {
-          this._readyResolve();
-        });
+          this._readyResolve()
+        })
 
-      traceInfo(`dubbo:bootstrap version => ${packageVersion}`);
-    });
+      traceInfo(`dubbo:bootstrap version => ${packageVersion}`)
+    })
   }
 
   /**
@@ -267,7 +267,7 @@ export default class Dubbo<TService = Object>
    */
   private _registryService(service: Object) {
     for (let key in service) {
-      this._service[key] = service[key](this);
+      this._service[key] = service[key](this)
     }
   }
 }

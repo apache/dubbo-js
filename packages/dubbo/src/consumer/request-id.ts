@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-let uniqueId = 0;
+let uniqueId = 0
 
 export function id() {
-  uniqueId = ++uniqueId;
+  uniqueId = ++uniqueId
   //reset
   if (uniqueId === Number.MAX_SAFE_INTEGER) {
-    uniqueId = 0;
+    uniqueId = 0
   }
-  return uniqueId;
+  return uniqueId
 }

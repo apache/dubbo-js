@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import debug from 'debug';
-import Hessian from 'hessian.js';
-import {toBytes8} from '../common/byte';
-import RequestContext from '../consumer/request-context';
-import {DubboEncodeError} from '../common/err';
-import {isDevEnv, Version} from '../common/util';
+import debug from 'debug'
+import Hessian from 'hessian.js'
+import {toBytes8} from '../common/byte'
+import RequestContext from '../consumer/request-context'
+import {DubboEncodeError} from '../common/err'
+import {isDevEnv, Version} from '../common/util'
 import {
   DUBBO_MAGIC_HEADER,
   DUBBO_FLAG_REQUEST,
@@ -32,19 +32,19 @@ import {
   DUBBO_RESPONSE_BODY_FLAG,
   DUBBO_MAGIC_HIGH,
   DUBBO_MAGIC_LOW,
-} from './constants';
-import ResponseContext, {ResponseStatus} from '../server/response-context';
+} from './constants'
+import ResponseContext, {ResponseStatus} from '../server/response-context'
 
-const log = debug('dubbo:hessian:encoderV2');
+const log = debug('dubbo:hessian:encoderV2')
 
 const checkPayload = (payload: number) => {
   //check body length
   if (payload > 0 && payload > DUBBO_DEFAULT_PAY_LOAD) {
     throw new DubboEncodeError(
       `Data length too large: ${payload}, max payload: ${DUBBO_DEFAULT_PAY_LOAD}`,
-    );
+    )
   }
-};
+}
 
 //dubbo hessian serialization
 //com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec
@@ -52,22 +52,22 @@ const checkPayload = (payload: number) => {
 
 export class DubboRequestEncoder {
   constructor(ctx: RequestContext) {
-    this._ctx = ctx;
+    this._ctx = ctx
     if (isDevEnv) {
       log(
         'dubbo encode param request:%s',
         JSON.stringify(this._ctx.request, null, 2),
-      );
+      )
     }
   }
 
-  private readonly _ctx: RequestContext;
+  private readonly _ctx: RequestContext
 
   encode() {
-    const body = this.encodeBody();
-    const head = this.encodeHead(body.length);
-    log(`encode body length: ${body.length} bytes`);
-    return Buffer.concat([head, body]);
+    const body = this.encodeBody()
+    const head = this.encodeHead(body.length)
+    log(`encode body length: ${body.length} bytes`)
+    return Buffer.concat([head, body])
   }
 
   /**
@@ -81,46 +81,44 @@ export class DubboRequestEncoder {
    */
   private encodeHead(payload: number) {
     //header
-    const header = Buffer.alloc(DUBBO_HEADER_LENGTH);
+    const header = Buffer.alloc(DUBBO_HEADER_LENGTH)
 
     //set magic number
     //magic high
-    header[0] = DUBBO_MAGIC_HEADER >>> 8;
+    header[0] = DUBBO_MAGIC_HEADER >>> 8
     //magic low
-    header[1] = DUBBO_MAGIC_HEADER & 0xff;
+    header[1] = DUBBO_MAGIC_HEADER & 0xff
 
     // set request and serialization flag.
     header[2] =
-      DUBBO_FLAG_REQUEST |
-      HESSIAN2_SERIALIZATION_CONTENT_ID |
-      DUBBO_FLAG_TWOWAY;
+      DUBBO_FLAG_REQUEST | HESSIAN2_SERIALIZATION_CONTENT_ID | DUBBO_FLAG_TWOWAY
 
     //requestId
-    this.setRequestId(header);
+    this.setRequestId(header)
 
     //body长度int-> 4个byte
 
-    header.writeUInt32BE(payload, 12);
-    return header;
+    header.writeUInt32BE(payload, 12)
+    return header
   }
 
   private setRequestId(header: Buffer) {
-    const {requestId} = this._ctx;
-    log(`encode header requestId: ${requestId}`);
-    const buffer = toBytes8(requestId);
-    header[4] = buffer[0];
-    header[5] = buffer[1];
-    header[6] = buffer[2];
-    header[7] = buffer[3];
-    header[8] = buffer[4];
-    header[9] = buffer[5];
-    header[10] = buffer[6];
-    header[11] = buffer[7];
+    const {requestId} = this._ctx
+    log(`encode header requestId: ${requestId}`)
+    const buffer = toBytes8(requestId)
+    header[4] = buffer[0]
+    header[5] = buffer[1]
+    header[6] = buffer[2]
+    header[7] = buffer[3]
+    header[8] = buffer[4]
+    header[9] = buffer[5]
+    header[10] = buffer[6]
+    header[11] = buffer[7]
   }
 
   private encodeBody() {
     //hessian v2
-    const encoder = new Hessian.EncoderV2();
+    const encoder = new Hessian.EncoderV2()
 
     const {
       dubboVersion,
@@ -128,43 +126,43 @@ export class DubboRequestEncoder {
       version,
       methodName,
       methodArgs,
-    } = this._ctx;
+    } = this._ctx
 
     //dubbo version
-    encoder.write(dubboVersion);
+    encoder.write(dubboVersion)
     //path interface
-    encoder.write(dubboInterface);
+    encoder.write(dubboInterface)
     //interface version
-    encoder.write(version);
+    encoder.write(version)
     //method name
-    encoder.write(methodName);
+    encoder.write(methodName)
 
     //supported dubbox
     if (this._ctx.isSupportedDubbox) {
-      encoder.write(-1);
+      encoder.write(-1)
     }
     //parameter types
-    encoder.write(DubboRequestEncoder.getParameterTypes(methodArgs));
+    encoder.write(DubboRequestEncoder.getParameterTypes(methodArgs))
 
     //arguments
     if (methodArgs && methodArgs.length) {
       for (let arg of methodArgs) {
-        encoder.write(arg);
+        encoder.write(arg)
       }
     }
 
     //attachments
-    encoder.write(this.getAttachments());
+    encoder.write(this.getAttachments())
 
     // check payload lenght
-    checkPayload(encoder.byteBuffer._offset);
+    checkPayload(encoder.byteBuffer._offset)
 
-    return encoder.byteBuffer._bytes.slice(0, encoder.byteBuffer._offset);
+    return encoder.byteBuffer._bytes.slice(0, encoder.byteBuffer._offset)
   }
 
   private static getParameterTypes(args: Array<any>) {
     if (!(args && args.length)) {
-      return '';
+      return ''
     }
 
     const primitiveTypeRef = {
@@ -177,33 +175,33 @@ export class DubboRequestEncoder {
       int: 'I',
       long: 'J',
       short: 'S',
-    };
+    }
 
-    const desc = [];
+    const desc = []
 
     for (let arg of args) {
-      let type: string = arg['$class'];
+      let type: string = arg['$class']
 
       //暂时不支持二维数组
       //如果将来支持，这个地方要while判断下
       if (type[0] === '[') {
         //1. c is array
-        desc.push('[');
-        type = type.slice(1);
+        desc.push('[')
+        type = type.slice(1)
       }
 
       if (primitiveTypeRef[type]) {
         //2. c is primitive
-        desc.push(primitiveTypeRef[type]);
+        desc.push(primitiveTypeRef[type])
       } else {
         //3. c is object
-        desc.push('L');
-        desc.push(type.replace(/\./gi, '/'));
-        desc.push(';');
+        desc.push('L')
+        desc.push(type.replace(/\./gi, '/'))
+        desc.push(';')
       }
     }
 
-    return desc.join('');
+    return desc.join('')
   }
 
   private getAttachments() {
@@ -216,7 +214,7 @@ export class DubboRequestEncoder {
       version,
       application: {name},
       attachments,
-    } = this._ctx;
+    } = this._ctx
 
     //merge dubbo attachments and customize attachments
     const map = {
@@ -226,26 +224,26 @@ export class DubboRequestEncoder {
         version: version || '0.0.0',
       },
       ...attachments,
-    };
+    }
 
-    group && (map['group'] = group);
-    timeout && (map['timeout'] = timeout);
-    name && (map['application'] = name);
+    group && (map['group'] = group)
+    timeout && (map['timeout'] = timeout)
+    name && (map['application'] = name)
 
     let attachmentsHashMap = {
       $class: 'java.util.HashMap',
       $: map,
-    };
+    }
 
     if (isDevEnv) {
       log(
         'request#%d attachment %s',
         requestId,
         JSON.stringify(attachmentsHashMap, null, 2),
-      );
+      )
     }
 
-    return attachmentsHashMap;
+    return attachmentsHashMap
   }
 }
 
@@ -253,90 +251,90 @@ export class DubboRequestEncoder {
 //com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec
 //encodeRequest
 export class DubboResponseEncoder {
-  private readonly _ctx: ResponseContext;
+  private readonly _ctx: ResponseContext
 
   constructor(ctx: ResponseContext) {
-    this._ctx = ctx;
+    this._ctx = ctx
   }
 
   encode() {
-    const body = this.encodeBody();
-    const head = this.encodeHead(body.length);
-    return Buffer.concat([head, body]);
+    const body = this.encodeBody()
+    const head = this.encodeHead(body.length)
+    return Buffer.concat([head, body])
   }
 
   encodeHead(payload: number) {
-    const header = Buffer.alloc(DUBBO_HEADER_LENGTH);
+    const header = Buffer.alloc(DUBBO_HEADER_LENGTH)
     // set magic number
-    header[0] = DUBBO_MAGIC_HIGH;
-    header[1] = DUBBO_MAGIC_LOW;
+    header[0] = DUBBO_MAGIC_HIGH
+    header[1] = DUBBO_MAGIC_LOW
 
     // set request and serialization flag.
-    header[2] = HESSIAN2_SERIALIZATION_ID;
+    header[2] = HESSIAN2_SERIALIZATION_ID
 
     // set response status
-    header[3] = this._ctx.status;
+    header[3] = this._ctx.status
 
     //set requestId
-    const reqIdBuf = toBytes8(this._ctx.request.requestId);
-    header[4] = reqIdBuf[0];
-    header[5] = reqIdBuf[1];
-    header[6] = reqIdBuf[2];
-    header[7] = reqIdBuf[3];
-    header[8] = reqIdBuf[4];
-    header[9] = reqIdBuf[5];
-    header[10] = reqIdBuf[6];
-    header[11] = reqIdBuf[7];
+    const reqIdBuf = toBytes8(this._ctx.request.requestId)
+    header[4] = reqIdBuf[0]
+    header[5] = reqIdBuf[1]
+    header[6] = reqIdBuf[2]
+    header[7] = reqIdBuf[3]
+    header[8] = reqIdBuf[4]
+    header[9] = reqIdBuf[5]
+    header[10] = reqIdBuf[6]
+    header[11] = reqIdBuf[7]
 
-    header.writeUInt32BE(payload, 12);
-    return header;
+    header.writeUInt32BE(payload, 12)
+    return header
   }
 
   encodeBody() {
-    const encoder = new Hessian.EncoderV2();
+    const encoder = new Hessian.EncoderV2()
 
     // response error
     if (this._ctx.status === ResponseStatus.OK) {
       const isSupportAttachment = Version.isSupportResponseAttachment(
         this._ctx.request.version,
-      );
+      )
       if (this._ctx.body.err) {
         encoder.write(
           isSupportAttachment
             ? DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION_WITH_ATTACHMENTS
             : DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION,
-        );
-        encoder.write(this._ctx.body.err.message);
+        )
+        encoder.write(this._ctx.body.err.message)
       } else {
         if (this._ctx.body.res === null) {
           encoder.write(
             isSupportAttachment
               ? DUBBO_RESPONSE_BODY_FLAG.RESPONSE_NULL_VALUE_WITH_ATTACHMENTS
               : DUBBO_RESPONSE_BODY_FLAG.RESPONSE_NULL_VALUE,
-          );
+          )
         } else {
           encoder.write(
             isSupportAttachment
               ? DUBBO_RESPONSE_BODY_FLAG.RESPONSE_VALUE_WITH_ATTACHMENTS
               : DUBBO_RESPONSE_BODY_FLAG.RESPONSE_VALUE,
-          );
-          encoder.write(this._ctx.body.res);
+          )
+          encoder.write(this._ctx.body.res)
         }
       }
 
       if (isSupportAttachment) {
-        const attachments = this._ctx.attachments;
-        attachments['dubbo'] = '2.0.2';
-        encoder.write(attachments);
+        const attachments = this._ctx.attachments
+        attachments['dubbo'] = '2.0.2'
+        encoder.write(attachments)
       }
     } else {
-      encoder.write(this._ctx.body.err.message);
+      encoder.write(this._ctx.body.err.message)
     }
 
     // check payload length
-    checkPayload(encoder.byteBuffer._offset);
+    checkPayload(encoder.byteBuffer._offset)
 
     // encode
-    return encoder.byteBuffer._bytes.slice(0, encoder.byteBuffer._offset);
+    return encoder.byteBuffer._bytes.slice(0, encoder.byteBuffer._offset)
   }
 }

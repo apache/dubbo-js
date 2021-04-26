@@ -39,9 +39,9 @@ export class ZookeeperExpiredError extends Error {}
 export class FaultExitError extends Error {
   //copy message and stack
   constructor(err: Error) {
-    super(err.message);
-    this.message = err.message;
-    this.stack = err.stack;
-    this.name = err.name;
+    super(err.message)
+    this.message = err.message
+    this.stack = err.stack
+    this.name = err.name
   }
 }

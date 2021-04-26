@@ -16,4 +16,4 @@
  */
 
 // 测试启动后，过一会关闭wifi, 过20次的心跳间隔，会关闭socket, 重新创建连接
-it('socket-time-out', () => {});
+it('socket-time-out', () => {})

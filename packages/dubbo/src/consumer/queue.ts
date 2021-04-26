@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-import debug from 'debug';
-import config from '../common/config';
-import RequestContext from './request-context';
-import DubboUrl from './dubbo-url';
+import debug from 'debug'
+import config from '../common/config'
+import RequestContext from './request-context'
+import DubboUrl from './dubbo-url'
 import {
   DubboMethodParamHessianTypeError,
   DubboTimeoutError,
-} from '../common/err';
-import SocketWorker from './socket-worker';
-import statistics from './statistics';
-import {IObservable, TQueueObserver, TRequestId} from '../types';
-import {isDevEnv, noop, traceErr} from '../common/util';
-import {DEFAULT_DUBBO_PROTOCOL_VERSION} from '../serialization/constants';
+} from '../common/err'
+import SocketWorker from './socket-worker'
+import statistics from './statistics'
+import {IObservable, TQueueObserver, TRequestId} from '../types'
+import {isDevEnv, noop, traceErr} from '../common/util'
+import {DEFAULT_DUBBO_PROTOCOL_VERSION} from '../serialization/constants'
 
-const log = debug('dubbo:queue');
+const log = debug('dubbo:queue')
 
 /**
  * Node的异步特性就会让我们在思考问题的时候，要转换一下思考问题的思维
@@ -41,24 +41,24 @@ const log = debug('dubbo:queue');
  */
 export default class Queue implements IObservable<TQueueObserver> {
   private constructor() {
-    log('new Queue');
+    log('new Queue')
     //调用队列-保持调用的requestId和参数
-    this._requestQueue = new Map();
+    this._requestQueue = new Map()
     //订阅者,当有新的dubbo请求添加到队列中，通知schedule进行处理
-    this._subscriber = noop;
+    this._subscriber = noop
   }
 
   //订阅者
-  private _subscriber: Function;
+  private _subscriber: Function
   //请求队列
-  private readonly _requestQueue: Map<TRequestId, RequestContext>;
+  private readonly _requestQueue: Map<TRequestId, RequestContext>
 
   private _clear(requestId) {
-    log(`clear invoke and schedule queue #${requestId}`);
-    this._requestQueue.delete(requestId);
+    log(`clear invoke and schedule queue #${requestId}`)
+    this._requestQueue.delete(requestId)
     if (isDevEnv) {
-      log('current schedule queue', this.scheduleQueue);
-      this._showStatistics();
+      log('current schedule queue', this.scheduleQueue)
+      this._showStatistics()
     }
   }
 
@@ -66,54 +66,54 @@ export default class Queue implements IObservable<TQueueObserver> {
    * static factory method
    */
   static create() {
-    return new Queue();
+    return new Queue()
   }
 
   add = (ctx: RequestContext) => {
     return new Promise((resolve, reject) => {
-      ctx.resolve = resolve;
-      ctx.reject = reject;
+      ctx.resolve = resolve
+      ctx.reject = reject
 
       //hessian参数检测
       if (!Queue._checkMethodArgsHessianType(ctx)) {
-        return;
+        return
       }
       //timeout超时检测
-      this._checkTimeout(ctx);
+      this._checkTimeout(ctx)
       //add queue
-      const {requestId, dubboInterface} = ctx.request;
-      log(`add queue,requestId#${requestId}, interface: ${dubboInterface}`);
+      const {requestId, dubboInterface} = ctx.request
+      log(`add queue,requestId#${requestId}, interface: ${dubboInterface}`)
       //设置调用队列
-      this._requestQueue.set(requestId, ctx);
+      this._requestQueue.set(requestId, ctx)
       if (isDevEnv) {
-        log(`current schedule queue =>`, this.scheduleQueue);
+        log(`current schedule queue =>`, this.scheduleQueue)
       }
       //通知scheduler
-      this._subscriber(requestId, ctx);
-    });
-  };
+      this._subscriber(requestId, ctx)
+    })
+  }
 
   /**
    * 获取当前请求队列
    */
   get requestQueue() {
-    return this._requestQueue;
+    return this._requestQueue
   }
 
   /**
    * 获取当前调度队列
    */
   get scheduleQueue() {
-    const schedule = {};
+    const schedule = {}
     for (let [requestId, ctx] of this._requestQueue) {
-      schedule[requestId] = ctx.pid;
+      schedule[requestId] = ctx.pid
     }
-    return schedule;
+    return schedule
   }
 
   subscribe(cb: Function) {
-    this._subscriber = cb;
-    return this;
+    this._subscriber = cb
+    return this
   }
 
   allFailed(err: Error) {
@@ -121,89 +121,87 @@ export default class Queue implements IObservable<TQueueObserver> {
       const {
         reject,
         request: {dubboInterface, methodName},
-      } = ctx;
+      } = ctx
       log(
         'queue schedule failed requestId#%d, %s#%s err: %s',
         requestId,
         dubboInterface,
         methodName,
         err,
-      );
-      ctx.cleanTimeout();
-      reject(err);
+      )
+      ctx.cleanTimeout()
+      reject(err)
     }
-    this._requestQueue.clear();
+    this._requestQueue.clear()
   }
 
   failed(requestId: TRequestId, err: Error, attachments: Object = {}) {
-    const ctx = this._requestQueue.get(requestId);
+    const ctx = this._requestQueue.get(requestId)
     if (!ctx) {
-      return;
+      return
     }
 
     const {
       uuid,
       request: {dubboInterface, methodName},
-    } = ctx;
-    log('queue schedule failed requestId#%d, err: %s', requestId, err);
-    err.message = `uuid: ${uuid} invoke ${dubboInterface}#${methodName} was error, ${
-      err.message
-    }`;
+    } = ctx
+    log('queue schedule failed requestId#%d, err: %s', requestId, err)
+    err.message = `uuid: ${uuid} invoke ${dubboInterface}#${methodName} was error, ${err.message}`
     //删除该属性，不然会导致JSON.Stringify失败
     if (err['cause']) {
-      delete err['cause']['cause'];
+      delete err['cause']['cause']
     }
     //dubbo2.6.3
-    ctx.providerAttachments = attachments;
-    ctx.cleanTimeout();
-    ctx.reject(err);
-    this._clear(requestId);
+    ctx.providerAttachments = attachments
+    ctx.cleanTimeout()
+    ctx.reject(err)
+    this._clear(requestId)
   }
 
   consume(requestId: TRequestId, node: SocketWorker, providerMeta: DubboUrl) {
-    const ctx = this._requestQueue.get(requestId);
+    const ctx = this._requestQueue.get(requestId)
     if (!ctx) {
-      return;
+      return
     }
-    const {request} = ctx;
-    const {dubboInterface, version} = request;
-    log(`staring schedule ${requestId}#${dubboInterface}#${version}`);
+    const {request} = ctx
+    const {dubboInterface, version} = request
+    log(`staring schedule ${requestId}#${dubboInterface}#${version}`)
 
     //merge dubboVersion timeout group
     request.dubboVersion =
       request.dubboVersion ||
       providerMeta.dubboVersion ||
-      DEFAULT_DUBBO_PROTOCOL_VERSION;
-    request.group = request.group || providerMeta.group;
-    request.path = providerMeta.path;
+      DEFAULT_DUBBO_PROTOCOL_VERSION
+    request.group = request.group || providerMeta.group
+    request.path = providerMeta.path
     try {
-      node.write(ctx);
+      node.write(ctx)
     } catch (err) {
-      this.failed(requestId, err);
-      traceErr(err);
+      this.failed(requestId, err)
+      traceErr(err)
     }
     if (isDevEnv) {
-      log(`current schedule queue ==>`, this.scheduleQueue);
+      log(`current schedule queue ==>`, this.scheduleQueue)
     }
   }
 
   resolve(requestId: TRequestId, res: any, attachments: Object = {}) {
-    const ctx = this._requestQueue.get(requestId);
+    const ctx = this._requestQueue.get(requestId)
     if (!ctx) {
-      return;
+      return
     }
-    log('resolve requestId#%d, res: %O', requestId, res);
+    log('resolve requestId#%d, res: %O', requestId, res)
     //dubbo2.6.3
-    ctx.providerAttachments = attachments;
-    ctx.cleanTimeout();
-    ctx.resolve(res);
-    this._clear(requestId);
+    ctx.providerAttachments = attachments
+    ctx.cleanTimeout()
+    ctx.resolve(res)
+    this._clear(requestId)
   }
 
   private _showStatistics() {
     //调度完成,显示调度结果
     if (this._requestQueue.size === 0) {
-      log('invoke statistics==>%o', statistics);
+      log('invoke statistics==>%o', statistics)
     }
   }
 
@@ -213,24 +211,24 @@ export default class Queue implements IObservable<TQueueObserver> {
    */
   private static _checkMethodArgsHessianType(ctx: RequestContext) {
     if (ctx.isMethodArgsHessianType) {
-      return true;
+      return true
     }
 
-    const {dubboInterface, methodArgs, methodName} = ctx.request;
-    statistics.paramCheckErrCount++;
+    const {dubboInterface, methodArgs, methodName} = ctx.request
+    statistics.paramCheckErrCount++
 
     log(
       `${dubboInterface} method: ${methodName} not all arguments are valid hessian type arguments: => %O`,
       methodArgs,
-    );
+    )
 
     ctx.reject(
       new DubboMethodParamHessianTypeError(
         `err: ${dubboInterface}#${methodName} not all arguments are valid hessian type`,
       ),
-    );
+    )
 
-    return false;
+    return false
   }
 
   /**
@@ -239,21 +237,21 @@ export default class Queue implements IObservable<TQueueObserver> {
    */
   private _checkTimeout(ctx: RequestContext) {
     //先获取上下文设置的超时时间，如果没有设置就获取最大超时时间
-    const timeout = (ctx.timeout || config.dubboInvokeTimeout) * 1000;
-    log('check timeout: ctx.timeout-> %d @timeout: %d', ctx.timeout, timeout);
+    const timeout = (ctx.timeout || config.dubboInvokeTimeout) * 1000
+    log('check timeout: ctx.timeout-> %d @timeout: %d', ctx.timeout, timeout)
 
     ctx.timeoutId = setTimeout(() => {
-      statistics.timeoutErrCount++;
-      const {requestId, dubboInterface, methodName} = ctx.request;
+      statistics.timeoutErrCount++
+      const {requestId, dubboInterface, methodName} = ctx.request
 
-      log(`err: ${dubboInterface}#${methodName} remote invoke timeout`);
+      log(`err: ${dubboInterface}#${methodName} remote invoke timeout`)
 
       this.failed(
         requestId,
         new DubboTimeoutError(
           `err:${dubboInterface}#${methodName} remote invoke timeout`,
         ),
-      );
-    }, timeout);
+      )
+    }, timeout)
   }
 }

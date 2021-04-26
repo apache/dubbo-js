@@ -14,26 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import java from 'js-to-java';
+import java from 'js-to-java'
 
 export interface ITypeRequest {
-  bigDecimal?: {value: string};
-  map?: {[name: string]: string};
+  bigDecimal?: {value: string}
+  map?: {[name: string]: string}
 }
 
 export class TypeRequest {
   constructor(params: ITypeRequest) {
-    this.bigDecimal = params.bigDecimal;
-    this.map = params.map;
+    this.bigDecimal = params.bigDecimal
+    this.map = params.map
   }
 
-  bigDecimal?: {value: string};
-  map?: {[name: string]: string};
+  bigDecimal?: {value: string}
+  map?: {[name: string]: string}
 
   __fields2java() {
-    let mapMapTransfer = new Map();
+    let mapMapTransfer = new Map()
     for (let mapKey in this.map) {
-      mapMapTransfer.set(java.String(mapKey), java.String(this.map[mapKey]));
+      mapMapTransfer.set(java.String(mapKey), java.String(this.map[mapKey]))
     }
     return {
       $class: 'org.apache.dubbo.demo.TypeRequest',
@@ -41,6 +41,6 @@ export class TypeRequest {
         bigDecimal: java.BigDecimal(this.bigDecimal.value),
         map: java.Map(mapMapTransfer),
       },
-    };
+    }
   }
 }

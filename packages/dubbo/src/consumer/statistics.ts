@@ -21,4 +21,4 @@
 export default {
   timeoutErrCount: 0,
   paramCheckErrCount: 0,
-};
+}

@@ -1,7 +1,7 @@
 declare module 'hessian.js' {
   export interface JavaType {
-    $class: string;
-    $: any;
+    $class: string
+    $: any
   }
 
   export class EncoderV2 {
@@ -14,26 +14,26 @@ declare module 'hessian.js' {
         | Object
         | Map<string, any>
         | JavaType,
-    ): void;
+    ): void
     byteBuffer: {
-      _bytes: Buffer;
-      _offset: number;
-    };
+      _bytes: Buffer
+      _offset: number
+    }
   }
 
   export class DecoderV2 {
-    constructor(buff: Buffer);
-    read(): any;
-    readNull(): null;
-    readBool(): boolean;
-    readInt(): number;
-    readLong(): number;
-    readDouble(): number;
-    readDate(): Date;
-    readObject(): Object;
-    readMap(): Map<any, any>;
-    readArray(): Array<any>;
-    readList(): Array<any>;
-    readRef(): Object;
+    constructor(buff: Buffer)
+    read(): any
+    readNull(): null
+    readBool(): boolean
+    readInt(): number
+    readLong(): number
+    readDouble(): number
+    readDate(): Date
+    readObject(): Object
+    readMap(): Map<any, any>
+    readArray(): Array<any>
+    readList(): Array<any>
+    readRef(): Object
   }
 }

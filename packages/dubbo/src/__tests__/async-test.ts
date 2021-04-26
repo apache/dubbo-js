@@ -16,60 +16,60 @@
  */
 
 async function hello() {
-  return {err: null, res: 'hello'};
+  return {err: null, res: 'hello'}
 }
 
 async function world() {
-  return {err: null, res: 'world'};
+  return {err: null, res: 'world'}
 }
 
 async function temp() {
-  return {err: new Error('I am error'), res: null};
+  return {err: new Error('I am error'), res: null}
 }
 
 class AsyncWrapper {
-  public error: Error;
+  public error: Error
 
   private constructor() {
-    this.error = null;
+    this.error = null
   }
 
   static create() {
-    return new AsyncWrapper();
+    return new AsyncWrapper()
   }
 
   async go(fn) {
     if (this.error) {
-      return null;
+      return null
     }
 
-    const {err, res} = await fn();
+    const {err, res} = await fn()
 
     if (err) {
-      this.error = err;
-      return null;
+      this.error = err
+      return null
     }
 
-    return {err, res};
+    return {err, res}
   }
 
   get err() {
-    return this.error;
+    return this.error
   }
 }
 
 it('test async', async () => {
-  const aw = AsyncWrapper.create();
-  const res = await aw.go(hello);
-  expect(res).toEqual({err: null, res: 'hello'});
+  const aw = AsyncWrapper.create()
+  const res = await aw.go(hello)
+  expect(res).toEqual({err: null, res: 'hello'})
 
-  const res1 = await aw.go(temp);
-  expect(res1).toEqual(null);
+  const res1 = await aw.go(temp)
+  expect(res1).toEqual(null)
 
-  const res2 = await aw.go(world);
-  expect(res2).toEqual(null);
+  const res2 = await aw.go(world)
+  expect(res2).toEqual(null)
 
   if (aw.error) {
-    expect(aw.error.message).toEqual('I am error');
+    expect(aw.error.message).toEqual('I am error')
   }
-});
+})

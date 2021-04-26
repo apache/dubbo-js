@@ -11,22 +11,22 @@ yarn add dubbo-js
 ## How to Usage?
 
 ```typescript
-import {Dubbo, java, TDubboCallResult} from 'dubbo';
+import {Dubbo, java, TDubboCallResult} from 'dubbo'
 
 //定义dubbo方法类型接口
 //方便代码自动提示
 //如果写的JavaScript忽略
 interface IDemoService {
-  sayHello(name: string): TDubboCallResult<string>;
+  sayHello(name: string): TDubboCallResult<string>
 
-  echo(): TDubboCallResult<string>;
+  echo(): TDubboCallResult<string>
 
-  test(): TDubboCallResult<void>;
+  test(): TDubboCallResult<void>
 
   getUserInfo(): TDubboCallResult<{
-    status: string;
-    info: {id: number; name: string};
-  }>;
+    status: string
+    info: {id: number; name: string}
+  }>
 }
 
 //创建dubbo对象
@@ -36,7 +36,7 @@ const dubbo = new Dubbo({
   register: 'localhost:2181',
   dubboVersion: '2.0.0',
   interfaces: ['org.apache.dubbo.demo.DemoService'],
-});
+})
 
 //代理本地对象->dubbo对象
 const demoService = dubbo.proxyService<IDemoService>({
@@ -45,7 +45,7 @@ const demoService = dubbo.proxyService<IDemoService>({
   methods: {
     sayHello(name) {
       //仅仅做参数hessian化转换
-      return [java.String(name)];
+      return [java.String(name)]
     },
 
     echo() {},
@@ -60,17 +60,17 @@ const demoService = dubbo.proxyService<IDemoService>({
           name: 'nodejs',
           email: 'node@qianmi.com',
         }),
-      ];
+      ]
     },
   },
-});
+})
 
-const result1 = await demoService.sayHello('node');
+const result1 = await demoService.sayHello('node')
 //print {err: null, res:'hello node from dubbo service'}
-const res = await demoService.echo();
+const res = await demoService.echo()
 //print {err: null, res: 'pang'}
 
-const res = await demoService.getUserInfo();
+const res = await demoService.getUserInfo()
 //status: 'ok', info: { id: '1', name: 'test' }
 ```
 
@@ -139,7 +139,7 @@ const demoSerivce = Dubbo.proxService({
 ## FAQ
 
 ```javascript
-import {Dubbo} from 'dubbo-js';
+import {Dubbo} from 'dubbo-js'
 ```
 
 默认导入的 dubbo-js 是按照 es2017 进行编译的，支持 node7.10 以上。
@@ -147,5 +147,5 @@ import {Dubbo} from 'dubbo-js';
 如果更低的 node 版本，可以使用
 
 ```javascript
-import {Dubbo} from 'dubbo-js/es6';
+import {Dubbo} from 'dubbo-js/es6'
 ```

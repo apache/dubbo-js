@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import debug from 'debug';
-import qs from 'querystring';
-import url, {Url} from 'url';
-import {IQueryObj} from '../types';
+import debug from 'debug'
+import qs from 'querystring'
+import url, {Url} from 'url'
+import {IQueryObj} from '../types'
 
-const log = debug('dubbo:dubbo-url');
+const log = debug('dubbo:dubbo-url')
 
 /**
  *
@@ -36,31 +36,31 @@ const log = debug('dubbo:dubbo-url');
  */
 export default class DubboUrl {
   private constructor(providerUrl: string) {
-    log('DubboUrl from -> %s', providerUrl);
-    this._url = url.parse(providerUrl);
-    this._query = qs.parse(providerUrl) as any;
+    log('DubboUrl from -> %s', providerUrl)
+    this._url = url.parse(providerUrl)
+    this._query = qs.parse(providerUrl) as any
 
-    this.host = this._url.hostname;
-    this.port = Number(this._url.port);
-    this.path = this._url.pathname.substring(1);
-    this.dubboVersion = this._query.dubbo || '';
+    this.host = this._url.hostname
+    this.port = Number(this._url.port)
+    this.path = this._url.pathname.substring(1)
+    this.dubboVersion = this._query.dubbo || ''
     this.version =
-      this._query.version || this._query['default.version'] || '0.0.0';
-    this.group = this._query.group || this._query['default.group'] || '';
+      this._query.version || this._query['default.version'] || '0.0.0'
+    this.group = this._query.group || this._query['default.group'] || ''
   }
 
-  private readonly _url: Url;
-  private readonly _query: IQueryObj;
+  private readonly _url: Url
+  private readonly _query: IQueryObj
 
   //===================public fields and methods============
-  public readonly host: string;
-  public readonly port: number;
-  public readonly path: string;
-  public readonly dubboVersion: string;
-  public readonly version: string;
-  public readonly group: string;
+  public readonly host: string
+  public readonly port: number
+  public readonly path: string
+  public readonly dubboVersion: string
+  public readonly version: string
+  public readonly group: string
 
   static from(providerUrl: string) {
-    return new DubboUrl(providerUrl);
+    return new DubboUrl(providerUrl)
   }
 }

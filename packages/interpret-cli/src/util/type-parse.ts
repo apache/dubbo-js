@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import debug from 'debug';
-import {IJFieldPropers, ITypePropers, ITypeSearch} from '../typings';
+import debug from 'debug'
+import {IJFieldPropers, ITypePropers, ITypeSearch} from '../typings'
 
-const log = debug('j2t:core:ast-parse-util');
+const log = debug('j2t:core:ast-parse-util')
 
 /**
  * java 类型映射到TS中的值;;
@@ -57,7 +57,7 @@ const javaType2JSMap = {
   'java.util.Map': '{[name: ${nameType}]: ${value}}',
   'java.util.HashMap': '{[name: ${nameType}]: ${value}}',
   'java.math.BigDecimal': '{value:string}',
-};
+}
 
 /**
  * 获取field的类型转换eg:
@@ -72,68 +72,68 @@ export async function jType2Ts(
   typePropers: ITypePropers,
   typeOptions: ITypeSearch,
 ): Promise<string> {
-  let result = '';
+  let result = ''
   //是否是类泛型的定义
   if (!typePropers) {
-    throw new Error('typePropers为空');
+    throw new Error('typePropers为空')
   }
 
   if (typeOptions.isTypeParam(typePropers.name)) {
-    return typePropers.name;
+    return typePropers.name
   } else if (typePropers.isArray) {
-    let subType = await jType2Ts(typePropers.elementType, typeOptions);
-    return `${subType}[]`;
+    let subType = await jType2Ts(typePropers.elementType, typeOptions)
+    return `${subType}[]`
   } else if (typePropers.name === 'java.lang.Enum') {
     //枚举类型处理
-    let enumClassPath = typePropers.typeArgs[0].type.name;
-    return classPath2TypeName(enumClassPath, typeOptions);
+    let enumClassPath = typePropers.typeArgs[0].type.name
+    return classPath2TypeName(enumClassPath, typeOptions)
   } else if (
     typePropers.name === 'java.util.Map' &&
     typePropers.typeArgs.length === 0
   ) {
-    return 'any'; //直接返回any
+    return 'any' //直接返回any
   } else if (typePropers.typeArgs && typePropers.typeArgs.length > 0) {
     //泛型处理
-    let type = await classPath2TypeName(typePropers.name, typeOptions);
+    let type = await classPath2TypeName(typePropers.name, typeOptions)
     if (typePropers.name === 'java.util.Map') {
-      let nameType = 'any';
+      let nameType = 'any'
       if (typePropers.typeArgs[0]) {
         if (!typePropers.typeArgs[0].isWildcard) {
-          nameType = await jType2Ts(typePropers.typeArgs[0].type, typeOptions);
+          nameType = await jType2Ts(typePropers.typeArgs[0].type, typeOptions)
         }
       }
 
-      let valueType = 'any';
+      let valueType = 'any'
       if (typePropers.typeArgs[1]) {
         if (!typePropers.typeArgs[1].isWildcard) {
-          valueType = await jType2Ts(typePropers.typeArgs[1].type, typeOptions);
+          valueType = await jType2Ts(typePropers.typeArgs[1].type, typeOptions)
         }
       }
 
       result = type
         .replace('${nameType}', nameType)
-        .replace('${value}', valueType);
+        .replace('${value}', valueType)
     } else if (type === 'any') {
-      return 'any';
+      return 'any'
     } else {
-      let subTypes = [];
+      let subTypes = []
       for (var i = 0, iLen = typePropers.typeArgs.length; i < iLen; i++) {
-        var subItem = typePropers.typeArgs[i];
+        var subItem = typePropers.typeArgs[i]
 
         if (!subItem.isWildcard) {
-          subTypes.push(await jType2Ts(subItem.type, typeOptions));
+          subTypes.push(await jType2Ts(subItem.type, typeOptions))
         } else {
-          subTypes.push('any');
+          subTypes.push('any')
         }
       }
-      result = `${type}<${subTypes.join(',')}>`;
+      result = `${type}<${subTypes.join(',')}>`
     }
   } else {
-    result = await classPath2TypeName(typePropers.name, typeOptions);
+    result = await classPath2TypeName(typePropers.name, typeOptions)
   }
 
-  log('获取变量的类型:', typePropers, '==>', result);
-  return result;
+  log('获取变量的类型:', typePropers, '==>', result)
+  return result
 }
 
 /**
@@ -153,19 +153,19 @@ export async function classPath2TypeName(
   classPath: string,
   typeOptions: ITypeSearch,
 ): Promise<string> {
-  let result = javaType2JSMap[classPath];
+  let result = javaType2JSMap[classPath]
   if (result) {
-    return result;
+    return result
   } else if (typeOptions.hasAst(classPath)) {
-    let denpendItem = await typeOptions.addDenpend(classPath);
+    let denpendItem = await typeOptions.addDenpend(classPath)
     if (denpendItem) {
-      return denpendItem.importName;
+      return denpendItem.importName
     } else {
-      console.warn('warning: not find class Type for :' + classPath);
-      return 'any';
+      console.warn('warning: not find class Type for :' + classPath)
+      return 'any'
     }
   } else {
-    return 'any';
+    return 'any'
     // throw new Error(`未找到类${classPath},在typescript中的信息; `);
   }
 }

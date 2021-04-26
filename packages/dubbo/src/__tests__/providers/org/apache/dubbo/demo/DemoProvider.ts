@@ -14,16 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Dubbo, TDubboCallResult} from 'dubbo-js';
-import {argumentMap, JavaString} from 'interpret-util';
-import {UserRequest} from './UserRequest';
-import {UserResponse} from './UserResponse';
+import {Dubbo, TDubboCallResult} from 'dubbo-js'
+import {argumentMap, JavaString} from 'interpret-util'
+import {UserRequest} from './UserRequest'
+import {UserResponse} from './UserResponse'
 
 export interface IDemoProvider {
-  sayHello(name: JavaString): TDubboCallResult<string>;
-  test(): TDubboCallResult<void>;
-  echo(): TDubboCallResult<string>;
-  getUserInfo(request: UserRequest): TDubboCallResult<UserResponse>;
+  sayHello(name: JavaString): TDubboCallResult<string>
+  test(): TDubboCallResult<void>
+  echo(): TDubboCallResult<string>
+  getUserInfo(request: UserRequest): TDubboCallResult<UserResponse>
 }
 
 export const DemoProviderWrapper = {
@@ -31,11 +31,11 @@ export const DemoProviderWrapper = {
   test: argumentMap,
   echo: argumentMap,
   getUserInfo: argumentMap,
-};
+}
 
 export function DemoProvider(dubbo: Dubbo): IDemoProvider {
   return dubbo.proxyService<IDemoProvider>({
     dubboInterface: 'org.apache.dubbo.demo.DemoProvider',
     methods: DemoProviderWrapper,
-  });
+  })
 }

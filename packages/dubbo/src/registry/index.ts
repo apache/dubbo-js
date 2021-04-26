@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-import Registry from './registry';
-import zk from './registry-zookeeper';
-import nacos from './registry-nacos';
-import {isString, isFunction} from 'util';
+import Registry from './registry'
+import zk from './registry-zookeeper'
+import nacos from './registry-nacos'
+import {isString, isFunction} from 'util'
 import {
   IDubboProviderRegistryProps,
   IDubboConsumerRegistryProps,
-} from '../types';
+} from '../types'
 
 /**
  * parse registry
@@ -44,12 +44,12 @@ function fromRegistry(
   props: IDubboProviderRegistryProps | IDubboConsumerRegistryProps,
 ) => Registry {
   if (isString(param) && param.startsWith('nacos://')) {
-    return nacos({url: param});
+    return nacos({url: param})
   } else if (isString(param)) {
-    return zk({url: param});
+    return zk({url: param})
   } else if (isFunction(param)) {
-    return param as any;
+    return param as any
   }
 }
 
-export {fromRegistry, Registry, zk, nacos};
+export {fromRegistry, Registry, zk, nacos}

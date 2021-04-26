@@ -16,16 +16,16 @@
  */
 
 export interface IDubboSetting {
-  group?: string;
-  version?: string;
-  timeout?: number;
+  group?: string
+  version?: string
+  timeout?: number
 }
 
 export type TPredictFunction = (
   fullInterfaceName: string,
-) => IDubboSetting | null;
+) => IDubboSetting | null
 
 export interface IRule {
-  condition: string | Array<string> | RegExp | TPredictFunction;
-  dubboSetting: IDubboSetting;
+  condition: string | Array<string> | RegExp | TPredictFunction
+  dubboSetting: IDubboSetting
 }

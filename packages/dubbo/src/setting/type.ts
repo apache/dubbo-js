@@ -14,26 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {TPredictFunction} from './types';
+import {TPredictFunction} from './types'
 
-const toString = Object.prototype.toString;
+const toString = Object.prototype.toString
 
 export const type = (arg: any) => {
-  return toString.call(arg);
-};
+  return toString.call(arg)
+}
 
 export const isArray = (arg: any): arg is Array<string> => {
-  return type(arg) === '[object Array]';
-};
+  return type(arg) === '[object Array]'
+}
 
 export const isString = (arg: any): arg is string => {
-  return type(arg) === '[object String]';
-};
+  return type(arg) === '[object String]'
+}
 
 export const isRegExp = (arg: any): arg is RegExp => {
-  return type(arg) === '[object RegExp]';
-};
+  return type(arg) === '[object RegExp]'
+}
 
 export const isFn = (arg: any): arg is TPredictFunction => {
-  return type(arg) === '[object Function]';
-};
+  return type(arg) === '[object Function]'
+}

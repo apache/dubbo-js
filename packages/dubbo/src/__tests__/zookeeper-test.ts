@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import {zk} from '../registry';
-import setting from '../setting';
+import {zk} from '../registry'
+import setting from '../setting'
 
 describe('zookeeper test suite', () => {
   it('test connect', () => {
@@ -31,7 +31,7 @@ describe('zookeeper test suite', () => {
           'org.apache.dubbo.demo.ErrorProvider',
         ],
         {version: '1.0.0'},
-      );
+      )
 
     const client = zk({
       url: 'localhost:2181,localhost:2181,localhost:2181',
@@ -45,15 +45,15 @@ describe('zookeeper test suite', () => {
       application: {
         name: 'node-zookeeper-test',
       },
-    });
+    })
 
     client.subscribe({
       onData(data) {
-        expect(data.size).toEqual(1);
+        expect(data.size).toEqual(1)
       },
       onError(err) {
-        expect(err).toBeNull();
+        expect(err).toBeNull()
       },
-    });
-  });
-});
+    })
+  })
+})

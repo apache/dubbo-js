@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import {Dubbo, setting} from 'dubbo-js';
-import {DemoProvider} from './providers/org/apache/dubbo/demo/DemoProvider';
+import {Dubbo, setting} from 'dubbo-js'
+import {DemoProvider} from './providers/org/apache/dubbo/demo/DemoProvider'
 
 const service = {
   DemoProvider,
-};
+}
 
 const dubboSetting = setting
   .match('org.apache.dubbo.demo.BasicTypeProvider', {
@@ -32,35 +32,36 @@ const dubboSetting = setting
       'org.apache.dubbo.demo.ErrorProvider',
     ],
     {version: '1.0.0'},
-  );
+  )
 
 const dubbo = new Dubbo<typeof service>({
   application: {name: 'dubbo-js'},
   register: 'localhost:2181',
   service,
   dubboSetting,
-});
+})
 
 //use middleware
 dubbo.use(async function test(ctx, next) {
-  const startTime = Date.now();
-  await next();
-  const endTime = Date.now();
+  const startTime = Date.now()
+  await next()
+  const endTime = Date.now()
   const {
     request: {dubboInterface, methodName},
-  } = ctx;
+  } = ctx
   console.log(
-    `hessian-check: invoke ${dubboInterface}#${methodName} costTime: ${endTime -
-      startTime}`,
-  );
-});
+    `hessian-check: invoke ${dubboInterface}#${methodName} costTime: ${
+      endTime - startTime
+    }`,
+  )
+})
 
 describe('dubbo hessian parameter check test suite', () => {
   it('test sayHello', async () => {
     //@ts-ignore
-    const {res, err} = await dubbo.service.DemoProvider.sayHello('node');
-    expect(res).toEqual(null);
-    expect(err != null).toEqual(true);
-    expect(err.message).toMatch(/not all arguments are valid hessian type/);
-  });
-});
+    const {res, err} = await dubbo.service.DemoProvider.sayHello('node')
+    expect(res).toEqual(null)
+    expect(err != null).toEqual(true)
+    expect(err.message).toMatch(/not all arguments are valid hessian type/)
+  })
+})

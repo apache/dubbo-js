@@ -14,16 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import debug from 'debug';
-import {relative, sep} from 'path';
-import {ImportDeclarationStructure} from 'ts-simple-ast';
+import debug from 'debug'
+import {relative, sep} from 'path'
+import {ImportDeclarationStructure} from 'ts-simple-ast'
 
-const log = debug('j2t:core:toImport');
+const log = debug('j2t:core:toImport')
 
 export interface IToImportParam {
-  className: string;
-  classPath: string;
-  packagePath: string;
+  className: string
+  classPath: string
+  packagePath: string
 }
 
 /**
@@ -38,7 +38,7 @@ export function toImport({
   classPath,
   packagePath,
 }: IToImportParam): ImportDeclarationStructure {
-  log('调用转换方法 toImport::', className, classPath, packagePath);
+  log('调用转换方法 toImport::', className, classPath, packagePath)
 
   return {
     moduleSpecifier:
@@ -47,5 +47,5 @@ export function toImport({
         .split(sep)
         .join('/'),
     namedImports: [{name: className}],
-  };
+  }
 }

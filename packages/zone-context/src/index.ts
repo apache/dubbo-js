@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-import asyncHook from 'async_hooks';
-import fs from 'fs';
-import path from 'path';
+import asyncHook from 'async_hooks'
+import fs from 'fs'
+import path from 'path'
 
 export interface IRoot {
-  [key: string]: Object;
+  [key: string]: Object
 }
 
 export interface ITree {
   [key: string]: {
-    rootId: number;
-    pid: number;
-    children: Array<number>;
-  };
+    rootId: number
+    pid: number
+    children: Array<number>
+  }
 }
 
 // root context
-const root: IRoot = {};
+const root: IRoot = {}
 
 /**
  * tree invoke context data-structure
@@ -48,7 +48,7 @@ const root: IRoot = {};
  * }
  *
  */
-const invokeTree: ITree = {};
+const invokeTree: ITree = {}
 
 // enabel async hook
 asyncHook
@@ -58,26 +58,26 @@ asyncHook
       // debugFile(`${asyncId} - ${type} - ${triggerAsyncId}`, 'hook.debug.log')
       // 不记录一步的文件操作
       if (type === 'FSREQCALLBACK') {
-        return;
+        return
       }
       // debugFile(`${type}-${asyncId}-${triggerAsyncId}`)
-      const parent = invokeTree[triggerAsyncId];
+      const parent = invokeTree[triggerAsyncId]
       if (parent) {
         invokeTree[asyncId] = {
           pid: triggerAsyncId,
           rootId: parent.rootId,
           children: [],
-        };
-        invokeTree[triggerAsyncId].children.push(asyncId);
+        }
+        invokeTree[triggerAsyncId].children.push(asyncId)
       }
     },
   })
-  .enable();
+  .enable()
 
 // find root value
 function findRootVal(asyncId: number) {
-  const node = invokeTree[asyncId];
-  return node ? root[node.rootId] : null;
+  const node = invokeTree[asyncId]
+  return node ? root[node.rootId] : null
 }
 
 /**
@@ -87,30 +87,30 @@ function findRootVal(asyncId: number) {
 function gc(rootId: number) {
   // 如果不存在该 rootId
   if (!root[rootId]) {
-    return;
+    return
   }
 
   const collectionAllNodeId = (rootId: number) => {
-    const {children} = invokeTree[rootId];
-    let allNodeId = [...children];
+    const {children} = invokeTree[rootId]
+    let allNodeId = [...children]
     for (let id of children) {
-      allNodeId = [...allNodeId, ...collectionAllNodeId(id)];
+      allNodeId = [...allNodeId, ...collectionAllNodeId(id)]
     }
-    return allNodeId;
-  };
-
-  const allNodes = collectionAllNodeId(rootId);
-  for (let id of allNodes) {
-    delete invokeTree[id];
+    return allNodeId
   }
-  delete invokeTree[rootId];
-  delete root[rootId];
+
+  const allNodes = collectionAllNodeId(rootId)
+  for (let id of allNodes) {
+    delete invokeTree[id]
+  }
+  delete invokeTree[rootId]
+  delete root[rootId]
 }
 
 export function debugFile(arg: any, file: string = 'tls.debug.log') {
   fs.writeFileSync(path.join(process.cwd(), file), `${arg}\n`, {
     flag: 'a',
-  });
+  })
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ public api ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -120,33 +120,33 @@ export function debugFile(arg: any, file: string = 'tls.debug.log') {
  * @param fn
  */
 export async function ZoneContext(fn: Function) {
-  const asyncResource = new asyncHook.AsyncResource('ZoneContext');
-  let rootId = -1;
+  const asyncResource = new asyncHook.AsyncResource('ZoneContext')
+  let rootId = -1
   // @ts-ignore
   return asyncResource.runInAsyncScope(async () => {
     try {
-      rootId = asyncHook.executionAsyncId();
-      root[rootId] = {};
+      rootId = asyncHook.executionAsyncId()
+      root[rootId] = {}
       invokeTree[rootId] = {
         pid: -1,
         rootId,
         children: [],
-      };
-      await fn();
+      }
+      await fn()
     } finally {
       // destroy tree
-      gc(rootId);
+      gc(rootId)
     }
-  });
+  })
 }
 
 export function getZoneContext() {
-  const curId = asyncHook.executionAsyncId();
-  return findRootVal(curId);
+  const curId = asyncHook.executionAsyncId()
+  return findRootVal(curId)
 }
 
 export function setZoneContext(obj: Object) {
-  const curId = asyncHook.executionAsyncId();
-  let root = findRootVal(curId);
-  Object.assign(root, obj);
+  const curId = asyncHook.executionAsyncId()
+  let root = findRootVal(curId)
+  Object.assign(root, obj)
 }

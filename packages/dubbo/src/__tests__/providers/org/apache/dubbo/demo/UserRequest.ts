@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-import java from 'js-to-java';
+import java from 'js-to-java'
 
 export interface IUserRequest {
-  name?: string;
-  id?: number;
-  email?: string;
+  name?: string
+  id?: number
+  email?: string
 }
 
 export class UserRequest {
   constructor(params: IUserRequest) {
-    this.name = params.name;
-    this.id = params.id;
-    this.email = params.email;
+    this.name = params.name
+    this.id = params.id
+    this.email = params.email
   }
 
-  name?: string;
-  id?: number;
-  email?: string;
+  name?: string
+  id?: number
+  email?: string
 
   __fields2java() {
     return {
@@ -42,6 +42,6 @@ export class UserRequest {
         id: java.Integer(this.id),
         email: java.String(this.email),
       },
-    };
+    }
   }
 }

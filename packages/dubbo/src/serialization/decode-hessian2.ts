@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import debug from 'debug';
-import Hessian from 'hessian.js';
-import {fromBytes8} from '../common/byte';
-import {DubboDecodeError, DubboServiceError} from '../common/err';
-import {IDubboResponse} from '../types';
+import debug from 'debug'
+import Hessian from 'hessian.js'
+import {fromBytes8} from '../common/byte'
+import {DubboDecodeError, DubboServiceError} from '../common/err'
+import {IDubboResponse} from '../types'
 import {
   DEFAULT_DUBBO_PROTOCOL_VERSION,
   DUBBO_RESPONSE_BODY_FLAG,
@@ -27,78 +27,78 @@ import {
   DUBBO_FLAG_REQUEST,
   DUBBO_HEADER_LENGTH,
   HESSIAN2_SERIALIZATION_CONTENT_ID,
-} from './constants';
-import Request from './request';
+} from './constants'
+import Request from './request'
 
 export function decodeDubboRequest(buff: Buffer): Request {
-  const log = debug('dubbo:decodeDubboRequest');
+  const log = debug('dubbo:decodeDubboRequest')
 
-  const flag = buff[2];
+  const flag = buff[2]
   // get requestId
-  const requestId = fromBytes8(buff.slice(4, 12));
-  log('decode requestId -> ', requestId);
-  const req = new Request(requestId);
+  const requestId = fromBytes8(buff.slice(4, 12))
+  log('decode requestId -> ', requestId)
+  const req = new Request(requestId)
 
   // decode request
   if ((flag & DUBBO_FLAG_REQUEST) !== 0) {
-    req.version = DEFAULT_DUBBO_PROTOCOL_VERSION;
+    req.version = DEFAULT_DUBBO_PROTOCOL_VERSION
 
-    const decoder = new Hessian.DecoderV2(buff.slice(DUBBO_HEADER_LENGTH));
+    const decoder = new Hessian.DecoderV2(buff.slice(DUBBO_HEADER_LENGTH))
     // decode request
-    const dubboVersion = decoder.read();
-    req.version = dubboVersion;
-    req.attachment.dubbo = dubboVersion;
+    const dubboVersion = decoder.read()
+    req.version = dubboVersion
+    req.attachment.dubbo = dubboVersion
 
-    const path = decoder.read();
-    req.attachment.path = path;
+    const path = decoder.read()
+    req.attachment.path = path
 
-    const version = decoder.read();
-    req.attachment.version = version;
+    const version = decoder.read()
+    req.attachment.version = version
 
-    const methodName = decoder.read();
-    req.methodName = methodName;
+    const methodName = decoder.read()
+    req.methodName = methodName
 
-    const desc: string = decoder.read();
-    req.parameterTypeDesc = desc;
+    const desc: string = decoder.read()
+    req.parameterTypeDesc = desc
 
     if (desc.length > 0) {
-      const paramaterTypes: Array<string> = desc.split(';').filter(Boolean);
-      req.parameterTypes = paramaterTypes;
-      const len = paramaterTypes.length;
-      const args = [];
+      const paramaterTypes: Array<string> = desc.split(';').filter(Boolean)
+      req.parameterTypes = paramaterTypes
+      const len = paramaterTypes.length
+      const args = []
       for (let i = 0; i < len; i++) {
-        args.push(decoder.read());
+        args.push(decoder.read())
       }
-      req.args = args;
+      req.args = args
     }
 
     // merge attachment
-    const attachment = decoder.read();
+    const attachment = decoder.read()
     if (attachment !== null) {
-      Object.keys(attachment).forEach(k => {
-        req.attachment[k] = attachment[k];
-      });
+      Object.keys(attachment).forEach((k) => {
+        req.attachment[k] = attachment[k]
+      })
     }
   }
 
-  return req;
+  return req
 }
 
 //com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec.encodeResponse/decode
 export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
-  const log = debug('dubbo:decodeDubboResponse');
+  const log = debug('dubbo:decodeDubboResponse')
 
-  let res = null;
-  let err = null;
-  let attachments = {};
+  let res = null
+  let err = null
+  let attachments = {}
 
   // set request and serialization flag.
   //字节位置[4-11] 8 bytes
-  const requestIdBuff = bytes.slice(4, 12);
-  const requestId = fromBytes8(requestIdBuff);
-  log(`decode parse requestId: ${requestId}`);
+  const requestIdBuff = bytes.slice(4, 12)
+  const requestId = fromBytes8(requestIdBuff)
+  log(`decode parse requestId: ${requestId}`)
 
-  const typeId = bytes[2];
+  const typeId = bytes[2]
 
   if (typeId !== HESSIAN2_SERIALIZATION_CONTENT_ID) {
     return {
@@ -106,20 +106,20 @@ export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
       res: null,
       attachments,
       requestId,
-    };
+    }
   }
 
   // get response status.
-  const status = bytes[3];
+  const status = bytes[3]
 
   log(
     `parse response status: ${status}, DUBBO_RESPONSE_STATUS: ${
       DUBBO_RESPONSE_STATUS[DUBBO_RESPONSE_STATUS.OK]
     }`,
-  );
+  )
 
   //com.alibaba.dubbo.rpc.protocol.dubbo.DecodeableRpcResult
-  const body = new Hessian.DecoderV2(bytes.slice(DUBBO_HEADER_LENGTH));
+  const body = new Hessian.DecoderV2(bytes.slice(DUBBO_HEADER_LENGTH))
 
   if (status != DUBBO_RESPONSE_STATUS.OK) {
     return {
@@ -127,60 +127,58 @@ export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
       res: null,
       attachments,
       requestId,
-    };
+    }
   }
 
   // current status flag
-  const flag = body.readInt();
+  const flag = body.readInt()
 
   log(
-    `parse dubbo response body flag: ${flag}, DUBBO_RESPONSE_BODY_FLAG: ${
-      DUBBO_RESPONSE_BODY_FLAG[flag]
-    }`,
-  );
+    `parse dubbo response body flag: ${flag}, DUBBO_RESPONSE_BODY_FLAG: ${DUBBO_RESPONSE_BODY_FLAG[flag]}`,
+  )
 
   switch (flag) {
     case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_VALUE:
-      err = null;
-      res = body.read();
-      attachments = {};
-      break;
+      err = null
+      res = body.read()
+      attachments = {}
+      break
     case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_NULL_VALUE:
-      err = null;
-      res = null;
-      attachments = {};
-      break;
+      err = null
+      res = null
+      attachments = {}
+      break
     case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION:
-      const exception = body.read();
+      const exception = body.read()
       err =
         exception instanceof Error
           ? exception
-          : new DubboServiceError(exception);
-      res = null;
-      attachments = {};
-      break;
+          : new DubboServiceError(exception)
+      res = null
+      attachments = {}
+      break
     case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_NULL_VALUE_WITH_ATTACHMENTS:
-      err = null;
-      res = null;
-      attachments = body.read();
-      break;
+      err = null
+      res = null
+      attachments = body.read()
+      break
     case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_VALUE_WITH_ATTACHMENTS:
-      err = null;
-      res = body.read();
-      attachments = body.read();
-      break;
+      err = null
+      res = body.read()
+      attachments = body.read()
+      break
     case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION_WITH_ATTACHMENTS:
-      const exp = body.read();
-      err = exp instanceof Error ? exp : new DubboServiceError(exp);
-      res = null;
-      attachments = body.read();
-      break;
+      const exp = body.read()
+      err = exp instanceof Error ? exp : new DubboServiceError(exp)
+      res = null
+      attachments = body.read()
+      break
     default:
       err = new DubboDecodeError(
         `Unknown result flag, expect '0/1/2/3/4/5', get  ${flag})`,
-      );
-      res = null;
+      )
+      res = null
   }
 
-  return {requestId, err, res, attachments};
+  return {requestId, err, res, attachments}
 }

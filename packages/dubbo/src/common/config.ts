@@ -26,4 +26,4 @@ export default {
    * 借助node的非阻塞的特性1个socket长连接已经非常高效
    */
   dubboSocketPool: 1,
-};
+}

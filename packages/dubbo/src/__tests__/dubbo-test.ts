@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-import {Context, Dubbo, java, setting} from 'apache-dubbo-js';
-import {BasicTypeProvider} from './providers/org/apache/dubbo/demo/BasicTypeProvider';
-import {DemoProvider} from './providers/org/apache/dubbo/demo/DemoProvider';
-import {ErrorProvider} from './providers/org/apache/dubbo/demo/ErrorProvider';
-import {TypeRequest} from './providers/org/apache/dubbo/demo/TypeRequest';
-import {UserRequest} from './providers/org/apache/dubbo/demo/UserRequest';
+import {Context, Dubbo, java, setting} from 'apache-dubbo-js'
+import {BasicTypeProvider} from './providers/org/apache/dubbo/demo/BasicTypeProvider'
+import {DemoProvider} from './providers/org/apache/dubbo/demo/DemoProvider'
+import {ErrorProvider} from './providers/org/apache/dubbo/demo/ErrorProvider'
+import {TypeRequest} from './providers/org/apache/dubbo/demo/TypeRequest'
+import {UserRequest} from './providers/org/apache/dubbo/demo/UserRequest'
 
 //==============init dubbo==============
 const service = {
   BasicTypeProvider,
   DemoProvider,
   ErrorProvider,
-};
+}
 
 //dubbo-setting
 const dubboSetting = setting
@@ -40,77 +40,77 @@ const dubboSetting = setting
       'org.apache.dubbo.demo.ErrorProvider',
     ],
     {version: '1.0.0'},
-  );
+  )
 
 const dubbo = new Dubbo<typeof service>({
   application: {name: 'node-dubbo'},
   register: 'localhost:2181,localhost:2181,localhost:2181',
   service,
   dubboSetting,
-});
+})
 
 //use middleware
 dubbo.use(async function costtime(ctx, next) {
-  const startTime = Date.now();
-  await next();
-  const endTime = Date.now();
+  const startTime = Date.now()
+  await next()
+  const endTime = Date.now()
   const {
     request: {dubboInterface, methodName},
-  } = ctx;
+  } = ctx
 
   console.log(
     `invoke ${dubboInterface}#${methodName} costTime: ${endTime - startTime}`,
-  );
-});
+  )
+})
 
 dubbo.use(async function trace(ctx: Context, next) {
-  const uuid = Date.now();
+  const uuid = Date.now()
   //auto merge attchments when assign more
   ctx.attachments = {
     uuid,
-  };
+  }
 
   ctx.attachments = {
     userId: uuid,
-  };
+  }
 
-  await next();
-});
+  await next()
+})
 
 dubbo.subscribe({
   onTrace(msg) {
-    console.log(msg);
+    console.log(msg)
   },
-});
+})
 
 //=====demoservice==========
 describe('demoService', () => {
   it('test sayHello', async () => {
     const {res, err} = await dubbo.service.DemoProvider.sayHello(
       java.String('node'),
-    );
-    expect(err).toEqual(null);
-    expect(res.includes('Hello node, response form provider')).toEqual(true);
-  });
+    )
+    expect(err).toEqual(null)
+    expect(res.includes('Hello node, response form provider')).toEqual(true)
+  })
 
   it('test echo', async () => {
-    const res = await dubbo.service.DemoProvider.echo();
+    const res = await dubbo.service.DemoProvider.echo()
     expect(res).toEqual({
       res: 'pang',
       err: null,
-    });
-  });
+    })
+  })
 
   it('test getUserInfo', async () => {
     const res = await dubbo.service.DemoProvider.getUserInfo(
       new UserRequest({name: 'nodejs', email: 'email'}),
-    );
+    )
     expect(res).toEqual({
       err: null,
       res: {status: 'ok', info: {id: '1', name: 'test'}},
-    });
-  });
-});
+    })
+  })
+})
 
 describe('typeBasicServer', () => {
   it('testBasicType', async () => {
@@ -122,7 +122,7 @@ describe('typeBasicServer', () => {
         },
         bigDecimal: {value: '100.00'},
       }),
-    );
+    )
     expect(reuslt).toEqual({
       err: null,
       res: {
@@ -132,14 +132,14 @@ describe('typeBasicServer', () => {
           email: 'email@qianmi.com',
         },
       },
-    });
-  });
-});
+    })
+  })
+})
 
 describe('error test', () => {
   it('test errorTest', async () => {
-    const {res, err} = await dubbo.service.ErrorProvider.errorTest();
-    expect(err != null).toEqual(true);
-    expect(res == null).toEqual(true);
-  });
-});
+    const {res, err} = await dubbo.service.ErrorProvider.errorTest()
+    expect(err != null).toEqual(true)
+    expect(res == null).toEqual(true)
+  })
+})

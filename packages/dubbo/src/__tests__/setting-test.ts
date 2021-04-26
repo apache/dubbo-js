@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-import setting from '../setting';
+import setting from '../setting'
 
 describe('matcher test suite', () => {
   it('test string match', () => {
     setting.match('org.apache.dubbo.demo.DemoProvider', {
       version: '1.0.0',
       group: 'apache',
-    });
+    })
 
     expect(
       setting.getDubboSetting('org.apache.dubbo.demo.DemoProvider'),
     ).toEqual({
       version: '1.0.0',
       group: 'apache',
-    });
-  });
+    })
+  })
 
   it('test array string match', () => {
     setting.match(
@@ -39,15 +39,15 @@ describe('matcher test suite', () => {
         'org.apache.dubbo.demo.ProductProvider',
       ],
       {version: '1.0.0', group: 'apache'},
-    );
+    )
 
     expect(
       setting.getDubboSetting('org.apache.dubbo.demo.ProductProvider'),
     ).toEqual({
       version: '1.0.0',
       group: 'apache',
-    });
-  });
+    })
+  })
 
   it('test predict fn match', () => {
     //setting match rule
@@ -56,40 +56,38 @@ describe('matcher test suite', () => {
         return {
           version: '3.0.0',
           group: 'apache',
-        };
+        }
       }
-    });
+    })
 
     expect(
       setting.getDubboSetting('org.apache.dubbo.demo.ProductProvider1'),
     ).toEqual({
       version: '3.0.0',
       group: 'apache',
-    });
+    })
 
     //not match
     expect(
       setting.getDubboSetting('org.apache.dubbo.demo.GoodsProvider'),
-    ).toEqual(null);
-  });
+    ).toEqual(null)
+  })
 
   it('test RegExp match', () => {
     setting.match(/^org.apache.dubbo.demo/, {
       version: '2.0.0',
       group: 'apache',
-    });
+    })
 
     expect(
       setting.getDubboSetting('org.apache.dubbo.demo.UserProvider'),
     ).toEqual({
       version: '2.0.0',
       group: 'apache',
-    });
-  });
+    })
+  })
 
   it('test not match', () => {
-    expect(setting.getDubboSetting('org.dubbo.demo.ShoppingCart')).toEqual(
-      null,
-    );
-  });
-});
+    expect(setting.getDubboSetting('org.dubbo.demo.ShoppingCart')).toEqual(null)
+  })
+})

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import HeartBeat from '../heartbeat';
+import HeartBeat from '../heartbeat'
 
 it('心跳值测试e2', () => {
   const buffer = Buffer.from([
@@ -36,8 +36,8 @@ it('心跳值测试e2', () => {
     0x00,
     0x01,
     0x4e,
-  ]);
-  expect(HeartBeat.isHeartBeat(buffer)).toBe(true);
+  ])
+  expect(HeartBeat.isHeartBeat(buffer)).toBe(true)
 
   //mock数据
   const buffer2 = Buffer.from([
@@ -58,12 +58,12 @@ it('心跳值测试e2', () => {
     0x00,
     0x01,
     0x4e,
-  ]);
-  expect(HeartBeat.isHeartBeat(buffer2)).toBe(false);
-});
+  ])
+  expect(HeartBeat.isHeartBeat(buffer2)).toBe(false)
+})
 
 it('心跳值检测', () => {
-  let buffer = HeartBeat.encode();
+  let buffer = HeartBeat.encode()
   expect(buffer).toEqual(
     Buffer.from([
       0xda,
@@ -84,5 +84,5 @@ it('心跳值检测', () => {
       0x01,
       0x4e,
     ]),
-  );
-});
+  )
+})

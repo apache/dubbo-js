@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Buffer} from 'buffer';
-import {decode} from '../decode';
-import DecodeBuffer from '../decode-buffer';
+import {Buffer} from 'buffer'
+import {decode} from '../decode'
+import DecodeBuffer from '../decode-buffer'
 
 it('test receive right data', () => {
   const buffer = Buffer.from([
@@ -42,15 +42,15 @@ it('test receive right data', () => {
     0x61,
     0x6e,
     0x67,
-  ]);
-  const dBuff = new DecodeBuffer().subscribe(data => {
-    const {requestId, res, err} = decode(data);
-    expect(requestId).toEqual(2);
-    expect(res).toEqual('pang');
-    expect(err).toEqual(null);
-  });
-  dBuff.receive(buffer);
-});
+  ])
+  const dBuff = new DecodeBuffer().subscribe((data) => {
+    const {requestId, res, err} = decode(data)
+    expect(requestId).toEqual(2)
+    expect(res).toEqual('pang')
+    expect(err).toEqual(null)
+  })
+  dBuff.receive(buffer)
+})
 
 it('test receive wrong data', () => {
   const buffer = Buffer.from([
@@ -79,12 +79,12 @@ it('test receive wrong data', () => {
     0x61,
     0x6e,
     0x67,
-  ]);
-  const dBuff = new DecodeBuffer().subscribe(data => {
-    const {requestId, res, err} = decode(data);
-    expect(requestId).toEqual(2);
-    expect(res).toEqual('pang');
-    expect(err).toEqual(null);
-  });
-  dBuff.receive(buffer);
-});
+  ])
+  const dBuff = new DecodeBuffer().subscribe((data) => {
+    const {requestId, res, err} = decode(data)
+    expect(requestId).toEqual(2)
+    expect(res).toEqual('pang')
+    expect(err).toEqual(null)
+  })
+  dBuff.receive(buffer)
+})

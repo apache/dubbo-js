@@ -15,40 +15,40 @@
  * limitations under the License.
  */
 
-import {DirectlyDubbo, java} from 'dubbo-js';
+import {DirectlyDubbo, java} from 'dubbo-js'
 import {
   DemoProviderWrapper,
   IDemoProvider,
-} from './providers/org/apache/dubbo/demo/DemoProvider';
-import {UserRequest} from './providers/org/apache/dubbo/demo/UserRequest';
+} from './providers/org/apache/dubbo/demo/DemoProvider'
+import {UserRequest} from './providers/org/apache/dubbo/demo/UserRequest'
 
 const dubbo = DirectlyDubbo.from({
   dubboAddress: 'localhost:20880',
   dubboVersion: '2.0.0',
   dubboInvokeTimeout: 10,
-});
+})
 
 const demoService = dubbo.proxyService<IDemoProvider>({
   dubboInterface: 'org.apache.dubbo.demo.DemoProvider',
   methods: DemoProviderWrapper,
   version: '1.0.0',
-});
+})
 
 describe('demoService', () => {
   it('test sayHello', async () => {
     //@ts-ignore
-    const {res, err} = await demoService.sayHello(java.String('node'));
-    expect(err).toEqual(null);
-    expect(res.includes('Hello node, response form provider')).toEqual(true);
-  });
+    const {res, err} = await demoService.sayHello(java.String('node'))
+    expect(err).toEqual(null)
+    expect(res.includes('Hello node, response form provider')).toEqual(true)
+  })
 
   it('test echo', async () => {
-    const res = await demoService.echo();
+    const res = await demoService.echo()
     expect(res).toEqual({
       res: 'pang',
       err: null,
-    });
-  });
+    })
+  })
 
   it('test getUserInfo', async () => {
     const res = await demoService.getUserInfo(
@@ -57,10 +57,10 @@ describe('demoService', () => {
         name: 'nodejs',
         email: 'node@qianmi.com',
       }),
-    );
+    )
     expect(res).toEqual({
       err: null,
       res: {status: 'ok', info: {id: '1', name: 'test'}},
-    });
-  });
-});
+    })
+  })
+})

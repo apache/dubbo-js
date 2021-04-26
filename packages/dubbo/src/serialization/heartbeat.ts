@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import debug from 'debug';
-import {Socket} from 'net';
-import Hessian from 'hessian.js';
-import {noop} from '../common/util';
-import {IHeartBeatProps} from '../types';
+import debug from 'debug'
+import {Socket} from 'net'
+import Hessian from 'hessian.js'
+import {noop} from '../common/util'
+import {IHeartBeatProps} from '../types'
 
 import {
   DUBBO_FLAG_REQUEST,
@@ -29,111 +29,111 @@ import {
   HESSIAN2_SERIALIZATION_CONTENT_ID,
   DUBBO_MAGIC_HIGH,
   DUBBO_MAGIC_LOW,
-} from './constants';
+} from './constants'
 
-const log = debug('dubbo:heartbeat');
+const log = debug('dubbo:heartbeat')
 
 // Reference
 //com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec
 //encodeRequest
 
 //心跳频率
-const HEART_BEAT = 60 * 1000;
+const HEART_BEAT = 60 * 1000
 // retry heartbeat
-const RETRY_HEARD_BEAT_TIME = 3;
+const RETRY_HEARD_BEAT_TIME = 3
 
 /**
  * Heartbeat Manager
  */
 export default class HeartBeat {
-  private _type: 'request' | 'response';
-  private _transport: Socket;
-  private _onTimeout: Function;
-  private _heartBeatTimer: NodeJS.Timer;
-  private _lastReadTimestamp: number = -1;
-  private _lastWriteTimestamp: number = -1;
+  private _type: 'request' | 'response'
+  private _transport: Socket
+  private _onTimeout: Function
+  private _heartBeatTimer: NodeJS.Timer
+  private _lastReadTimestamp: number = -1
+  private _lastWriteTimestamp: number = -1
 
   constructor(props: IHeartBeatProps) {
-    const {transport, onTimeout, type} = props;
-    this._type = type;
-    this._transport = transport;
-    this._onTimeout = onTimeout || noop;
+    const {transport, onTimeout, type} = props
+    this._type = type
+    this._transport = transport
+    this._onTimeout = onTimeout || noop
 
-    const who = this._type === 'request' ? 'dubbo-consumer' : 'dubbo-server';
-    log('%s init heartbeat manager', who);
+    const who = this._type === 'request' ? 'dubbo-consumer' : 'dubbo-server'
+    log('%s init heartbeat manager', who)
 
     // init heartbaet
-    this.init();
+    this.init()
   }
 
   // ==========================private method=====================================
 
   private init = () => {
     // init read/write timestamp
-    this.setWriteTimestamp();
-    this.setReadTimestamp();
+    this.setWriteTimestamp()
+    this.setReadTimestamp()
 
     //heartbeart
     //when network is close, the connection maybe not close, so check the heart beat times
     this._heartBeatTimer = setInterval(() => {
-      const now = Date.now();
+      const now = Date.now()
       if (now - this._lastReadTimestamp > HEART_BEAT * RETRY_HEARD_BEAT_TIME) {
-        this._onTimeout();
+        this._onTimeout()
       } else if (
         now - this._lastWriteTimestamp > HEART_BEAT ||
         now - this._lastReadTimestamp > HEART_BEAT
       ) {
-        this.emit();
+        this.emit()
       }
-    }, HEART_BEAT);
+    }, HEART_BEAT)
 
     this._transport
       .on('data', () => {
-        this.setReadTimestamp();
+        this.setReadTimestamp()
       })
       .on('close', () => {
-        this.destroy();
-      });
-  };
+        this.destroy()
+      })
+  }
 
   emit() {
-    const who = this._type === 'request' ? 'dubbo-consumer' : 'dubbo-server';
-    log(`${who} emit heartbeat`);
-    this.setWriteTimestamp();
-    this._transport.write(this.encode());
+    const who = this._type === 'request' ? 'dubbo-consumer' : 'dubbo-server'
+    log(`${who} emit heartbeat`)
+    this.setWriteTimestamp()
+    this._transport.write(this.encode())
   }
 
   private destroy = () => {
-    clearTimeout(this._heartBeatTimer);
-    this._transport = null;
-    this._lastReadTimestamp = -1;
-    this._lastWriteTimestamp = -1;
-  };
+    clearTimeout(this._heartBeatTimer)
+    this._transport = null
+    this._lastReadTimestamp = -1
+    this._lastWriteTimestamp = -1
+  }
 
   setReadTimestamp() {
-    this._lastReadTimestamp = Date.now();
+    this._lastReadTimestamp = Date.now()
   }
 
   setWriteTimestamp() {
-    this._lastWriteTimestamp = Date.now();
+    this._lastWriteTimestamp = Date.now()
   }
 
   // ========================static method=============================
   static from(props: IHeartBeatProps) {
-    return new HeartBeat(props);
+    return new HeartBeat(props)
   }
   /**
    * encode heartbeat
    */
   encode(): Buffer {
-    const who = this._type === 'request' ? 'dubbo-consumer' : 'dubbo-server';
-    log('%s encode heartbeat', who);
+    const who = this._type === 'request' ? 'dubbo-consumer' : 'dubbo-server'
+    log('%s encode heartbeat', who)
 
-    const buffer = Buffer.alloc(DUBBO_HEADER_LENGTH + 1);
+    const buffer = Buffer.alloc(DUBBO_HEADER_LENGTH + 1)
 
     //magic header
-    buffer[0] = DUBBO_MAGIC_HIGH;
-    buffer[1] = DUBBO_MAGIC_LOW;
+    buffer[0] = DUBBO_MAGIC_HIGH
+    buffer[1] = DUBBO_MAGIC_LOW
 
     // set request and serialization flag.
 
@@ -142,36 +142,34 @@ export default class HeartBeat {
         DUBBO_FLAG_REQUEST |
         HESSIAN2_SERIALIZATION_CONTENT_ID |
         DUBBO_FLAG_TWOWAY |
-        DUBBO_FLAG_EVENT;
+        DUBBO_FLAG_EVENT
     } else if (this._type === 'response') {
       buffer[2] =
-        HESSIAN2_SERIALIZATION_CONTENT_ID |
-        DUBBO_FLAG_TWOWAY |
-        DUBBO_FLAG_EVENT;
+        HESSIAN2_SERIALIZATION_CONTENT_ID | DUBBO_FLAG_TWOWAY | DUBBO_FLAG_EVENT
     }
 
     //set request id
     //暂时不设置
 
     //set body length
-    buffer[15] = 1;
+    buffer[15] = 1
 
     //body
     // new Hessian.EncoderV2().write(null);
-    buffer[16] = 0x4e;
+    buffer[16] = 0x4e
 
-    return buffer;
+    return buffer
   }
 
   //com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec.decodeBody
   static isHeartBeat(buf: Buffer) {
     // get flag position
-    const flag = buf[2];
+    const flag = buf[2]
     if ((flag & DUBBO_FLAG_EVENT) !== 0) {
-      const decoder = new Hessian.DecoderV2(buf.slice(DUBBO_HEADER_LENGTH));
-      const data = decoder.read();
-      return data === null;
+      const decoder = new Hessian.DecoderV2(buf.slice(DUBBO_HEADER_LENGTH))
+      const data = decoder.read()
+      return data === null
     }
-    return false;
+    return false
   }
 }
