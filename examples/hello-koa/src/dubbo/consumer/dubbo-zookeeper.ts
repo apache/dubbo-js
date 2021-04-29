@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-import {Context, Dubbo, setting} from 'apache-dubbo-js'
-import {EggApplication} from 'egg'
-import service from './service'
+import {Dubbo, setting} from 'apache-dubbo-js'
+import * as service from './service'
 
-declare module 'egg' {
-  export interface EggApplication {
-    dubbo: Dubbo<typeof service>
-  }
-}
-
-// dubbo interface setting
+/**
+ * setting dubbo invoke params, such version, group etc.
+ */
 const dubboSetting = setting
   .match(
     [
@@ -38,32 +33,33 @@ const dubboSetting = setting
   )
   .match('org.apache.dubbo.demo.BasicTypeProvider', {version: '2.0.0'})
 
-export default (app: EggApplication) => {
-  // create a dubboo object
-  const {application, registry} = app.config.dubbo
-  const dubbo = new Dubbo<typeof service>({
-    application,
-    registry,
-    service,
-    dubboSetting,
-  })
+/**
+ * create dubbo instance, it create proxyService
+ */
+// console.log('nacos-----', nacos);
+const dubbo = new Dubbo<typeof service>({
+  application: {name: 'dubbo-node-consumer'},
+  service,
+  dubboSetting,
+  // default zookeeper
+  registry: `localhost:2181`,
+})
 
-  dubbo.subscribe({
-    onTrace(err) {
-      console.log(err)
-    },
-  })
+/**
+ * apache-dubbo-js middleware Extension mechanism the same as koa middleware
+ */
+dubbo.use(async (ctx, next) => {
+  await next()
+  console.log('-providerAttachments-->', ctx.providerAttachments)
+})
 
-  // extends middleware
-  dubbo.use(async (ctx: Context, next: any) => {
-    const start = Date.now()
-    await next()
-    const end = Date.now()
-    app.coreLogger.info(
-      `${ctx.dubboInterface} was invoked, cost-time ${end - start}`,
-    )
-  })
+/**
+ * subscribe apache-dubbo-js inner message
+ */
+dubbo.subscribe({
+  onTrace(msg) {
+    console.log(msg)
+  },
+})
 
-  // mounted dubbo to app
-  app.dubbo = dubbo
-}
+export default dubbo

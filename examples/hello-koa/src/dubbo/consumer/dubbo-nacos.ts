@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-// import {Dubbo, setting, zk} from 'apache-dubbo-js';
-import {Dubbo, setting, zk} from 'apache-dubbo-js';
-import * as service from './service';
+import {Dubbo, setting, nacos} from 'apache-dubbo-js'
+import * as service from './service'
 
 /**
  * setting dubbo invoke params, such version, group etc.
@@ -32,7 +31,7 @@ const dubboSetting = setting
       version: '1.0.0',
     },
   )
-  .match('org.apache.dubbo.demo.BasicTypeProvider', {version: '2.0.0'});
+  .match('org.apache.dubbo.demo.BasicTypeProvider', {version: '2.0.0'})
 
 /**
  * create dubbo instance, it create proxyService
@@ -42,28 +41,26 @@ const dubbo = new Dubbo<typeof service>({
   application: {name: 'dubbo-node-consumer'},
   service,
   dubboSetting,
-  // default zookeeper
-  registry: `localhost:2181`,
-  // register: nacos({
-  //   url: 'nacos:localhost:8848',
-  // }),
-});
+  registry: nacos({
+    url: 'nacos:localhost:8848',
+  }),
+})
 
 /**
  * apache-dubbo-js middleware Extension mechanism the same as koa middleware
  */
 dubbo.use(async (ctx, next) => {
-  await next();
-  console.log('-providerAttachments-->', ctx.providerAttachments);
-});
+  await next()
+  console.log('-providerAttachments-->', ctx.providerAttachments)
+})
 
 /**
  * subscribe apache-dubbo-js inner message
  */
 dubbo.subscribe({
   onTrace(msg) {
-    console.log(msg);
+    console.log(msg)
   },
-});
+})
 
-export default dubbo;
+export default dubbo

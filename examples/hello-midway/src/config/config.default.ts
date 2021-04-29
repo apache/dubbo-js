@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-import {EggAppConfig, EggAppInfo, PowerPartial} from 'midway';
+import {EggAppConfig, EggAppInfo, PowerPartial} from 'midway'
 
-export type DefaultConfig = PowerPartial<EggAppConfig>;
+export type DefaultConfig = PowerPartial<EggAppConfig>
 
 export default (appInfo: EggAppInfo) => {
-  const config = {} as DefaultConfig;
+  const config = {} as DefaultConfig
 
   // use for cookie sign key, should change to your own and keep security
-  config.keys = appInfo.name + '_1599135676543_3920';
+  config.keys = appInfo.name + '_1599135676543_3920'
 
   // add your config here
-  config.middleware = [];
+  config.middleware = []
 
   /**
    * dubbo config
    *
    * application 当前的应用标识
-   * register 注册中心地址
+   * registry 注册中心地址
    *   support registry mode
    *     1、 zookeeper  'localhost:2181,localhost:2182,localhost:2183'
    *     2、 nacos      'nacos://localhost:2181'
@@ -40,12 +40,12 @@ export default (appInfo: EggAppInfo) => {
    *
    */
   config.dubbo = {
-    application: 'hello-midway',
+    application: {name: 'node-midway-bff'},
     // zookeeper 的链接
-    // register: 'localhost:2181,localhost:2182,localhost:2183',
+    // registry: 'localhost:2181,localhost:2182,localhost:2183',
     // nacos 的链接 要以 nacos:// 开头
-    register: 'nacos://localhost:8848',
-  };
+    registry: 'nacos://localhost:8848',
+  }
 
-  return config;
-};
+  return config
+}
