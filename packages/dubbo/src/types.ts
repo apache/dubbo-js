@@ -256,7 +256,6 @@ export interface IDubboService {
 }
 
 export interface IDubboServerProps {
-  port?: number
   registry: string | Function
   services: Array<IDubboService>
 }
@@ -266,3 +265,5 @@ export interface IHeartBeatProps {
   transport: net.Socket
   onTimeout?: Function
 }
+
+export type DubboServiceClazzName = string

@@ -22,18 +22,17 @@ export interface IDemoProvider {
 const sleep = (delay: number) =>
   new Promise((resolve) => {
     setTimeout(() => {
-      resolve()
+      resolve(null)
     }, delay)
   })
 
 let server: DubboServer = null
 beforeAll(async () => {
   server = new DubboServer({
-    port: 20880,
     registry: 'localhost:2181',
     services: [
       {
-        clazz: 'com.alibaba.dubbo.demo.DemoService',
+        dubboInterface: 'com.alibaba.dubbo.demo.DemoService',
         version: '1.0.0',
         methods: {
           sayHello(name: string, rest: boolean) {
@@ -51,13 +50,12 @@ beforeAll(async () => {
     console.log(`dubbo-server receive requestId:`, ctx.request.requestId)
     await next()
   })
-  server.start()
 
   await sleep(2000)
 })
 
 afterAll(async () => {
-  // server && server.close();
+  server.close()
 })
 
 // ======================directly dubbo test suite=======================================
@@ -137,7 +135,7 @@ it('test dubbo invoke', async () => {
 
   const dubbo = new Dubbo<typeof service>({
     application: {name: 'node-test'},
-    register: '127.0.0.1:2181',
+    registry: '127.0.0.1:2181',
     dubboSetting,
     service,
   })

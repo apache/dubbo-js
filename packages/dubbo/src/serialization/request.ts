@@ -34,6 +34,9 @@ export default class Request {
 
   constructor(requestId: number) {
     this.requestId = requestId
-    this.attachment = {} as IAttachment
+    this.attachment = {
+      group: '',
+      version: '0.0.0',
+    } as IAttachment
   }
 }

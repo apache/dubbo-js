@@ -1,6 +1,6 @@
 {
   "name": "apache-dubbo-js",
-  "version": "3.0.0-rc6",
+  "version": "4.0.0",
   "main": "./lib/index.js",
   "types": "./lib/typings/index.d.ts",
   "license": "Apache Licence 2.0",

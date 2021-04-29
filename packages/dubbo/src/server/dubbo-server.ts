@@ -18,7 +18,7 @@
 import net, {Socket} from 'net'
 import ip from 'ip'
 import debug from 'debug'
-import compose from 'koa-compose'
+import compose, {Middleware} from 'koa-compose'
 import qs from 'querystring'
 import {Retry} from './retry'
 import Request from '../serialization/request'
@@ -30,13 +30,18 @@ import ResponseContext, {ResponseStatus} from './response-context'
 import {checkRetValHessian} from '../common/util'
 import {fromRegistry} from '../registry'
 import {randomPort} from './port'
-
-import {IDubboServerProps, IDubboService, Middleware} from '../types'
-
-type DubboServiceClazzName = string
+import {DubboServiceClazzName, IDubboServerProps, IDubboService} from '../types'
 
 const log = debug('dubbo-server')
 
+/**
+ * DubboServer - expose dubbo service by nodejs
+ * - expose dubbo service
+ * - connect zookeeper or nacos, registry service
+ * - router => find service
+ * - extend middleware
+ * - keep heartbeat with consumer
+ */
 export default class DubboServer {
   private retry: Retry
   private port: number
@@ -47,14 +52,16 @@ export default class DubboServer {
   private readonly middlewares: Array<Middleware<ResponseContext>>
 
   constructor(props: IDubboServerProps) {
-    const {port, services} = props
-    this.port = port || 20880
-    this.registry = props.registry
-    this.middlewares = []
-    this.services = services || []
-    this.serviceMap = new Map()
+    const {registry, services} = props
+    this.registry = registry
 
-    // set retry
+    this.serviceMap = new Map()
+    this.services = services || []
+    this.pprintService()
+
+    this.middlewares = []
+
+    // set retry container
     this.retry = new Retry({
       retry: () => this.listen(),
       end: () => {
@@ -64,27 +71,32 @@ export default class DubboServer {
       },
     })
 
-    // debug log service
-    log(`init service with port: %d`, this.port)
-    for (let service of this.services) {
-      const methods = Object.keys(service.methods)
-      const s = {...service, methods}
-      log('registry services %j', s)
-    }
-
     // listen tcp server
     this.listen()
   }
 
   // ~~~~~~~~~~~~~~~~~~private~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  private pprintService() {
+    for (let service of this.services) {
+      const methods = Object.keys(service.methods)
+      const s = {...service, methods}
+      log('registry services %j', s)
+    }
+  }
+
+  /**
+   * start tcp server
+   */
   private listen = async () => {
     this.port = await randomPort()
+    log(`init service with port: %d`, this.port)
+
     this.server = net
-      .createServer(this._handleSocketRequest)
+      .createServer(this.handleSocketRequest)
       .listen(this.port, () => {
         log('start dubbo-server with port %d', this.port)
         this.retry.reset()
-        this._registerServices()
+        this.registerServices()
       })
       .on('error', (err) => {
         log(`server listen %d port err: %s`, this.port, err)
@@ -92,7 +104,11 @@ export default class DubboServer {
       })
   }
 
-  private _handleSocketRequest = (socket: Socket) => {
+  /**
+   * recevice tcp message
+   * @param socket
+   */
+  private handleSocketRequest = (socket: Socket) => {
     log('tcp socket establish connection')
     // init heartbeat
     const heartbeat = HeartBeat.from({
@@ -102,34 +118,41 @@ export default class DubboServer {
     })
 
     DecodeBuffer.from(socket, 'dubbo-server').subscribe(async (data) => {
+      // send heartbeat
       if (HeartBeat.isHeartBeat(data)) {
         log(`receive socket client heartbeat`)
         heartbeat.emit()
         return
       }
-      const ctx = await this._invokeRequest(data)
+
+      const ctx = await this.invokeComposeChainRequest(data)
       heartbeat.setWriteTimestamp()
       socket.write(new DubboResponseEncoder(ctx).encode())
     })
   }
 
-  private async _invokeRequest(data: Buffer) {
+  /**
+   * invoke compose middleware chain, the same as koa
+   * @param data
+   * @returns
+   */
+  private async invokeComposeChainRequest(data: Buffer) {
     const request = decodeDubboRequest(data)
     const service = this.matchService(request)
-    const context = new ResponseContext(request)
+    const ctx = new ResponseContext(request)
 
     const {
       methodName,
-      attachment: {path, group, version},
+      attachment: {path, group = '', version},
     } = request
 
     // service not found
     if (!service) {
-      context.status = ResponseStatus.SERVICE_NOT_FOUND
-      context.body.err = new Error(
+      ctx.status = ResponseStatus.SERVICE_NOT_FOUND
+      ctx.body.err = new Error(
         `Service not found with ${path} and ${methodName}, group:${group}, version:${version}`,
       )
-      return context
+      return ctx
     }
 
     const middlewares = [
@@ -161,43 +184,45 @@ export default class DubboServer {
     const fn = compose(middlewares)
 
     try {
-      await fn(context)
+      await fn(ctx)
     } catch (err) {
       log(err)
-      context.status = ResponseStatus.SERVER_ERROR
-      context.body.err = err
+      ctx.status = ResponseStatus.SERVER_ERROR
+      ctx.body.err = err
     }
-    return context
+    return ctx
   }
 
-  private _registerServices() {
-    const services = this.services
-    // init serviceMap
-    for (let service of services) {
+  /**
+   * register service into zookeeper or nacos
+   */
+  private registerServices() {
+    // collect service
+    const registryService = this.services.map((service) => {
+      service.group = service.group || ''
+      service.version = service.version || '0.0.0'
+
       this.serviceMap.set(service.dubboInterface, service)
-    }
+      const url = this.buildUrl(service)
+      return [service.dubboInterface, url] as [string, string]
+    })
 
-    const registryService = []
-
-    for (let service of services) {
-      // compose dubbo url
-      // dubbo://127.0.0.1:3000/org.apache.dubbo.js.HelloWorld?group=fe&version=1.0.0&method=sayHello,sayWorld
-      const url = this._urlBuilder(service)
-      // write to zookeeper
-      registryService.push([service.dubboInterface, url])
-    }
-
-    const registry = fromRegistry(this.registry)
-
-    registry({
+    // register service to zookeeper
+    fromRegistry(this.registry)({
       type: 'provider',
       services: registryService,
     })
   }
 
-  private _urlBuilder(service: IDubboService) {
+  /**
+   * build dubbo service url
+   *
+   * @param service
+   * @returns
+   */
+  private buildUrl(service: IDubboService) {
     const ipAddr = ip.address()
-    const {dubboInterface, group = '', version, methods} = service
+    const {dubboInterface, group, version, methods} = service
     const methodName = Object.keys(methods).join()
 
     return encodeURIComponent(
@@ -218,6 +243,11 @@ export default class DubboServer {
     )
   }
 
+  /**
+   * router, map request to service
+   * @param request
+   * @returns
+   */
   private matchService(request: Request) {
     const {methodName} = request
     const {
@@ -225,9 +255,10 @@ export default class DubboServer {
     } = request
 
     const service = this.serviceMap.get(path)
+
     if (
       !service ||
-      service.methods[methodName] === undefined ||
+      typeof service.methods[methodName] === 'undefined' ||
       service.group !== group ||
       service.version !== version
     ) {
@@ -238,16 +269,26 @@ export default class DubboServer {
 
   // ~~~~~~~~~~~~~public method ~~~~~~~~~~~~~~~~~~~
 
+  /**
+   * static factory method
+   *
+   * @param props
+   * @returns
+   */
   public static from(props: IDubboServerProps) {
     return new DubboServer(props)
   }
 
+  /**
+   * close current tcp servce
+   */
   public close() {
     this.server?.close()
   }
 
   /**
    * extends middleware
+   *
    * @param fn
    */
   public use(fn: Middleware<ResponseContext>) {

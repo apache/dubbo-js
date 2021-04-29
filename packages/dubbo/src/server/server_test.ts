@@ -14,7 +14,6 @@ const sleep = (delay: number = 1000) => {
 
 ;(async () => {
   const server = new DubboServer({
-    port: 20880,
     registry: 'localhost:2181',
     services: [
       {
