@@ -57,8 +57,7 @@
     "bracketSpacing": true,
     "singleQuote": true,
     "trailingComma": "all",
-    "semi": false,
-    "parser": "typescript"
+    "semi": false
   },
   "husky": {
     "hooks": {
