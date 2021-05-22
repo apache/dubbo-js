@@ -17,6 +17,9 @@
     "@types/node": "^14.14.41",
     "@types/node-zookeeper-client": "^0.2.6",
     "@types/uuid": "3.4.3",
+    "@types/fs-extra": "^9.0.11",
+    "@types/glob": "^7.1.3",
+    "@types/prettier": "^2.2.3",
     "husky": "^1.3.1",
     "jest": "^21.2.1",
     "lerna": "^2.5.1",
@@ -25,7 +28,11 @@
     "ts-jest": "^21.2.2",
     "ts-node": "^9.0.0",
     "typescript": "^4.2.4",
-    "uuid": "3.2.1"
+    "uuid": "3.2.1",
+    "glob": "^7.1.7",
+    "fs-extra": "^10.0.0",
+    "chalk": "^4.1.1",
+    "jest-diff": "^26.6.2"
   },
   "jest": {
     "transform": {
@@ -47,10 +54,11 @@
     ]
   },
   "prettier": {
-    "bracketSpacing": false,
+    "bracketSpacing": true,
     "singleQuote": true,
     "trailingComma": "all",
-    "semi": false
+    "semi": false,
+    "parser": "typescript"
   },
   "husky": {
     "hooks": {
