@@ -29,14 +29,14 @@ import {
   HostName,
   IDubboResponse,
   TDubboInterface,
-  TDubboUrl,
+  TDubboUrl
 } from './types'
 
 const log = debug('dubbo:scheduler')
 const enum STATUS {
   PADDING = 'padding',
   READY = 'ready',
-  FAILED = 'failded',
+  FAILED = 'failded'
 }
 
 /**
@@ -46,10 +46,6 @@ const enum STATUS {
  * 3. resolve queue reeust
  */
 export default class Scheduler {
-  private readyPromise: Promise<void>
-  private resolve: Function
-  private reject: Function
-
   private status: STATUS
   private queue: Queue
   private registry: IRegistry<any>
@@ -59,12 +55,6 @@ export default class Scheduler {
   constructor(registry: IRegistry<any>, queue: Queue) {
     log(`new scheduler`)
     this.status = STATUS.PADDING
-
-    // init ready promsie
-    this.readyPromise = new Promise((resolve, reject) => {
-      this.resolve = resolve
-      this.reject = reject
-    })
 
     // init queue
     this.queue = queue
@@ -77,23 +67,19 @@ export default class Scheduler {
       onData: (data: any) => {
         this.handleTransportData(data)
       },
-      onClose: this.handleTransportClose,
+      onClose: this.handleTransportClose
     })
 
     // init registry
     this.registry = registry
     this.registry.subscribe({
       onData: this.handleRegistryServiceChange,
-      onError: this.handleRegistryError,
+      onError: this.handleRegistryError
     })
   }
 
   static from(registry: IRegistry<any>, queue: Queue) {
     return new Scheduler(registry, queue)
-  }
-
-  ready() {
-    return this.readyPromise
   }
 
   /**
@@ -113,7 +99,7 @@ export default class Scheduler {
       case STATUS.FAILED:
         this.queue.consume({
           requestId: ctx.requestId,
-          err: new DubboScheduleError('registry occur fatal error'),
+          err: new DubboScheduleError('registry occur fatal error')
         })
         break
       default:
@@ -122,7 +108,7 @@ export default class Scheduler {
   }
 
   private handleRegistryServiceChange = (
-    map: Map<TDubboInterface, Array<TDubboUrl>>,
+    map: Map<TDubboInterface, Array<TDubboUrl>>
   ) => {
     log(`get all cluster info:=> %O`, map)
     const transportMap = new Map() as Map<HostName, Set<Host>>
@@ -149,7 +135,7 @@ export default class Scheduler {
             transportMap.set(hostname, new Set([host]))
           }
           return url
-        }),
+        })
       )
     }
 
@@ -160,7 +146,6 @@ export default class Scheduler {
     log(err)
     if (this.status !== STATUS.READY) {
       this.status = STATUS.FAILED
-      this.reject(err)
     }
   }
 
@@ -171,8 +156,8 @@ export default class Scheduler {
       this.queue.consume({
         requestId: ctx.requestId,
         err: new DubboScheduleError(
-          `Could not find any agent worker with ${dubboInterface}`,
-        ),
+          `Could not find any agent worker with ${dubboInterface}`
+        )
       })
       return
     }
@@ -182,8 +167,8 @@ export default class Scheduler {
       this.queue.consume({
         requestId,
         err: new DubboScheduleError(
-          `${dubboInterface}?grop=${group}&version=${version}`,
-        ),
+          `${dubboInterface}?grop=${group}&version=${version}`
+        )
       })
       return
     }
@@ -194,7 +179,7 @@ export default class Scheduler {
 
   private handleDubboClusterConnect = ({
     host,
-    transport,
+    transport
   }: {
     host: string
     transport: DubboTcpTransport
@@ -224,13 +209,13 @@ export default class Scheduler {
     requestId,
     res,
     err,
-    attachments,
+    attachments
   }: IDubboResponse) => {
     this.queue.consume({
       requestId,
       res,
       err,
-      attachments,
+      attachments
     })
   }
 
@@ -274,7 +259,7 @@ export default class Scheduler {
     const [hostname, port] = host.split(':')
     const dubboUrls = this.dubboServiceUrlMapper.get(dubboInterface)
     return dubboUrls.find(
-      (url) => url.hostname === hostname && url.port === Number(port),
+      (url) => url.hostname === hostname && url.port === Number(port)
     )
   }
 }
