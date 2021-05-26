@@ -310,7 +310,7 @@ export default class DubboServer {
   private matchService(request: Request) {
     const { methodName } = request
     const {
-      attachment: { path, group = '', version }
+      attachment: { path, group = '', version = '0.0.0' }
     } = request
 
     const serviceList = this.serviceRouter.get(path) || []

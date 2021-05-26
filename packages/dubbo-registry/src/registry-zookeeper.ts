@@ -19,6 +19,7 @@ import debug from 'debug'
 import Zookeeper from 'zookeeper'
 import { IRegistry } from './registry'
 import BaseRegistry from './registry-base'
+import Timeout from './timeout'
 import {
   INodeProps,
   IZkClientConfig,
@@ -34,6 +35,7 @@ export class ZookeeperRegistry
   implements IRegistry<Zookeeper> {
   private client: Zookeeper
   private props: IZkClientConfig
+  private timeout: Timeout
 
   private readyPromise: Promise<void>
   private resolve: Function
@@ -50,6 +52,14 @@ export class ZookeeperRegistry
       this.reject = reject
     })
 
+    this.timeout = new Timeout({
+      onTimeout: () => {
+        this.reject(
+          new Error(`zookeeper connect ${this.props.connect} timeout`)
+        )
+        this.close()
+      }
+    })
     this.init()
   }
 
@@ -72,6 +82,7 @@ export class ZookeeperRegistry
 
     this.client.on('connect', async () => {
       dlog('connected with zookeeper with %s', this.props.connect)
+      this.timeout.clearTimeout()
 
       try {
         // create root node
