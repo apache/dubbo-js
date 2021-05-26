@@ -19,5 +19,5 @@ export default {
   /**
    * default dubbo invoke time, default 5000 Microseconds
    */
-  dubboInvokeTimeout: 5000,
+  dubboInvokeTimeout: 5000
 }

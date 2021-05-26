@@ -20,7 +20,7 @@ import {
   IDubboSetting,
   TDubboInterface,
   TDubboServiceShortName,
-  TMatchThunk,
+  TMatchThunk
 } from './types'
 
 export class DubboSetting {
@@ -36,7 +36,7 @@ export class DubboSetting {
 
   match(
     rule: TDubboInterface | Array<TDubboInterface> | RegExp,
-    meta: IDubboSetting,
+    meta: IDubboSetting
   ) {
     if (util.isString(rule)) {
       this.matchDubboInterface.set(rule, meta)
@@ -55,7 +55,7 @@ export class DubboSetting {
 
   getDubboSetting({
     dubboServiceShortName,
-    dubboServiceInterface,
+    dubboServiceInterface
   }: {
     dubboServiceShortName?: TDubboServiceShortName
     dubboServiceInterface?: TDubboInterface

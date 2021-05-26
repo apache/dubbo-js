@@ -56,7 +56,7 @@
   "prettier": {
     "bracketSpacing": true,
     "singleQuote": true,
-    "trailingComma": "all",
+    "trailingComma": "none",
     "semi": false
   },
   "husky": {

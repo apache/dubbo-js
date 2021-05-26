@@ -16,9 +16,9 @@
  */
 
 import debug from 'debug'
-import { INaocsClientProps } from './types'
 import BaseRegistry from './registry-base'
 import { IRegistry } from './registry'
+import { INaocsClientProps, TDubboInterface, TDubboUrl } from './types'
 
 const log = debug('dubbo:nacos')
 const NacosNamingClient = require('nacos').NacosNamingClient
@@ -51,7 +51,7 @@ export class NacosRegistry
     this.client = new NacosNamingClient({
       logger: console,
       serverList: registryUrl,
-      namespace: 'public',
+      namespace: 'public'
     })
 
     this.client.ready()
@@ -102,11 +102,21 @@ export class NacosRegistry
     throw new Error('Method not implemented.')
   }
 
-  registyServices(services: [string, string][]): Promise<void> {
+  registyServices(
+    services: Array<{
+      dubboServiceInterface: TDubboInterface
+      dubboServiceUrl: TDubboUrl
+    }>
+  ): Promise<void> {
     console.log(services)
     throw new Error('Method not implemented.')
   }
-  registyConsumers(consumers: [string, string][]): Promise<void> {
+  registyConsumers(
+    consumers: Array<{
+      dubboServiceInterface: TDubboInterface
+      dubboServiceUrl: TDubboUrl
+    }>
+  ): Promise<void> {
     console.log(consumers)
     throw new Error('Method not implemented.')
   }

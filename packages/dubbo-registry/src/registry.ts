@@ -22,10 +22,18 @@ export interface IRegistry<T> {
 
   findDubboServiceUrls(dubboInterfaces: Array<string>): Promise<void>
 
-  registyServices(services: Array<[TDubboInterface, TDubboUrl]>): Promise<void>
+  registyServices(
+    services: Array<{
+      dubboServiceInterface: TDubboInterface
+      dubboServiceUrl: TDubboUrl
+    }>
+  ): Promise<void>
 
   registyConsumers(
-    consumers: Array<[TDubboInterface, TDubboUrl]>,
+    consumers: Array<{
+      dubboServiceInterface: TDubboInterface
+      dubboServiceUrl: TDubboUrl
+    }>
   ): Promise<void>
 
   subscribe(cb: IRegistrySubscriber): void

@@ -28,7 +28,7 @@ import {
   DubboResponseEncoder,
   DUBBO_RESPONSE_STATUS,
   HeartBeat,
-  Request,
+  Request
 } from '@apache/dubbo-serialization'
 import Context from './context'
 import { randomPort } from './port'
@@ -37,7 +37,7 @@ import {
   IDubboServerProps,
   IDubboService,
   TDubboServiceInterface,
-  TDubboServiceUrl,
+  TDubboServiceUrl
 } from './types'
 import { DubboSetting } from './dubbo-setting'
 
@@ -93,9 +93,9 @@ export default class DubboServer {
       retry: () => this.listen(),
       end: () => {
         throw new Error(
-          'Oops, dubbo server can not start, can not find available port',
+          'Oops, dubbo server can not start, can not find available port'
         )
-      },
+      }
     })
 
     process.nextTick(() => {
@@ -151,7 +151,7 @@ export default class DubboServer {
     const heartbeat = HeartBeat.from({
       type: 'response',
       transport: socket,
-      onTimeout: () => socket.destroy(),
+      onTimeout: () => socket.destroy()
     })
 
     DecodeBuffer.from(socket, 'dubbo-server').subscribe(async (data) => {
@@ -180,14 +180,14 @@ export default class DubboServer {
 
     const {
       methodName,
-      attachment: { path, group = '', version },
+      attachment: { path, group = '', version }
     } = request
 
     // service not found
     if (!service) {
       ctx.status = DUBBO_RESPONSE_STATUS.SERVICE_NOT_FOUND
       ctx.body = new Error(
-        `Service not found with ${path} and ${methodName}, group:${group}, version:${version}`,
+        `Service not found with ${path} and ${methodName}, group:${group}, version:${version}`
       )
       return ctx
     }
@@ -200,12 +200,12 @@ export default class DubboServer {
         try {
           const res = await method.apply(service, [
             ...(request.args || []),
-            ctx,
+            ctx
           ])
           // check hessian type
           if (!util.checkRetValHessian(res)) {
             throw new Error(
-              `${path}#${methodName} return value not hessian type`,
+              `${path}#${methodName} return value not hessian type`
             )
           }
           this.body = res
@@ -213,7 +213,7 @@ export default class DubboServer {
           log(`handle request error %s`, err)
           this.body = err
         }
-      },
+      }
     ]
 
     log('middleware stack =>', middlewares)
@@ -238,16 +238,17 @@ export default class DubboServer {
       throw err
     })
 
-    const registryServiceMap = [] as Array<
-      [TDubboServiceInterface, TDubboServiceUrl]
-    >
+    const registrySerivceList = [] as Array<{
+      dubboServiceInterface: TDubboServiceInterface
+      dubboServiceUrl: TDubboServiceUrl
+    }>
     for (let [dubboServiceShortName, service] of Object.entries(
-      this.services,
+      this.services
     )) {
       const meta = this.dubboSetting
         ? this.dubboSetting.getDubboSetting({
             dubboServiceShortName,
-            dubboServiceInterface: service.dubboInterface,
+            dubboServiceInterface: service.dubboInterface
           })
         : { group: '', version: '0.0.0' }
       service.group = meta.group
@@ -262,11 +263,14 @@ export default class DubboServer {
 
       const dubboServiceUrl = this.buildUrl(service)
       log('registry dubbo service url %s', dubboServiceUrl)
-      registryServiceMap.push([service.dubboInterface, dubboServiceUrl])
+      registrySerivceList.push({
+        dubboServiceInterface: service.dubboInterface,
+        dubboServiceUrl
+      })
     }
 
     // register service to registry, such as zookeeper or nacos
-    // this.registry.registyServices(registryServiceMap)
+    this.registry.registyServices(registrySerivceList)
   }
 
   /**
@@ -293,7 +297,7 @@ export default class DubboServer {
         dynamic: true,
         category: 'providers',
         anyhost: true,
-        timestamp: Date.now(),
+        timestamp: Date.now()
       })
     )
   }
@@ -306,7 +310,7 @@ export default class DubboServer {
   private matchService(request: Request) {
     const { methodName } = request
     const {
-      attachment: { path, group = '', version },
+      attachment: { path, group = '', version }
     } = request
 
     const serviceList = this.serviceRouter.get(path) || []
@@ -332,8 +336,17 @@ export default class DubboServer {
   /**
    * close current tcp servce
    */
-  public close() {
-    this.server?.close()
+  public close(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.registry.close()
+      this.server?.close((err) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve()
+        }
+      })
+    })
   }
 
   /**

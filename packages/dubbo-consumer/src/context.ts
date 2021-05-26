@@ -86,7 +86,7 @@ export default class Context<T = any> {
     this._providerAttachments = {}
     this._request = <IContextRequestParam>{
       requestId: id(),
-      group: '',
+      group: ''
     }
     // max timeout
     this._timeout = this._request.timeout || cfg.dubboInvokeTimeout
@@ -296,14 +296,14 @@ export default class Context<T = any> {
     log(
       'requestId#%d, set max timeout handler, maxtimeout: %d',
       this.requestId,
-      this._timeout,
+      this._timeout
     )
     this.timer = setTimeout(() => {
       this.reject &&
         this.reject(
           new DubboInvokeTimeout(
-            `invoke ${this.dubboInterface}#${this.methodName}?group=${this.group}&version=${this.version}`,
-          ),
+            `invoke ${this.dubboInterface}#${this.methodName}?group=${this.group}&version=${this.version}`
+          )
         )
       end()
       this.cleanTimeout()

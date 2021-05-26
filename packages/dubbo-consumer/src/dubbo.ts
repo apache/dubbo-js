@@ -30,7 +30,7 @@ import {
   Middleware,
   TDubboInterface,
   TDubboService,
-  TDubboUrl,
+  TDubboUrl
 } from './types'
 import { DubboSetting } from './dubbo-setting'
 
@@ -57,7 +57,10 @@ export default class Dubbo<TService = Object> {
   private readonly props: IDubboProps
   private readonly middlewares: Array<Middleware<Context>>
   private readonly service: TDubboService<TService>
-  private readonly consumers: Array<[TDubboInterface, TDubboUrl]>
+  private readonly consumers: Array<{
+    dubboServiceInterface: TDubboInterface
+    dubboServiceUrl: TDubboUrl
+  }>
 
   constructor(props: IDubboProps) {
     this.props = props
@@ -113,11 +116,11 @@ export default class Dubbo<TService = Object> {
       const meta = this.dubboSetting
         ? this.dubboSetting.getDubboSetting({
             dubboServiceShortName: shortName,
-            dubboServiceInterface: service.dubboInterface,
+            dubboServiceInterface: service.dubboInterface
           })
         : {
             group: '',
-            version: '0.0.0',
+            version: '0.0.0'
           }
       service.group = meta.group
       service.version = meta.version
@@ -130,21 +133,23 @@ export default class Dubbo<TService = Object> {
     const { dubboInterface, methods, timeout, group, version } = provider
     const proxyObj = Object.create(null)
 
-    this.consumers.push([
-      dubboInterface,
-      `consumer://${ip.address()}/${dubboInterface}?${qs.stringify({
-        interface: dubboInterface,
-        application: this.props.application.name,
-        category: 'consumers',
-        method: '',
-        revision: '',
-        version: group,
-        group: version,
-        timeout: timeout,
-        side: 'consumer',
-        check: false,
-      })}`,
-    ])
+    this.consumers.push({
+      dubboServiceInterface: dubboInterface,
+      dubboServiceUrl: `consumer://${ip.address()}/${dubboInterface}?${qs.stringify(
+        {
+          interface: dubboInterface,
+          application: this.props.application.name,
+          category: 'consumers',
+          method: '',
+          revision: '',
+          version: group,
+          group: version,
+          timeout: timeout,
+          side: 'consumer',
+          check: false
+        }
+      )}`
+    })
 
     //proxy methods
     Object.keys(methods).forEach((name) => {
@@ -174,7 +179,7 @@ export default class Dubbo<TService = Object> {
             log('start middleware handle dubbo request')
             ctx.body = await go(self.queue.push(ctx))
             log('end handle dubbo request')
-          },
+          }
         ]
 
         log('middleware->', middlewares)

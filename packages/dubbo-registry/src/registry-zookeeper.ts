@@ -23,7 +23,7 @@ import {
   INodeProps,
   IZkClientConfig,
   TDubboInterface,
-  TDubboUrl,
+  TDubboUrl
 } from './types'
 
 const DUBBO_ZK_ROOT_PATH: string = '/dubbo'
@@ -111,14 +111,14 @@ export class ZookeeperRegistry
         err,
         path,
         data,
-        isPersistent,
+        isPersistent
       )
       await this.client.create(
         path,
         data,
         isPersistent
           ? Zookeeper.constants.ZOO_PERSISTENT
-          : Zookeeper.constants.ZOO_EPHEMERAL,
+          : Zookeeper.constants.ZOO_EPHEMERAL
       )
     }
   }
@@ -159,8 +159,8 @@ export class ZookeeperRegistry
   async findDubboServiceUrls(dubboInterfaces: Array<string>) {
     await Promise.all(
       dubboInterfaces.map((dubboInterface) =>
-        this.findDubboServiceUrl(dubboInterface),
-      ),
+        this.findDubboServiceUrl(dubboInterface)
+      )
     )
     this.emitData(this.dubboServiceUrlMap)
   }
@@ -175,7 +175,7 @@ export class ZookeeperRegistry
             `get beehive service urls errro %s %s %s`,
             servicePath,
             dubboInterface,
-            err,
+            err
           )
           return []
         })
@@ -185,29 +185,39 @@ export class ZookeeperRegistry
     this.dubboServiceUrlMap.set(dubboInterface, urls)
   }
 
-  async registyServices(services: Array<[TDubboInterface, TDubboUrl]>) {
-    for (let [dubboInterface, dubboUrl] of services) {
+  async registyServices(
+    services: Array<{
+      dubboServiceInterface: TDubboInterface
+      dubboServiceUrl: TDubboUrl
+    }>
+  ) {
+    for (let { dubboServiceInterface, dubboServiceUrl } of services) {
       // create service root path
-      const serviceRootPath = `${DUBBO_ZK_ROOT_PATH}/${dubboInterface}/services`
+      const serviceRootPath = `${DUBBO_ZK_ROOT_PATH}/${dubboServiceInterface}/services`
       await this.mkdirp(serviceRootPath)
       // create service node
       await this.createNode({
-        path: `${serviceRootPath}/${encodeURIComponent(dubboUrl)}`,
+        path: `${serviceRootPath}/${encodeURIComponent(dubboServiceUrl)}`
       })
     }
   }
 
-  async registyConsumers(consumers: Array<[TDubboInterface, TDubboUrl]>) {
+  async registyConsumers(
+    consumers: Array<{
+      dubboServiceInterface: TDubboInterface
+      dubboServiceUrl: TDubboUrl
+    }>
+  ) {
     const dubboInterfaces = new Set<string>()
     // registry consumer
-    for (let [dubboInterface, dubboUrl] of consumers) {
-      dubboInterfaces.add(dubboInterface)
+    for (let { dubboServiceInterface, dubboServiceUrl } of consumers) {
+      dubboInterfaces.add(dubboServiceInterface)
       // create consumer root path
-      const consumerRootPath = `/${DUBBO_ZK_ROOT_PATH}/${dubboInterface}/consumers`
+      const consumerRootPath = `/${DUBBO_ZK_ROOT_PATH}/${dubboServiceInterface}/consumers`
       await this.mkdirp(consumerRootPath)
       // create service node
       await this.createNode({
-        path: `${consumerRootPath}/${encodeURIComponent(dubboUrl)}`,
+        path: `${consumerRootPath}/${encodeURIComponent(dubboServiceUrl)}`
       })
     }
 
