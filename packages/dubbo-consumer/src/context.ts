@@ -289,7 +289,7 @@ export default class Context<T = any> {
   }
 
   set timeout(timeout: number) {
-    this._timeout = timeout
+    this._timeout = timeout || cfg.dubboInvokeTimeout
   }
 
   setMaxTimeout(end: Function) {

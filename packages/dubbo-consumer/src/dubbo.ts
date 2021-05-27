@@ -35,7 +35,7 @@ import {
 import { DubboSetting } from './dubbo-setting'
 
 const log = debug('dubbo:bootstrap')
-const packageVersion = require('../../package.json').version
+const packageVersion = require('../package.json').version
 log('dubbo-js version :=> %s', packageVersion)
 
 /**
@@ -56,19 +56,14 @@ export default class Dubbo<TService = Object> {
   private readonly dubboSetting: DubboSetting
   private readonly props: IDubboProps
   private readonly middlewares: Array<Middleware<Context>>
-  private readonly service: TDubboService<TService>
   private readonly consumers: Array<{
     dubboServiceInterface: TDubboInterface
     dubboServiceUrl: TDubboUrl
   }>
+  public readonly service: TDubboService<TService>
 
   constructor(props: IDubboProps) {
     this.props = props
-
-    // check dubbo setting
-    if (!props.dubboSetting) {
-      throw new Error('Please specify dubboSetting')
-    }
 
     // check dubbo register
     if (!util.isObj(this.props.registry)) {

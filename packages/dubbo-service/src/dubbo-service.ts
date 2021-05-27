@@ -21,7 +21,6 @@ import debug from 'debug'
 import qs from 'querystring'
 import compose, { Middleware } from 'koa-compose'
 import { Retry, util } from '@apache/dubbo-common'
-import { IRegistry } from '@apache/dubbo-registry'
 import {
   DecodeBuffer,
   decodeDubboRequest,
@@ -36,6 +35,7 @@ import {
   DubboServiceClazzName,
   IDubboServerProps,
   IDubboService,
+  IRegistry,
   TDubboServiceInterface,
   TDubboServiceUrl
 } from './types'
@@ -52,7 +52,7 @@ const log = debug('dubbo-server ~')
  * - keep heartbeat with consumer
  */
 
-export default class DubboServer {
+export default class DubboService {
   private resolve: Function
   private reject: Function
   private readyPromise: Promise<void>
@@ -61,7 +61,7 @@ export default class DubboServer {
   private port: number
   private server: net.Server
   private dubboSetting: DubboSetting
-  private registry: IRegistry<any>
+  private registry: IRegistry
   private services: { [name in string]: IDubboService }
   private serviceRouter: Map<DubboServiceClazzName, Array<IDubboService>>
   private readonly middlewares: Array<Middleware<Context>>
@@ -330,7 +330,7 @@ export default class DubboServer {
    * @returns
    */
   public static from(props: IDubboServerProps) {
-    return new DubboServer(props)
+    return new DubboService(props)
   }
 
   /**

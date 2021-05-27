@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 
+import debug from 'debug'
 import { IRegistrySubscriber, TDubboInterface, TDubboUrl } from './types'
+
+const log = debug('registry:base~')
 
 /**
  * Extract the base class of the registry
@@ -40,10 +43,12 @@ export default class BaseRegistry {
   }
 
   emitData(map: Map<TDubboInterface, Array<TDubboUrl>>) {
+    log('emit data => %O', map)
     this.subscribers.forEach((s) => s.onData(map))
   }
 
   emitErr(err: Error) {
+    log('emit error %s', err)
     this.subscribers.forEach((s) => s.onError(err))
   }
 }

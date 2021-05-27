@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import { IRegistry } from '@apache/dubbo-registry'
 import { DubboSetting } from './dubbo-setting'
 
 export type TDubboServiceUrl = string
@@ -23,7 +22,7 @@ export type TDubboServiceShortName = string
 export type TDubboServiceInterface = string
 export type DubboServiceClazzName = string
 export type TMatchThunk = (
-  shortName: TDubboServiceShortName,
+  shortName: TDubboServiceShortName
 ) => IDubboServiceSetting
 
 export interface IDubboServerProps {
@@ -34,7 +33,7 @@ export interface IDubboServerProps {
 
 export interface IDubboService {
   dubboInterface: string
-  version: string
+  version?: string
   group?: string
   methods: { [key in string]: Function }
 }
@@ -43,4 +42,17 @@ export interface IDubboServiceSetting {
   group?: string
   version?: string
   timeout?: number
+}
+
+export interface IRegistry<T = Object> {
+  ready(): Promise<void>
+  registyServices(
+    services: Array<{
+      dubboServiceInterface: TDubboServiceInterface
+      dubboServiceUrl: TDubboServiceUrl
+    }>
+  ): Promise<void>
+  getClient(): T
+
+  close(): void
 }

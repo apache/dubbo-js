@@ -21,7 +21,7 @@ import {
   DubboServer,
   Dubbo,
   setting,
-  TDubboCallResult,
+  TDubboCallResult
 } from '@apache/dubbo-consumer'
 
 export interface IDemoProvider {
@@ -57,10 +57,10 @@ beforeAll(async () => {
           },
           async getUserInfo(userInfo: Object) {
             return userInfo
-          },
-        },
-      },
-    ],
+          }
+        }
+      }
+    ]
   })
 
   server.use(async (ctx, next) => {
@@ -81,7 +81,7 @@ it('test directly dubbo sayHello/getUserInfo', async () => {
   const dubbo = DirectlyDubbo.from({
     dubboAddress: '172.22.226.94:20880',
     dubboVersion: '2.0.2',
-    dubboInvokeTimeout: 10,
+    dubboInvokeTimeout: 10
   })
 
   const demoService = dubbo.proxyService({
@@ -97,36 +97,36 @@ it('test directly dubbo sayHello/getUserInfo', async () => {
           java.combine('com.alibaba.dubbo.demo.UserRequest', {
             id: 1,
             name: 'nodejs',
-            lib: 'dubbo-js',
-          }),
+            lib: 'dubbo-js'
+          })
         ]
-      },
-    },
+      }
+    }
   })
 
   // @ts-ignore
   expect(await demoService.sayHello('hello world', 1)).toEqual({
     res: {
       name: 'hello world',
-      rest: true,
+      rest: true
     },
-    err: null,
+    err: null
   })
   // @ts-ignore
   expect(await demoService.getUserInfo()).toEqual({
     res: {
       id: 1,
       name: 'nodejs',
-      lib: 'dubbo-js',
+      lib: 'dubbo-js'
     },
-    err: null,
+    err: null
   })
 })
 
 // ==========================dubbo invoker========================================
 it('test dubbo invoke', async () => {
   const dubboSetting = setting.match(['com.alibaba.dubbo.demo.DemoService'], {
-    version: '1.0.0',
+    version: '1.0.0'
   })
   const service = {
     demoService: (dubbo: Dubbo): IDemoProvider =>
@@ -142,19 +142,19 @@ it('test dubbo invoke', async () => {
               java.combine('com.alibaba.dubbo.demo.UserRequest', {
                 id: 1,
                 name: 'nodejs',
-                lib: 'dubbo-js',
-              }),
+                lib: 'dubbo-js'
+              })
             ]
-          },
-        },
-      }),
+          }
+        }
+      })
   }
 
   const dubbo = new Dubbo<typeof service>({
     application: { name: 'node-test' },
     registry: '127.0.0.1:2181',
     dubboSetting,
-    service,
+    service
   })
 
   dubbo.use(async (ctx, next) => {
@@ -166,15 +166,15 @@ it('test dubbo invoke', async () => {
     err: null,
     res: {
       name: 'hello world',
-      rest: true,
-    },
+      rest: true
+    }
   })
   expect(await dubbo.service.demoService.getUserInfo()).toEqual({
     err: null,
     res: {
       id: 1,
       name: 'nodejs',
-      lib: 'dubbo-js',
-    },
+      lib: 'dubbo-js'
+    }
   })
 })

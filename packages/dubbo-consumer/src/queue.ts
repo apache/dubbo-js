@@ -22,7 +22,7 @@ import {
   IDubboObservable,
   IDubboResponse,
   TQueueObserver,
-  TRequestId,
+  TRequestId
 } from './types'
 import { util } from '@apache/dubbo-common'
 
@@ -65,8 +65,8 @@ export default class Queue implements IDubboObservable<TQueueObserver> {
       if (!ctx.isRequestMethodArgsHessianType) {
         ctx.reject(
           new DubboMethodParamNotHessianError(
-            `${ctx.dubboInterface}#${ctx.request.methodName} not all arguments are valid hessian type`,
-          ),
+            `${ctx.dubboInterface}#${ctx.request.methodName} not all arguments are valid hessian type`
+          )
         )
         return
       }
@@ -113,7 +113,7 @@ export default class Queue implements IDubboObservable<TQueueObserver> {
         'queue schedule failed requestId#%d, traceId:%s err: %s',
         requestId,
         ctx.traceId,
-        err,
+        err
       )
       //删除该属性，不然会导致JSON.Stringify失败
       if (err['cause']) {
@@ -125,7 +125,7 @@ export default class Queue implements IDubboObservable<TQueueObserver> {
         'resolve requestId:%d traceId: %s, res: %O',
         requestId,
         ctx.traceId,
-        res,
+        res
       )
       ctx.resolve(res)
     }

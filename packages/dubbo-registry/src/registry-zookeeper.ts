@@ -168,6 +168,7 @@ export class ZookeeperRegistry
   }
 
   async findDubboServiceUrls(dubboInterfaces: Array<string>) {
+    dlog('find dubbo service urls => %O', dubboInterfaces)
     await Promise.all(
       dubboInterfaces.map((dubboInterface) =>
         this.findDubboServiceUrl(dubboInterface)
@@ -219,12 +220,13 @@ export class ZookeeperRegistry
       dubboServiceUrl: TDubboUrl
     }>
   ) {
+    dlog('registry consumers => %O', consumers)
     const dubboInterfaces = new Set<string>()
     // registry consumer
     for (let { dubboServiceInterface, dubboServiceUrl } of consumers) {
       dubboInterfaces.add(dubboServiceInterface)
       // create consumer root path
-      const consumerRootPath = `/${DUBBO_ZK_ROOT_PATH}/${dubboServiceInterface}/consumers`
+      const consumerRootPath = `${DUBBO_ZK_ROOT_PATH}/${dubboServiceInterface}/consumers`
       await this.mkdirp(consumerRootPath)
       // create service node
       await this.createNode({

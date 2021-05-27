@@ -60,6 +60,9 @@ export default class Scheduler {
     this.queue = queue
     this.queue.subscribe(this.handleQueueMessage)
 
+    // init service url mapper
+    this.dubboServiceUrlMapper = new Map()
+
     // init dubbo cluster
     this.dubboCluster = new DubboCluster()
     this.dubboCluster.subscribe({
