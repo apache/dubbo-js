@@ -35,7 +35,7 @@ const dubbo = new Dubbo({
   //zookeeper address
   register: 'localhost:2181',
   dubboVersion: '2.0.0',
-  interfaces: ['org.apache.dubbo.demo.DemoService'],
+  interfaces: ['org.apache.dubbo.demo.DemoService']
 })
 
 //代理本地对象->dubbo对象
@@ -58,11 +58,11 @@ const demoService = dubbo.proxyService<IDemoService>({
         java.combine('com.alibaba.dubbo.demo.UserRequest', {
           id: 1,
           name: 'nodejs',
-          email: 'node@qianmi.com',
-        }),
+          email: 'node@qianmi.com'
+        })
       ]
-    },
-  },
+    }
+  }
 })
 
 const result1 = await demoService.sayHello('node')

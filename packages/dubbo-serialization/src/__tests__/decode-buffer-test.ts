@@ -41,7 +41,7 @@ it('test receive right data', () => {
     0x70,
     0x61,
     0x6e,
-    0x67,
+    0x67
   ])
   const dBuff = new DecodeBuffer().subscribe((data) => {
     const { requestId, res, err } = decode(data)
@@ -78,7 +78,7 @@ it('test receive wrong data', () => {
     0x70,
     0x61,
     0x6e,
-    0x67,
+    0x67
   ])
   const dBuff = new DecodeBuffer().subscribe((data) => {
     const { requestId, res, err } = decode(data)

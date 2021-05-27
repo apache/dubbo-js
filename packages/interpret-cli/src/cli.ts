@@ -17,13 +17,13 @@
  */
 import program from 'commander'
 import debug from 'debug'
-import {readFile, writeFile} from 'fs-extra'
+import { readFile, writeFile } from 'fs-extra'
 import klaw from 'klaw'
 import prettier from 'prettier'
 import Config from './config'
-import {extra} from './ext'
-import {Request} from './request'
-import {to} from './to'
+import { extra } from './ext'
+import { Request } from './request'
+import { to } from './to'
 
 const log = debug('j2t:cli')
 
@@ -33,8 +33,8 @@ program
   .option('-c, --config [value]', 'specify interpret Config ')
   .parse(process.argv)
 ;(async () => {
-  const {res: dubboConfig, err: configErr} = await Config.fromConfigPath(
-    program.config,
+  const { res: dubboConfig, err: configErr } = await Config.fromConfigPath(
+    program.config
   )
   if (configErr) {
     console.error('Error reading configuration file')
@@ -43,7 +43,7 @@ program
     return
   }
 
-  const {res: extInfo, err: extError} = await to(extra(dubboConfig))
+  const { res: extInfo, err: extError } = await to(extra(dubboConfig))
   if (extError) {
     console.error('Failed to extract ast from java class')
     console.log(extError)
@@ -80,8 +80,8 @@ async function formatSourceDir(srcDir): Promise<void> {
                 singleQuote: true,
                 bracketSpacing: false,
                 trailingComma: 'all',
-                semi: true,
-              }),
+                semi: true
+              })
             )
             log(`Format the source code successfully:${item.path}`)
           } catch (err) {

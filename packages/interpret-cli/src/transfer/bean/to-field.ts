@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 import debug from 'debug'
-import {PropertySignatureStructure} from 'ts-simple-ast'
-import {IntepretHandle} from '../../handle'
-import {IJFieldPropers} from '../../typings'
-import {jType2Ts} from '../../util/type-parse'
+import { PropertySignatureStructure } from 'ts-simple-ast'
+import { IntepretHandle } from '../../handle'
+import { IJFieldPropers } from '../../typings'
+import { jType2Ts } from '../../util/type-parse'
 
 const log = debug('j2t:core:toField')
 
@@ -31,7 +31,7 @@ const log = debug('j2t:core:toField')
 export async function toField(
   fieldName: string,
   fieldProps: IJFieldPropers,
-  intepretHandle: IntepretHandle,
+  intepretHandle: IntepretHandle
 ): Promise<PropertySignatureStructure> {
   log('转换 %s 为属性:%o', fieldName, fieldProps)
 
@@ -39,6 +39,6 @@ export async function toField(
   return {
     name: fieldName,
     hasQuestionToken: true,
-    type,
+    type
   }
 }

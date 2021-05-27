@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 import debug from 'debug'
-import {EnumDeclarationStructure} from 'ts-simple-ast'
-import {IntepretHandle} from '../../handle'
-import {IJClass} from '../../typings'
+import { EnumDeclarationStructure } from 'ts-simple-ast'
+import { IntepretHandle } from '../../handle'
+import { IJClass } from '../../typings'
 
 const log = debug('j2t:core:toField')
 
@@ -29,7 +29,7 @@ const log = debug('j2t:core:toField')
 export function toEnum(
   className: string,
   enumDef: IJClass,
-  intepretHandle: IntepretHandle,
+  intepretHandle: IntepretHandle
 ): EnumDeclarationStructure {
   log('转换 为枚举:%o', enumDef)
 
@@ -47,7 +47,7 @@ export function toEnum(
 
       members.push({
         name: fieldsKey,
-        initializer,
+        initializer
       })
       fieldIndex++
     } else {
@@ -60,11 +60,11 @@ export function toEnum(
     className,
     '参数数量:',
     paramNmu,
-    ' 联系相关接口开发人员,尽量不要使用枚举类型',
+    ' 联系相关接口开发人员,尽量不要使用枚举类型'
   )
   return {
     isExported: true,
     name: intepretHandle.getTypeInfo(className).className,
-    members,
+    members
   }
 }

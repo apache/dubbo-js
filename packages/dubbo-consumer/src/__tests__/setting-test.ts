@@ -21,14 +21,14 @@ describe('matcher test suite', () => {
   it('test string match', () => {
     setting.match('org.apache.dubbo.demo.DemoProvider', {
       version: '1.0.0',
-      group: 'apache',
+      group: 'apache'
     })
 
     expect(
-      setting.getDubboSetting('org.apache.dubbo.demo.DemoProvider'),
+      setting.getDubboSetting('org.apache.dubbo.demo.DemoProvider')
     ).toEqual({
       version: '1.0.0',
-      group: 'apache',
+      group: 'apache'
     })
   })
 
@@ -36,16 +36,16 @@ describe('matcher test suite', () => {
     setting.match(
       [
         'org.apache.dubbo.demo.DemoProvider',
-        'org.apache.dubbo.demo.ProductProvider',
+        'org.apache.dubbo.demo.ProductProvider'
       ],
-      { version: '1.0.0', group: 'apache' },
+      { version: '1.0.0', group: 'apache' }
     )
 
     expect(
-      setting.getDubboSetting('org.apache.dubbo.demo.ProductProvider'),
+      setting.getDubboSetting('org.apache.dubbo.demo.ProductProvider')
     ).toEqual({
       version: '1.0.0',
-      group: 'apache',
+      group: 'apache'
     })
   })
 
@@ -55,35 +55,35 @@ describe('matcher test suite', () => {
       if (dubboInterface === 'org.apache.dubbo.demo.ProductProvider1') {
         return {
           version: '3.0.0',
-          group: 'apache',
+          group: 'apache'
         }
       }
     })
 
     expect(
-      setting.getDubboSetting('org.apache.dubbo.demo.ProductProvider1'),
+      setting.getDubboSetting('org.apache.dubbo.demo.ProductProvider1')
     ).toEqual({
       version: '3.0.0',
-      group: 'apache',
+      group: 'apache'
     })
 
     //not match
     expect(
-      setting.getDubboSetting('org.apache.dubbo.demo.GoodsProvider'),
+      setting.getDubboSetting('org.apache.dubbo.demo.GoodsProvider')
     ).toEqual(null)
   })
 
   it('test RegExp match', () => {
     setting.match(/^org.apache.dubbo.demo/, {
       version: '2.0.0',
-      group: 'apache',
+      group: 'apache'
     })
 
     expect(
-      setting.getDubboSetting('org.apache.dubbo.demo.UserProvider'),
+      setting.getDubboSetting('org.apache.dubbo.demo.UserProvider')
     ).toEqual({
       version: '2.0.0',
-      group: 'apache',
+      group: 'apache'
     })
   })
 

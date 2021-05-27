@@ -16,7 +16,7 @@ export default class Zoookeeper extends EventEmitter {
   create(
     path: string,
     data: string | Buffer,
-    isPersistent: boolean,
+    isPersistent: boolean
   ): Promise<void>
   exists(path: string): Promise<never>
   w_get_children(servicePath: string): Promise<string[]>

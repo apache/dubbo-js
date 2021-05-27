@@ -39,8 +39,8 @@ export class TypeRequest {
       $class: 'org.apache.dubbo.demo.TypeRequest',
       $: {
         bigDecimal: java.BigDecimal(this.bigDecimal.value),
-        map: java.Map(mapMapTransfer),
-      },
+        map: java.Map(mapMapTransfer)
+      }
     }
   }
 }

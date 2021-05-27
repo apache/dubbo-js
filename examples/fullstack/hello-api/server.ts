@@ -17,7 +17,7 @@ server.use(async (ctx) => {
   console.log(res, err)
   ctx.body = {
     res,
-    err: err.message
+    err: err?.message
   }
 })
 server.listen(3000)

@@ -51,7 +51,7 @@
  */
 
 export async function go<T>(
-  promise: Promise<T>,
+  promise: Promise<T>
 ): Promise<{ err: Error; res: T }> {
   try {
     const res = await promise
@@ -59,7 +59,7 @@ export async function go<T>(
   } catch (err) {
     return {
       res: null,
-      err,
+      err
     }
   }
 }

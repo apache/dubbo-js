@@ -26,27 +26,27 @@ import { UserRequest } from './__tests__/providers/org/apache/dubbo/demo/UserReq
 const service = {
   BasicTypeProvider,
   DemoProvider,
-  ErrorProvider,
+  ErrorProvider
 }
 
 //dubbo-setting
 const dubboSetting = setting
   .match('org.apache.dubbo.demo.BasicTypeProvider', {
-    version: '2.0.0',
+    version: '2.0.0'
   })
   .match(
     [
       'org.apache.dubbo.demo.DemoProvider',
-      'org.apache.dubbo.demo.ErrorProvider',
+      'org.apache.dubbo.demo.ErrorProvider'
     ],
-    { version: '1.0.0' },
+    { version: '1.0.0' }
   )
 
 const dubbo = new Dubbo<typeof service>({
   application: { name: 'node-dubbo' },
   register: 'localhost:2181,localhost:2181,localhost:2181',
   service,
-  dubboSetting,
+  dubboSetting
 })
 
 //use middleware
@@ -55,11 +55,11 @@ dubbo.use(async function costtime(ctx, next) {
   await next()
   const endTime = Date.now()
   const {
-    request: { dubboInterface, methodName },
+    request: { dubboInterface, methodName }
   } = ctx
 
   console.log(
-    `invoke ${dubboInterface}#${methodName} costTime: ${endTime - startTime}`,
+    `invoke ${dubboInterface}#${methodName} costTime: ${endTime - startTime}`
   )
 })
 
@@ -67,11 +67,11 @@ dubbo.use(async function trace(ctx: Context, next) {
   const uuid = Date.now()
   //auto merge attchments when assign more
   ctx.attachments = {
-    uuid,
+    uuid
   }
 
   ctx.attachments = {
-    userId: uuid,
+    userId: uuid
   }
 
   await next()
@@ -80,14 +80,14 @@ dubbo.use(async function trace(ctx: Context, next) {
 dubbo.subscribe({
   onTrace(msg) {
     console.log(msg)
-  },
+  }
 })
 
 //=====demoservice==========
 describe('demoService', () => {
   it('test sayHello', async () => {
     const { res, err } = await dubbo.service.DemoProvider.sayHello(
-      java.String('node'),
+      java.String('node')
     )
     expect(err).toEqual(null)
     expect(res.includes('Hello node, response form provider')).toEqual(true)
@@ -97,17 +97,17 @@ describe('demoService', () => {
     const res = await dubbo.service.DemoProvider.echo()
     expect(res).toEqual({
       res: 'pang',
-      err: null,
+      err: null
     })
   })
 
   it('test getUserInfo', async () => {
     const res = await dubbo.service.DemoProvider.getUserInfo(
-      new UserRequest({ name: 'nodejs', email: 'email' }),
+      new UserRequest({ name: 'nodejs', email: 'email' })
     )
     expect(res).toEqual({
       err: null,
-      res: { status: 'ok', info: { id: '1', name: 'test' } },
+      res: { status: 'ok', info: { id: '1', name: 'test' } }
     })
   })
 })
@@ -118,10 +118,10 @@ describe('typeBasicServer', () => {
       new TypeRequest({
         map: {
           hello: 'hello world',
-          email: 'email@qianmi.com',
+          email: 'email@qianmi.com'
         },
-        bigDecimal: { value: '100.00' },
-      }),
+        bigDecimal: { value: '100.00' }
+      })
     )
     expect(reuslt).toEqual({
       err: null,
@@ -129,9 +129,9 @@ describe('typeBasicServer', () => {
         bigDecimal: { value: '100.00' },
         map: {
           hello: 'hello world',
-          email: 'email@qianmi.com',
-        },
-      },
+          email: 'email@qianmi.com'
+        }
+      }
     })
   })
 })

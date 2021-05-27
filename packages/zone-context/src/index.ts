@@ -66,11 +66,11 @@ asyncHook
         invokeTree[asyncId] = {
           pid: triggerAsyncId,
           rootId: parent.rootId,
-          children: [],
+          children: []
         }
         invokeTree[triggerAsyncId].children.push(asyncId)
       }
-    },
+    }
   })
   .enable()
 
@@ -91,7 +91,7 @@ function gc(rootId: number) {
   }
 
   const collectionAllNodeId = (rootId: number) => {
-    const {children} = invokeTree[rootId]
+    const { children } = invokeTree[rootId]
     let allNodeId = [...children]
     for (let id of children) {
       allNodeId = [...allNodeId, ...collectionAllNodeId(id)]
@@ -109,7 +109,7 @@ function gc(rootId: number) {
 
 export function debugFile(arg: any, file: string = 'tls.debug.log') {
   fs.writeFileSync(path.join(process.cwd(), file), `${arg}\n`, {
-    flag: 'a',
+    flag: 'a'
   })
 }
 
@@ -130,7 +130,7 @@ export async function ZoneContext(fn: Function) {
       invokeTree[rootId] = {
         pid: -1,
         rootId,
-        children: [],
+        children: []
       }
       await fn()
     } finally {

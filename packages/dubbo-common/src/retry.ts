@@ -34,7 +34,7 @@ export class Retry {
     this.end = props.end
     this.delay = props.delay || 1000
     dlog(`init props: %j`, {
-      delay: this.delay,
+      delay: this.delay
     })
   }
 

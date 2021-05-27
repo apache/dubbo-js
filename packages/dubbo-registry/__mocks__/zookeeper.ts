@@ -56,7 +56,7 @@ export default class Zoookeeper extends EventEmitter {
   create(
     path: string,
     data: string | Buffer,
-    isPersistent: boolean,
+    isPersistent: boolean
   ): Promise<void> {
     console.log(`create with ${JSON.stringify({ path, data, isPersistent })} `)
     return new Promise((resolve) => {
@@ -72,7 +72,7 @@ export default class Zoookeeper extends EventEmitter {
   w_get_children(servicePath: string) {
     const dubboInterface = servicePath.split('.')[1]
     return Promise.resolve([
-      `dubbo://127.0.0.1:20880/${dubboInterface}?methods=hello&group=&version=0.0.0`,
+      `dubbo://127.0.0.1:20880/${dubboInterface}?methods=hello&group=&version=0.0.0`
     ])
   }
 }

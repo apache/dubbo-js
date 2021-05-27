@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 import debug from 'debug'
-import {TypeParameterDeclarationStructure} from 'ts-simple-ast'
-import {IntepretHandle} from '../../../handle'
-import {IJClass, IJFieldPropers, ITypeSearch} from '../../../typings'
-import {jType2Ts} from '../../../util/type-parse'
+import { TypeParameterDeclarationStructure } from 'ts-simple-ast'
+import { IntepretHandle } from '../../../handle'
+import { IJClass, IJFieldPropers, ITypeSearch } from '../../../typings'
+import { jType2Ts } from '../../../util/type-parse'
 
 const log = debug('j2t:core:toBeanClass:transfer')
 
@@ -37,14 +37,14 @@ interface IFiled {
 
 export function getCtorParaStr(
   className: string,
-  typeParameters: TypeParameterDeclarationStructure[] = [],
+  typeParameters: TypeParameterDeclarationStructure[] = []
 ) {
   if (typeParameters.length === 0) {
     return 'I' + className
   } else {
     return `I${className}<${typeParameters
-      .map(({name}) =>
-        name.replace(' extends { __fields2java?(): any } = any', ''),
+      .map(({ name }) =>
+        name.replace(' extends { __fields2java?(): any } = any', '')
       )
       .join(',')}>`
   }
@@ -60,7 +60,7 @@ export function getCtorParaStr(
 export async function fields2CtrContent(
   fileds: IFiled[],
   typeOption: ITypeSearch,
-  typeDef: IJClass,
+  typeDef: IJClass
 ): Promise<{
   initContent: string
   fieldTrans: Array<string>
@@ -69,7 +69,7 @@ export async function fields2CtrContent(
     fieldTrans = []
 
   for (var i = 0, iLen = fileds.length; i < iLen; i++) {
-    var {name, filedAst} = fileds[i]
+    var { name, filedAst } = fileds[i]
 
     if (filedAst.isArray) {
       let firstDTypeClassPath = filedAst.elementType.name
@@ -77,14 +77,14 @@ export async function fields2CtrContent(
         fieldTrans.push(`${name}:java.array("${firstDTypeClassPath}",(this.${name}||[]).map(paramItem=>{
           return ${j2Jtj(typeOption, {
             paramRefName: 'paramItem',
-            classPath: firstDTypeClassPath,
+            classPath: firstDTypeClassPath
           })}
           }))`)
       } else if (firstDTypeClassPath.startsWith('java.lang')) {
         fieldTrans.push(`${name}:java.array('${firstDTypeClassPath}',(this.${name}||[]).map(paramItem=>{
           return ${j2Jtj(typeOption, {
             paramRefName: 'paramItem',
-            classPath: firstDTypeClassPath,
+            classPath: firstDTypeClassPath
           })}
           }))`)
       } else {
@@ -95,8 +95,8 @@ export async function fields2CtrContent(
       fieldTrans.push(
         `${name}:${j2Jtj(typeOption, {
           classPath: filedAst.typeArgs[0].type.name,
-          paramRefName: `this.${name}`,
-        })}`,
+          paramRefName: `this.${name}`
+        })}`
       )
     } else if (filedAst.typeArgs && filedAst.typeArgs.length > 0) {
       let isWildcard = false
@@ -117,12 +117,12 @@ export async function fields2CtrContent(
           'java.util.List',
           'java.util.Collection',
           'java.util.Set',
-          'java.util.LinkedHashSet',
+          'java.util.LinkedHashSet'
         ].includes(filedAst.name)
       ) {
         if (
           ['java.util.HashMap', 'java.util.Map'].includes(
-            filedAst.typeArgs[0].type.name,
+            filedAst.typeArgs[0].type.name
           )
         ) {
           let forEachStr = `(this.${name}||[])`
@@ -131,13 +131,13 @@ export async function fields2CtrContent(
           }
 
           fieldTrans.push(`${name}:java.${filedAst.name.substring(
-            filedAst.name.lastIndexOf('.') + 1,
+            filedAst.name.lastIndexOf('.') + 1
           )}(${forEachStr}.map(paramItem=>{
               ${mapParseContent(
                 'paramItemMapTransfer',
                 'paramItem',
                 filedAst.typeArgs[0].type,
-                typeOption,
+                typeOption
               )}
                return paramItemMapTransfer;
           }))`)
@@ -153,11 +153,11 @@ export async function fields2CtrContent(
               ? filedAst.name
               : 'java.util.List'
           fieldTrans.push(`${name}:this.${name}?java.${_classNam.substring(
-            filedAst.name.lastIndexOf('.') + 1,
+            filedAst.name.lastIndexOf('.') + 1
           )}(${forEachStr}.map(paramItem=>{
           return ${j2Jtj(typeOption, {
             paramRefName: 'paramItem',
-            classPath: filedAst.typeArgs[0].type.name,
+            classPath: filedAst.typeArgs[0].type.name
           })}
           }))
           :null
@@ -177,10 +177,10 @@ export async function fields2CtrContent(
           for(let mapKey  in this.${name}){
               ${name}MapTransfer.set(${j2Jtj(typeOption, {
             paramRefName: `mapKey`,
-            classPath: filedAst.typeArgs[0].type.name,
+            classPath: filedAst.typeArgs[0].type.name
           })}, ${j2Jtj(typeOption, {
             paramRefName: `this.${name}[mapKey]`,
-            classPath: filedAst.typeArgs[1].type.name,
+            classPath: filedAst.typeArgs[1].type.name
           })});
           };
           `
@@ -191,19 +191,18 @@ export async function fields2CtrContent(
               'java.util.List',
               'java.util.Collection',
               'java.util.Set',
-              'java.util.LinkedHashSet',
+              'java.util.LinkedHashSet'
             ].includes(filedAst.typeArgs[1].type.name)
           ) {
             initContent += `let ${name}MapTransfer = new Map();
           for(let mapKey  in this.${name}) {
               ${name}MapTransfer.set(${j2Jtj(typeOption, {
               paramRefName: `mapKey`,
-              classPath: filedAst.typeArgs[0].type.name,
+              classPath: filedAst.typeArgs[0].type.name
             })}, java.List(this.${name}[mapKey].map(paramItem=>{
                     return ${j2Jtj(typeOption, {
                       paramRefName: 'paramItem',
-                      classPath:
-                        filedAst.typeArgs[1].type.typeArgs[0].type.name,
+                      classPath: filedAst.typeArgs[1].type.typeArgs[0].type.name
                     })}}))
              );
           };
@@ -217,8 +216,8 @@ export async function fields2CtrContent(
 
         fieldTrans.push(
           `${name}:java.${filedAst.name.substring(
-            filedAst.name.lastIndexOf('.') + 1,
-          )}(${name}MapTransfer)`,
+            filedAst.name.lastIndexOf('.') + 1
+          )}(${name}MapTransfer)`
         )
       } else {
         throw new Error(`暂不支持该类型转换${typeDef.name}.${name}`)
@@ -227,13 +226,13 @@ export async function fields2CtrContent(
       fieldTrans.push(
         `${name}:${j2Jtj(typeOption, {
           classPath: filedAst.name,
-          paramRefName: `this.${name}`,
-        })}`,
+          paramRefName: `this.${name}`
+        })}`
       )
     }
   }
 
-  return {fieldTrans, initContent}
+  return { fieldTrans, initContent }
 }
 
 /**
@@ -247,16 +246,16 @@ export function mapParseContent(
   resultMapName: string,
   mapValName: string,
   fieldPropers: IJFieldPropers,
-  typeOption: ITypeSearch,
+  typeOption: ITypeSearch
 ) {
   let initContent = `let ${resultMapName} = new Map();
           for(let mapKey  in ${mapValName}){
               ${resultMapName}.set(${j2Jtj(typeOption, {
     paramRefName: `mapKey`,
-    classPath: fieldPropers.typeArgs[0].type.name,
+    classPath: fieldPropers.typeArgs[0].type.name
   })}, ${j2Jtj(typeOption, {
     paramRefName: `${mapValName}[mapKey]`,
-    classPath: fieldPropers.typeArgs[1].type.name,
+    classPath: fieldPropers.typeArgs[1].type.name
   })});
           };
           `
@@ -275,22 +274,22 @@ export function j2Jtj(
   typeOptions: ITypeSearch,
   {
     paramRefName,
-    classPath,
+    classPath
   }: {
     paramRefName: string
     classPath: string
-  },
+  }
 ) {
   if (typeOptions.hasAst(classPath)) {
     //处理bean对象类型, 或者枚举类型;
-    let {isClass, isEnum} = typeOptions.getTypeInfo(classPath)
+    let { isClass, isEnum } = typeOptions.getTypeInfo(classPath)
 
     if (isEnum) {
       log(`添加枚举转换(java.enum) ${classPath}`)
       return `java['enum'](
                   '${classPath}',
                   ${classPath.substring(
-                    classPath.lastIndexOf('.') + 1,
+                    classPath.lastIndexOf('.') + 1
                   )}[${paramRefName}]
                 )`
     } else if (isClass) {
@@ -312,7 +311,7 @@ export function j2Jtj(
     return `(${paramRefName}&&${paramRefName}['__fields2java'])?${paramRefName}['__fields2java']():${paramRefName}`
   } else if (classPath.startsWith('java.lang.')) {
     return `java.${classPath.substring(
-      classPath.lastIndexOf('.') + 1,
+      classPath.lastIndexOf('.') + 1
     )}(${paramRefName})`
   } else {
     return `${paramRefName}`

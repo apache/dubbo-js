@@ -37,7 +37,7 @@ export default class Request {
     this.requestId = requestId
     this.attachment = {
       group: '',
-      version: '0.0.0',
+      version: '0.0.0'
     } as IAttachment
   }
 }

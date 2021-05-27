@@ -28,6 +28,6 @@ export const BasicTypeProviderWrapper = { testBasicType: argumentMap }
 export function BasicTypeProvider(dubbo: Dubbo): IBasicTypeProvider {
   return dubbo.proxyService<IBasicTypeProvider>({
     dubboInterface: 'org.apache.dubbo.demo.BasicTypeProvider',
-    methods: BasicTypeProviderWrapper,
+    methods: BasicTypeProviderWrapper
   })
 }

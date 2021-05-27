@@ -114,7 +114,7 @@ export interface IRule {
 }
 
 export type TPredictFunction = (
-  fullInterfaceName: string,
+  fullInterfaceName: string
 ) => IDubboSetting | null
 
 export interface IDubboSetting {

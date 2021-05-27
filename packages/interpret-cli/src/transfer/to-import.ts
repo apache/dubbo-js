@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 import debug from 'debug'
-import {relative, sep} from 'path'
-import {ImportDeclarationStructure} from 'ts-simple-ast'
+import { relative, sep } from 'path'
+import { ImportDeclarationStructure } from 'ts-simple-ast'
 
 const log = debug('j2t:core:toImport')
 
@@ -36,7 +36,7 @@ export interface IToImportParam {
 export function toImport({
   className,
   classPath,
-  packagePath,
+  packagePath
 }: IToImportParam): ImportDeclarationStructure {
   log('调用转换方法 toImport::', className, classPath, packagePath)
 
@@ -46,6 +46,6 @@ export function toImport({
       relative(packagePath.split('.').join('/'), classPath.split('.').join('/'))
         .split(sep)
         .join('/'),
-    namedImports: [{name: className}],
+    namedImports: [{ name: className }]
   }
 }

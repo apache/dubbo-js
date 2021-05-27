@@ -37,7 +37,7 @@ export class UserResponse {
     }
     return {
       $class: 'org.apache.dubbo.demo.UserResponse',
-      $: { status: java.String(this.status), info: java.Map(infoMapTransfer) },
+      $: { status: java.String(this.status), info: java.Map(infoMapTransfer) }
     }
   }
 }

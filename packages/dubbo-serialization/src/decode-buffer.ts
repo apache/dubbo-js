@@ -21,7 +21,7 @@ import { IObservable, TDecodeBuffSubscriber } from './types'
 import {
   DUBBO_HEADER_LENGTH,
   DUBBO_MAGIC_HIGH,
-  DUBBO_MAGIC_LOW,
+  DUBBO_MAGIC_LOW
 } from './constants'
 import { Socket } from 'net'
 
@@ -73,7 +73,7 @@ export default class DecodeBuffer
           `%s receive server data error, buffer[0] is 0xda ${
             magicHigh == 0xda
           } buffer[1] is 0xbb ${magicLow == 0xbb}`,
-          this.flag,
+          this.flag
         )
 
         const magicHighIndex = this.buffer.indexOf(DUBBO_MAGIC_HIGH)
@@ -120,7 +120,7 @@ export default class DecodeBuffer
           header[12],
           header[13],
           header[14],
-          header[15],
+          header[15]
         ])
         const bodyLength = byte.fromBytes4(bodyLengthBuff)
         log('%s body length %d', this.flag, bodyLength)
@@ -132,7 +132,7 @@ export default class DecodeBuffer
         }
         const dataBuffer = this.buffer.slice(
           0,
-          DUBBO_HEADER_LENGTH + bodyLength,
+          DUBBO_HEADER_LENGTH + bodyLength
         )
         this.buffer = this.buffer.slice(DUBBO_HEADER_LENGTH + bodyLength)
         bufferLength = this.buffer.length

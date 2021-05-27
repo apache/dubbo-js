@@ -28,7 +28,7 @@ import {
   DUBBO_FLAG_EVENT,
   HESSIAN2_SERIALIZATION_CONTENT_ID,
   DUBBO_MAGIC_HIGH,
-  DUBBO_MAGIC_LOW,
+  DUBBO_MAGIC_LOW
 } from './constants'
 
 const log = debug('dubbo:heartbeat')

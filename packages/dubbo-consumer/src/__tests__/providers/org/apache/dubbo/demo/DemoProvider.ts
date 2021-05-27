@@ -30,12 +30,12 @@ export const DemoProviderWrapper = {
   sayHello: argumentMap,
   test: argumentMap,
   echo: argumentMap,
-  getUserInfo: argumentMap,
+  getUserInfo: argumentMap
 }
 
 export function DemoProvider(dubbo: Dubbo): IDemoProvider {
   return dubbo.proxyService<IDemoProvider>({
     dubboInterface: 'org.apache.dubbo.demo.DemoProvider',
-    methods: DemoProviderWrapper,
+    methods: DemoProviderWrapper
   })
 }

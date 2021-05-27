@@ -43,7 +43,7 @@ import {
   DUBBO_RESPONSE_STATUS,
   DUBBO_FLAG_REQUEST,
   DUBBO_HEADER_LENGTH,
-  HESSIAN2_SERIALIZATION_CONTENT_ID,
+  HESSIAN2_SERIALIZATION_CONTENT_ID
 } from './constants'
 import Request from './request'
 
@@ -122,7 +122,7 @@ export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
       err: new DubboDecodeError(`only support hessian serialization`),
       res: null,
       attachments,
-      requestId,
+      requestId
     }
   }
 
@@ -132,7 +132,7 @@ export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
   log(
     `parse response status: ${status}, DUBBO_RESPONSE_STATUS: ${
       DUBBO_RESPONSE_STATUS[DUBBO_RESPONSE_STATUS.OK]
-    }`,
+    }`
   )
 
   //com.alibaba.dubbo.rpc.protocol.dubbo.DecodeableRpcResult
@@ -143,7 +143,7 @@ export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
       err: new DubboServiceError(body.read()),
       res: null,
       attachments,
-      requestId,
+      requestId
     }
   }
 
@@ -151,7 +151,7 @@ export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
   const flag = body.readInt()
 
   log(
-    `parse dubbo response body flag: ${flag}, DUBBO_RESPONSE_BODY_FLAG: ${DUBBO_RESPONSE_BODY_FLAG[flag]}`,
+    `parse dubbo response body flag: ${flag}, DUBBO_RESPONSE_BODY_FLAG: ${DUBBO_RESPONSE_BODY_FLAG[flag]}`
   )
 
   switch (flag) {
@@ -182,6 +182,7 @@ export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
     case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_VALUE_WITH_ATTACHMENTS:
       err = null
       res = body.read()
+      console.log(':::', res)
       attachments = body.read()
       break
     case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION_WITH_ATTACHMENTS:
@@ -192,7 +193,7 @@ export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
       break
     default:
       err = new DubboDecodeError(
-        `Unknown result flag, expect '0/1/2/3/4/5', get  ${flag})`,
+        `Unknown result flag, expect '0/1/2/3/4/5', get  ${flag})`
       )
       res = null
   }

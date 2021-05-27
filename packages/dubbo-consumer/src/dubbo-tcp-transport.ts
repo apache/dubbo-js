@@ -22,7 +22,7 @@ import {
   DecodeBuffer,
   decodeDubboResponse,
   DubboRequestEncoder,
-  HeartBeat,
+  HeartBeat
 } from '@apache/dubbo-serialization'
 import { STATUS } from './dubbo-status'
 import { IDubboObservable, IDubboTransportSubscriber } from './types'
@@ -54,7 +54,7 @@ export default class DubboTcpTransport
     this.subscriber = {
       onConnect: util.noop,
       onData: util.noop,
-      onClose: util.noop,
+      onClose: util.noop
     }
 
     this.retry = new Retry({
@@ -66,7 +66,7 @@ export default class DubboTcpTransport
       },
       end: () => {
         this.subscriber.onClose(this.host)
-      },
+      }
     })
 
     //init socket
@@ -94,7 +94,7 @@ export default class DubboTcpTransport
           log('tcp-transport#%s <=received=> dubbo result %O', this.host, res)
           this.subscriber.onData(res)
         }
-      },
+      }
     )
   }
 
@@ -105,12 +105,12 @@ export default class DubboTcpTransport
     this.heartBeat = HeartBeat.from({
       type: 'request',
       transport: this.transport,
-      onTimeout: () => this.transport.destroy(),
+      onTimeout: () => this.transport.destroy()
     })
     //notifiy subscriber, the socketworker was connected successfully
     this.subscriber.onConnect({
       host: this.host,
-      transport: this,
+      transport: this
     })
   }
 
@@ -119,7 +119,7 @@ export default class DubboTcpTransport
   }
 
   private onClose = () => {
-    log('tcp-transport#${this.host} was closed')
+    log('tcp-transport#%s was closed', this.host)
     this._status = STATUS.CLOSED
     this.retry.start()
   }

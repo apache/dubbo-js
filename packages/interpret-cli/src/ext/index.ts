@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {spawn} from 'child_process'
-import {pathExists} from 'fs-extra'
-import {join} from 'path'
-import {IDubboExtInfo, IExtraResult} from '../typings'
+import { spawn } from 'child_process'
+import { pathExists } from 'fs-extra'
+import { join } from 'path'
+import { IDubboExtInfo, IExtraResult } from '../typings'
 
 const startFlag = 'Output at:'
 
@@ -36,7 +36,7 @@ export async function extra(extraParam: IDubboExtInfo): Promise<IExtraResult> {
       extraParam.entry,
       extraParam.entryJarPath,
       extraParam.libDirPath,
-      extraParam.providerSuffix || 'Provider',
+      extraParam.providerSuffix || 'Provider'
     ])
 
     let err: string = ''
@@ -58,7 +58,7 @@ export async function extra(extraParam: IDubboExtInfo): Promise<IExtraResult> {
       if (jarDir) {
         resolve({
           jarInfo: join(jarDir, '/output/deflated.json'),
-          jarDir,
+          jarDir
         })
       }
       if (err) {

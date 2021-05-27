@@ -24,7 +24,7 @@ export function argumentMap() {
   return _arguments.map((argumentItem) =>
     argumentItem.__fields2java
       ? paramEnhance(argumentItem.__fields2java())
-      : argumentItem,
+      : argumentItem
   )
 }
 

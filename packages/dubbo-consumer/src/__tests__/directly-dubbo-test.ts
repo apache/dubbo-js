@@ -18,20 +18,20 @@
 import { DirectlyDubbo, java } from 'dubbo-js'
 import {
   DemoProviderWrapper,
-  IDemoProvider,
+  IDemoProvider
 } from './__tests__/providers/org/apache/dubbo/demo/DemoProvider'
 import { UserRequest } from './__tests__/providers/org/apache/dubbo/demo/UserRequest'
 
 const dubbo = DirectlyDubbo.from({
   dubboAddress: 'localhost:20880',
   dubboVersion: '2.0.0',
-  dubboInvokeTimeout: 10 * 1000,
+  dubboInvokeTimeout: 10 * 1000
 })
 
 const demoService = dubbo.proxyService<IDemoProvider>({
   dubboInterface: 'org.apache.dubbo.demo.DemoProvider',
   methods: DemoProviderWrapper,
-  version: '1.0.0',
+  version: '1.0.0'
 })
 
 describe('demoService', () => {
@@ -46,7 +46,7 @@ describe('demoService', () => {
     const res = await demoService.echo()
     expect(res).toEqual({
       res: 'pang',
-      err: null,
+      err: null
     })
   })
 
@@ -55,12 +55,12 @@ describe('demoService', () => {
       new UserRequest({
         id: 1,
         name: 'nodejs',
-        email: 'node@qianmi.com',
-      }),
+        email: 'node@qianmi.com'
+      })
     )
     expect(res).toEqual({
       err: null,
-      res: { status: 'ok', info: { id: '1', name: 'test' } },
+      res: { status: 'ok', info: { id: '1', name: 'test' } }
     })
   })
 })

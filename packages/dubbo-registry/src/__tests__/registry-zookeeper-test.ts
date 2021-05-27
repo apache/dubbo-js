@@ -30,13 +30,13 @@ beforeEach(() => {
 
 it('test zk props and ready ok', async () => {
   const zk = Zk({
-    connect: 'localhost:2181',
+    connect: 'localhost:2181'
   })
   expect(zk.getProps()).toEqual({
     connect: 'localhost:2181',
     timeout: 5000,
     debug_level: Zookeeper.constants.ZOO_LOG_LEVEL_WARN,
-    host_order_deterministic: false,
+    host_order_deterministic: false
   })
   const res = await zk.ready()
   expect(res).toBeUndefined()
@@ -45,13 +45,13 @@ it('test zk props and ready ok', async () => {
 
 it('test zk ready failed', async () => {
   const zk = Zk({
-    connect: 'localhost:2181',
+    connect: 'localhost:2181'
   })
   zk.subscribe({
     onData() {},
     onError(err) {
       expect(err.message).toEqual(`zk could not connect`)
-    },
+    }
   })
   const client = zk.getClient()
   //@ts-ignore
@@ -68,16 +68,16 @@ it('test registyService', async () => {
   const map = new Map([
     [
       'org.apache.demo.service.HelloService',
-      'dubbo://127.0.01:20880/org.apache.demo.HelloService?interface=org.apache.demo.service.HelloService&methods=sayHello,test,echo,getUserInfo&version=1.0.0',
+      'dubbo://127.0.01:20880/org.apache.demo.HelloService?interface=org.apache.demo.service.HelloService&methods=sayHello,test,echo,getUserInfo&version=1.0.0'
     ],
     [
       'org.apache.demo.service.UserService',
-      'dubbo://127.0.01:20880/org.apache.demo.UserService?interface=org.apache.demo.service.UserService&methods=sayHello,test,echo,getUserInfo&version=1.0.0',
-    ],
+      'dubbo://127.0.01:20880/org.apache.demo.UserService?interface=org.apache.demo.service.UserService&methods=sayHello,test,echo,getUserInfo&version=1.0.0'
+    ]
   ])
 
   const zk = Zk({
-    connect: 'localhost:2181',
+    connect: 'localhost:2181'
   })
 
   await zk.registyServices(map)
@@ -88,19 +88,19 @@ it('test registryConsumer', async () => {
   const map = new Map([
     [
       'org.apache.demo.service.HelloService',
-      'consumer://127.0.01:20880/org.apache.demo.HelloService?version=1.0.0',
+      'consumer://127.0.01:20880/org.apache.demo.HelloService?version=1.0.0'
     ],
     [
       'org.apache.demo.service.UserService',
-      'consumer://127.0.01:20880/org.apache.demo.UserService?version=1.0.0',
-    ],
+      'consumer://127.0.01:20880/org.apache.demo.UserService?version=1.0.0'
+    ]
   ])
   const zk = Zk({ connect: 'localhost:2181' })
   zk.subscribe({
     onData(data) {
       expect(data).toMatchSnapshot()
     },
-    onError(err) {},
+    onError(err) {}
   })
   await zk.registyConsumers(map)
   expect(logBuff).toMatchSnapshot()

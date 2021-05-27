@@ -17,20 +17,20 @@
 import {
   InterfaceDeclarationStructure,
   MethodSignatureStructure,
-  PropertySignatureStructure,
+  PropertySignatureStructure
 } from 'ts-simple-ast'
 
 import debug from 'debug'
-import {toField} from '../bean/to-field'
-import {IJClass} from '../../typings'
-import {toMethod} from '../to-method'
-import {IntepretHandle} from '../../handle'
+import { toField } from '../bean/to-field'
+import { IJClass } from '../../typings'
+import { toMethod } from '../to-method'
+import { IntepretHandle } from '../../handle'
 
 const log = debug('j2t:core:toInterface')
 
 export async function toInterface(
   typeDef: IJClass,
-  intepretHandle: IntepretHandle,
+  intepretHandle: IntepretHandle
 ): Promise<InterfaceDeclarationStructure> {
   log('调用转换方法 toInterface::')
   let methods: MethodSignatureStructure[] = []
@@ -38,11 +38,11 @@ export async function toInterface(
 
   for (let fieldName in typeDef.fields) {
     properties.push(
-      await toField(fieldName, typeDef.fields[fieldName], intepretHandle),
+      await toField(fieldName, typeDef.fields[fieldName], intepretHandle)
     )
   }
 
-  let filtersMethodNames = genePropsGetSet(properties.map(({name}) => name))
+  let filtersMethodNames = genePropsGetSet(properties.map(({ name }) => name))
 
   log('添加过滤方法:: %j', filtersMethodNames)
 
@@ -62,7 +62,7 @@ export async function toInterface(
     let methodItem = await toMethod(
       _methodName,
       typeDef.methods[methodName],
-      intepretHandle,
+      intepretHandle
     )
 
     //如果是基本类型, 生成typescript的类型与js-to-java类型相对应 javaXXX;
@@ -92,7 +92,7 @@ export async function toInterface(
 
   intepretHandle.sourceFile.addImport({
     moduleSpecifier: 'interpret-util',
-    defaultImport: `{${extraImport.join(',')}}`,
+    defaultImport: `{${extraImport.join(',')}}`
   })
 
   log('转换 名称::%s 属性 :%j  方法:%j', typeDef.name, properties, methods)
@@ -101,7 +101,7 @@ export async function toInterface(
     name: 'I' + intepretHandle.getTypeInfo(typeDef.name).className,
     isExported: true,
     methods,
-    properties,
+    properties
   }
 }
 
@@ -141,5 +141,5 @@ const TypeMap = {
   'java.util.List': 'JavaList',
   'java.util.Set': 'JavaSet',
   'java.util.HashMap': 'JavaHashMap',
-  'java.util.Map': 'JavaMap',
+  'java.util.Map': 'JavaMap'
 }

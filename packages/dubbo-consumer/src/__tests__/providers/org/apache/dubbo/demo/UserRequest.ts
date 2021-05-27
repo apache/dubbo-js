@@ -40,8 +40,8 @@ export class UserRequest {
       $: {
         name: java.String(this.name),
         id: java.Integer(this.id),
-        email: java.String(this.email),
-      },
+        email: java.String(this.email)
+      }
     }
   }
 }

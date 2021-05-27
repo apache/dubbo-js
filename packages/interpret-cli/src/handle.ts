@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 import debug from 'debug'
-import {ensureDir} from 'fs-extra'
-import {join, parse} from 'path'
-import {default as Ast, SourceFile} from 'ts-simple-ast'
-import {Request} from './request'
-import {toImport} from './transfer/to-import'
-import {toTypescript} from './transfer/to-typescript'
-import {IDependItem, IGetTypeInfo, IJClass, ITypeSearch} from './typings'
+import { ensureDir } from 'fs-extra'
+import { join, parse } from 'path'
+import { default as Ast, SourceFile } from 'ts-simple-ast'
+import { Request } from './request'
+import { toImport } from './transfer/to-import'
+import { toTypescript } from './transfer/to-typescript'
+import { IDependItem, IGetTypeInfo, IJClass, ITypeSearch } from './typings'
 
 const log = debug('j2t:core:inteprethandle')
 const ast = new Ast()
@@ -36,7 +36,7 @@ export class IntepretHandle implements ITypeSearch {
     log(
       'Start translating :%s, outputDir:%s',
       classPath,
-      interpreterRequest.outputDir,
+      interpreterRequest.outputDir
     )
   }
 
@@ -51,7 +51,7 @@ export class IntepretHandle implements ITypeSearch {
   get to(): string {
     return join(
       this.request.outputDir,
-      this.classPath.split('.').join('/') + '.ts',
+      this.classPath.split('.').join('/') + '.ts'
     )
   }
 
@@ -114,7 +114,7 @@ export class IntepretHandle implements ITypeSearch {
       return {
         classPath,
         name: className,
-        importName: className,
+        importName: className
       }
     }
 
@@ -143,12 +143,12 @@ export class IntepretHandle implements ITypeSearch {
                 ? `${dependItem.name} as ${dependItem.importName}`
                 : dependItem.name,
             classPath,
-            packagePath: this.getTypeInfo(this.classPath).packagePath,
-          }),
+            packagePath: this.getTypeInfo(this.classPath).packagePath
+          })
         )
       } catch (err) {
         console.error(
-          `Error in adding dependencies :add ${classPath} in ${this.classPath}`,
+          `Error in adding dependencies :add ${classPath} in ${this.classPath}`
         )
         console.error(err)
       }
@@ -178,7 +178,7 @@ export class IntepretHandle implements ITypeSearch {
     return {
       classPath,
       name,
-      importName: importName,
+      importName: importName
     }
   }
 

@@ -45,7 +45,7 @@ export default class DubboDirectlyInvoker {
     this.transport = DubboTcpTransport.from(this.props.dubboHost).subscribe({
       onConnect: this.handleTransportConnect,
       onData: this.handleTransportData,
-      onClose: this.handleTransportClose,
+      onClose: this.handleTransportClose
     })
   }
 
@@ -62,7 +62,7 @@ export default class DubboDirectlyInvoker {
       group,
       version,
       attachments = {},
-      isSupportedDubbox = false,
+      isSupportedDubbox = false
     } = invokeParam
     const proxy = Object.create(null)
 
@@ -90,7 +90,7 @@ export default class DubboDirectlyInvoker {
           //param should be hessian data type
           if (!ctx.isRequestMethodArgsHessianType) {
             log(
-              `${dubboInterface} method: ${methodName} not all arguments are valid hessian type`,
+              `${dubboInterface} method: ${methodName} not all arguments are valid hessian type`
             )
             log(`arguments->%O`, ctx.request.methodArgs)
             reject(new Error('not all arguments are valid hessian type'))
@@ -124,7 +124,7 @@ export default class DubboDirectlyInvoker {
   private consume({
     requestId,
     err,
-    res,
+    res
   }: {
     requestId: number
     err?: Error
@@ -166,7 +166,7 @@ export default class DubboDirectlyInvoker {
       case STATUS.CLOSED:
         this.consume({
           requestId,
-          err: new Error(`dubbo transport was closed.`),
+          err: new Error(`dubbo transport was closed.`)
         })
         break
     }
@@ -189,7 +189,7 @@ export default class DubboDirectlyInvoker {
     this.consume({
       requestId,
       err,
-      res,
+      res
     })
   }
 

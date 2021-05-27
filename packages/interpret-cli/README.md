@@ -66,17 +66,17 @@ note: [Reference examples](../../examples/hello-egg);
 ### step2:Use the provider
 
 ```typescript
-import {ShowCaseProvider} from '@qianmi/***-api/lib/com/qianmi/ShowCaseProvider'
+import { ShowCaseProvider } from '@qianmi/***-api/lib/com/qianmi/ShowCaseProvider'
 const dubbo = new Dubbo({
-  application: {name: 'd2p-visitor-bff'},
+  application: { name: 'd2p-visitor-bff' },
   dubboInvokeTimeout: 10,
   //zookeeper address
   register: app.config.zookeeper,
   dubboVersion: '2.4.13',
   logger: app.logger as ILogger,
   interfaces: [
-    'com.qianmi.cloudshop.api.marketing.d2p.D2pMarketingQueryProvider',
-  ],
+    'com.qianmi.cloudshop.api.marketing.d2p.D2pMarketingQueryProvider'
+  ]
 })
 let showCaseProvider = ShowCaseProvider(dubbo)
 showCaseProvider.show()
@@ -115,10 +115,10 @@ public interface DemoProvider {
 Second, the client for node.js, corresponding to the Dubbo service, such as
 
 ```typescript
-import {UserRequest} from './UserRequest'
-import {UserResponse} from './UserResponse'
-import {argumentMap, JavaString} from 'interpret-util'
-import {TDubboCallResult, Dubbo} from 'dubbo2.js'
+import { UserRequest } from './UserRequest'
+import { UserResponse } from './UserResponse'
+import { argumentMap, JavaString } from 'interpret-util'
+import { TDubboCallResult, Dubbo } from 'dubbo2.js'
 
 export interface IDemoProvider {
   sayHello(name: JavaString): TDubboCallResult<string>
@@ -131,13 +131,13 @@ export const DemoProviderWrapper = {
   sayHello: argumentMap,
   test: argumentMap,
   echo: argumentMap,
-  getUserInfo: argumentMap,
+  getUserInfo: argumentMap
 }
 
 export function DemoProvider(dubbo: Dubbo): IDemoProvider {
   return dubbo.proxyService<IDemoProvider>({
     dubboInterface: 'com.alibaba.dubbo.demo.DemoProvider',
-    methods: DemoProviderWrapper,
+    methods: DemoProviderWrapper
   })
 }
 
@@ -200,8 +200,8 @@ export class UserRequest {
       $: {
         name: java.String(this.name),
         id: java.Integer(this.id),
-        email: java.String(this.email),
-      },
+        email: java.String(this.email)
+      }
     }
   }
 }
@@ -528,10 +528,10 @@ Main steps:
 ```typescript
 //Examples of argumentMap usage
 
-import {UserRequest} from './UserRequest'
-import {UserResponse} from './UserResponse'
-import {argumentMap, JavaString} from 'interpret-util'
-import {TDubboCallResult, Dubbo} from 'dubbo-js'
+import { UserRequest } from './UserRequest'
+import { UserResponse } from './UserResponse'
+import { argumentMap, JavaString } from 'interpret-util'
+import { TDubboCallResult, Dubbo } from 'dubbo-js'
 
 export interface IDemoProvider {
   sayHello(name: JavaString): TDubboCallResult<string>
@@ -544,13 +544,13 @@ export const DemoProviderWrapper = {
   sayHello: argumentMap,
   test: argumentMap,
   echo: argumentMap,
-  getUserInfo: argumentMap,
+  getUserInfo: argumentMap
 }
 
 export function DemoProvider(dubbo: Dubbo): IDemoProvider {
   return dubbo.proxyService<IDemoProvider>({
     dubboInterface: 'com.alibaba.dubbo.demo.DemoProvider',
-    methods: DemoProviderWrapper,
+    methods: DemoProviderWrapper
   })
 }
 
@@ -563,7 +563,7 @@ export function argumentMap() {
   return _arguments.map((argumentItem) =>
     argumentItem.__fields2java
       ? paramEnhance(argumentItem.__fields2java())
-      : argumentItem,
+      : argumentItem
   )
 }
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 import debug from 'debug'
-import {IJFieldPropers, ITypePropers, ITypeSearch} from '../typings'
+import { IJFieldPropers, ITypePropers, ITypeSearch } from '../typings'
 
 const log = debug('j2t:core:ast-parse-util')
 
@@ -56,7 +56,7 @@ const javaType2JSMap = {
   'java.util.Date': 'Date',
   'java.util.Map': '{[name: ${nameType}]: ${value}}',
   'java.util.HashMap': '{[name: ${nameType}]: ${value}}',
-  'java.math.BigDecimal': '{value:string}',
+  'java.math.BigDecimal': '{value:string}'
 }
 
 /**
@@ -70,7 +70,7 @@ const javaType2JSMap = {
  */
 export async function jType2Ts(
   typePropers: ITypePropers,
-  typeOptions: ITypeSearch,
+  typeOptions: ITypeSearch
 ): Promise<string> {
   let result = ''
   //是否是类泛型的定义
@@ -151,7 +151,7 @@ export async function jType2Ts(
  */
 export async function classPath2TypeName(
   classPath: string,
-  typeOptions: ITypeSearch,
+  typeOptions: ITypeSearch
 ): Promise<string> {
   let result = javaType2JSMap[classPath]
   if (result) {

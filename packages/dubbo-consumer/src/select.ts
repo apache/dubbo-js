@@ -1,6 +1,6 @@
 export default function select<T>(
   choices: Array<T>,
-  type: 'random' = 'random',
+  type: 'random' = 'random'
 ) {
   if (type === 'random') {
     return randomSelect(choices)

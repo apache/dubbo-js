@@ -22,7 +22,7 @@ import { DubboResponseEncoder, DubboRequestEncoder } from './encode-hessian2'
 import { decodeDubboRequest, decodeDubboResponse } from './decode-hessian2'
 import {
   DUBBO_RESPONSE_STATUS,
-  DEFAULT_DUBBO_PROTOCOL_VERSION,
+  DEFAULT_DUBBO_PROTOCOL_VERSION
 } from './constants'
 
 export {
@@ -34,5 +34,5 @@ export {
   decodeDubboRequest,
   decodeDubboResponse,
   DUBBO_RESPONSE_STATUS,
-  DEFAULT_DUBBO_PROTOCOL_VERSION,
+  DEFAULT_DUBBO_PROTOCOL_VERSION
 }

@@ -26,7 +26,7 @@ import {
   isNumber,
   isString,
   msg,
-  Version,
+  Version
 } from '../util'
 
 it('msg', () => {
@@ -106,8 +106,8 @@ it('checkRetValHessian', () => {
     checkRetValHessian({
       __fields2java() {
         return { $class: 'java.lang.String', $: 'hello' }
-      },
-    }),
+      }
+    })
   ).toBeTruthy()
 })
 

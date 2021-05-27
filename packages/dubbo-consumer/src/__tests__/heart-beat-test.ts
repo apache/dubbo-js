@@ -35,7 +35,7 @@ it('心跳值测试e2', () => {
     0x00,
     0x00,
     0x01,
-    0x4e,
+    0x4e
   ])
   expect(HeartBeat.isHeartBeat(buffer)).toBe(true)
 
@@ -57,7 +57,7 @@ it('心跳值测试e2', () => {
     0x00,
     0x00,
     0x01,
-    0x4e,
+    0x4e
   ])
   expect(HeartBeat.isHeartBeat(buffer2)).toBe(false)
 })
@@ -82,7 +82,7 @@ it('心跳值检测', () => {
       0x00,
       0x00,
       0x01,
-      0x4e,
-    ]),
+      0x4e
+    ])
   )
 })

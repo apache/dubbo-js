@@ -21,13 +21,13 @@ import {
   MethodDeclarationStructure,
   ParameterDeclarationStructure,
   PropertyDeclarationStructure,
-  TypeParameterDeclarationStructure,
+  TypeParameterDeclarationStructure
 } from 'ts-simple-ast'
-import {IntepretHandle} from '../../handle'
-import {IJClass} from '../../typings'
-import {jType2Ts} from '../../util/type-parse'
-import {toField} from './to-field'
-import {fields2CtrContent, getCtorParaStr} from './util/transfer'
+import { IntepretHandle } from '../../handle'
+import { IJClass } from '../../typings'
+import { jType2Ts } from '../../util/type-parse'
+import { toField } from './to-field'
+import { fields2CtrContent, getCtorParaStr } from './util/transfer'
 
 const log = debug('j2t:core:toBeanClass')
 
@@ -38,7 +38,7 @@ const log = debug('j2t:core:toBeanClass')
  */
 export async function toBeanClass(
   typeDef: IJClass,
-  intepretHandle: IntepretHandle,
+  intepretHandle: IntepretHandle
 ): Promise<ClassDeclarationStructure> {
   log('调用转换方法 toBeanClass::')
   let typeName = intepretHandle.getTypeInfo(typeDef.name).className
@@ -47,7 +47,7 @@ export async function toBeanClass(
   if (typeDef.typeParams) {
     typeDef.typeParams.forEach((typeParamsItem) => {
       typeParameters.push({
-        name: typeParamsItem.name + ' extends { __fields2java?(): any } = any',
+        name: typeParamsItem.name + ' extends { __fields2java?(): any } = any'
       })
     })
   }
@@ -65,7 +65,7 @@ export async function toBeanClass(
       filedType = typeDef.fields[fieldName].elementType.name
     }
     const regex = new RegExp(
-      `^(get|set)${fieldName[0].toUpperCase()}${fieldName.slice(1)}$`,
+      `^(get|set)${fieldName[0].toUpperCase()}${fieldName.slice(1)}$`
     )
     if (
       typeDef.privateFields.indexOf(fieldName) !== -1 && // 在privateField中
@@ -77,24 +77,24 @@ export async function toBeanClass(
     let field = await toField(
       fieldName,
       typeDef.fields[fieldName],
-      intepretHandle,
+      intepretHandle
     )
     properties.push(field)
-    ctorParams.push({name: field.name, type: field.type})
+    ctorParams.push({ name: field.name, type: field.type })
 
     let filedItem = typeDef.fields[fieldName]
     fileds.push({
       name: fieldName,
       type: await jType2Ts(filedItem, intepretHandle),
-      filedAst: filedItem,
+      filedAst: filedItem
     })
   }
   //添加构造函数入参interface
   //1.2 生成方法;;
-  let {fieldTrans, initContent} = await fields2CtrContent(
+  let { fieldTrans, initContent } = await fields2CtrContent(
     fileds,
     intepretHandle,
-    typeDef,
+    typeDef
   )
 
   let bodyText = `${initContent ? initContent + ';' : ''}
@@ -108,15 +108,15 @@ export async function toBeanClass(
       typeParameters,
       isExported: true,
       name: 'I' + typeName,
-      properties,
+      properties
     })
   } catch (err) {
     console.error(`为${intepretHandle.classPath}添加Interface出错,${err}`)
   }
 
-  methods.push({name: '__fields2java', bodyText})
+  methods.push({ name: '__fields2java', bodyText })
   let ctorBody = ctorParams
-    .map(({name}) => `this.${name}=params.${name};`)
+    .map(({ name }) => `this.${name}=params.${name};`)
     .join('\n')
 
   return {
@@ -124,14 +124,14 @@ export async function toBeanClass(
     ctor: {
       parameters: [
         {
-          name: `params:${getCtorParaStr(typeName, typeParameters)}`,
-        },
+          name: `params:${getCtorParaStr(typeName, typeParameters)}`
+        }
       ],
-      bodyText: ctorBody,
+      bodyText: ctorBody
     },
     typeParameters,
     properties,
     isExported: true,
-    methods,
+    methods
   }
 }

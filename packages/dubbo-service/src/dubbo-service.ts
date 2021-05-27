@@ -163,6 +163,7 @@ export default class DubboService {
       }
 
       const ctx = await this.invokeComposeChainRequest(data)
+      console.log('>>>>>>>>>>>>>>>>>>>', ctx)
       heartbeat.setWriteTimestamp()
       socket.write(new DubboResponseEncoder(ctx).encode())
     })
@@ -186,7 +187,7 @@ export default class DubboService {
     // service not found
     if (!service) {
       ctx.status = DUBBO_RESPONSE_STATUS.SERVICE_NOT_FOUND
-      ctx.body = new Error(
+      ctx.body.err = new Error(
         `Service not found with ${path} and ${methodName}, group:${group}, version:${version}`
       )
       return ctx
@@ -208,10 +209,10 @@ export default class DubboService {
               `${path}#${methodName} return value not hessian type`
             )
           }
-          this.body = res
+          ctx.body.res = res
         } catch (err) {
           log(`handle request error %s`, err)
-          this.body = err
+          ctx.body.err = err
         }
       }
     ]
@@ -224,8 +225,9 @@ export default class DubboService {
     } catch (err) {
       log(err)
       ctx.status = DUBBO_RESPONSE_STATUS.SERVER_ERROR
-      ctx.body = err
+      ctx.body.err = err
     }
+
     return ctx
   }
 

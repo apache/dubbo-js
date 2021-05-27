@@ -30,7 +30,7 @@ import {
   DUBBO_RESPONSE_BODY_FLAG,
   DUBBO_MAGIC_HIGH,
   DUBBO_MAGIC_LOW,
-  DUBBO_RESPONSE_STATUS,
+  DUBBO_RESPONSE_STATUS
 } from './constants'
 import { IRequestContext, IResponseContext } from './types'
 
@@ -40,7 +40,7 @@ const checkPayload = (payload: number) => {
   //check body length
   if (payload > 0 && payload > DUBBO_DEFAULT_PAY_LOAD) {
     throw new DubboEncodeError(
-      `Data length too large: ${payload}, max payload: ${DUBBO_DEFAULT_PAY_LOAD}`,
+      `Data length too large: ${payload}, max payload: ${DUBBO_DEFAULT_PAY_LOAD}`
     )
   }
 }
@@ -57,7 +57,7 @@ export class DubboRequestEncoder {
     if (util.isDevEnv) {
       log(
         'dubbo encode param request:%s',
-        JSON.stringify(this.ctx.request, null, 2),
+        JSON.stringify(this.ctx.request, null, 2)
       )
     }
   }
@@ -124,7 +124,7 @@ export class DubboRequestEncoder {
       dubboInterface,
       version,
       methodName,
-      methodArgs,
+      methodArgs
     } = this.ctx
 
     //dubbo version
@@ -173,7 +173,7 @@ export class DubboRequestEncoder {
       float: 'F',
       int: 'I',
       long: 'J',
-      short: 'S',
+      short: 'S'
     }
 
     const desc = []
@@ -212,7 +212,7 @@ export class DubboRequestEncoder {
       timeout,
       version,
       application: { name },
-      attachments,
+      attachments
     } = this.ctx
 
     //merge dubbo attachments and customize attachments
@@ -220,9 +220,9 @@ export class DubboRequestEncoder {
       ...{
         path: path,
         interface: dubboInterface,
-        version: version || '0.0.0',
+        version: version || '0.0.0'
       },
-      ...attachments,
+      ...attachments
     }
 
     group && (map['group'] = group)
@@ -231,14 +231,14 @@ export class DubboRequestEncoder {
 
     let attachmentsHashMap = {
       $class: 'java.util.HashMap',
-      $: map,
+      $: map
     }
 
     if (util.isDevEnv) {
       log(
         'request#%d attachment %s',
         requestId,
-        JSON.stringify(attachmentsHashMap, null, 2),
+        JSON.stringify(attachmentsHashMap, null, 2)
       )
     }
 
@@ -292,48 +292,56 @@ export class DubboResponseEncoder {
   encodeBody() {
     const encoder = new Hessian.EncoderV2()
 
-    // response error
-    if (this.ctx.status === DUBBO_RESPONSE_STATUS.OK) {
-      const isSupportAttachment = util.Version.isSupportResponseAttachment(
-        this.ctx.request.version,
-      )
-      if (this.ctx.body.err) {
+    const isSupportAttachment = util.Version.isSupportResponseAttachment(
+      this.ctx.request.version
+    )
+
+    switch (true) {
+      // invoke chain return err
+      case this.ctx.body.err:
         encoder.write(
           isSupportAttachment
             ? DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION_WITH_ATTACHMENTS
-            : DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION,
+            : DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION
         )
-        encoder.write(this.ctx.body.err.message)
-      } else {
-        if (this.ctx.body.res === null) {
-          encoder.write(
-            isSupportAttachment
-              ? DUBBO_RESPONSE_BODY_FLAG.RESPONSE_NULL_VALUE_WITH_ATTACHMENTS
-              : DUBBO_RESPONSE_BODY_FLAG.RESPONSE_NULL_VALUE,
-          )
-        } else {
-          encoder.write(
-            isSupportAttachment
-              ? DUBBO_RESPONSE_BODY_FLAG.RESPONSE_VALUE_WITH_ATTACHMENTS
-              : DUBBO_RESPONSE_BODY_FLAG.RESPONSE_VALUE,
-          )
-          encoder.write(this.ctx.body.res)
-        }
-      }
+        encoder.write(
+          'Service Status' +
+            DUBBO_RESPONSE_STATUS[this.ctx.status] +
+            this.ctx.body.err.message
+        )
+        break
 
-      if (isSupportAttachment) {
-        const attachments = this.ctx.attachments
-        attachments['dubbo'] = '2.0.2'
-        encoder.write(attachments)
-      }
-    } else {
-      encoder.write(this.ctx.body.err.message)
+      // invoke chain not return error, but res is null
+      case this.ctx.body.res === null:
+        encoder.write(
+          isSupportAttachment
+            ? DUBBO_RESPONSE_BODY_FLAG.RESPONSE_NULL_VALUE_WITH_ATTACHMENTS
+            : DUBBO_RESPONSE_BODY_FLAG.RESPONSE_NULL_VALUE
+        )
+        break
+
+      default:
+        encoder.write(
+          isSupportAttachment
+            ? DUBBO_RESPONSE_BODY_FLAG.RESPONSE_VALUE_WITH_ATTACHMENTS
+            : DUBBO_RESPONSE_BODY_FLAG.RESPONSE_VALUE
+        )
+        encoder.write(this.ctx.body.res)
+    }
+
+    if (isSupportAttachment) {
+      const attachments = this.ctx.attachments
+      attachments['dubbo'] = '2.0.2'
+      encoder.write(attachments)
     }
 
     // check payload length
-    checkPayload(encoder.byteBuffer._offset)
+    try {
+      checkPayload(encoder.byteBuffer._offset)
+    } catch (err) {
+      encoder.write(err.message)
+    }
 
-    // encode
     return encoder.byteBuffer._bytes.slice(0, encoder.byteBuffer._offset)
   }
 }

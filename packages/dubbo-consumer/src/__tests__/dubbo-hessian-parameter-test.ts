@@ -19,26 +19,26 @@ import { Dubbo, setting } from 'dubbo-js'
 import { DemoProvider } from './__tests__/providers/org/apache/dubbo/demo/DemoProvider'
 
 const service = {
-  DemoProvider,
+  DemoProvider
 }
 
 const dubboSetting = setting
   .match('org.apache.dubbo.demo.BasicTypeProvider', {
-    version: '2.0.0',
+    version: '2.0.0'
   })
   .match(
     [
       'org.apache.dubbo.demo.DemoProvider',
-      'org.apache.dubbo.demo.ErrorProvider',
+      'org.apache.dubbo.demo.ErrorProvider'
     ],
-    { version: '1.0.0' },
+    { version: '1.0.0' }
   )
 
 const dubbo = new Dubbo<typeof service>({
   application: { name: 'dubbo-js' },
   register: 'localhost:2181',
   service,
-  dubboSetting,
+  dubboSetting
 })
 
 //use middleware
@@ -47,12 +47,12 @@ dubbo.use(async function test(ctx, next) {
   await next()
   const endTime = Date.now()
   const {
-    request: { dubboInterface, methodName },
+    request: { dubboInterface, methodName }
   } = ctx
   console.log(
     `hessian-check: invoke ${dubboInterface}#${methodName} costTime: ${
       endTime - startTime
-    }`,
+    }`
   )
 })
 

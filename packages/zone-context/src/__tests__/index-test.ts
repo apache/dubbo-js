@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import {ZoneContext, getZoneContext, setZoneContext} from '../index'
+import { ZoneContext, getZoneContext, setZoneContext } from '../index'
 
 it('test ZoneContext', () => {
   ZoneContext(async () => {
-    setZoneContext({uuid: 1})
-    expect(getZoneContext()).toEqual({uuid: 1})
+    setZoneContext({ uuid: 1 })
+    expect(getZoneContext()).toEqual({ uuid: 1 })
   })
 })

@@ -20,12 +20,12 @@ import { DemoProvider } from './__tests__/providers/org/apache/dubbo/demo/DemoPr
 import { UserRequest } from './__tests__/providers/org/apache/dubbo/demo/UserRequest'
 
 const service = {
-  DemoProvider,
+  DemoProvider
 }
 
 const dubboSetting = setting
   .match('org.apache.dubbo.demo.BasicTypeProvider', {
-    version: '2.0.0',
+    version: '2.0.0'
   })
   .match('org.apache.dubbo.demo.DemoProvider', { version: '1.0.0' })
   .match('org.apache.dubbo.demo.ErrorProvider', { version: '1.0.0' })
@@ -35,7 +35,7 @@ const dubbo = new Dubbo<typeof service>({
   register: 'localhost:2181,localhost:2181,localhost:2181',
   dubboInvokeTimeout: 0.001,
   service,
-  dubboSetting,
+  dubboSetting
 })
 
 //use middleware
@@ -44,12 +44,12 @@ dubbo.use(async function test(ctx, next) {
   await next()
   const endTime = Date.now()
   const {
-    request: { dubboInterface, methodName },
+    request: { dubboInterface, methodName }
   } = ctx
   console.log(
     `timeout: invoke ${dubboInterface}#${methodName} costTime: ${
       endTime - startTime
-    }`,
+    }`
   )
 })
 
@@ -63,7 +63,7 @@ describe('dubbo timeout test suite', () => {
 
   it('test sayHello', async () => {
     const { res, err } = await dubbo.service.DemoProvider.sayHello(
-      java.String('node'),
+      java.String('node')
     )
     expect(res).toEqual(null)
     expect(err != null).toEqual(true)
@@ -75,8 +75,8 @@ describe('dubbo timeout test suite', () => {
       new UserRequest({
         id: 1,
         name: 'nodejs',
-        email: 'dubbo-js',
-      }),
+        email: 'dubbo-js'
+      })
     )
     expect(res).toEqual(null)
     expect(err != null).toEqual(true)

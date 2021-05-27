@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {TypeInfoI} from '../../typings'
-import {jType2Ts} from '../type-parse'
+import { TypeInfoI } from '../../typings'
+import { jType2Ts } from '../type-parse'
 
 let beans = ['com.qianmi.gavin.comm.Phone']
 let typeInfo: Map<string, TypeInfoI> = new Map()
@@ -25,7 +25,7 @@ typeInfo.set('com.qianmi.gavin.comm.Phone', {
   className: 'Phone',
   isProvider: false,
   isClass: false,
-  isEnum: true,
+  isEnum: true
 })
 
 describe('基本类型转换', () => {
@@ -38,7 +38,7 @@ describe('基本类型转换', () => {
       return {
         classPath: _typeInfo.classPath,
         name: _typeInfo.className,
-        importName: _typeInfo.className,
+        importName: _typeInfo.className
       }
     },
     hasAst: (classPath: string) => {
@@ -55,10 +55,10 @@ describe('基本类型转换', () => {
           isEnum: false,
           classPath: '',
           packagePath: '',
-          className: '',
+          className: ''
         }
       }
-    },
+    }
   }
 
   it('枚举Enum<Phone>类型转换', async () => {
@@ -70,12 +70,12 @@ describe('基本类型转换', () => {
             isWildcard: false,
             type: {
               name: 'com.qianmi.gavin.comm.Phone',
-              typeArgs: [],
-            },
-          },
-        ],
+              typeArgs: []
+            }
+          }
+        ]
       },
-      typeOptions,
+      typeOptions
     )
     expect(type).toEqual('Phone')
   })
@@ -84,9 +84,9 @@ describe('基本类型转换', () => {
     let type = await jType2Ts(
       {
         isArray: false,
-        name: 'java.lang.Integer',
+        name: 'java.lang.Integer'
       },
-      typeOptions,
+      typeOptions
     )
 
     expect(type).toEqual('number')
@@ -103,8 +103,8 @@ describe('基本类型转换', () => {
             type: {
               isArray: false,
               name: 'java.lang.String',
-              typeArgs: [],
-            },
+              typeArgs: []
+            }
           },
           {
             isWildcard: false,
@@ -117,15 +117,15 @@ describe('基本类型转换', () => {
                   type: {
                     isArray: false,
                     name: 'java.lang.String',
-                    typeArgs: [],
-                  },
-                },
-              ],
-            },
-          },
-        ],
+                    typeArgs: []
+                  }
+                }
+              ]
+            }
+          }
+        ]
       },
-      typeOptions,
+      typeOptions
     )
     expect(type).toMatchSnapshot()
   })

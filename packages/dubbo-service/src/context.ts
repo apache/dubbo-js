@@ -25,12 +25,12 @@ export default class Context<T = any> {
   /**
    * 当前dubbo返回的结果
    */
-  private _body: Error | T
+  private _body: { res: T; err: Error }
 
   constructor(req: Request) {
     this.req = req
     this._attachments = {}
-    this._body = null
+    this._body = { res: null, err: null }
   }
 
   get request() {
@@ -41,10 +41,6 @@ export default class Context<T = any> {
     return this._body
   }
 
-  set body(body: Error | T) {
-    this._body = body
-  }
-
   get attachments(): Object {
     return this._attachments
   }
@@ -52,7 +48,7 @@ export default class Context<T = any> {
   set attachments(val: Object) {
     this._attachments = {
       ...this._attachments,
-      ...val,
+      ...val
     }
   }
 

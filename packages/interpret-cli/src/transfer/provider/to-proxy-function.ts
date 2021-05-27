@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 import debug from 'debug'
-import {FunctionDeclarationStructure} from 'ts-simple-ast'
+import { FunctionDeclarationStructure } from 'ts-simple-ast'
 
 const log = debug('j2t:core:toBeanClass')
 
 export function toProxyFunc({
   typeName,
-  typePath,
+  typePath
 }: {
   typeName: string
   typePath: string
 }): FunctionDeclarationStructure {
-  let parameters = [{name: 'dubbo', isReadOnly: true, type: 'Dubbo'}]
+  let parameters = [{ name: 'dubbo', isReadOnly: true, type: 'Dubbo' }]
 
   log('调用转换方法 toProxyFunc::')
   return {
@@ -37,6 +37,6 @@ export function toProxyFunc({
     bodyText: `return dubbo.proxyService<${'I' + typeName}>({
         dubboInterface: '${typePath}',
         methods: ${typeName}Wrapper,
-      }); `,
+      }); `
   }
 }

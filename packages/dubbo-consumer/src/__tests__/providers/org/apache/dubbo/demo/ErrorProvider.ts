@@ -26,6 +26,6 @@ export const ErrorProviderWrapper = { errorTest: argumentMap }
 export function ErrorProvider(dubbo: Dubbo): IErrorProvider {
   return dubbo.proxyService<IErrorProvider>({
     dubboInterface: 'org.apache.dubbo.demo.ErrorProvider',
-    methods: ErrorProviderWrapper,
+    methods: ErrorProviderWrapper
   })
 }

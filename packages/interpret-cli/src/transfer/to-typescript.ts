@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 import debug from 'debug'
-import {SourceFile} from 'ts-simple-ast'
-import {IntepretHandle} from '../handle'
-import {toEnum} from './bean/to-enum'
-import {toBeanClass} from './bean/to-vo'
-import {toInterface} from './provider/to-interface'
-import {toProxyFunc} from './provider/to-proxy-function'
-import {toWrapperClass} from './provider/to-wrapper-class'
+import { SourceFile } from 'ts-simple-ast'
+import { IntepretHandle } from '../handle'
+import { toEnum } from './bean/to-enum'
+import { toBeanClass } from './bean/to-vo'
+import { toInterface } from './provider/to-interface'
+import { toProxyFunc } from './provider/to-proxy-function'
+import { toWrapperClass } from './provider/to-wrapper-class'
 
 const log = debug('j2t:core:toTypewcript')
 
@@ -32,10 +32,10 @@ const log = debug('j2t:core:toTypewcript')
  * @returns {SourceFile}
  */
 export async function toTypescript(
-  intepretHandle: IntepretHandle,
+  intepretHandle: IntepretHandle
 ): Promise<SourceFile> {
   log('调用转换方法 toTypescript::', intepretHandle.classPath)
-  let {sourceFile, astJava} = intepretHandle
+  let { sourceFile, astJava } = intepretHandle
 
   let lastPointIndex = astJava.name.lastIndexOf('.') + 1
   let typeInfo = {
@@ -47,8 +47,8 @@ export async function toTypescript(
     isInterface: astJava.isInterface,
     isClass: !astJava.isEnum && !astJava.isInterface,
     isProvider: astJava.name.endsWith(
-      String(intepretHandle.providerSuffix) || 'Provider',
-    ),
+      String(intepretHandle.providerSuffix) || 'Provider'
+    )
   }
   intepretHandle.request.registerTypeInfo(typeInfo)
 
@@ -65,28 +65,28 @@ export async function toTypescript(
         sourceFile.addVariableStatement(toWrapperClass(astJava, intepretHandle))
         sourceFile.addImport({
           moduleSpecifier: 'dubbo-js',
-          defaultImport: '{TDubboCallResult,Dubbo}',
+          defaultImport: '{TDubboCallResult,Dubbo}'
         })
         sourceFile.addFunction(
           toProxyFunc({
             typeName: intepretHandle.classPath.substring(
-              intepretHandle.classPath.lastIndexOf('.') + 1,
+              intepretHandle.classPath.lastIndexOf('.') + 1
             ),
-            typePath: intepretHandle.classPath,
-          }),
+            typePath: intepretHandle.classPath
+          })
         )
       } else {
         sourceFile.addClass(await toBeanClass(astJava, intepretHandle))
         sourceFile.addImport({
           moduleSpecifier: 'js-to-java',
-          defaultImport: 'java',
+          defaultImport: 'java'
         })
       }
     }
   } catch (err) {
     console.error(
       `为${intepretHandle.classPath},${JSON.stringify(typeInfo)} 添加内容出错,`,
-      err,
+      err
     )
   }
 

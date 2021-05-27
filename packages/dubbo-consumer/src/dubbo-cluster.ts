@@ -24,7 +24,7 @@ import {
   IDubboObservable,
   IDubboTransportSubscriber,
   HostName,
-  Host,
+  Host
 } from './types'
 
 const log = debug('dubbo:dubbo-cluster')
@@ -48,7 +48,7 @@ export default class DubboCluster
     this.subscriber = {
       onConnect: noop,
       onData: noop,
-      onClose: noop,
+      onClose: noop
     }
   }
 
@@ -56,7 +56,7 @@ export default class DubboCluster
 
   private handleTransportClose = (
     transport: DubboTcpTransport,
-    hostname: string,
+    hostname: string
   ) => (host: string) => {
     log('receive dubbo-tcp-transport closed %s', transport.host)
     if (!this.dubboClusterTransportMap.has(hostname)) {
@@ -79,7 +79,7 @@ export default class DubboCluster
       transport.subscribe({
         onConnect: this.subscriber.onConnect,
         onData: this.subscriber.onData,
-        onClose: this.handleTransportClose(transport, hostname),
+        onClose: this.handleTransportClose(transport, hostname)
       })
       transports.add(transport)
     }
@@ -91,7 +91,7 @@ export default class DubboCluster
       transport.subscribe({
         onConnect: this.subscriber.onConnect,
         onData: this.subscriber.onData,
-        onClose: this.handleTransportClose(transport, hostname),
+        onClose: this.handleTransportClose(transport, hostname)
       })
       return transport
     })
@@ -121,7 +121,9 @@ export default class DubboCluster
   }
 
   getAllReadyClusterHosts(hostnames: Set<HostName>) {
-    return [...hostnames].filter(this.isClusterReady)
+    return [...hostnames].filter((hostname: string) =>
+      this.isClusterReady(hostname)
+    )
   }
 
   getAvailableDubboTransport(hostnames: Set<HostName>): DubboTcpTransport {
@@ -139,7 +141,7 @@ export default class DubboCluster
     const transports = this.getClusterReadyDubboTransports(hostname)
     log(
       'find all avaiable transports %s',
-      transports.map((t) => t.host),
+      transports.map((t) => t.host)
     )
 
     const transport = select<DubboTcpTransport>(transports, 'random')

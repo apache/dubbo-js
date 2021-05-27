@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {TypeInfoI} from '../../../../typings'
-import {fields2CtrContent, getCtorParaStr, j2Jtj} from '../transfer'
+import { TypeInfoI } from '../../../../typings'
+import { fields2CtrContent, getCtorParaStr, j2Jtj } from '../transfer'
 
 /**
  * @desc
@@ -28,7 +28,7 @@ import {fields2CtrContent, getCtorParaStr, j2Jtj} from '../transfer'
 
 let enums = [
     'com.qianmi.yxtc.enums.BusiTypeEnum',
-    'com.qianmi.gavin.comm.Phone',
+    'com.qianmi.gavin.comm.Phone'
   ],
   beans = ['com.qianmi.yxtc.domain.PayMethodInfo']
 let typeInfo: Map<string, TypeInfoI> = new Map()
@@ -41,7 +41,7 @@ enums.forEach((item) => {
     isProvider: false,
     isClass: false,
     isEnum: true,
-    typeParameters: [],
+    typeParameters: []
   })
 })
 
@@ -53,7 +53,7 @@ beans.forEach((item) => {
     isProvider: false,
     isClass: true,
     isEnum: false,
-    typeParameters: [],
+    typeParameters: []
   })
 })
 
@@ -68,7 +68,7 @@ let typeOptions = {
     return {
       classPath: '',
       name: '',
-      importName: '',
+      importName: ''
     }
   },
   getTypeInfo: (classPath: string) => {
@@ -81,10 +81,10 @@ let typeOptions = {
         className: '',
         isProvider: false,
         isClass: false,
-        isEnum: false,
+        isEnum: false
       }
     }
-  },
+  }
 }
 
 describe('构造函数生成', () => {
@@ -96,11 +96,11 @@ describe('构造函数生成', () => {
   it('有多个泛型参数的', async () => {
     let content = getCtorParaStr('ItemCreateRequest', [
       {
-        name: 'T',
+        name: 'T'
       },
       {
-        name: 'W',
-      },
+        name: 'W'
+      }
     ])
     expect(content).toEqual('IItemCreateRequest<T,W>')
   })
@@ -110,7 +110,7 @@ describe('基础转换生成', () => {
   it('枚举类型', async () => {
     let content = j2Jtj(typeOptions, {
       paramRefName: 'item',
-      classPath: 'com.qianmi.yxtc.enums.BusiTypeEnum',
+      classPath: 'com.qianmi.yxtc.enums.BusiTypeEnum'
     })
     expect(content).toMatchSnapshot()
   })
@@ -118,7 +118,7 @@ describe('基础转换生成', () => {
   it('对象类型', async () => {
     let content = j2Jtj(typeOptions, {
       paramRefName: 'item',
-      classPath: 'com.qianmi.yxtc.domain.PayMethodInfo',
+      classPath: 'com.qianmi.yxtc.domain.PayMethodInfo'
     })
     expect(content).toEqual('item?item.__fields2java():null')
   })
@@ -126,17 +126,17 @@ describe('基础转换生成', () => {
   it('泛型对象类型', async () => {
     let content = j2Jtj(typeOptions, {
       paramRefName: 'item',
-      classPath: 'T',
+      classPath: 'T'
     })
     expect(content).toEqual(
-      "(item&&item['__fields2java'])?item['__fields2java']():item",
+      "(item&&item['__fields2java'])?item['__fields2java']():item"
     )
   })
 
   it('时间类型', async () => {
     let content = j2Jtj(typeOptions, {
       paramRefName: 'item',
-      classPath: 'java.util.Date',
+      classPath: 'java.util.Date'
     })
     expect(content).toEqual('item')
   })
@@ -144,7 +144,7 @@ describe('基础转换生成', () => {
   it('java.lang.类型', async () => {
     let content = j2Jtj(typeOptions, {
       paramRefName: 'item',
-      classPath: 'java.lang.String',
+      classPath: 'java.lang.String'
     })
     expect(content).toEqual('java.String(item)')
   })
@@ -152,25 +152,25 @@ describe('基础转换生成', () => {
   it('bigDecimal.类型', async () => {
     let content = j2Jtj(typeOptions, {
       paramRefName: 'this.initPrice',
-      classPath: 'java.math.BigDecimal',
+      classPath: 'java.math.BigDecimal'
     })
     expect(content).toEqual(
-      'this.initPrice?java.BigDecimal(this.initPrice.value):null',
+      'this.initPrice?java.BigDecimal(this.initPrice.value):null'
     )
   })
 })
 
 describe('集合显示问题 ', () => {
   it('java.util.Collection', async () => {
-    let {fieldTrans, initContent} = await fields2CtrContent(
+    let { fieldTrans, initContent } = await fields2CtrContent(
       [
         {
           name: 'skuIds',
-          filedAst: typeDef.fields.skuIds,
-        },
+          filedAst: typeDef.fields.skuIds
+        }
       ],
       typeOptions,
-      typeDef,
+      typeDef
     )
     expect(initContent).toMatchSnapshot()
     expect(fieldTrans.join(',')).toMatchSnapshot()
@@ -179,15 +179,15 @@ describe('集合显示问题 ', () => {
 
 describe('数组显示问题 string[]', () => {
   it('string[]', async () => {
-    let {fieldTrans, initContent} = await fields2CtrContent(
+    let { fieldTrans, initContent } = await fields2CtrContent(
       [
         {
           name: 'PARSED_IDS',
-          filedAst: typeDef.fields.PARSED_IDS,
-        },
+          filedAst: typeDef.fields.PARSED_IDS
+        }
       ],
       typeOptions,
-      typeDef,
+      typeDef
     )
     expect(initContent).toMatchSnapshot()
     expect(fieldTrans.join(',')).toMatchSnapshot()
@@ -196,15 +196,15 @@ describe('数组显示问题 string[]', () => {
 
 describe('枚举类型转换', () => {
   it('Enum<Phone> 用法的支持', async () => {
-    let {fieldTrans, initContent} = await fields2CtrContent(
+    let { fieldTrans, initContent } = await fields2CtrContent(
       [
         {
           name: 'type',
-          filedAst: typeDef.fields.type,
-        },
+          filedAst: typeDef.fields.type
+        }
       ],
       typeOptions,
-      typeDef,
+      typeDef
     )
     expect(fieldTrans).toMatchSnapshot('枚举类型转换')
   })
@@ -212,32 +212,32 @@ describe('枚举类型转换', () => {
 
 describe('map<string,List<string>>转换方法', () => {
   it('map类型转换生成', async () => {
-    let {fieldTrans, initContent} = await fields2CtrContent(
+    let { fieldTrans, initContent } = await fields2CtrContent(
       [
         {
           name: 'billIdMap',
-          filedAst: typeDef.fields.billIdMap,
-        },
+          filedAst: typeDef.fields.billIdMap
+        }
       ],
       typeOptions,
-      typeDef,
+      typeDef
     )
     expect(initContent).toMatchSnapshot()
     expect(fieldTrans.join(',')).toEqual(
-      'billIdMap:java.Map(billIdMapMapTransfer)',
+      'billIdMap:java.Map(billIdMapMapTransfer)'
     )
   })
 
   it('Map<string,List<object>>转换方法', async () => {
-    let {fieldTrans, initContent} = await fields2CtrContent(
+    let { fieldTrans, initContent } = await fields2CtrContent(
       [
         {
           name: 'cats',
-          filedAst: typeDef.fields.cats,
-        },
+          filedAst: typeDef.fields.cats
+        }
       ],
       typeOptions,
-      typeDef,
+      typeDef
     )
     expect(initContent).toEqual('')
     expect(fieldTrans.join(',')).toMatchSnapshot()
@@ -248,7 +248,7 @@ const typeDef = {
   fields: {
     initPrice: {
       name: 'java.math.BigDecimal',
-      typeArgs: [],
+      typeArgs: []
     },
     skuIds: {
       name: 'java.util.Collection',
@@ -257,17 +257,17 @@ const typeDef = {
           isWildcard: false,
           type: {
             name: 'java.lang.String',
-            typeArgs: [],
-          },
-        },
-      ],
+            typeArgs: []
+          }
+        }
+      ]
     },
     PARSED_IDS: {
       elementType: {
         name: 'java.lang.String',
-        typeArgs: [],
+        typeArgs: []
       },
-      isArray: true,
+      isArray: true
     },
     type: {
       name: 'java.lang.Enum',
@@ -276,10 +276,10 @@ const typeDef = {
           isWildcard: false,
           type: {
             name: 'com.qianmi.gavin.comm.Phone',
-            typeArgs: [],
-          },
-        },
-      ],
+            typeArgs: []
+          }
+        }
+      ]
     },
     cats: {
       isArray: false,
@@ -296,21 +296,21 @@ const typeDef = {
                 type: {
                   isArray: false,
                   name: 'java.lang.String',
-                  typeArgs: [],
-                },
+                  typeArgs: []
+                }
               },
               {
                 isWildcard: false,
                 type: {
                   isArray: false,
                   name: 'java.lang.Object',
-                  typeArgs: [],
-                },
-              },
-            ],
-          },
-        },
-      ],
+                  typeArgs: []
+                }
+              }
+            ]
+          }
+        }
+      ]
     },
     billIdMap: {
       isArray: false,
@@ -321,8 +321,8 @@ const typeDef = {
           type: {
             isArray: false,
             name: 'java.lang.String',
-            typeArgs: [],
-          },
+            typeArgs: []
+          }
         },
         {
           isWildcard: false,
@@ -335,14 +335,14 @@ const typeDef = {
                 type: {
                   isArray: false,
                   name: 'java.lang.String',
-                  typeArgs: [],
-                },
-              },
-            ],
-          },
-        },
-      ],
-    },
+                  typeArgs: []
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
   },
   isEnum: false,
   isInterface: false,
@@ -354,12 +354,12 @@ const typeDef = {
       ret: {
         isArray: false,
         name: 'java.util.Map',
-        typeArgs: [],
+        typeArgs: []
       },
-      typeParams: [],
-    },
+      typeParams: []
+    }
   },
   name: 'com.qianmi.pc.api.app.stock.response.AppBillIdGetResponse',
   values: [],
-  typeParams: [],
+  typeParams: []
 }

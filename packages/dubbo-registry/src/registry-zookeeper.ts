@@ -117,13 +117,6 @@ export class ZookeeperRegistry
       await this.client.exists(path, false)
       dlog(`${path} node was existed ~`)
     } catch (err) {
-      dlog(
-        `${path} was not existed %s, create path: %s, data: %s, isPersistence: %s`,
-        err,
-        path,
-        data,
-        isPersistent
-      )
       await this.client.create(
         path,
         data,
@@ -192,8 +185,8 @@ export class ZookeeperRegistry
           return []
         })
     )
-      .filter((v: string) => v.startsWith('dubbo://'))
       .map((v: string) => decodeURIComponent(v))
+      .filter((v: string) => v.startsWith('dubbo://'))
     this.dubboServiceUrlMap.set(dubboInterface, urls)
   }
 
@@ -205,7 +198,7 @@ export class ZookeeperRegistry
   ) {
     for (let { dubboServiceInterface, dubboServiceUrl } of services) {
       // create service root path
-      const serviceRootPath = `${DUBBO_ZK_ROOT_PATH}/${dubboServiceInterface}/services`
+      const serviceRootPath = `${DUBBO_ZK_ROOT_PATH}/${dubboServiceInterface}/providers`
       await this.mkdirp(serviceRootPath)
       // create service node
       await this.createNode({
