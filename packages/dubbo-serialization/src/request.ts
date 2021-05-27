@@ -21,11 +21,11 @@ import { IAttachment } from './types'
 
 export default class Request {
   readonly requestId: number
+
   /**
    * dubbo version
    */
   version: string
-  broken: boolean
   data: Object | string
   methodName: string
   parameterTypeDesc: string

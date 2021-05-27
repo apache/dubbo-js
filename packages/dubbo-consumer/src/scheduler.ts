@@ -36,21 +36,21 @@ const log = debug('dubbo:scheduler')
 const enum STATUS {
   PADDING = 'padding',
   READY = 'ready',
-  FAILED = 'failded'
+  FAILED = 'failed'
 }
 
 /**
  * scheduler
  * 1. subscribe registry
- * 2. subbscribe dubbo-cluster
- * 3. resolve queue reeust
+ * 2. subscribe dubbo-cluster
+ * 3. resolve queue
  */
 export default class Scheduler {
   private status: STATUS
-  private queue: Queue
-  private registry: IRegistry<any>
-  private dubboCluster: DubboCluster
-  private dubboServiceUrlMapper: Map<TDubboInterface, Array<DubboUrl>>
+  private readonly queue: Queue
+  private readonly registry: IRegistry<any>
+  private readonly dubboCluster: DubboCluster
+  private readonly dubboServiceUrlMapper: Map<TDubboInterface, Array<DubboUrl>>
 
   constructor(registry: IRegistry<any>, queue: Queue) {
     log(`new scheduler`)
@@ -106,7 +106,7 @@ export default class Scheduler {
         })
         break
       default:
-        log('schedule unkown status')
+        log('schedule unknown status')
     }
   }
 
@@ -117,7 +117,7 @@ export default class Scheduler {
     const transportMap = new Map() as Map<HostName, Set<Host>>
     for (let [dubboInterface, dubboUrls] of map) {
       // if registry get dubbo url is empty,
-      // but in memory dubbointerface map dubbo url is not empty
+      // but in memory dubbo interface map dubbo url is not empty
       // don't override it.
       if (
         dubboUrls.length === 0 &&
@@ -170,7 +170,7 @@ export default class Scheduler {
       this.queue.consume({
         requestId,
         err: new DubboScheduleError(
-          `${dubboInterface}?grop=${group}&version=${version}`
+          `${dubboInterface}?group=${group}&version=${version}`
         )
       })
       return
@@ -226,7 +226,7 @@ export default class Scheduler {
     log(`dubbo-tcp-transport was close %s`, host)
     // search context by host in queue, re-dispatch
     const { requestQueue } = this.queue
-    for (let [_, ctx] of requestQueue) {
+    for (let ctx of requestQueue.values()) {
       if (ctx.invokedByHost === host) {
         this.handleDubboInvoke(ctx)
       }

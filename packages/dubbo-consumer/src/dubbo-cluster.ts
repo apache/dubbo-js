@@ -117,7 +117,7 @@ export default class DubboCluster
 
   getClusterReadyDubboTransports(hostname: HostName) {
     const transports = this.dubboClusterTransportMap.get(hostname)
-    return [...transports].filter((transport) => transport.isAvaliable)
+    return [...transports].filter((transport) => transport.isAvailable)
   }
 
   getAllReadyClusterHosts(hostnames: Set<HostName>) {

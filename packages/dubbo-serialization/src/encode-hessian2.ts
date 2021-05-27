@@ -54,12 +54,10 @@ export class DubboRequestEncoder {
 
   constructor(ctx: IRequestContext) {
     this.ctx = ctx
-    if (util.isDevEnv) {
-      log(
-        'dubbo encode param request:%s',
-        JSON.stringify(this.ctx.request, null, 2)
-      )
-    }
+    log(
+      'dubbo encode param request:%s',
+      JSON.stringify(this.ctx.request, null, 2)
+    )
   }
 
   encode() {
@@ -153,7 +151,7 @@ export class DubboRequestEncoder {
     //attachments
     encoder.write(this.getAttachments())
 
-    // check payload lenght
+    // check payload length
     checkPayload(encoder.byteBuffer._offset)
 
     return encoder.byteBuffer._bytes.slice(0, encoder.byteBuffer._offset)
@@ -234,13 +232,11 @@ export class DubboRequestEncoder {
       $: map
     }
 
-    if (util.isDevEnv) {
-      log(
-        'request#%d attachment %s',
-        requestId,
-        JSON.stringify(attachmentsHashMap, null, 2)
-      )
-    }
+    log(
+      'request#%d attachment %s',
+      requestId,
+      JSON.stringify(attachmentsHashMap, null, 2)
+    )
 
     return attachmentsHashMap
   }

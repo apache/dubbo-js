@@ -46,7 +46,7 @@ export interface IDubboServiceSetting {
 
 export interface IRegistry<T = Object> {
   ready(): Promise<void>
-  registyServices(
+  registerServices(
     services: Array<{
       dubboServiceInterface: TDubboServiceInterface
       dubboServiceUrl: TDubboServiceUrl

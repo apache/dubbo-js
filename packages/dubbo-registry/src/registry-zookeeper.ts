@@ -190,7 +190,7 @@ export class ZookeeperRegistry
     this.dubboServiceUrlMap.set(dubboInterface, urls)
   }
 
-  async registyServices(
+  async registerService(
     services: Array<{
       dubboServiceInterface: TDubboInterface
       dubboServiceUrl: TDubboUrl
@@ -207,7 +207,7 @@ export class ZookeeperRegistry
     }
   }
 
-  async registyConsumers(
+  async registerConsumers(
     consumers: Array<{
       dubboServiceInterface: TDubboInterface
       dubboServiceUrl: TDubboUrl

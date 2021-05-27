@@ -19,7 +19,6 @@ import debug from 'debug'
 import Context from './context'
 import { STATUS } from './dubbo-status'
 import DubboTcpTransport from './dubbo-tcp-transport'
-
 import { IDirectlyDubboProps, IHessianType, IInvokeParam } from './types'
 
 const log = debug('dubbo-consumer:directly-dubbo ~')
@@ -119,6 +118,7 @@ export default class DubboDirectlyInvoker {
    * Successfully process the task of the queue
    *
    * @param requestId
+   * @param err
    * @param res
    */
   private consume({

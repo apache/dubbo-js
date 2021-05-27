@@ -1,11 +1,8 @@
-export interface ITimeoutProps {
-  maxTimeout?: number
-  onTimeout: () => void
-}
+import { ITimeoutProps } from './types'
 
 export default class Timeout {
-  private maxTimeout: number
-  private timer: NodeJS.Timer
+  private readonly maxTimeout: number
+  private readonly timer: NodeJS.Timer
 
   constructor(props: ITimeoutProps) {
     this.maxTimeout = props.maxTimeout || 10 * 1000

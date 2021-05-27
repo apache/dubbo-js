@@ -24,9 +24,9 @@ import {
 } from './types'
 
 export class DubboSetting {
-  private matchDubboInterface: Map<TDubboInterface, IDubboSetting>
-  private matchDubboRegx: Map<RegExp, IDubboSetting>
-  private matchDubboThunk: Set<TMatchThunk>
+  private readonly matchDubboInterface: Map<TDubboInterface, IDubboSetting>
+  private readonly matchDubboRegx: Map<RegExp, IDubboSetting>
+  private readonly matchDubboThunk: Set<TMatchThunk>
 
   constructor() {
     this.matchDubboInterface = new Map()

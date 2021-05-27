@@ -19,8 +19,6 @@ import debug from 'debug'
 import { Socket } from 'net'
 import Hessian from 'hessian.js'
 import { util } from '@apache/dubbo-common'
-import { IHeartBeatProps } from './types'
-
 import {
   DUBBO_FLAG_REQUEST,
   DUBBO_FLAG_TWOWAY,
@@ -30,6 +28,7 @@ import {
   DUBBO_MAGIC_HIGH,
   DUBBO_MAGIC_LOW
 } from './constants'
+import { IHeartBeatProps } from './types'
 
 const log = debug('dubbo:heartbeat')
 
@@ -46,9 +45,9 @@ const RETRY_HEARD_BEAT_TIME = 3
  * Heartbeat Manager
  */
 export default class HeartBeat {
-  private type: 'request' | 'response'
+  private readonly type: 'request' | 'response'
+  private readonly onTimeout: Function
   private transport: Socket
-  private onTimeout: Function
   private heartBeatTimer: NodeJS.Timer
   private lastReadTimestamp: number = -1
   private lastWriteTimestamp: number = -1
@@ -73,7 +72,7 @@ export default class HeartBeat {
     this.setWriteTimestamp()
     this.setReadTimestamp()
 
-    //heartbeart
+    //heartbeat
     //when network is close, the connection maybe not close, so check the heart beat times
     this.heartBeatTimer = setInterval(() => {
       const now = Date.now()

@@ -24,9 +24,9 @@ import {
   DubboRequestEncoder,
   HeartBeat
 } from '@apache/dubbo-serialization'
+import Context from './context'
 import { STATUS } from './dubbo-status'
 import { IDubboObservable, IDubboTransportSubscriber } from './types'
-import Context from './context'
 
 const log = debug('dubbo:tcp-transport ~')
 
@@ -107,7 +107,7 @@ export default class DubboTcpTransport
       transport: this.transport,
       onTimeout: () => this.transport.destroy()
     })
-    //notifiy subscriber, the socketworker was connected successfully
+    //notify subscriber, the transport was connected successfully
     this.subscriber.onConnect({
       host: this.host,
       transport: this
@@ -147,9 +147,9 @@ export default class DubboTcpTransport
   }
 
   /**
-   * current status is whether avaliable or not
+   * current status is whether available or not
    */
-  get isAvaliable() {
+  get isAvailable() {
     return this._status === STATUS.CONNECTED
   }
 

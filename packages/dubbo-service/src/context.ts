@@ -18,14 +18,14 @@
 import { Request, DUBBO_RESPONSE_STATUS } from '@apache/dubbo-serialization'
 
 export default class Context<T = any> {
-  private req: Request
+  private readonly req: Request
   private _attachments: Object
   private _status: number
 
   /**
    * 当前dubbo返回的结果
    */
-  private _body: { res: T; err: Error }
+  private readonly _body: { res: T; err: Error }
 
   constructor(req: Request) {
     this.req = req

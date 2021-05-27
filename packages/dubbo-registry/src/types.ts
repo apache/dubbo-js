@@ -18,6 +18,11 @@
 export type TDubboInterface = string
 export type TDubboUrl = string
 
+export interface ITimeoutProps {
+  maxTimeout?: number
+  onTimeout: () => void
+}
+
 export interface INaocsClientProps {
   nacosRoot?: string
   url: string

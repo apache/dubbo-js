@@ -102,7 +102,7 @@ export class NacosRegistry
     throw new Error('Method not implemented.')
   }
 
-  registyServices(
+  registerService(
     services: Array<{
       dubboServiceInterface: TDubboInterface
       dubboServiceUrl: TDubboUrl
@@ -111,7 +111,7 @@ export class NacosRegistry
     console.log(services)
     throw new Error('Method not implemented.')
   }
-  registyConsumers(
+  registerConsumers(
     consumers: Array<{
       dubboServiceInterface: TDubboInterface
       dubboServiceUrl: TDubboUrl

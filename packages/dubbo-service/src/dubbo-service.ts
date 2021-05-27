@@ -31,6 +31,7 @@ import {
 } from '@apache/dubbo-serialization'
 import Context from './context'
 import { randomPort } from './port'
+import { DubboSetting } from './dubbo-setting'
 import {
   DubboServiceClazzName,
   IDubboServerProps,
@@ -39,7 +40,6 @@ import {
   TDubboServiceInterface,
   TDubboServiceUrl
 } from './types'
-import { DubboSetting } from './dubbo-setting'
 
 const log = debug('dubbo-server ~')
 
@@ -55,19 +55,19 @@ const log = debug('dubbo-server ~')
 export default class DubboService {
   private resolve: Function
   private reject: Function
-  private readyPromise: Promise<void>
+  private readonly readyPromise: Promise<void>
 
   private retry: Retry
   private port: number
   private server: net.Server
-  private dubboSetting: DubboSetting
+  private readonly dubboSetting: DubboSetting
   private registry: IRegistry
-  private services: { [name in string]: IDubboService }
+  private readonly services: { [name in string]: IDubboService }
   private serviceRouter: Map<DubboServiceClazzName, Array<IDubboService>>
   private readonly middlewares: Array<Middleware<Context>>
 
   constructor(props: IDubboServerProps) {
-    this.checkProps(props)
+    DubboService.checkProps(props)
 
     // init ready promise
     this.readyPromise = new Promise((resolve, reject) => {
@@ -98,14 +98,14 @@ export default class DubboService {
       }
     })
 
-    process.nextTick(() => {
+    process.nextTick(async () => {
       // listen tcp server
-      this.listen()
+      await this.listen()
     })
   }
 
   // ~~~~~~~~~~~~~~~~~~private~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  private checkProps(props: IDubboServerProps) {
+  private static checkProps(props: IDubboServerProps) {
     if (!util.isObj(props.registry)) {
       throw new Error(`Please specify registry, use Zk or Nacos init registry`)
     }
@@ -141,7 +141,7 @@ export default class DubboService {
   }
 
   /**
-   * recevice tcp message
+   * receive tcp message
    * @param socket
    */
   private handleSocketRequest = (socket: Socket) => {
@@ -163,7 +163,6 @@ export default class DubboService {
       }
 
       const ctx = await this.invokeComposeChainRequest(data)
-      console.log('>>>>>>>>>>>>>>>>>>>', ctx)
       heartbeat.setWriteTimestamp()
       socket.write(new DubboResponseEncoder(ctx).encode())
     })
@@ -240,7 +239,7 @@ export default class DubboService {
       throw err
     })
 
-    const registrySerivceList = [] as Array<{
+    const registryServiceList = [] as Array<{
       dubboServiceInterface: TDubboServiceInterface
       dubboServiceUrl: TDubboServiceUrl
     }>
@@ -265,14 +264,14 @@ export default class DubboService {
 
       const dubboServiceUrl = this.buildUrl(service)
       log('registry dubbo service url %s', dubboServiceUrl)
-      registrySerivceList.push({
+      registryServiceList.push({
         dubboServiceInterface: service.dubboInterface,
         dubboServiceUrl
       })
     }
 
     // register service to registry, such as zookeeper or nacos
-    this.registry.registyServices(registrySerivceList)
+    await this.registry.registerServices(registryServiceList)
   }
 
   /**
@@ -295,7 +294,7 @@ export default class DubboService {
         side: 'provider',
         pid: process.pid,
         generic: false,
-        protocal: 'dubbo',
+        protocol: 'dubbo',
         dynamic: true,
         category: 'providers',
         anyhost: true,
@@ -336,7 +335,7 @@ export default class DubboService {
   }
 
   /**
-   * close current tcp servce
+   * close current tcp service
    */
   public close(): Promise<void> {
     return new Promise((resolve, reject) => {

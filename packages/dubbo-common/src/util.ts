@@ -20,7 +20,6 @@ import { IHessianType } from './types'
 
 export const msg = new EventEmitter()
 export const noop = () => {}
-export const isDevEnv = process.env.NODE_ENV !== 'production'
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~ types~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const toString = Object.prototype.toString
@@ -96,14 +95,10 @@ export class Version {
       return false
     }
     const v = Version.getIntVersion(version)
-    if (
+    return (
       v >= Version.LOWEST_VERSION_FOR_RESPONSE_ATTACHMENT &&
       v <= Version.HIGHEST_PROTOCOL_VERSION
-    ) {
-      return true
-    }
-
-    return false
+    )
   }
 
   static getIntVersion(version: string) {
@@ -132,9 +127,9 @@ export class Version {
     const vArr = version.split('.')
     const len = vArr.length
     for (let i = 0; i < len; i++) {
-      const subv = Version.getPrefixDigits(vArr[i])
-      if (subv) {
-        v += parseInt(subv) * Math.pow(10, (len - i - 1) * 2)
+      const subversion = Version.getPrefixDigits(vArr[i])
+      if (subversion) {
+        v += parseInt(subversion) * Math.pow(10, (len - i - 1) * 2)
       }
     }
     return v

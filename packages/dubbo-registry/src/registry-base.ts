@@ -24,7 +24,7 @@ const log = debug('registry:base~')
  * Extract the base class of the registry
  */
 export default class BaseRegistry {
-  protected subscribers: Set<IRegistrySubscriber>
+  protected readonly subscribers: Set<IRegistrySubscriber>
   protected readonly dubboServiceUrlMap: Map<TDubboInterface, Array<TDubboUrl>>
 
   constructor() {

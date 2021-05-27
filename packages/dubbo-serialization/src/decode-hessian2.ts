@@ -39,10 +39,10 @@ import { DubboDecodeError, DubboServiceError } from './err'
 import { IDubboResponse } from './types'
 import {
   DEFAULT_DUBBO_PROTOCOL_VERSION,
-  DUBBO_RESPONSE_BODY_FLAG,
-  DUBBO_RESPONSE_STATUS,
   DUBBO_FLAG_REQUEST,
   DUBBO_HEADER_LENGTH,
+  DUBBO_RESPONSE_BODY_FLAG,
+  DUBBO_RESPONSE_STATUS,
   HESSIAN2_SERIALIZATION_CONTENT_ID
 } from './constants'
 import Request from './request'
@@ -66,22 +66,17 @@ export function decodeDubboRequest(buff: Buffer): Request {
     req.version = dubboVersion
     req.attachment.dubbo = dubboVersion
 
-    const path = decoder.read()
-    req.attachment.path = path
+    req.attachment.path = decoder.read()
+    req.attachment.version = decoder.read()
+    req.methodName = decoder.read()
 
-    const version = decoder.read()
-    req.attachment.version = version
-
-    const methodName = decoder.read()
-    req.methodName = methodName
-
-    const desc: string = decoder.read()
+    const desc = decoder.read()
     req.parameterTypeDesc = desc
 
     if (desc.length > 0) {
-      const paramaterTypes: Array<string> = desc.split(';').filter(Boolean)
-      req.parameterTypes = paramaterTypes
-      const len = paramaterTypes.length
+      const parameterTypes: Array<string> = desc.split(';').filter(Boolean)
+      req.parameterTypes = parameterTypes
+      const len = parameterTypes.length
       const args = []
       for (let i = 0; i < len; i++) {
         args.push(decoder.read())

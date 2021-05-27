@@ -24,6 +24,7 @@ import { go, util } from '@apache/dubbo-common'
 import Scheduler from './scheduler'
 import qs from 'querystring'
 import ip from 'ip'
+import { DubboSetting } from './dubbo-setting'
 import {
   IDubboProps,
   IDubboProvider,
@@ -32,7 +33,6 @@ import {
   TDubboService,
   TDubboUrl
 } from './types'
-import { DubboSetting } from './dubbo-setting'
 
 const log = debug('dubbo:bootstrap')
 const packageVersion = require('../package.json').version
@@ -94,16 +94,16 @@ export default class Dubbo<TService = Object> {
     await this.props.registry.ready()
     this.consumeService(this.props.service)
     log('consumerService: %O', this.consumers)
-    this.props.registry.registyConsumers(this.consumers)
+    this.props.registry.registerConsumers(this.consumers)
     //create scheduler
     Scheduler.from(this.props.registry, this.queue)
   }
 
   /**
    * registry consume service
-   * @param service
    * service style:
    * {[key: string]: (dubbo): T => dubbo.proxyService<T>({...})}
+   * @param services
    */
   private consumeService(services: Object) {
     for (let [shortName, serviceProxy] of Object.entries(services)) {

@@ -80,7 +80,7 @@ it('test registyService', async () => {
     connect: 'localhost:2181'
   })
 
-  await zk.registyServices(map)
+  await zk.registerService(map)
   expect(logBuff).toMatchSnapshot()
 })
 
@@ -102,6 +102,6 @@ it('test registryConsumer', async () => {
     },
     onError(err) {}
   })
-  await zk.registyConsumers(map)
+  await zk.registerConsumers(map)
   expect(logBuff).toMatchSnapshot()
 })
