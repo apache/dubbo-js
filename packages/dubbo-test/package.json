@@ -1,5 +1,6 @@
 {
-  "name": "@apache/dubbo-registry",
+  "private": true,
+  "name": "@apache/dubbo-tedst",
   "version": "0.0.1",
   "main": "./lib/index.js",
   "types": "./lib/typings/index.d.ts",
@@ -18,9 +19,7 @@
     "url": "https://github.com/apache/dubbo-js"
   },
   "dependencies": {
-    "ip": "1.1.5",
-    "@apache/dubbo-common": "0.0.1",
-    "nacos": "2.0.0",
-    "zookeeper": "^4.9.0"
+    "@apache/dubbo-consumer": "*",
+    "@apache/dubbo-service": "*"
   }
 }

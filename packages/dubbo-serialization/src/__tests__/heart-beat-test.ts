@@ -14,28 +14,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Dubbo, TDubboCallResult } from 'dubbo-js'
-import { argumentMap, JavaString } from 'interpret-util'
-import { UserRequest } from './UserRequest'
-import { UserResponse } from './UserResponse'
 
-export interface IDemoProvider {
-  sayHello(name: JavaString): TDubboCallResult<string>
-  test(): TDubboCallResult<void>
-  echo(): TDubboCallResult<string>
-  getUserInfo(request: UserRequest): TDubboCallResult<UserResponse>
-}
+import HeartBeat from '../heartbeat'
 
-export const DemoProviderWrapper = {
-  sayHello: argumentMap,
-  test: argumentMap,
-  echo: argumentMap,
-  getUserInfo: argumentMap
-}
+it('心跳值测试e2', () => {
+  const buffer = Buffer.from([
+    0xda,
+    0xbb,
+    0xe2,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x05,
+    0x00,
+    0x00,
+    0x00,
+    0x01,
+    0x4e
+  ])
+  expect(HeartBeat.isHeartBeat(buffer)).toBe(true)
 
-export function DemoProvider(dubbo: Dubbo): IDemoProvider {
-  return dubbo.proxyService<IDemoProvider>({
-    dubboInterface: 'org.apache.dubbo.demo.DemoProvider',
-    methods: DemoProviderWrapper
-  })
-}
+  //mock数据
+  const buffer2 = Buffer.from([
+    0xda,
+    0xbb,
+    0x02,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x05,
+    0x00,
+    0x00,
+    0x00,
+    0x01,
+    0x4e
+  ])
+  expect(HeartBeat.isHeartBeat(buffer2)).toBe(false)
+})

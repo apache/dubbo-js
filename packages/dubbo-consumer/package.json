@@ -4,7 +4,7 @@
   "main": "./lib/index.js",
   "types": "./lib/typings/index.d.ts",
   "license": "Apache Licence 2.0",
-  "description": "Aapche dubbo & dubbo-js & dubbo-common",
+  "description": "Apache dubbo & dubbo-js & dubbo-common",
   "author": "hufeng@apache.org, xiaodongyang@apache.org",
   "maintainers": [
     "godkun666@126.com",

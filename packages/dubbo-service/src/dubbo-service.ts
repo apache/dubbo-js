@@ -24,8 +24,8 @@ import { Retry, util } from '@apache/dubbo-common'
 import {
   DecodeBuffer,
   decodeDubboRequest,
-  DubboResponseEncoder,
   DUBBO_RESPONSE_STATUS,
+  DubboResponseEncoder,
   HeartBeat,
   Request
 } from '@apache/dubbo-serialization'
@@ -340,7 +340,7 @@ export default class DubboService {
   public close(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.registry.close()
-      this.server?.close((err) => {
+      this.server.close((err) => {
         if (err) {
           reject(err)
         } else {

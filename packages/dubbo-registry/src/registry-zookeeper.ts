@@ -34,10 +34,10 @@ export class ZookeeperRegistry
   extends BaseRegistry
   implements IRegistry<Zookeeper> {
   private client: Zookeeper
-  private props: IZkClientConfig
+  private readonly props: IZkClientConfig
   private timeout: Timeout
 
-  private readyPromise: Promise<void>
+  private readonly readyPromise: Promise<void>
   private resolve: Function
   private reject: Function
 
@@ -190,7 +190,7 @@ export class ZookeeperRegistry
     this.dubboServiceUrlMap.set(dubboInterface, urls)
   }
 
-  async registerService(
+  async registerServices(
     services: Array<{
       dubboServiceInterface: TDubboInterface
       dubboServiceUrl: TDubboUrl

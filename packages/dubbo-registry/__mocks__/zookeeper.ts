@@ -14,10 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import debug from 'debug'
 import EventEmitter from 'events'
 import Zookeeper from 'zookeeper'
 import { IZkClientConfig } from '../src/types'
+
+const log = debug('dubbo:zookeeper:mock')
 
 /**
  * mock node_modules/zookeeper
@@ -27,25 +29,28 @@ export default class Zoookeeper extends EventEmitter {
   static constants = Zookeeper.constants
   props: IZkClientConfig
   isConnectErr: boolean = false
+  private cache: Map<string, Array<string>>
 
   constructor(props: IZkClientConfig) {
     super()
     this.props = props
+    this.cache = new Map()
   }
 
   init() {
-    console.log('init')
+    log('init')
     if (this.isConnectErr) {
-      console.log('emit error')
+      log('emit error')
       this.emit('error', new Error(`zk could not connect`))
     } else {
       this.emit('connect')
-      console.log('emit connect')
+      log('emit connect')
     }
   }
 
   mkdirp(path: string, cb: Function) {
-    console.log(`mkdir ${path}`)
+    log(`mkdir ${path}`)
+    this.cache.set(path, [])
     cb(null)
   }
 
@@ -58,21 +63,24 @@ export default class Zoookeeper extends EventEmitter {
     data: string | Buffer,
     isPersistent: boolean
   ): Promise<void> {
-    console.log(`create with ${JSON.stringify({ path, data, isPersistent })} `)
+    log(`create with ${JSON.stringify({ path, data, isPersistent })} `)
     return new Promise((resolve) => {
+      const paths = path.split('/')
+      const dir = paths.splice(0, 4).join('/')
+      this.cache.get(dir).push(paths[0])
       resolve()
     })
   }
 
   exists(path: string) {
-    console.log(`exists not path ${path}`)
     return Promise.reject(new Error(`node was not exists`))
   }
 
   w_get_children(servicePath: string) {
-    const dubboInterface = servicePath.split('.')[1]
-    return Promise.resolve([
-      `dubbo://127.0.0.1:20880/${dubboInterface}?methods=hello&group=&version=0.0.0`
-    ])
+    return Promise.resolve(this.cache.get(servicePath))
+  }
+
+  close() {
+    log('close zookeeper')
   }
 }

@@ -17,13 +17,14 @@
 
 import java from 'js-to-java'
 import {
-  DirectlyDubbo,
-  DubboServer,
   Dubbo,
-  setting,
+  DubboDirectlyInvoker,
   TDubboCallResult
 } from '@apache/dubbo-consumer'
+import { Zk } from '@apache/dubbo-registry'
+import DubboService from '../dubbo-service'
 
+// define service interface
 export interface IDemoProvider {
   sayHello(name: string, rest: number): TDubboCallResult<string>
   getUserInfo(): TDubboCallResult<{
@@ -34,8 +35,6 @@ export interface IDemoProvider {
 }
 
 // =========================environment=====================================
-// init dubbo server
-
 const sleep = (delay: number) =>
   new Promise((resolve) => {
     setTimeout(() => {
@@ -43,12 +42,12 @@ const sleep = (delay: number) =>
     }, delay)
   })
 
-let server: DubboServer = null
+let server: DubboService = null
 beforeAll(async () => {
-  server = new DubboServer({
-    registry: 'localhost:2181',
-    services: [
-      {
+  server = new DubboService({
+    registry: Zk({ connect: 'localhost:2181' }),
+    services: {
+      helloService: {
         dubboInterface: 'com.alibaba.dubbo.demo.DemoService',
         version: '1.0.0',
         methods: {
@@ -60,7 +59,7 @@ beforeAll(async () => {
           }
         }
       }
-    ]
+    }
   })
 
   server.use(async (ctx, next) => {
@@ -72,16 +71,16 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-  server.close()
+  await server.close()
 })
 
 // ======================directly dubbo test suite=======================================
 
 it('test directly dubbo sayHello/getUserInfo', async () => {
-  const dubbo = DirectlyDubbo.from({
-    dubboAddress: '172.22.226.94:20880',
+  const dubbo = DubboDirectlyInvoker.from({
+    dubboHost: '172.22.226.94:20880',
     dubboVersion: '2.0.2',
-    dubboInvokeTimeout: 10
+    dubboInvokeTimeout: 10 * 1000
   })
 
   const demoService = dubbo.proxyService({

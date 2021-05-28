@@ -177,7 +177,6 @@ export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
     case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_VALUE_WITH_ATTACHMENTS:
       err = null
       res = body.read()
-      console.log(':::', res)
       attachments = body.read()
       break
     case DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION_WITH_ATTACHMENTS:

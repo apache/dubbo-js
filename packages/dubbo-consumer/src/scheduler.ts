@@ -85,6 +85,10 @@ export default class Scheduler {
     return new Scheduler(registry, queue)
   }
 
+  close() {
+    this.dubboCluster.close()
+  }
+
   /**
    * handle request in queue
    * @param ctx
@@ -191,7 +195,7 @@ export default class Scheduler {
     this.status = STATUS.READY
     const hostname = host.split(':')[0]
     for (let ctx of this.queue.requestQueue.values()) {
-      if (ctx.wasInvoked && this.isHostCanResolveService(ctx, hostname)) {
+      if (!ctx.wasInvoked && this.isHostCanResolveService(ctx, hostname)) {
         this.sendRequest(ctx, transport)
       }
     }

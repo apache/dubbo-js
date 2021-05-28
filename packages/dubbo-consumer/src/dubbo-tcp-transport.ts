@@ -176,4 +176,8 @@ export default class DubboTcpTransport
     this.subscriber = subscriber
     return this
   }
+
+  close() {
+    this.transport.destroy()
+  }
 }

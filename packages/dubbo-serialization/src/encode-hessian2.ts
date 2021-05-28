@@ -292,37 +292,32 @@ export class DubboResponseEncoder {
       this.ctx.request.version
     )
 
-    switch (true) {
-      // invoke chain return err
-      case this.ctx.body.err:
+    if (this.ctx.status !== DUBBO_RESPONSE_STATUS.OK) {
+      encoder.write(
+        `${DUBBO_RESPONSE_STATUS[this.ctx.status]}#${this.ctx.body.err.message}`
+      )
+    } else {
+      if (this.ctx.body.err) {
         encoder.write(
           isSupportAttachment
             ? DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION_WITH_ATTACHMENTS
             : DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION
         )
-        encoder.write(
-          'Service Status' +
-            DUBBO_RESPONSE_STATUS[this.ctx.status] +
-            this.ctx.body.err.message
-        )
-        break
-
-      // invoke chain not return error, but res is null
-      case this.ctx.body.res === null:
-        encoder.write(
-          isSupportAttachment
-            ? DUBBO_RESPONSE_BODY_FLAG.RESPONSE_NULL_VALUE_WITH_ATTACHMENTS
-            : DUBBO_RESPONSE_BODY_FLAG.RESPONSE_NULL_VALUE
-        )
-        break
-
-      default:
+        encoder.write(this.ctx.body.err.message)
+      } else if (this.ctx.body.res) {
         encoder.write(
           isSupportAttachment
             ? DUBBO_RESPONSE_BODY_FLAG.RESPONSE_VALUE_WITH_ATTACHMENTS
             : DUBBO_RESPONSE_BODY_FLAG.RESPONSE_VALUE
         )
         encoder.write(this.ctx.body.res)
+      } else {
+        encoder.write(
+          isSupportAttachment
+            ? DUBBO_RESPONSE_BODY_FLAG.RESPONSE_NULL_VALUE_WITH_ATTACHMENTS
+            : DUBBO_RESPONSE_BODY_FLAG.RESPONSE_NULL_VALUE
+        )
+      }
     }
 
     if (isSupportAttachment) {
@@ -335,7 +330,15 @@ export class DubboResponseEncoder {
     try {
       checkPayload(encoder.byteBuffer._offset)
     } catch (err) {
-      encoder.write(err.message)
+      encoder.clear()
+      encoder.write(
+        isSupportAttachment
+          ? DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION_WITH_ATTACHMENTS
+          : DUBBO_RESPONSE_BODY_FLAG.RESPONSE_WITH_EXCEPTION
+      )
+      encoder.write(
+        `${DUBBO_RESPONSE_STATUS[this.ctx.status]}#${this.ctx.body.err.message}`
+      )
     }
 
     return encoder.byteBuffer._bytes.slice(0, encoder.byteBuffer._offset)

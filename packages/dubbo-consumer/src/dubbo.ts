@@ -60,6 +60,7 @@ export default class Dubbo<TService = Object> {
     dubboServiceInterface: TDubboInterface
     dubboServiceUrl: TDubboUrl
   }>
+  private scheduler: Scheduler
   public readonly service: TDubboService<TService>
 
   constructor(props: IDubboProps) {
@@ -74,7 +75,11 @@ export default class Dubbo<TService = Object> {
     this.middlewares = []
     this.queue = Queue.init()
     this.dubboSetting = props.dubboSetting
+
+    // init service
     this.service = <TDubboService<TService>>{}
+    this.consumeService(this.props.services)
+    log('consumerService: %O', this.consumers)
 
     //Initialize config
     //Global timeout (maximum fusing time) similar to <dubbo:consumer timeout="sometime"/>
@@ -83,20 +88,17 @@ export default class Dubbo<TService = Object> {
     const { dubboInvokeTimeout } = props
     config.dubboInvokeTimeout = dubboInvokeTimeout || config.dubboInvokeTimeout
 
-    log(`initial:|> %O`, props)
     log('config:|> %O', config)
 
-    this.init()
+    this.init().catch((err) => console.log(err))
   }
 
   // ========================private method=======================
   private async init() {
     await this.props.registry.ready()
-    this.consumeService(this.props.service)
-    log('consumerService: %O', this.consumers)
-    this.props.registry.registerConsumers(this.consumers)
     //create scheduler
-    Scheduler.from(this.props.registry, this.queue)
+    this.scheduler = Scheduler.from(this.props.registry, this.queue)
+    await this.props.registry.registerConsumers(this.consumers)
   }
 
   /**
@@ -205,8 +207,8 @@ export default class Dubbo<TService = Object> {
   /**
    * 代理dubbo的服务
    */
-  proxyService(provider: IDubboProvider) {
-    return provider
+  proxyService<T = any>(provider: IDubboProvider): T {
+    return provider as any
   }
 
   /**
@@ -245,5 +247,10 @@ export default class Dubbo<TService = Object> {
    */
   ready() {
     return this.props.registry.ready()
+  }
+
+  close() {
+    this.props.registry.close()
+    this.scheduler.close()
   }
 }

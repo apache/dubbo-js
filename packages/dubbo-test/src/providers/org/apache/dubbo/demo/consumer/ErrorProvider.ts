@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-import { Dubbo, TDubboCallResult } from 'dubbo-js'
+import { Dubbo, TDubboCallResult } from '@apache/dubbo-consumer'
 import { argumentMap } from 'interpret-util'
-import { TypeRequest } from './TypeRequest'
 
-export interface IBasicTypeProvider {
-  testBasicType(request: TypeRequest): TDubboCallResult<TypeRequest>
+export interface IErrorProvider {
+  errorTest(): TDubboCallResult<void>
 }
 
-export const BasicTypeProviderWrapper = { testBasicType: argumentMap }
+export const ErrorProviderWrapper = { errorTest: argumentMap }
 
-export function BasicTypeProvider(dubbo: Dubbo): IBasicTypeProvider {
-  return dubbo.proxyService<IBasicTypeProvider>({
-    dubboInterface: 'org.apache.dubbo.demo.BasicTypeProvider',
-    methods: BasicTypeProviderWrapper
+export function ErrorProvider(dubbo: Dubbo): IErrorProvider {
+  return dubbo.proxyService<IErrorProvider>({
+    dubboInterface: 'org.apache.dubbo.demo.ErrorProvider',
+    methods: ErrorProviderWrapper
   })
 }

@@ -102,7 +102,7 @@ export class NacosRegistry
     throw new Error('Method not implemented.')
   }
 
-  registerService(
+  registerServices(
     services: Array<{
       dubboServiceInterface: TDubboInterface
       dubboServiceUrl: TDubboUrl

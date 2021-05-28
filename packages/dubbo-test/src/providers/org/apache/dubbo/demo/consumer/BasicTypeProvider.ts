@@ -15,12 +15,19 @@
  * limitations under the License.
  */
 
-import Context from '../context'
+import { Dubbo, TDubboCallResult } from '@apache/dubbo-consumer'
+import { argumentMap } from 'interpret-util'
+import { TypeRequest } from '../TypeRequest'
 
-describe('context test suite', () => {
-  it('test default Value', () => {
-    const ctx = Context.init()
-    expect(ctx.requestId).toEqual(1)
-    expect(ctx.application).toEqual({ name: 'dubbo-js' })
+export interface IBasicTypeProvider {
+  testBasicType(request: TypeRequest): TDubboCallResult<TypeRequest>
+}
+
+export const BasicTypeProviderWrapper = { testBasicType: argumentMap }
+
+export function BasicTypeProvider(dubbo: Dubbo): IBasicTypeProvider {
+  return dubbo.proxyService<IBasicTypeProvider>({
+    dubboInterface: 'org.apache.dubbo.demo.BasicTypeProvider',
+    methods: BasicTypeProviderWrapper
   })
-})
+}

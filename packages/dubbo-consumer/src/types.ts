@@ -33,7 +33,7 @@ export interface IDubboProps {
   application: { name: string }
   registry: IRegistry<Object>
   //当前要注册到dubbo容器的服务对象
-  service: Object
+  services: Object
   isSupportedDubbox?: boolean
   //dubbo调用最大超时时间单位为秒，默认5000
   dubboInvokeTimeout?: number
@@ -69,9 +69,9 @@ export interface IHessianType {
   $: any
 }
 export interface IInvokeParam {
-  path: string
   dubboInterface: string
   methods: { [methodName: string]: Function }
+  path?: string
   group?: string
   version?: string
   timeout?: number
@@ -108,15 +108,6 @@ export interface IDubboSetting {
   timeout?: number
 }
 
-export interface IRule {
-  condition: string | Array<string> | RegExp | TPredictFunction
-  dubboSetting: IDubboSetting
-}
-
-export type TPredictFunction = (
-  fullInterfaceName: string
-) => IDubboSetting | null
-
 export interface IDubboSetting {
   group?: string
   version?: string
@@ -127,6 +118,8 @@ export interface IDubboResult<T> {
   err: Error
   res: T
 }
+
+export type TDubboCallResult<T> = Promise<IDubboResult<T>>
 
 export interface IContextRequestParam {
   requestId: number

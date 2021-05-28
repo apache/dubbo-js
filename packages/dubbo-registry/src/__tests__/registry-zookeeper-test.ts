@@ -62,7 +62,7 @@ it('test zk ready failed', async () => {
   expect(logBuff).toEqual(['init', 'emit error'])
 })
 
-it('test registryConsumers', () => {})
+it('test register consumer', () => {})
 
 it('test registyService', async () => {
   const map = new Map([

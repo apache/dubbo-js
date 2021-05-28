@@ -153,4 +153,10 @@ export default class DubboCluster
     this.subscriber = subscriber
     return this
   }
+
+  close() {
+    for (let transports of this.dubboClusterTransportMap.values()) {
+      transports.forEach((transport) => transport.close())
+    }
+  }
 }
