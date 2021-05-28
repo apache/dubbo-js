@@ -74,32 +74,32 @@ const XML_LICENSE = `<!--
 const meta = {
   js: {
     license: LICENSE,
-    prettier: true,
+    prettier: true
   },
   ts: {
     license: LICENSE,
-    prettier,
+    prettier
   },
   java: {
     license: LICENSE,
-    prettier: false,
+    prettier: false
   },
   sh: {
     license: SHELL_LICENSE,
-    prettier: false,
+    prettier: false
   },
   yml: {
     license: SHELL_LICENSE,
-    prettier: false,
+    prettier: false
   },
   xml: {
     license: XML_LICENSE,
-    prettier: false,
+    prettier: false
   },
   properties: {
     license: SHELL_LICENSE,
-    prettier: false,
-  },
+    prettier: false
+  }
 }
 
 // check file apache license
@@ -139,7 +139,7 @@ function globFiles(): Promise<Array<string>> {
     glob(
       '../**/*[!.d].+(ts|java|js|sh|xml|yml|properties)',
       {
-        ignore: ['../**/node_modules/**', '../**/lib/**', '../**/target/**'],
+        ignore: ['../**/node_modules/**', '../**/lib/**', '../**/target/**']
       },
       (err, files) => {
         if (err) {
@@ -147,7 +147,7 @@ function globFiles(): Promise<Array<string>> {
           return
         }
         resolve(files)
-      },
+      }
     )
   })
 }
@@ -156,7 +156,7 @@ function* asyncReadFiles(files: Array<string>) {
   for (let file of files) {
     yield fs.readFile(file).then((res) => ({
       file,
-      content: res.toString(),
+      content: res.toString()
     }))
   }
 }
@@ -168,18 +168,21 @@ function* asyncWriteFiles(files: Array<{ file: string; content: string }>) {
       yield fs
         .writeFile(
           file,
-          prettier.format(`${cfg.license}\n\n${content}`, pkg.prettier as any),
+          prettier.format(`${cfg.license}\n\n${content}`, {
+            ...pkg.prettier,
+            parser: 'typescript'
+          } as any)
         )
         //@ts-ignore
         .then(() => ({
-          file,
+          file
         }))
     } else {
       yield fs
         .writeFile(file, `${cfg.license}\n\n${content}`)
         //@ts-ignore
         .then(() => ({
-          file,
+          file
         }))
     }
   }
