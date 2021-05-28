@@ -16,6 +16,7 @@
  */
 
 import debug from 'debug'
+import { go } from '@apache/dubbo-common'
 import Context from './context'
 import { STATUS } from './dubbo-status'
 import DubboTcpTransport from './dubbo-tcp-transport'
@@ -52,14 +53,18 @@ export default class DubboDirectlyInvoker {
     return new DubboDirectlyInvoker(props)
   }
 
+  close() {
+    this.transport.close()
+  }
+
   proxyService<T extends Object>(invokeParam: IInvokeParam): T {
     const {
       dubboInterface,
       path,
       methods,
       timeout,
-      group,
-      version,
+      group = '',
+      version = '0.0.0',
       attachments = {},
       isSupportedDubbox = false
     } = invokeParam
@@ -67,45 +72,47 @@ export default class DubboDirectlyInvoker {
 
     for (let methodName of Object.keys(methods)) {
       proxy[methodName] = (...args: Array<IHessianType>) => {
-        return new Promise((resolve, reject) => {
-          const ctx = Context.init()
-          ctx.resolve = resolve
-          ctx.reject = reject
+        return go(
+          new Promise((resolve, reject) => {
+            const ctx = Context.init()
+            ctx.resolve = resolve
+            ctx.reject = reject
 
-          ctx.methodName = methodName
-          const method = methods[methodName]
-          ctx.methodArgs = method.call(invokeParam, ...args) || []
+            ctx.methodName = methodName
+            const method = methods[methodName]
+            ctx.methodArgs = method.call(invokeParam, ...args) || []
 
-          ctx.dubboVersion = this.props.dubboVersion
-          ctx.dubboInterface = dubboInterface
-          ctx.path = path || dubboInterface
-          ctx.group = group
-          ctx.timeout = timeout
-          ctx.version = version
-          ctx.attachments = attachments
-          ctx.isSupportedDubbox = isSupportedDubbox
+            ctx.dubboVersion = this.props.dubboVersion
+            ctx.dubboInterface = dubboInterface
+            ctx.path = path || dubboInterface
+            ctx.group = group
+            ctx.timeout = timeout
+            ctx.version = version
+            ctx.attachments = attachments
+            ctx.isSupportedDubbox = isSupportedDubbox
 
-          //check param
-          //param should be hessian data type
-          if (!ctx.isRequestMethodArgsHessianType) {
-            log(
-              `${dubboInterface} method: ${methodName} not all arguments are valid hessian type`
-            )
-            log(`arguments->%O`, ctx.request.methodArgs)
-            reject(new Error('not all arguments are valid hessian type'))
-            return
-          }
+            //check param
+            //param should be hessian data type
+            if (!ctx.isRequestMethodArgsHessianType) {
+              log(
+                `${dubboInterface} method: ${methodName} not all arguments are valid hessian type`
+              )
+              log(`arguments->%O`, ctx.request.methodArgs)
+              reject(new Error('not all arguments are valid hessian type'))
+              return
+            }
 
-          //超时检测
-          ctx.timeout = this.props.dubboInvokeTimeout
+            //超时检测
+            ctx.timeout = this.props.dubboInvokeTimeout
 
-          ctx.setMaxTimeout(() => {
-            this.queue.delete(ctx.requestId)
+            ctx.setMaxTimeout(() => {
+              this.queue.delete(ctx.requestId)
+            })
+
+            //add task to queue
+            this.addQueue(ctx)
           })
-
-          //add task to queue
-          this.addQueue(ctx)
-        })
+        )
       }
     }
 
@@ -177,7 +184,7 @@ export default class DubboDirectlyInvoker {
     this.status = STATUS.CONNECTED
     for (let ctx of this.queue.values()) {
       //如果还没有被处理
-      if (ctx.wasInvoked) {
+      if (!ctx.wasInvoked) {
         ctx.invokedByHost = this.props.dubboHost
         this.transport.write(ctx)
       }

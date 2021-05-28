@@ -367,4 +367,8 @@ export default class DubboService {
   public ready() {
     return this.readyPromise
   }
+
+  public getPort() {
+    return this.port
+  }
 }

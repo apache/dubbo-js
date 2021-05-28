@@ -9,7 +9,6 @@ export class BasicTypeProvider implements IDubboService {
   }
 
   testBasicType(request: TypeRequest): Promise<TypeRequest> {
-    console.log(request)
     return Promise.resolve(new TypeRequest(request) as any)
   }
 }

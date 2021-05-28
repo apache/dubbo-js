@@ -24,7 +24,6 @@ export class DemoProvider implements IDubboService {
   }
 
   getUserInfo(request: UserRequest): Promise<UserResponse> {
-    console.log(request)
     const response = new UserResponse({
       status: 'ok',
       info: {
