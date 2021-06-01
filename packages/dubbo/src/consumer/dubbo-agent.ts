@@ -63,12 +63,7 @@ export default class DubboAgent implements IObservable<ISocketSubscriber> {
         const socketWorker = SocketWorker.from(agentAddr).subscribe({
           onConnect: this._subscriber.onConnect,
           onData: this._subscriber.onData,
-          onClose: ({host, pid, port}) => {
-            //delete close worker
-            this._clearCloseWorker(host + ':' + port);
-            //notify scheduler
-            this._subscriber.onClose({pid});
-          },
+          onClose: this.onSocketWorkerClose.bind(this),
         });
         this._serverAgentMap.set(agentAddr, socketWorker);
       }
@@ -76,6 +71,13 @@ export default class DubboAgent implements IObservable<ISocketSubscriber> {
 
     return this;
   };
+
+  onSocketWorkerClose({host, pid, port}) {
+    //delete close worker
+    this._clearCloseWorker(host + ':' + port);
+    //notify scheduler
+    this._subscriber.onClose({pid});
+  }
 
   /**
    * 获取可用负载对应的socketWorker
