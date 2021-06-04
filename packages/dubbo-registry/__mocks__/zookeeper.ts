@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import debug from 'debug'
 import EventEmitter from 'events'
 import Zookeeper from 'zookeeper'
@@ -25,7 +26,7 @@ const log = debug('dubbo:zookeeper:mock')
  * mock node_modules/zookeeper
  */
 
-export default class Zoookeeper extends EventEmitter {
+export default class ZookeeperMock extends EventEmitter {
   static constants = Zookeeper.constants
   props: IZkClientConfig
   isConnectErr: boolean = false
@@ -77,7 +78,7 @@ export default class Zoookeeper extends EventEmitter {
   }
 
   w_get_children(servicePath: string) {
-    return Promise.resolve(this.cache.get(servicePath))
+    return Promise.resolve(this.cache.get(servicePath) || [])
   }
 
   close() {

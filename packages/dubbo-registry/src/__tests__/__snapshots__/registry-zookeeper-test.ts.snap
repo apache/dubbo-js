@@ -1,34 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`test registryConsumer 1`] = `
+exports[`test zookeeper registry test registryConsumer 1`] = `
 Map {
-  "org.apache.demo.service.HelloService" => Array [
-    "dubbo://127.0.0.1:20880/apache?methods=hello&group=&version=0.0.0",
-  ],
-  "org.apache.demo.service.UserService" => Array [
-    "dubbo://127.0.0.1:20880/apache?methods=hello&group=&version=0.0.0",
-  ],
+  "org.apache.demo.service.HelloService" => Array [],
+  "org.apache.demo.service.UserService" => Array [],
 }
-`;
-
-exports[`test registryConsumer 2`] = `
-Array [
-  "mkdir //dubbo/org.apache.demo.service.HelloService/consumers",
-  "exists not path //dubbo/org.apache.demo.service.HelloService/consumers/consumer%3A%2F%2F127.0.01%3A20880%2Forg.apache.demo.HelloService%3Fversion%3D1.0.0",
-  "create with {\\"path\\":\\"//dubbo/org.apache.demo.service.HelloService/consumers/consumer%3A%2F%2F127.0.01%3A20880%2Forg.apache.demo.HelloService%3Fversion%3D1.0.0\\",\\"data\\":\\"\\",\\"isPersistent\\":1} ",
-  "mkdir //dubbo/org.apache.demo.service.UserService/consumers",
-  "exists not path //dubbo/org.apache.demo.service.UserService/consumers/consumer%3A%2F%2F127.0.01%3A20880%2Forg.apache.demo.UserService%3Fversion%3D1.0.0",
-  "create with {\\"path\\":\\"//dubbo/org.apache.demo.service.UserService/consumers/consumer%3A%2F%2F127.0.01%3A20880%2Forg.apache.demo.UserService%3Fversion%3D1.0.0\\",\\"data\\":\\"\\",\\"isPersistent\\":1} ",
-]
-`;
-
-exports[`test registyService 1`] = `
-Array [
-  "mkdir /dubbo/org.apache.demo.service.HelloService/services",
-  "exists not path /dubbo/org.apache.demo.service.HelloService/services/dubbo%3A%2F%2F127.0.01%3A20880%2Forg.apache.demo.HelloService%3Finterface%3Dorg.apache.demo.service.HelloService%26methods%3DsayHello%2Ctest%2Cecho%2CgetUserInfo%26version%3D1.0.0",
-  "create with {\\"path\\":\\"/dubbo/org.apache.demo.service.HelloService/services/dubbo%3A%2F%2F127.0.01%3A20880%2Forg.apache.demo.HelloService%3Finterface%3Dorg.apache.demo.service.HelloService%26methods%3DsayHello%2Ctest%2Cecho%2CgetUserInfo%26version%3D1.0.0\\",\\"data\\":\\"\\",\\"isPersistent\\":1} ",
-  "mkdir /dubbo/org.apache.demo.service.UserService/services",
-  "exists not path /dubbo/org.apache.demo.service.UserService/services/dubbo%3A%2F%2F127.0.01%3A20880%2Forg.apache.demo.UserService%3Finterface%3Dorg.apache.demo.service.UserService%26methods%3DsayHello%2Ctest%2Cecho%2CgetUserInfo%26version%3D1.0.0",
-  "create with {\\"path\\":\\"/dubbo/org.apache.demo.service.UserService/services/dubbo%3A%2F%2F127.0.01%3A20880%2Forg.apache.demo.UserService%3Finterface%3Dorg.apache.demo.service.UserService%26methods%3DsayHello%2Ctest%2Cecho%2CgetUserInfo%26version%3D1.0.0\\",\\"data\\":\\"\\",\\"isPersistent\\":1} ",
-]
 `;
