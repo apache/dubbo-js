@@ -26,12 +26,6 @@ const log = debug('dubbo:dubbo-url')
  * parse dubbo service url
  *
  * @param dubboUrl dubbo的url
- *
- * for example:
- * dubbo://192.168.2.1:38080/com.ofpay.demo.api.UserProvider?anyhost=true
- * &application=demo-provider&default.timeout=10000&dubbo=2.4.10
- * &environment=product&interface=com.ofpay.demo.api.UserProvider
- * &methods=getUser,queryAll,queryUser,isLimit&owner=wenwu&pid=61578&side=provider&timestamp=1428904600188
  */
 export default class DubboUrl {
   private readonly url: URL

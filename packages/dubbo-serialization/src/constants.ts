@@ -27,16 +27,13 @@ export const HESSIAN2_SERIALIZATION_ID = 2
 //com.alibaba.dubbo.common.serialize.support.hessian.Hessian2Serialization
 export const HESSIAN2_SERIALIZATION_CONTENT_ID = 2
 //max dubbo response payload length
-//com.alibaba.dubbo.common.Constants.DEAULT_PAY_LOAD
+//com.alibaba.dubbo.common.Constants.DEFAULT_PAY_LOAD
 export const DUBBO_DEFAULT_PAY_LOAD = 8 * 1024 * 1024 // 8M
 
 // message flag
 export const DUBBO_FLAG_REQUEST = 0x80
 export const DUBBO_FLAG_TWOWAY = 0x40
 export const DUBBO_FLAG_EVENT = 0x20
-
-// event
-export const DUBBO_HEART_BEAT_EVENT = null
 
 //com.alibaba.dubbo.remoting.exchange.Response
 export enum DUBBO_RESPONSE_STATUS {

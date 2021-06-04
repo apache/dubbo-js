@@ -249,6 +249,9 @@ export default class Dubbo<TService = Object> {
     return this.props.registry.ready()
   }
 
+  /**
+   * close dubbo consumer, usually used in test suite
+   */
   close() {
     this.props.registry.close()
     this.scheduler.close()

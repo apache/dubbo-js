@@ -67,7 +67,7 @@ export default class DecodeBuffer
       const magicHigh = this.buffer[0]
       const magicLow = this.buffer[1]
 
-      //如果不是magichigh magiclow 做个容错
+      //如果不是magic high magic low 做个容错
       if (magicHigh != DUBBO_MAGIC_HIGH || magicLow != DUBBO_MAGIC_LOW) {
         log(
           `%s receive server data error, buffer[0] is 0xda ${

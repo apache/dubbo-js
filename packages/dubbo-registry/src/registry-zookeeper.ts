@@ -87,7 +87,7 @@ export class ZookeeperRegistry
       try {
         // create root node
         await this.mkdirp(DUBBO_ZK_ROOT_PATH)
-        // trigger reeady promise
+        // trigger ready promise
         this.resolve()
       } catch (err) {
         this.reject(err)
@@ -177,7 +177,7 @@ export class ZookeeperRegistry
         .w_get_children(servicePath, this.wrapWatch(dubboInterface))
         .catch((err) => {
           dlog(
-            `get beehive service urls errro %s %s %s`,
+            `get beehive service urls err %s %s %s`,
             servicePath,
             dubboInterface,
             err

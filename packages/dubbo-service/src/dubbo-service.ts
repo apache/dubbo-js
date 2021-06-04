@@ -203,9 +203,10 @@ export default class DubboService {
           ])
           // check hessian type
           if (!util.checkRetValHessian(res)) {
-            throw new Error(
+            ctx.body.err = new Error(
               `${path}#${methodName} return value not hessian type`
             )
+            return
           }
           ctx.body.res = res
         } catch (err) {

@@ -21,7 +21,6 @@ import { DubboService } from '@apache/dubbo-service'
 import consumer from '../providers/org/apache/dubbo/demo/consumer'
 import provider from '../providers/org/apache/dubbo/demo/provider'
 import { UserRequest } from '../providers/org/apache/dubbo/demo/UserRequest'
-import { TypeRequest } from '../providers/org/apache/dubbo/demo/TypeRequest'
 
 let dubbo: DubboDirectlyInvoker = null
 let dubboService: DubboService = null

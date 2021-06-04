@@ -250,8 +250,7 @@ export default class Context<T = any> {
   //=====================attachments=======================
   /**
    * 设置当前的attachments
-   * @param key
-   * @param value
+   * @param param
    */
   set attachments(param: Object) {
     log('set attachments->%o', param)
@@ -294,7 +293,7 @@ export default class Context<T = any> {
 
   setMaxTimeout(end: Function) {
     log(
-      'requestId#%d, set max timeout handler, maxtimeout: %d',
+      'requestId#%d, set max timeout handler, max timeout: %d',
       this.requestId,
       this._timeout
     )
