@@ -34,12 +34,20 @@ export class NacosRegistry
   private client: typeof NacosNamingClient
 
   private readonly readyPromise: Promise<void>
+  private resolve: Function
+  private reject: Function
 
   constructor(nacosProps: INaocsClientProps) {
     super()
     dlog(`init nacos with %O`, nacosProps)
     this.nacosProps = nacosProps
     this.nacosProps.nacosRoot = this.nacosProps.nacosRoot || 'dubbo'
+
+    // init ready promise
+    this.readyPromise = new Promise((resolve, reject) => {
+      this.resolve = resolve
+      this.reject = reject
+    })
 
     // init nacos client
     this.init()
@@ -57,7 +65,13 @@ export class NacosRegistry
       serverList: registryUrl,
       namespace: 'public'
     })
-    this.client.ready()
+
+    try {
+      await this.client.ready()
+      this.resolve()
+    } catch (err) {
+      this.reject(err)
+    }
   }
 
   ready(): Promise<void> {
