@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import { Dubbo, IDubboResult, java } from '@apache/dubbo-consumer'
+import { Dubbo, TDubboCallResult, java } from '@apache/dubbo-consumer'
 
 export interface IHelloService {
-  hello(name: string): Promise<IDubboResult<string>>
+  hello(name: string): Promise<TDubboCallResult<string>>
 }
 
 export const helloService = (dubbo: Dubbo): IHelloService =>

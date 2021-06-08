@@ -17,19 +17,18 @@
 
 import Koa from 'koa'
 import { Dubbo } from '@apache/dubbo-consumer'
-import { Zk } from '@apache/dubbo-registry'
-import service from './service'
+// import { Zk } from '@apache/dubbo-registry'
+import { Nacos } from '@apache/dubbo-registry'
+import services from './service'
 
-const dubbo =
-  new Dubbo() <
-  typeof service >
-  {
-    application: {
-      name: 'hello-api'
-    },
-    registry: Zk({ connect: 'localhost:2181' }),
-    service
-  }
+const dubbo = new Dubbo<typeof services>({
+  application: {
+    name: 'hello-api'
+  },
+  registry: Nacos({ connect: 'nacos://localhost:8848' }),
+  // registry: Zk({ connect: 'localhost:2181' }),
+  services
+})
 
 const server = new Koa()
 server.use(async (ctx) => {
@@ -40,5 +39,5 @@ server.use(async (ctx) => {
     err: err?.message
   }
 })
-server.listen(3000)
-console.log('hello-api start at port 3000')
+server.listen(6000)
+console.log('hello-api start at port 6000....')

@@ -25,7 +25,7 @@ export interface ITimeoutProps {
 
 export interface INaocsClientProps {
   nacosRoot?: string
-  url: string
+  connect: string
 }
 export interface IRegistrySubscriber {
   onData: (map: Map<TDubboInterface, Array<TDubboUrl>>) => void

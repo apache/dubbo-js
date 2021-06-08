@@ -15,32 +15,32 @@
  * limitations under the License.
  */
 
-import {Dubbo, java, TDubboCallResult} from 'apache-dubbo-js';
+import { Dubbo, java, TDubboCallResult } from '@apache/dubbo-consumer'
 
 //=====================types===========================
 export interface IUserResponse {
-  status?: string;
-  info?: {[name: string]: string};
+  status?: string
+  info?: { [name: string]: string }
 }
 
 export interface IDemoProvider {
-  sayHello(name: string): TDubboCallResult<string>;
-  test(): TDubboCallResult<void>;
-  echo(): TDubboCallResult<string>;
-  getUserInfo(): TDubboCallResult<IUserResponse>;
+  sayHello(name: string): TDubboCallResult<string>
+  test(): TDubboCallResult<void>
+  echo(): TDubboCallResult<string>
+  getUserInfo(): TDubboCallResult<IUserResponse>
 }
 
 export interface ITypeRequest {
-  bigDecimal?: {value: string};
-  map?: {[name: string]: string};
+  bigDecimal?: { value: string }
+  map?: { [name: string]: string }
 }
 
 export interface IBasicTypeProvider {
-  testBasicType(): TDubboCallResult<ITypeRequest>;
+  testBasicType(): TDubboCallResult<ITypeRequest>
 }
 
 export interface IErrorProvider {
-  errorTest(): TDubboCallResult<void>;
+  errorTest(): TDubboCallResult<void>
 }
 
 //========================provider=======================
@@ -49,7 +49,7 @@ export const demoProvider = (dubbo: Dubbo): IDemoProvider =>
     dubboInterface: 'org.apache.dubbo.demo.DemoProvider',
     methods: {
       sayHello(name: string) {
-        return [java.String(name)];
+        return [java.String(name)]
       },
 
       echo() {},
@@ -61,12 +61,12 @@ export const demoProvider = (dubbo: Dubbo): IDemoProvider =>
           java.combine('org.apache.dubbo.demo.UserRequest', {
             id: 1,
             name: 'nodejs',
-            email: 'node@qianmi.com',
-          }),
-        ];
-      },
-    },
-  });
+            email: 'node@qianmi.com'
+          })
+        ]
+      }
+    }
+  })
 
 export const basicTypeProvider = (dubbo: Dubbo): IBasicTypeProvider =>
   dubbo.proxyService({
@@ -75,20 +75,20 @@ export const basicTypeProvider = (dubbo: Dubbo): IBasicTypeProvider =>
       testBasicType() {
         return [
           java.combine('org.apache.dubbo.demo.TypeRequest', {
-            map: java.Map({name: 'test'}),
-            bigDecimal: java.BigDecimal('1000.0000'),
-          }),
-        ];
-      },
-    },
-  });
+            map: java.Map({ name: 'test' }),
+            bigDecimal: java.BigDecimal('1000.0000')
+          })
+        ]
+      }
+    }
+  })
 
 export const errorProvider = (dubbo: Dubbo): IErrorProvider =>
   dubbo.proxyService({
     dubboInterface: 'org.apache.dubbo.demo.ErrorProvider',
     methods: {
       errorTest() {
-        return [];
-      },
-    },
-  });
+        return []
+      }
+    }
+  })

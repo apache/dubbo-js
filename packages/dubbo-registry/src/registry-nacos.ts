@@ -19,8 +19,10 @@ import debug from 'debug'
 import BaseRegistry from './registry-base'
 import { IRegistry } from './registry'
 import { INaocsClientProps, TDubboInterface, TDubboUrl } from './types'
+import qs from 'querystring'
 
-const log = debug('dubbo:nacos')
+// log
+const dlog = debug('dubbo:nacos~')
 const NacosNamingClient = require('nacos').NacosNamingClient
 
 // nacos debug
@@ -31,9 +33,11 @@ export class NacosRegistry
   private nacosProps: INaocsClientProps
   private client: typeof NacosNamingClient
 
+  private readonly readyPromise: Promise<void>
+
   constructor(nacosProps: INaocsClientProps) {
     super()
-    log(`init nacos with %O`, this.nacosProps)
+    dlog(`init nacos with %O`, nacosProps)
     this.nacosProps = nacosProps
     this.nacosProps.nacosRoot = this.nacosProps.nacosRoot || 'dubbo'
 
@@ -45,83 +49,92 @@ export class NacosRegistry
 
   // nacos connect
   private async init() {
-    let registryUrl = this.nacosProps.url.split('nacos://')[1]
-    log(`connecting nacosserver ${registryUrl}`)
+    let registryUrl = this.nacosProps.connect.split('nacos://')[1]
+    dlog(`connecting nacosserver ${registryUrl}`)
 
     this.client = new NacosNamingClient({
       logger: console,
       serverList: registryUrl,
       namespace: 'public'
     })
-
     this.client.ready()
   }
 
-  // private _init = async (err: Error) => {
-  //   // nacos occur error
-  //   if (err) {
-  //     log(err)
-  //     traceErr(err)
-  //     this.subscriber.onError(err)
-  //     return
-  //   }
-
-  //   // if current nacos call from dubbo provider, registry provider service to nacos
-  //   if (this.props.type === 'provider') {
-  //     log(`this._dubboProps.type=${this.props.type}`)
-  //     return
-  //   }
-
-  //   // nacos connected
-  //   let {interfaces, dubboSetting} = this.props
-
-  //   log(`this._dubboProps=${this.props}`)
-
-  //   // 获取所有 provider
-  //   for (let item of interfaces) {
-  //     let obj = await dubboSetting.getDubboSetting(item)
-  //     // providers:org.apache.dubbo.demo.DemoProvider:1.0.0:
-  //     let inf = 'providers:' + item + ':' + obj.version + ':'
-  //     const dubboServiceUrls = await this._client.getAllInstances(inf)
-  //     // set dubbo interface meta info
-  //     for (let {ip, port, metadata} of dubboServiceUrls) {
-  //       this.dubboServiceUrlMap.set(metadata.path, {...metadata, ip, port})
-  //     }
-  //   }
-  //   log(`this._dubboServiceUrlMap=${this.dubboServiceUrlMap}`)
-  //   this.subscriber.onData(this.allAgentAddrSet)
-  // }
-
-  // ~~~~~~~~~~~~~~~~ public ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
   ready(): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
-  findDubboServiceUrls(dubboInterfaces: string[]): Promise<void> {
-    console.log(dubboInterfaces)
-    throw new Error('Method not implemented.')
+    return this.readyPromise
   }
 
-  registerServices(
+  async findDubboServiceUrls(dubboInterfaces: Array<string>) {
+    dlog('find dubbo service urls => %O', dubboInterfaces)
+    await Promise.all(
+      dubboInterfaces.map((dubboInterface) =>
+        this.findDubboServiceUrl(dubboInterface)
+      )
+    )
+    this.emitData(this.dubboServiceUrlMap)
+  }
+
+  async findDubboServiceUrl(dubboInterface: string) {
+    const dubboServiceUrls = await this.client.getAllInstances(dubboInterface)
+    dlog('dubboServiceUrls => %O', dubboServiceUrls)
+    for (let { ip: hostname, port, metadata } of dubboServiceUrls) {
+      const url = `consumer://${hostname}:${port}/${dubboInterface}?${qs.stringify(
+        metadata
+      )}`
+      this.dubboServiceUrlMap.set(dubboInterface, [url])
+    }
+  }
+
+  // 注册服务提供
+  async registerServices(
     services: Array<{
       dubboServiceInterface: TDubboInterface
       dubboServiceUrl: TDubboUrl
     }>
-  ): Promise<void> {
-    console.log(services)
-    throw new Error('Method not implemented.')
+  ) {
+    dlog('services => %O', services)
+    for (let { dubboServiceInterface, dubboServiceUrl } of services) {
+      let metadata = qs.parse(dubboServiceUrl.split('?')[1])
+      const ipAndHost = dubboServiceUrl.split('dubbo://')[1].split('/')[0]
+      const ip = ipAndHost.split(':')[0]
+      const port = ipAndHost.split(':')[1] || 80
+      dlog('metadata and ipAndHost => ', metadata, ipAndHost)
+      await this.client.registerInstance(dubboServiceInterface, {
+        ip,
+        port,
+        metadata
+      })
+    }
   }
-  registerConsumers(
+
+  // 注册服务消费
+  async registerConsumers(
     consumers: Array<{
       dubboServiceInterface: TDubboInterface
       dubboServiceUrl: TDubboUrl
     }>
-  ): Promise<void> {
-    console.log(consumers)
-    throw new Error('Method not implemented.')
+  ) {
+    dlog('consumers => %O', consumers)
+    const dubboInterfaces = new Set<string>()
+    for (let { dubboServiceInterface, dubboServiceUrl } of consumers) {
+      dubboInterfaces.add(dubboServiceInterface)
+      let metadata = qs.parse(dubboServiceUrl.split('?')[1])
+      const ipAndHost = dubboServiceUrl.split('consumer://')[1].split('/')[0]
+      const ip = ipAndHost?.split(':')[0]
+      const port = ipAndHost?.split(':')[1] || 80
+      dlog('metadata and ipAndHost => ', metadata, ipAndHost)
+      await this.client.registerInstance(dubboServiceInterface, {
+        ip,
+        port,
+        metadata
+      })
+    }
+    await this.findDubboServiceUrls([...dubboInterfaces])
   }
 
-  close() {}
+  close(): void {
+    this.client?.close()
+  }
 
   getClient() {
     return this.client
@@ -129,5 +142,5 @@ export class NacosRegistry
 }
 
 export function Nacos(props: INaocsClientProps) {
-  new NacosRegistry(props)
+  return new NacosRegistry(props)
 }
