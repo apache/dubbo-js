@@ -19,7 +19,6 @@ import debug from 'debug'
 import { util } from '@apache/dubbo-common'
 import DubboTcpTransport from './dubbo-tcp-transport'
 import select from './select'
-const { noop } = util
 import {
   IDubboObservable,
   IDubboTransportSubscriber,
@@ -46,9 +45,9 @@ export default class DubboCluster
     log('init dubbo-cluster')
     this.dubboClusterTransportMap = new Map()
     this.subscriber = {
-      onConnect: noop,
-      onData: noop,
-      onClose: noop
+      onConnect: util.noop,
+      onData: util.noop,
+      onClose: util.noop
     }
   }
 
@@ -127,9 +126,9 @@ export default class DubboCluster
   }
 
   getAvailableDubboTransport(hostnames: Set<HostName>): DubboTcpTransport {
-    // 1. first, We find avaiable clusters
+    // 1. first, We find available clusters
     const allReadyHostnames = this.getAllReadyClusterHosts(hostnames)
-    log('find all avaiable clusters %s', allReadyHostnames)
+    log('find all available clusters %s', allReadyHostnames)
 
     // 2. select one cluster
     const hostname = select<string>(allReadyHostnames, 'random')
@@ -140,7 +139,7 @@ export default class DubboCluster
     // 3. get all transports
     const transports = this.getClusterReadyDubboTransports(hostname)
     log(
-      'find all avaiable transports %s',
+      'find all available transports %s',
       transports.map((t) => t.host)
     )
 

@@ -126,7 +126,6 @@ export default class DubboService {
       .createServer(this.handleSocketRequest)
       .listen(this.port, () => {
         log('start dubbo-server with port %d', this.port)
-        this.resolve()
         this.retry.reset()
         this.registerServices()
       })
@@ -204,9 +203,10 @@ export default class DubboService {
           ])
           // check hessian type
           if (!util.checkRetValHessian(res)) {
-            throw new Error(
+            ctx.body.err = new Error(
               `${path}#${methodName} return value not hessian type`
             )
+            return
           }
           ctx.body.res = res
         } catch (err) {
@@ -236,6 +236,7 @@ export default class DubboService {
   private async registerServices() {
     await this.registry.ready().catch((err) => {
       log('registry service error %s', err)
+      this.reject()
       throw err
     })
 
@@ -272,6 +273,9 @@ export default class DubboService {
 
     // register service to registry, such as zookeeper or nacos
     await this.registry.registerServices(registryServiceList)
+
+    // everything ready...
+    this.resolve()
   }
 
   /**

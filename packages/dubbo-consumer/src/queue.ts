@@ -78,7 +78,7 @@ export default class Queue implements IDubboObservable<TQueueObserver> {
 
       // set max timout
       ctx.setMaxTimeout(() => {
-        // delete thie context
+        // delete this context
         this.queue.delete(ctx.requestId)
       })
 

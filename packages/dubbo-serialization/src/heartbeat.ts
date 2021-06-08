@@ -61,7 +61,7 @@ export default class HeartBeat {
     const who = this.type === 'request' ? 'dubbo-consumer' : 'dubbo-server'
     log('%s init heartbeat manager', who)
 
-    // init heartbaet
+    // init heartbeat
     this.init()
   }
 

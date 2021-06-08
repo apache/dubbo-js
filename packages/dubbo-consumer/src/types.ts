@@ -54,10 +54,6 @@ export interface IDubboProvider {
   methods: { [methodName: string]: Function }
 }
 
-export interface IObservable<T> {
-  subscribe(subscriber: T): this
-}
-
 export interface IDirectlyDubboProps {
   dubboHost: string
   dubboVersion: string
