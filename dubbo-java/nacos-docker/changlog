@@ -16,15 +16,15 @@ version:1.3.0
 
 ### MemberLookup
 ### Addressing pattern category, If set, the priority is highest
-# nacos.core.member.lookup.type=[file,address-server,discovery]
+# nacos.core.member.lookup.type=[file,address-serverNacos,discovery]
 ## Set the cluster list with a configuration file or command-line argument
 # nacos.member.list=192.168.16.101:8847?raft_port=8807,192.168.16.101?raft_port=8808,192.168.16.101:8849?raft_port=8809
 ## for DiscoveryMemberLookup
 # If you want to use cluster node self-discovery, turn this parameter on
 # nacos.member.discovery=false
 ## for AddressServerMemberLookup
-# Maximum number of retries to query the address server upon initialization
-# nacos.core.address-server.retry=5
+# Maximum number of retries to query the address serverNacos upon initialization
+# nacos.core.address-serverNacos.retry=5
 
 #*************** JRaft Related Configurations ***************#
 

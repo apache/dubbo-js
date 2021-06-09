@@ -1,6 +1,6 @@
 # Nacos Docker
 
-本项目是 [Nacos](https://github.com/alibaba/nacos) Server 的 docker 镜像的 build 源码,以及 Nacos server 在 docker 的单机和集群的运行例子.
+本项目是 [Nacos](https://github.com/alibaba/nacos) Server 的 docker 镜像的 build 源码,以及 Nacos serverNacos 在 docker 的单机和集群的运行例子.
 
 ## 项目目录
 
@@ -14,7 +14,7 @@
 
 ### 注意事项
 
-- 从最新的 nacos:nacos-server/latest 镜像以后,移除了数据库主从镜像,具体原因请参考[移除主从镜像配置](https://github.com/nacos-group/nacos-docker/wiki/%E7%A7%BB%E9%99%A4%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%BB%E4%BB%8E%E9%95%9C%E5%83%8F%E9%85%8D%E7%BD%AE)
+- 从最新的 nacos:nacos-serverNacos/latest 镜像以后,移除了数据库主从镜像,具体原因请参考[移除主从镜像配置](https://github.com/nacos-group/nacos-docker/wiki/%E7%A7%BB%E9%99%A4%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%BB%E4%BB%8E%E9%95%9C%E5%83%8F%E9%85%8D%E7%BD%AE)
 - 从 Nacos 1.3.1 版本开始,数据库存储已经升级到 8.0,并且它向下兼容
 
 ## 快速开始
@@ -22,7 +22,7 @@
 打开命令窗口执行：
 
 ```powershell
- docker run --name nacos-standalone -e MODE=standalone -p 8848:8848 -d nacos/nacos-server:latest
+ docker run --name nacos-standalone -e MODE=standalone -p 8848:8848 -d nacos/nacos-serverNacos:latest
 ```
 
 ## 其他使用方式
@@ -94,7 +94,7 @@
 | JVM_MS                            | -XX:MetaspaceSize                                                                    | 默认 :128m                                                                  |
 | JVM_MMS                           | -XX:MaxMetaspaceSize                                                                 | 默认 :320m                                                                  |
 | NACOS_DEBUG                       | enable remote debug                                                                  | y/n 默认 :n                                                                 |
-| TOMCAT_ACCESSLOG_ENABLED          | server.tomcat.accesslog.enabled                                                      | 默认 :false                                                                 |
+| TOMCAT_ACCESSLOG_ENABLED          | serverNacos.tomcat.accesslog.enabled                                                 | 默认 :false                                                                 |
 | NACOS_AUTH_SYSTEM_TYPE            | 权限系统类型选择,目前只支持 nacos 类型                                               | 默认 :nacos                                                                 |
 | NACOS_AUTH_ENABLE                 | 是否开启权限系统                                                                     | 默认 :false                                                                 |
 | NACOS_AUTH_TOKEN_EXPIRE_SECONDS   | token 失效时间                                                                       | 默认 :18000                                                                 |

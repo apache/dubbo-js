@@ -1,6 +1,6 @@
 # Nacos Docker
 
-![Docker Pulls](https://img.shields.io/docker/pulls/nacos/nacos-server.svg?maxAge=60480)
+![Docker Pulls](https://img.shields.io/docker/pulls/nacos/nacos-serverNacos.svg?maxAge=60480)
 
 This project contains a Docker image meant to facilitate the deployment of [Nacos](https://github.com/alibaba/nacos).
 
@@ -10,11 +10,11 @@ This project contains a Docker image meant to facilitate the deployment of [Naco
 
 - build：Nacos makes the source code of the docker image
 - env: Environment variable file for compose yaml
-- example: Docker compose example for Nacos server
+- example: Docker compose example for Nacos serverNacos
 
 ## Precautions
 
-- The **database master-slave image** has been removed, after the latest `nacos/nacos-server:latest` image. For specific reasons, refer to [Removing the Master-Slave Image Configuration](https://github.com/nacos-group/nacos-docker/wiki/%E7%A7%BB%E9%99%A4%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%BB%E4%BB%8E%E9%95%9C%E5%83%8F%E9%85%8D%E7%BD%AE)
+- The **database master-slave image** has been removed, after the latest `nacos/nacos-serverNacos:latest` image. For specific reasons, refer to [Removing the Master-Slave Image Configuration](https://github.com/nacos-group/nacos-docker/wiki/%E7%A7%BB%E9%99%A4%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%BB%E4%BB%8E%E9%95%9C%E5%83%8F%E9%85%8D%E7%BD%AE)
 - Since Nacos 1.3.1 version, the database storage has been upgraded to 8.0, and it is backward compatible
 
 ## Quick Start
@@ -81,8 +81,8 @@ Run the following command：
 | MODE                              | cluster/standalone                                                                                                                | cluster/standalone default **cluster**                                                                 |
 | NACOS_SERVERS                     | nacos cluster address                                                                                                             | eg. ip1:port1 ip2:port2 ip3:port3                                                                      |
 | PREFER_HOST_MODE                  | Whether hostname are supported                                                                                                    | hostname/ip default **ip**                                                                             |
-| NACOS_APPLICATION_PORT            | nacos server port                                                                                                                 | default **8848**                                                                                       |
-| NACOS_SERVER_IP                   | custom nacos server ip when network was mutil-network                                                                             |                                                                                                        |
+| NACOS_APPLICATION_PORT            | nacos serverNacos port                                                                                                            | default **8848**                                                                                       |
+| NACOS_SERVER_IP                   | custom nacos serverNacos ip when network was mutil-network                                                                        |                                                                                                        |
 | SPRING_DATASOURCE_PLATFORM        | standalone support mysql                                                                                                          | mysql / empty default empty                                                                            |
 | MYSQL_SERVICE_HOST                | mysql host                                                                                                                        |                                                                                                        |
 | MYSQL_SERVICE_PORT                | mysql database port                                                                                                               | default : **3306**                                                                                     |
@@ -104,7 +104,7 @@ Run the following command：
 | JVM_MS                            | -XX:MetaspaceSize                                                                                                                 | default :128m                                                                                          |
 | JVM_MMS                           | -XX:MaxMetaspaceSize                                                                                                              | default :320m                                                                                          |
 | NACOS_DEBUG                       | enable remote debug                                                                                                               | y/n default :n                                                                                         |
-| TOMCAT_ACCESSLOG_ENABLED          | server.tomcat.accesslog.enabled                                                                                                   | default :false                                                                                         |
+| TOMCAT_ACCESSLOG_ENABLED          | serverNacos.tomcat.accesslog.enabled                                                                                              | default :false                                                                                         |
 | NACOS_AUTH_SYSTEM_TYPE            | The auth system to use, currently only 'nacos' is supported                                                                       | default :nacos                                                                                         |
 | NACOS_AUTH_ENABLE                 | If turn on auth system                                                                                                            | default :false                                                                                         |
 | NACOS_AUTH_TOKEN_EXPIRE_SECONDS   | The token expiration in seconds                                                                                                   | default :18000                                                                                         |
