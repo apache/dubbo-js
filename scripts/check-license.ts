@@ -111,7 +111,7 @@ const meta = {
 
   const haveNoLicenceFiles = []
 
-  // 2. check wether include license or not
+  // 2. check weather include license or not
   for await (let { file, content } of asyncReadFiles(files)) {
     const cfg = getMeta(file)
     const hasLicense = content.includes(cfg.license)
@@ -178,6 +178,18 @@ function* asyncWriteFiles(files: Array<{ file: string; content: string }>) {
           file
         }))
     } else {
+      // 如果是xml
+      if (
+        cfg.license === XML_LICENSE &&
+        content.includes(`<?xml version="1.0" encoding="UTF-8"?>`)
+      ) {
+        const [firstLine, ...rest] = content.split('\n')
+        yield fs
+          .writeFile(file, `${firstLine}\n${XML_LICENSE}\n${rest.join('\n')}`)
+          .then(() => ({ file }))
+        return
+      }
+
       yield fs
         .writeFile(file, `${cfg.license}\n\n${content}`)
         //@ts-ignore
