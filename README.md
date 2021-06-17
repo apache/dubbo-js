@@ -41,7 +41,7 @@ export default {
 };
 
 // =============== dubbo.ts ========================
-import {Dubbo} from 'dubbo-js';
+import {Dubbo} from 'apache-dubbo-js';
 import service from './service';
 
 // create dubbo object
@@ -67,7 +67,7 @@ The automatically translated typescript type definitions are not necessary, belo
 
 ```typescript
 // create the service to be injected
-import {Dubbo} from 'dubbo-js';
+import {Dubbo} from 'apache-dubbo-js';
 
 const demoProvider = dubbo =>
   dubbo.proxyService({
