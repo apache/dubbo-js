@@ -15,15 +15,9 @@
  * limitations under the License.
  */
 
-import {Dubbo, setting} from 'apache-dubbo-js';
-import {Application, Context} from 'midway';
-import service from './service';
-
-// declare module 'egg' {
-//   export interface EggApplication {
-//     dubbo: Dubbo<typeof service>;
-//   }
-// }
+import {Dubbo, setting} from 'apache-dubbo-js'
+import {Application, Context} from 'midway'
+import service from './service'
 
 export default async (app: Application) => {
   /**
@@ -39,22 +33,22 @@ export default async (app: Application) => {
         version: '1.0.0',
       },
     )
-    .match('org.apache.dubbo.demo.BasicTypeProvider', {version: '2.0.0'});
+    .match('org.apache.dubbo.demo.BasicTypeProvider', {version: '2.0.0'})
 
-  const {application, registry} = app.config.dubbo;
+  const {application, registry} = app.config.dubbo
   const dubbo = new Dubbo<typeof service>({
     application,
     registry,
     service,
     dubboSetting,
-  });
+  })
 
   dubbo.use(async (ctx: Context, next: any) => {
-    const start = Date.now();
-    await next();
-    const end = Date.now();
-    console.log(`${ctx.dubboInterface} was invoked, cost-time ${end - start}`);
-  });
+    const start = Date.now()
+    await next()
+    const end = Date.now()
+    console.log(`${ctx.dubboInterface} was invoked, cost-time ${end - start}`)
+  })
 
-  app.dubbo = dubbo;
-};
+  app.dubbo = dubbo
+}

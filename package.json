@@ -8,23 +8,29 @@
     "test": "jest"
   },
   "devDependencies": {
-    "lerna": "^2.5.1",
+    "@types/dateformat": "1.0.1",
     "@types/debug": "^0.0.30",
+    "@types/ip": "0.0.30",
     "@types/jest": "^21.1.6",
-    "@types/node": "^8.0.51",
-    "@types/node-zookeeper-client": "^0.2.6",
     "@types/js-to-java": "2.4.0",
     "@types/koa-compose": "3.2.2",
-    "@types/dateformat": "1.0.1",
-    "@types/ip": "0.0.30",
+    "@types/node": "^14.14.41",
+    "@types/node-zookeeper-client": "^0.2.6",
     "@types/uuid": "3.4.3",
+    "@types/glob": "^7.1.3",
+    "@types/prettier": "^2.2.3",
+    "husky": "^1.3.1",
     "jest": "^21.2.1",
-    "ts-jest": "^21.2.2",
-    "typescript": "2.9.2",
-    "ts-node": "^9.0.0",
-    "uuid": "3.2.1",
+    "lerna": "^2.5.1",
+    "prettier": "^2.2.1",
     "pretty-quick": "^1.10.0",
-    "husky": "^1.3.1"
+    "ts-jest": "^21.2.2",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.2.4",
+    "uuid": "3.2.1",
+    "glob": "^7.1.7",
+    "chalk": "^4.1.1",
+    "jest-diff": "^26.6.2"
   },
   "jest": {
     "transform": {
@@ -46,9 +52,10 @@
     ]
   },
   "prettier": {
-    "bracketSpacing": false,
+    "bracketSpacing": true,
     "singleQuote": true,
-    "trailingComma": "all"
+    "trailingComma": "none",
+    "semi": false
   },
   "husky": {
     "hooks": {

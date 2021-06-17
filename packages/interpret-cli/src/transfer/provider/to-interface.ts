@@ -17,107 +17,107 @@
 import {
   InterfaceDeclarationStructure,
   MethodSignatureStructure,
-  PropertySignatureStructure,
-} from 'ts-simple-ast';
+  PropertySignatureStructure
+} from 'ts-simple-ast'
 
-import debug from 'debug';
-import {toField} from '../bean/to-field';
-import {IJClass} from '../../typings';
-import {toMethod} from '../to-method';
-import {IntepretHandle} from '../../handle';
+import debug from 'debug'
+import { toField } from '../bean/to-field'
+import { IJClass } from '../../typings'
+import { toMethod } from '../to-method'
+import { IntepretHandle } from '../../handle'
 
-const log = debug('j2t:core:toInterface');
+const log = debug('j2t:core:toInterface')
 
 export async function toInterface(
   typeDef: IJClass,
-  intepretHandle: IntepretHandle,
+  intepretHandle: IntepretHandle
 ): Promise<InterfaceDeclarationStructure> {
-  log('调用转换方法 toInterface::');
-  let methods: MethodSignatureStructure[] = [];
-  let properties: PropertySignatureStructure[] = [];
+  log('调用转换方法 toInterface::')
+  let methods: MethodSignatureStructure[] = []
+  let properties: PropertySignatureStructure[] = []
 
   for (let fieldName in typeDef.fields) {
-      properties.push(
-        await toField(fieldName, typeDef.fields[fieldName], intepretHandle),
-      );
+    properties.push(
+      await toField(fieldName, typeDef.fields[fieldName], intepretHandle)
+    )
   }
 
-  let filtersMethodNames = genePropsGetSet(properties.map(({name}) => name));
+  let filtersMethodNames = genePropsGetSet(properties.map(({ name }) => name))
 
-  log('添加过滤方法:: %j', filtersMethodNames);
+  log('添加过滤方法:: %j', filtersMethodNames)
 
   //add extra javaType declare;
-  let extraImport: string[] = ['argumentMap'];
+  let extraImport: string[] = ['argumentMap']
   for (let methodName in typeDef.methods) {
     if (filtersMethodNames.includes(methodName)) {
-      continue;
+      continue
     }
-    let _methodName =methodName;
+    let _methodName = methodName
 
     if (typeDef.methods[methodName].isOverride) {
-      console.log('文件是override类型::',typeDef.name,methodName);
-      _methodName = methodName.substring(0, methodName.lastIndexOf('@override'));
+      console.log('文件是override类型::', typeDef.name, methodName)
+      _methodName = methodName.substring(0, methodName.lastIndexOf('@override'))
     }
 
     let methodItem = await toMethod(
       _methodName,
       typeDef.methods[methodName],
-      intepretHandle,
-    );
+      intepretHandle
+    )
 
     //如果是基本类型, 生成typescript的类型与js-to-java类型相对应 javaXXX;
-    let methodDef = typeDef.methods[methodName];
+    let methodDef = typeDef.methods[methodName]
 
     for (var i = 0, iLen = methodDef.params.length; i < iLen; i++) {
-      var paramItem = methodDef.params[i];
+      var paramItem = methodDef.params[i]
       if (paramItem.isArray) {
         if (TypeMap[paramItem.elementType.name]) {
           methodItem.parameters[i].type =
-            TypeMap[paramItem.elementType.name] + '[]';
+            TypeMap[paramItem.elementType.name] + '[]'
           if (!extraImport.includes(TypeMap[paramItem.elementType.name])) {
-            extraImport.push(TypeMap[paramItem.elementType.name]);
+            extraImport.push(TypeMap[paramItem.elementType.name])
           }
         }
       } else {
         if (TypeMap[paramItem.name]) {
-          methodItem.parameters[i].type = TypeMap[paramItem.name];
+          methodItem.parameters[i].type = TypeMap[paramItem.name]
           if (!extraImport.includes(TypeMap[paramItem.name])) {
-            extraImport.push(TypeMap[paramItem.name]);
+            extraImport.push(TypeMap[paramItem.name])
           }
         }
       }
     }
-    methods.push(methodItem);
+    methods.push(methodItem)
   }
 
   intepretHandle.sourceFile.addImport({
     moduleSpecifier: 'interpret-util',
-    defaultImport: `{${extraImport.join(',')}}`,
-  });
+    defaultImport: `{${extraImport.join(',')}}`
+  })
 
-  log('转换 名称::%s 属性 :%j  方法:%j', typeDef.name, properties, methods);
+  log('转换 名称::%s 属性 :%j  方法:%j', typeDef.name, properties, methods)
 
   return {
     name: 'I' + intepretHandle.getTypeInfo(typeDef.name).className,
     isExported: true,
     methods,
-    properties,
-  };
+    properties
+  }
 }
 
 export function genePropsGetSet(propsNames: string[]) {
-  let filtersMethodNames = [];
-  propsNames.forEach(name => {
+  let filtersMethodNames = []
+  propsNames.forEach((name) => {
     if (name.startsWith('is')) {
-      filtersMethodNames.push(name);
-      filtersMethodNames.push(name.replace('is', 'set'));
+      filtersMethodNames.push(name)
+      filtersMethodNames.push(name.replace('is', 'set'))
     } else {
-      let _methodName = name.charAt(0).toUpperCase() + name.slice(1);
-      filtersMethodNames.push('set' + _methodName);
-      filtersMethodNames.push('get' + _methodName);
+      let _methodName = name.charAt(0).toUpperCase() + name.slice(1)
+      filtersMethodNames.push('set' + _methodName)
+      filtersMethodNames.push('get' + _methodName)
     }
-  });
-  return filtersMethodNames;
+  })
+  return filtersMethodNames
 }
 
 const TypeMap = {
@@ -141,5 +141,5 @@ const TypeMap = {
   'java.util.List': 'JavaList',
   'java.util.Set': 'JavaSet',
   'java.util.HashMap': 'JavaHashMap',
-  'java.util.Map': 'JavaMap',
-};
+  'java.util.Map': 'JavaMap'
+}
