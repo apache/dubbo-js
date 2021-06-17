@@ -2,6 +2,8 @@
 
 Dubbo-js, using Node.js to embrace the Dubbo ecosystem. See this [Demo](https://github.com/apache/dubbo-js) to find how intelligent this project is.
 
+[![Node.js CI](https://github.com/apache/dubbo-js/actions/workflows/nodejs.yml/badge.svg?branch=master)](https://github.com/apache/dubbo-js/actions/workflows/nodejs.yml)
+
 ## Features
 
 - Various transport protocols (Hessian, JSON-RPC etc.) supports
