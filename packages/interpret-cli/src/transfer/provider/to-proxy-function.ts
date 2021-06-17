@@ -14,21 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import debug from 'debug';
-import {FunctionDeclarationStructure} from 'ts-simple-ast';
+import debug from 'debug'
+import { FunctionDeclarationStructure } from 'ts-simple-ast'
 
-const log = debug('j2t:core:toBeanClass');
+const log = debug('j2t:core:toBeanClass')
 
 export function toProxyFunc({
   typeName,
-  typePath,
+  typePath
 }: {
-  typeName: string;
-  typePath: string;
+  typeName: string
+  typePath: string
 }): FunctionDeclarationStructure {
-  let parameters = [{name: 'dubbo', isReadOnly: true, type: 'Dubbo'}];
+  let parameters = [{ name: 'dubbo', isReadOnly: true, type: 'Dubbo' }]
 
-  log('调用转换方法 toProxyFunc::');
+  log('调用转换方法 toProxyFunc::')
   return {
     name: `${typeName}`,
     isExported: true,
@@ -37,6 +37,6 @@ export function toProxyFunc({
     bodyText: `return dubbo.proxyService<${'I' + typeName}>({
         dubboInterface: '${typePath}',
         methods: ${typeName}Wrapper,
-      }); `,
-  };
+      }); `
+  }
 }

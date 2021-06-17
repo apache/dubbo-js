@@ -14,40 +14,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {TypeInfoI} from '../../typings';
-import {jType2Ts} from '../type-parse';
+import { TypeInfoI } from '../../typings'
+import { jType2Ts } from '../type-parse'
 
-let beans = ['com.qianmi.gavin.comm.Phone'];
-let typeInfo: Map<string, TypeInfoI> = new Map();
+let beans = ['com.qianmi.gavin.comm.Phone']
+let typeInfo: Map<string, TypeInfoI> = new Map()
 typeInfo.set('com.qianmi.gavin.comm.Phone', {
   classPath: 'com.qianmi.gavin.comm.Phone',
   packagePath: 'com.qianmi.gavin.comm',
   className: 'Phone',
   isProvider: false,
   isClass: false,
-  isEnum: true,
-});
+  isEnum: true
+})
 
 describe('基本类型转换', () => {
   let typeOptions = {
-    isTypeParam: typeName => {
-      return false;
+    isTypeParam: (typeName) => {
+      return false
     },
     addDenpend: async (classPath: string) => {
-      let _typeInfo = typeInfo.get(classPath);
+      let _typeInfo = typeInfo.get(classPath)
       return {
         classPath: _typeInfo.classPath,
         name: _typeInfo.className,
-        importName: _typeInfo.className,
-      };
+        importName: _typeInfo.className
+      }
     },
     hasAst: (classPath: string) => {
-      return beans.includes(classPath);
+      return beans.includes(classPath)
     },
 
     getTypeInfo: (classPath: string) => {
       if (typeInfo.has(classPath)) {
-        return typeInfo.get(classPath);
+        return typeInfo.get(classPath)
       } else {
         return {
           isProvider: false,
@@ -55,11 +55,11 @@ describe('基本类型转换', () => {
           isEnum: false,
           classPath: '',
           packagePath: '',
-          className: '',
-        };
+          className: ''
+        }
       }
-    },
-  };
+    }
+  }
 
   it('枚举Enum<Phone>类型转换', async () => {
     let type = await jType2Ts(
@@ -70,27 +70,27 @@ describe('基本类型转换', () => {
             isWildcard: false,
             type: {
               name: 'com.qianmi.gavin.comm.Phone',
-              typeArgs: [],
-            },
-          },
-        ],
+              typeArgs: []
+            }
+          }
+        ]
       },
-      typeOptions,
-    );
-    expect(type).toEqual('Phone');
-  });
+      typeOptions
+    )
+    expect(type).toEqual('Phone')
+  })
 
   it('java.lang下的类型转换', async () => {
     let type = await jType2Ts(
       {
         isArray: false,
-        name: 'java.lang.Integer',
+        name: 'java.lang.Integer'
       },
-      typeOptions,
-    );
+      typeOptions
+    )
 
-    expect(type).toEqual('number');
-  });
+    expect(type).toEqual('number')
+  })
 
   it('map泛型二层转换', async () => {
     let type = await jType2Ts(
@@ -103,8 +103,8 @@ describe('基本类型转换', () => {
             type: {
               isArray: false,
               name: 'java.lang.String',
-              typeArgs: [],
-            },
+              typeArgs: []
+            }
           },
           {
             isWildcard: false,
@@ -117,20 +117,20 @@ describe('基本类型转换', () => {
                   type: {
                     isArray: false,
                     name: 'java.lang.String',
-                    typeArgs: [],
-                  },
-                },
-              ],
-            },
-          },
-        ],
+                    typeArgs: []
+                  }
+                }
+              ]
+            }
+          }
+        ]
       },
-      typeOptions,
-    );
-    expect(type).toMatchSnapshot();
-  });
-});
+      typeOptions
+    )
+    expect(type).toMatchSnapshot()
+  })
+})
 
 describe('数组类型转换', () => {
-  it('基本数据类型转换', async () => {});
-});
+  it('基本数据类型转换', async () => {})
+})

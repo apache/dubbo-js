@@ -5,7 +5,7 @@ sidebar_label: Troubleshooting
 ---
 
 ```javascript
-import {Dubbo} from 'apache-dubbo-js';
+import { Dubbo } from 'apache-dubbo-js'
 ```
 
 默认导入的 apache-dubbo-js 是按照 es2017 进行编译的，支持 node7.10 以上。
@@ -13,7 +13,7 @@ import {Dubbo} from 'apache-dubbo-js';
 如果更低的 node 版本，可以使用
 
 ```javascript
-import {Dubbo} from 'apache-dubbo-js/es6';
+import { Dubbo } from 'apache-dubbo-js/es6'
 ```
 
 ## 报错了，为什么呢？
@@ -35,13 +35,13 @@ DEBUG=dubbo* pm2 start xxxx
 最普通
 
 ```sh
-DEBUG=dubbo* node server.js
+DEBUG=dubbo* node serverNacos.js
 ```
 
 ## log example
 
 ```text
-❯ DEBUG=dubbo* node server.js
+❯ DEBUG=dubbo* node serverNacos.js
   dubbo:queue new Queue +0ms
   dubbo:bootstrap dubbo2.js version :=> 2.1.5 +0ms
   dubbo:bootstrap initial:|> { application: { name: 'dubbo-node-consumer' },
@@ -105,9 +105,9 @@ DEBUG=dubbo* node server.js
   dubbo:zookeeper     version: '1.0.0',
   dubbo:zookeeper     group: '' } ] } +0ms
   dubbo:scheduler get agent address:=> Set { '172.19.6.203:20880' } +90ms
-  dubbo:server-agent agerntAddrs: Set { '172.19.6.203:20880' } +0ms
+  dubbo:serverNacos-agent agerntAddrs: Set { '172.19.6.203:20880' } +0ms
   dubbo:zookeeper init providerMap and agentSet +5ms
-  dubbo:server-agent create ServerAgent: 172.19.6.203:20880 +0ms
+  dubbo:serverNacos-agent create ServerAgent: 172.19.6.203:20880 +0ms
 { type: 'INFO',
   msg: 'ServerAgent create socket-pool: 172.19.6.203:20880' }
   dubbo:socket-pool new:|> {
