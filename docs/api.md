@@ -66,25 +66,25 @@ const demoSerivce = dubbo.proxService({
 ### connect dubbo directly
 
 ```typescript
-import {DirectlyDubbo, java} from 'apache-dubbo-js';
+import { DirectlyDubbo, java } from 'apache-dubbo-js'
 import {
   DemoProvider,
   DemoProviderWrapper,
-  IDemoProvider,
-} from './providers/com/alibaba/dubbo/demo/DemoProvider';
-import {UserRequest} from './providers/com/alibaba/dubbo/demo/UserRequest';
+  IDemoProvider
+} from './providers/com/alibaba/dubbo/demo/DemoProvider'
+import { UserRequest } from './providers/com/alibaba/dubbo/demo/UserRequest'
 
 const dubbo = DirectlyDubbo.from({
   dubboAddress: 'localhost:20880',
   dubboVersion: '2.0.0',
-  dubboInvokeTimeout: 10,
-});
+  dubboInvokeTimeout: 10
+})
 
 const demoService = dubbo.proxyService<IDemoProvider>({
   dubboInterface: 'com.alibaba.dubbo.demo.DemoProvider',
   methods: DemoProviderWrapper,
-  version: '1.0.0',
-});
+  version: '1.0.0'
+})
 ```
 
 ## When dubbo was ready?
@@ -121,13 +121,13 @@ const dubbo = Dubbo.from(/*...*/);
 ## dubbo's subscriber
 
 ```javascript
-const dubbo = Dubbo.from(/*...*/);
+const dubbo = Dubbo.from(/*...*/)
 
 dubbo.subscribe({
   onTrace(msg: ITrace) {
-    console.log(msg);
-  },
-});
+    console.log(msg)
+  }
+})
 ```
 
 you should get runtime trace info
@@ -279,8 +279,8 @@ you should get runtime trace info
     at TCP._handle.close [as _onclose] (net.js:541:12) }
 { type: 'ERR',
   msg: Error: 172.19.6.203:20880's pool socket-worker had all closed. delete 172.19.6.203:20880
-    at ServerAgent._clearClosedPool (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/server-agent.js:66:33)
-    at Object.onClose (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/server-agent.js:51:34)
+    at ServerAgent._clearClosedPool (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/serverNacos-agent.js:66:33)
+    at Object.onClose (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/serverNacos-agent.js:51:34)
     at SocketWorker._onClose (/Users/hufeng/Github/dubbo2.js/packages/dubbo/es7/socket-worker.js:97:34)
     at Socket.emit (events.js:180:13)
     at TCP._handle.close [as _onclose] (net.js:541:12) }

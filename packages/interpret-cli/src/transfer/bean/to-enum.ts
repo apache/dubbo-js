@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import debug from 'debug';
-import {EnumDeclarationStructure} from 'ts-simple-ast';
-import {IntepretHandle} from '../../handle';
-import {IJClass} from '../../typings';
+import debug from 'debug'
+import { EnumDeclarationStructure } from 'ts-simple-ast'
+import { IntepretHandle } from '../../handle'
+import { IJClass } from '../../typings'
 
-const log = debug('j2t:core:toField');
+const log = debug('j2t:core:toField')
 
 /**
  * 枚举类型转换;
@@ -29,29 +29,29 @@ const log = debug('j2t:core:toField');
 export function toEnum(
   className: string,
   enumDef: IJClass,
-  intepretHandle: IntepretHandle,
+  intepretHandle: IntepretHandle
 ): EnumDeclarationStructure {
-  log('转换 为枚举:%o', enumDef);
+  log('转换 为枚举:%o', enumDef)
 
   let members = [],
     paramNmu = 0,
-    fieldIndex = 0;
+    fieldIndex = 0
   for (var fieldsKey in enumDef.fields) {
     if (enumDef.fields[fieldsKey].name === className) {
       let initializer = `"${fieldsKey}"`,
-        values = intepretHandle.astJava.values || [];
+        values = intepretHandle.astJava.values || []
 
       if (typeof values[fieldIndex] === 'number') {
-        initializer = `${values[fieldIndex]}`;
+        initializer = `${values[fieldIndex]}`
       }
 
       members.push({
         name: fieldsKey,
-        initializer,
-      });
-      fieldIndex++;
+        initializer
+      })
+      fieldIndex++
     } else {
-      paramNmu++;
+      paramNmu++
     }
   }
 
@@ -60,11 +60,11 @@ export function toEnum(
     className,
     '参数数量:',
     paramNmu,
-    ' 联系相关接口开发人员,尽量不要使用枚举类型',
-  );
+    ' 联系相关接口开发人员,尽量不要使用枚举类型'
+  )
   return {
     isExported: true,
     name: intepretHandle.getTypeInfo(className).className,
-    members,
-  };
+    members
+  }
 }

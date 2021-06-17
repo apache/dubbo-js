@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test zookeeper registry test registryConsumer 1`] = `
+Map {
+  "org.apache.demo.service.HelloService" => Array [],
+  "org.apache.demo.service.UserService" => Array [],
+}
+`;

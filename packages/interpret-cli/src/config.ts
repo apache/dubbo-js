@@ -14,31 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {readJson} from 'fs-extra';
-import {isAbsolute, join} from 'path';
-import {to} from './to';
-import {IConfig} from './typings';
+import { readJson } from 'fs-extra'
+import { isAbsolute, join } from 'path'
+import { to } from './to'
+import { IConfig } from './typings'
 
 export default class Config {
   static fromConfigPath(
-    configPath: string,
-  ): Promise<{err: Error; res: IConfig}> {
+    configPath: string
+  ): Promise<{ err: Error; res: IConfig }> {
     return to<IConfig>(
-      readJson(configPath).then(config => {
+      readJson(configPath).then((config) => {
         // Relative path to absolute path
-        config.output = Config.getAbsolutePath(config.output);
-        config.entryJarPath = Config.getAbsolutePath(config.entryJarPath);
-        config.libDirPath = Config.getAbsolutePath(config.libDirPath);
-        return config;
-      }),
-    );
+        config.output = Config.getAbsolutePath(config.output)
+        config.entryJarPath = Config.getAbsolutePath(config.entryJarPath)
+        config.libDirPath = Config.getAbsolutePath(config.libDirPath)
+        return config
+      })
+    )
   }
 
   static getAbsolutePath(filePath: string) {
     if (filePath && !isAbsolute(filePath)) {
-      return join(process.cwd(), filePath);
+      return join(process.cwd(), filePath)
     } else {
-      return filePath;
+      return filePath
     }
   }
 }
