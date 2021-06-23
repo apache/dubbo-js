@@ -39,19 +39,19 @@ import { ErrorProvider } from './providers/org/apache/dubbo/demo/ErrorProvider'
 export default {
   BasicTypeProvider,
   DemoProvider,
-  ErrorProvider,
+  ErrorProvider
 }
 
 // =============== dubbo.ts ========================
-import {Dubbo} from 'apache-dubbo-js';
-import service from './service';
+import { Dubbo } from 'apache-dubbo-js'
+import service from './service'
 
 // create dubbo object
 const dubbo = new Dubbo<typeof service>({
   application: { name: 'dubbo-js' },
   // zookeeper address
   register: 'localhost:2181',
-  service,
+  service
 })
 
 // main method
@@ -69,7 +69,7 @@ The automatically translated typescript type definitions are not necessary, belo
 
 ```typescript
 // create the service to be injected
-import {Dubbo} from 'apache-dubbo-js';
+import { Dubbo } from 'apache-dubbo-js'
 
 const demoProvider = (dubbo) =>
   dubbo.proxyService({
@@ -89,21 +89,21 @@ const demoProvider = (dubbo) =>
           java.combine('org.apache.dubbo.demo.UserRequest', {
             id: 1,
             name: 'nodejs',
-            email: 'node@test.com',
-          }),
+            email: 'node@test.com'
+          })
         ]
-      },
-    },
+      }
+    }
   })
 
 // integrate the service in demoProvider with dubbo object constructor
 const service = {
-  demoProvider,
+  demoProvider
 }
 
 const dubbo = new Dubbo<typeof service>({
   // ....other parameters
-  service,
+  service
 })
 ```
 

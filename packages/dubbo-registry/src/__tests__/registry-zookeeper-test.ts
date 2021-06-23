@@ -31,6 +31,8 @@ describe('test zookeeper registry', () => {
     })
     const res = await zk.ready()
     expect(res).toBeUndefined()
+
+    zk.close()
   })
 
   it('test zk ready failed', async () => {
@@ -49,11 +51,11 @@ describe('test zookeeper registry', () => {
 
     const err = await zk.ready().catch((err) => err)
     expect(err instanceof Error).toBeTruthy()
+
+    zk.close()
   })
 
   it('test registerServices', async () => {
-    const map = new Map([])
-
     const services = [
       {
         dubboServiceInterface: 'org.apache.demo.service.HelloService',
@@ -72,6 +74,8 @@ describe('test zookeeper registry', () => {
     })
 
     await zk.registerServices(services)
+
+    zk.close()
   })
 
   it('test registryConsumer', async () => {
@@ -95,5 +99,6 @@ describe('test zookeeper registry', () => {
       onError(err) {}
     })
     await zk.registerConsumers(services)
+    zk.close()
   })
 })

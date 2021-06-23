@@ -231,6 +231,7 @@ export class ZookeeperRegistry
   }
 
   close(): void {
+    this.timeout.clearTimeout()
     this.client?.close()
   }
 

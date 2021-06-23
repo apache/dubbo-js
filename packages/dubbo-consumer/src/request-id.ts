@@ -21,7 +21,7 @@ export function id() {
   uniqueId = ++uniqueId
   //reset
   if (uniqueId === Number.MAX_SAFE_INTEGER) {
-    uniqueId = 0
+    uniqueId = 1
   }
   return uniqueId
 }

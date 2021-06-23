@@ -17,7 +17,6 @@
 
 import Koa from 'koa'
 import { Dubbo } from '@apache/dubbo-consumer'
-// import { Zk } from '@apache/dubbo-registry'
 import { Nacos } from '@apache/dubbo-registry'
 import services from './service'
 
@@ -26,14 +25,12 @@ const dubbo = new Dubbo<typeof services>({
     name: 'hello-api'
   },
   registry: Nacos({ connect: 'nacos://localhost:8848' }),
-  // registry: Zk({ connect: 'localhost:2181' }),
   services
 })
 
 const server = new Koa()
 server.use(async (ctx) => {
   const { res, err } = await dubbo.service.helloService.hello('dubbo-js')
-  console.log(res, err)
   ctx.body = {
     res,
     err: err?.message

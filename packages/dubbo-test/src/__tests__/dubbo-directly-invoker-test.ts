@@ -52,15 +52,12 @@ describe('dubbo test suite', () => {
     const hello = await demoService.sayHello(java.String('dubbo'))
     expect(hello.res).toEqual('hello dubbo')
     expect(hello.err).toBeNull()
-
     const echo = await demoService.echo()
     expect(echo.res).toEqual('pong')
     expect(echo.err).toBeNull()
-
     const test = await demoService.test()
     expect(test.res).toBeNull()
     expect(test.err).toBeNull()
-
     const userInfo = await demoService.getUserInfo(
       new UserRequest({
         id: 1,

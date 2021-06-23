@@ -40,6 +40,7 @@ export default class DubboTcpTransport
   implements IDubboObservable<IDubboTransportSubscriber> {
   public readonly host: string
   private _status: STATUS
+  private forceClose: boolean
   private retry: Retry
   private heartBeat: HeartBeat
   private transport: net.Socket
@@ -48,6 +49,7 @@ export default class DubboTcpTransport
   private constructor(host: string) {
     log('init tcp-transport with %s:%s status: %s', host, this._status)
     this.host = host
+    this.forceClose = false
     this._status = STATUS.PADDING
 
     //init subscriber
@@ -121,7 +123,9 @@ export default class DubboTcpTransport
   private onClose = () => {
     log('tcp-transport#%s was closed', this.host)
     this._status = STATUS.CLOSED
-    this.retry.start()
+    if (!this.forceClose) {
+      this.retry.start()
+    }
   }
 
   //==================================public method==========================
@@ -177,7 +181,11 @@ export default class DubboTcpTransport
     return this
   }
 
+  /**
+   * force close tcp transport
+   */
   close() {
+    this.forceClose = true
     this.transport.destroy()
   }
 }

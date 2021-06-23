@@ -22,11 +22,11 @@ export interface IHelloService {
 }
 
 export const helloService = (dubbo: Dubbo): IHelloService =>
-  dubbo.proxyService({
+  dubbo.proxyService<IHelloService>({
     dubboInterface: `org.apache.dubbojs.service.HelloService`,
     methods: {
       hello(name: string) {
         return [java.String(name)]
       }
     }
-  }) as any
+  })

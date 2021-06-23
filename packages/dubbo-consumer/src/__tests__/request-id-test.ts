@@ -17,10 +17,25 @@
 
 import { id } from '../request-id'
 
+const originNum = Number
+
+beforeAll(() => {
+  // @ts-ignore
+  global.Number = {
+    MAX_SAFE_INTEGER: 6
+  }
+})
+
 it('test generate uuid', () => {
   expect(id()).toEqual(1)
   expect(id()).toEqual(2)
   expect(id()).toEqual(3)
   expect(id()).toEqual(4)
   expect(id()).toEqual(5)
+  expect(id()).toEqual(1)
+  expect(id()).toEqual(2)
+})
+
+afterAll(() => {
+  global.Number = originNum
 })
