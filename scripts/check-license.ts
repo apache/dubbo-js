@@ -22,6 +22,8 @@ import chalk from 'chalk'
 import prettier from 'prettier'
 import pkg from '../package.json'
 
+const prettierConfig = fs.readJSONSync('../.prettierrc')
+
 const LICENSE = `/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -169,7 +171,7 @@ function* asyncWriteFiles(files: Array<{ file: string; content: string }>) {
         .writeFile(
           file,
           prettier.format(`${cfg.license}\n\n${content}`, {
-            ...pkg.prettier,
+            ...prettierConfig,
             parser: 'typescript'
           } as any)
         )
