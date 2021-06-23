@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [10, 12]
+        node-version: [10, 12, 14]
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
@@ -32,10 +32,10 @@ jobs:
 
       - name: Install Dependencies
         run: npm i -g lerna && lerna bootstrap
-        
+
       - name: compile all modules
         run: make
-         
+
       - name: Continuous Integration
         run: npm run test
 

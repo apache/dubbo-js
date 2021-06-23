@@ -511,26 +511,6 @@
   resolved "https://registry.npm.taobao.org/@tootallnate/once/download/@tootallnate/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha1-zLkURTYBeaBOf+av94wA/8Hur4I=
 
-"@tsconfig/node10@^1.0.7":
-  version "1.0.8"
-  resolved "https://registry.nlark.com/@tsconfig/node10/download/@tsconfig/node10-1.0.8.tgz#c1e4e80d6f964fbecb3359c43bd48b40f7cadad9"
-  integrity sha1-weToDW+WT77LM1nEO9SLQPfK2tk=
-
-"@tsconfig/node12@^1.0.7":
-  version "1.0.9"
-  resolved "https://registry.nlark.com/@tsconfig/node12/download/@tsconfig/node12-1.0.9.tgz#62c1f6dee2ebd9aead80dc3afa56810e58e1a04c"
-  integrity sha1-YsH23uLr2a6tgNw6+laBDljhoEw=
-
-"@tsconfig/node14@^1.0.0":
-  version "1.0.1"
-  resolved "https://registry.nlark.com/@tsconfig/node14/download/@tsconfig/node14-1.0.1.tgz#95f2d167ffb9b8d2068b0b235302fafd4df711f2"
-  integrity sha1-lfLRZ/+5uNIGiwsjUwL6/U33EfI=
-
-"@tsconfig/node16@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.nlark.com/@tsconfig/node16/download/@tsconfig/node16-1.0.1.tgz#a6ca6a9a0ff366af433f42f5f0e124794ff6b8f1"
-  integrity sha1-pspqmg/zZq9DP0L18OEkeU/2uPE=
-
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.14":
   version "7.1.14"
   resolved "https://registry.nlark.com/@types/babel__core/download/@types/babel__core-7.1.14.tgz#faaeefc4185ec71c389f4501ee5ec84b170cc402"
@@ -5099,15 +5079,11 @@ ts-jest@^27.0.3:
     semver "7.x"
     yargs-parser "20.x"
 
-ts-node@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.nlark.com/ts-node/download/ts-node-10.0.0.tgz?cache=0&sync_timestamp=1621809812550&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fts-node%2Fdownload%2Fts-node-10.0.0.tgz#05f10b9a716b0b624129ad44f0ea05dac84ba3be"
-  integrity sha1-BfELmnFrC2JBKa1E8OoF2shLo74=
+ts-node@^9.1.1:
+  version "9.1.1"
+  resolved "https://registry.nlark.com/ts-node/download/ts-node-9.1.1.tgz?cache=0&sync_timestamp=1621809812550&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fts-node%2Fdownload%2Fts-node-9.1.1.tgz#51a9a450a3e959401bda5f004a72d54b936d376d"
+  integrity sha1-UamkUKPpWUAb2l8ASnLVS5NtN20=
   dependencies:
-    "@tsconfig/node10" "^1.0.7"
-    "@tsconfig/node12" "^1.0.7"
-    "@tsconfig/node14" "^1.0.0"
-    "@tsconfig/node16" "^1.0.1"
     arg "^4.1.0"
     create-require "^1.1.0"
     diff "^4.0.1"
