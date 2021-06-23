@@ -574,6 +574,13 @@
   resolved "https://registry.npm.taobao.org/@types/debug/download/@types/debug-0.0.30.tgz?cache=0&sync_timestamp=1613378490981&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fdebug%2Fdownload%2F%40types%2Fdebug-0.0.30.tgz#dc1e40f7af3b9c815013a7860e6252f6352a84df"
   integrity sha1-3B5A9687nIFQE6eGDmJS9jUqhN8=
 
+"@types/fs-extra@9.0.11":
+  version "9.0.11"
+  resolved "https://registry.nlark.com/@types/fs-extra/download/@types/fs-extra-9.0.11.tgz?cache=0&sync_timestamp=1621241200090&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Ffs-extra%2Fdownload%2F%40types%2Ffs-extra-9.0.11.tgz#8cc99e103499eab9f347dbc6ca4e99fb8d2c2b87"
+  integrity sha1-jMmeEDSZ6rnzR9vGyk6Z+40sK4c=
+  dependencies:
+    "@types/node" "*"
+
 "@types/glob@^7.1.3":
   version "7.1.3"
   resolved "https://registry.npm.taobao.org/@types/glob/download/@types/glob-7.1.3.tgz#e6ba80f36b7daad2c685acd9266382e68985c183"
