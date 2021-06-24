@@ -27,7 +27,27 @@ describe('test zookeeper registry', () => {
       connect: 'localhost:2181',
       timeout: 5000,
       debug_level: Zookeeper.constants.ZOO_LOG_LEVEL_WARN,
-      host_order_deterministic: false
+      host_order_deterministic: false,
+      zkRootPath: '/dubbo'
+    })
+    const res = await zk.ready()
+    expect(res).toBeUndefined()
+
+    zk.close()
+  })
+
+  it('test zk with zkRootPath and ready ok', async () => {
+    const zk = Zk({
+      connect: 'localhost:2181',
+      zkRootPath: '/test/com.demo.dubbo'
+    })
+
+    expect(zk.getProps()).toEqual({
+      connect: 'localhost:2181',
+      timeout: 5000,
+      debug_level: Zookeeper.constants.ZOO_LOG_LEVEL_WARN,
+      host_order_deterministic: false,
+      zkRootPath: '/test/com.demo.dubbo'
     })
     const res = await zk.ready()
     expect(res).toBeUndefined()

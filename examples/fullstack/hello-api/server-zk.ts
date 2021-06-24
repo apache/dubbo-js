@@ -28,6 +28,7 @@ const dubbo = new Dubbo<typeof services>({
   services
 })
 
+// start server
 const server = new Koa()
 server.use(async (ctx) => {
   const { res, err } = await dubbo.service.helloService.hello('dubbo-js')

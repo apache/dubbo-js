@@ -37,6 +37,7 @@ export interface IZkClientConfig {
   timeout?: number
   debug_level?: number
   host_order_deterministic?: boolean
+  zkRootPath?: string
 }
 
 export interface INodeProps {

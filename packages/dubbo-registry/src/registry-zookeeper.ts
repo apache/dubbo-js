@@ -33,8 +33,8 @@ const dlog = debug('dubbo:zookeeper~')
 export class ZookeeperRegistry
   extends BaseRegistry
   implements IRegistry<Zookeeper> {
-  private client: Zookeeper
   private readonly props: IZkClientConfig
+  private client: Zookeeper
   private timeout: Timeout
 
   private readonly readyPromise: Promise<void>
@@ -45,6 +45,8 @@ export class ZookeeperRegistry
     super()
     dlog(`init zookeeper with %O`, props)
     this.props = props
+
+    this.props.zkRootPath = this.props.zkRootPath || DUBBO_ZK_ROOT_PATH
 
     // init ready promise
     this.readyPromise = new Promise((resolve, reject) => {
@@ -86,7 +88,7 @@ export class ZookeeperRegistry
 
       try {
         // create root node
-        await this.mkdirp(DUBBO_ZK_ROOT_PATH)
+        await this.mkdirp(this.props.zkRootPath)
         // trigger ready promise
         this.resolve()
       } catch (err) {
@@ -142,7 +144,7 @@ export class ZookeeperRegistry
   }
 
   private wrapWatch(dubboInterface: string) {
-    const servicePath = `${DUBBO_ZK_ROOT_PATH}/${dubboInterface}/providers`
+    const servicePath = `${this.props.zkRootPath}/${dubboInterface}/providers`
     return async (type: number, state: number) => {
       dlog('wrapWatch %s %d %d', servicePath, type, state)
       await this.findDubboServiceUrl(dubboInterface)
@@ -171,7 +173,7 @@ export class ZookeeperRegistry
   }
 
   async findDubboServiceUrl(dubboInterface: string) {
-    const servicePath = `${DUBBO_ZK_ROOT_PATH}/${dubboInterface}/providers`
+    const servicePath = `${this.props.zkRootPath}/${dubboInterface}/providers`
     const urls = (
       await this.client
         .w_get_children(servicePath, this.wrapWatch(dubboInterface))
@@ -198,7 +200,7 @@ export class ZookeeperRegistry
   ) {
     for (let { dubboServiceInterface, dubboServiceUrl } of services) {
       // create service root path
-      const serviceRootPath = `${DUBBO_ZK_ROOT_PATH}/${dubboServiceInterface}/providers`
+      const serviceRootPath = `${this.props.zkRootPath}/${dubboServiceInterface}/providers`
       await this.mkdirp(serviceRootPath)
       // create service node
       await this.createNode({
@@ -219,7 +221,7 @@ export class ZookeeperRegistry
     for (let { dubboServiceInterface, dubboServiceUrl } of consumers) {
       dubboInterfaces.add(dubboServiceInterface)
       // create consumer root path
-      const consumerRootPath = `${DUBBO_ZK_ROOT_PATH}/${dubboServiceInterface}/consumers`
+      const consumerRootPath = `${this.props.zkRootPath}/${dubboServiceInterface}/consumers`
       await this.mkdirp(consumerRootPath)
       // create service node
       await this.createNode({

@@ -19,6 +19,7 @@ import { DubboService } from '@apache/dubbo-service'
 import { Nacos } from '@apache/dubbo-registry'
 import services from './service'
 
+// start
 ;(async function main() {
   const dubbo = new DubboService({
     // registry: Zk({ connect: 'localhost:2181' }),
