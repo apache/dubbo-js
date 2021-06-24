@@ -30,13 +30,13 @@ import {
 } from './constants'
 import Request from './request'
 
+const reqLog = debug('dubbo:decodeDubboRequest');
 export function decodeDubboRequest(buff: Buffer): Request {
-  const log = debug('dubbo:decodeDubboRequest')
 
   const flag = buff[2]
   // get requestId
   const requestId = byte.fromBytes8(buff.slice(4, 12))
-  log('decode requestId -> ', requestId)
+  reqLog('decode requestId -> ', requestId)
   const req = new Request(requestId)
 
   // decode request
@@ -79,9 +79,9 @@ export function decodeDubboRequest(buff: Buffer): Request {
   return req
 }
 
+const resLog = debug('dubbo:decodeDubboResponse')
 //com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec.encodeResponse/decode
 export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
-  const log = debug('dubbo:decodeDubboResponse')
 
   let res = null
   let err = null
@@ -91,7 +91,7 @@ export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
   //字节位置[4-11] 8 bytes
   const requestIdBuff = bytes.slice(4, 12)
   const requestId = byte.fromBytes8(requestIdBuff)
-  log(`decode parse requestId: ${requestId}`)
+  resLog(`decode parse requestId: ${requestId}`)
 
   const typeId = bytes[2]
 
@@ -107,7 +107,7 @@ export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
   // get response status.
   const status = bytes[3]
 
-  log(
+  resLog(
     `parse response status: ${status}, DUBBO_RESPONSE_STATUS: ${
       DUBBO_RESPONSE_STATUS[DUBBO_RESPONSE_STATUS.OK]
     }`
@@ -128,7 +128,7 @@ export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
   // current status flag
   const flag = body.readInt()
 
-  log(
+  resLog(
     `parse dubbo response body flag: ${flag}, DUBBO_RESPONSE_BODY_FLAG: ${DUBBO_RESPONSE_BODY_FLAG[flag]}`
   )
 
