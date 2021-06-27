@@ -19,6 +19,16 @@ import Zookeeper from 'zookeeper'
 import { Zk } from '../registry-zookeeper'
 
 describe('test zookeeper registry', () => {
+  it('test throw connection url error', () => {
+    try {
+      Zk({
+        connect: ''
+      })
+    } catch (err) {
+      expect(err.message).toEqual('Please specify zookeeper connect url')
+    }
+  })
+
   it('test zk props and ready ok', async () => {
     const zk = Zk({
       connect: 'localhost:2181'
