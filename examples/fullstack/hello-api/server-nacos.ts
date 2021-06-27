@@ -24,7 +24,11 @@ const dubbo = new Dubbo<typeof services>({
   application: {
     name: 'hello-api'
   },
-  registry: Nacos({ connect: 'nacos://localhost:8848' }),
+  registry: Nacos({
+    connect: 'localhost:8848',
+    namespace: 'public',
+    logger: console
+  }),
   services
 })
 
