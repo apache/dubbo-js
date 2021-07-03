@@ -201,13 +201,14 @@ export default class DubboService {
             ...(request.args || []),
             ctx
           ])
+          // FIXEDME waiting dubbo/dj
           // check hessian type
-          if (!util.checkRetValHessian(res)) {
-            ctx.body.err = new Error(
-              `${path}#${methodName} return value not hessian type`
-            )
-            return
-          }
+          // if (!util.checkRetValHessian(res)) {
+          //   ctx.body.err = new Error(
+          //     `${path}#${methodName} return value not hessian type`
+          //   )
+          //   return
+          // }
           ctx.body.res = res
         } catch (err) {
           log(`handle request error %s`, err)
