@@ -33,8 +33,6 @@ export interface IDubboServerProps {
 
 export interface IDubboService {
   dubboInterface: string
-  version?: string
-  group?: string
   methods: { [key in string]: Function }
 }
 
