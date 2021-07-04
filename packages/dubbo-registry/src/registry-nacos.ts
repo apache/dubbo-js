@@ -91,18 +91,20 @@ export class NacosRegistry
         this.findDubboServiceUrl(dubboInterface)
       )
     )
-    this.emitData(this.dubboServiceUrlMap)
   }
 
   async findDubboServiceUrl(dubboInterface: string) {
-    const dubboServiceUrls = await this.client.getAllInstances(dubboInterface)
-    dlog('dubboServiceUrls => %O', dubboServiceUrls)
-    for (let { ip: hostname, port, metadata } of dubboServiceUrls) {
-      const url = `beehive://${hostname}:${port}/${dubboInterface}?${qs.stringify(
-        metadata
-      )}`
-      this.dubboServiceUrlMap.set(dubboInterface, [url])
-    }
+    this.client.subscribe(dubboInterface, (dubboServiceUrls) => {
+      dlog('dubboServiceUrls => %O', dubboServiceUrls)
+      const urls = dubboServiceUrls.map((item) => {
+        const { ip, port, serviceName, metadata } = item
+        const inf = serviceName.split('@@')[1]
+        return `beehive://${ip}:${port}/${inf}?${qs.stringify(metadata)}`
+      })
+      this.dubboServiceUrlMap.set(dubboInterface, urls)
+      dlog('urls => %O', urls)
+      this.emitData(this.dubboServiceUrlMap)
+    })
   }
 
   // 注册服务提供
