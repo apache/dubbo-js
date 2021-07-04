@@ -44,6 +44,7 @@ export class ZookeeperRegistry
   constructor(props: IZkClientConfig) {
     super()
     dlog(`init zookeeper with %O`, props)
+    this.checkProps(props)
     this.props = props
 
     this.props.zkRootPath = this.props.zkRootPath || DUBBO_ZK_ROOT_PATH
@@ -66,6 +67,12 @@ export class ZookeeperRegistry
   }
 
   // ~~~~~~~~~~~~~~~~ private ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  private checkProps(props: IZkClientConfig) {
+    if (!props.connect) {
+      throw new Error(`Please specify zookeeper connect url`)
+    }
+  }
+
   private init() {
     // cache this.client
     if (this.client) {

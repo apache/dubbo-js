@@ -60,4 +60,4 @@ es7
 examples/hello-egg/typings
 examples/hello-midway/src/typings
 
-dubbo-java/nacos-docker/example/
+dubbo-java/nacos-docker/example/standalone-logs/

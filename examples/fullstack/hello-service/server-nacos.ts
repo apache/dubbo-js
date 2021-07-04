@@ -22,8 +22,11 @@ import services from './service'
 // start
 ;(async function main() {
   const dubbo = new DubboService({
-    // registry: Zk({ connect: 'localhost:2181' }),
-    registry: Nacos({ connect: 'nacos://localhost:8848' }),
+    registry: Nacos({
+      connect: 'localhost:8848',
+      namespace: 'public',
+      logger: console
+    }),
     services
   })
   await dubbo.ready()
