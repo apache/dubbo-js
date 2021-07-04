@@ -14,14 +14,5 @@
 #  limitations under the License.
 
 #!/usr/bin/env sh
-
-# build java dubbo jar
-cd ./dubbo-java/dubbo-demo
-mvn clean install
-cd dubbo-demo-provider-with-nacos
-mvn clean package
-
 # start nacos cluster
-docker-compose -f ../../nacos-docker/example/standalone-derby.yaml up &
-# start java dubbo service
-java -jar ./target/dubbo-demo-provider-with-nacos-2.7.4.1-jar-with-dependencies.jar
+docker-compose -f ./nacos-docker/example/standalone-derby.yaml up

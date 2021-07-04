@@ -20,6 +20,7 @@ import BaseRegistry from './registry-base'
 import { IRegistry } from './registry'
 import { INaocsClientProps, TDubboInterface, TDubboUrl } from './types'
 import qs from 'querystring'
+import { util } from '@apache/dubbo-common'
 
 // log
 const dlog = debug('dubbo:nacos~')
@@ -28,7 +29,8 @@ const NacosNamingClient = require('nacos').NacosNamingClient
 // nacos debug
 export class NacosRegistry
   extends BaseRegistry
-  implements IRegistry<typeof NacosNamingClient> {
+  implements IRegistry<typeof NacosNamingClient>
+{
   // nacos props
   private nacosProps: INaocsClientProps
   private client: typeof NacosNamingClient
@@ -38,10 +40,11 @@ export class NacosRegistry
   private reject: Function
 
   constructor(nacosProps: INaocsClientProps) {
+    NacosRegistry.checkProps(nacosProps)
     super()
     dlog(`init nacos with %O`, nacosProps)
     this.nacosProps = nacosProps
-    this.nacosProps.nacosRoot = this.nacosProps.nacosRoot || 'dubbo'
+    this.nacosProps.namespace = this.nacosProps.namespace || 'default'
 
     // init ready promise
     this.readyPromise = new Promise((resolve, reject) => {
@@ -57,13 +60,16 @@ export class NacosRegistry
 
   // nacos connect
   private async init() {
-    let registryUrl = this.nacosProps.connect.split('nacos://')[1]
-    dlog(`connecting nacosserver ${registryUrl}`)
+    // support nacos cluster
+    let serverList = this.nacosProps.connect.split(',')
+    let namespace = this.nacosProps.namespace || 'public'
+    let logger = this.nacosProps.logger || console
+    dlog(`connecting nacos server ${serverList}`)
 
     this.client = new NacosNamingClient({
-      logger: console,
-      serverList: registryUrl,
-      namespace: 'public'
+      serverList,
+      namespace,
+      logger
     })
 
     try {
@@ -85,18 +91,20 @@ export class NacosRegistry
         this.findDubboServiceUrl(dubboInterface)
       )
     )
-    this.emitData(this.dubboServiceUrlMap)
   }
 
   async findDubboServiceUrl(dubboInterface: string) {
-    const dubboServiceUrls = await this.client.getAllInstances(dubboInterface)
-    dlog('dubboServiceUrls => %O', dubboServiceUrls)
-    for (let { ip: hostname, port, metadata } of dubboServiceUrls) {
-      const url = `consumer://${hostname}:${port}/${dubboInterface}?${qs.stringify(
-        metadata
-      )}`
-      this.dubboServiceUrlMap.set(dubboInterface, [url])
-    }
+    this.client.subscribe(dubboInterface, (dubboServiceUrls) => {
+      dlog('dubboServiceUrls => %O', dubboServiceUrls)
+      const urls = dubboServiceUrls.map((item) => {
+        const { ip, port, serviceName, metadata } = item
+        const inf = serviceName.split('@@')[1]
+        return `beehive://${ip}:${port}/${inf}?${qs.stringify(metadata)}`
+      })
+      this.dubboServiceUrlMap.set(dubboInterface, urls)
+      dlog('urls => %O', urls)
+      this.emitData(this.dubboServiceUrlMap)
+    })
   }
 
   // 注册服务提供
@@ -108,16 +116,7 @@ export class NacosRegistry
   ) {
     dlog('services => %O', services)
     for (let { dubboServiceInterface, dubboServiceUrl } of services) {
-      let metadata = qs.parse(dubboServiceUrl.split('?')[1])
-      const ipAndHost = dubboServiceUrl.split('dubbo://')[1].split('/')[0]
-      const ip = ipAndHost.split(':')[0]
-      const port = ipAndHost.split(':')[1] || 80
-      dlog('metadata and ipAndHost => ', metadata, ipAndHost)
-      await this.client.registerInstance(dubboServiceInterface, {
-        ip,
-        port,
-        metadata
-      })
+      await this.registerInstance(dubboServiceInterface, dubboServiceUrl)
     }
   }
 
@@ -132,18 +131,27 @@ export class NacosRegistry
     const dubboInterfaces = new Set<string>()
     for (let { dubboServiceInterface, dubboServiceUrl } of consumers) {
       dubboInterfaces.add(dubboServiceInterface)
-      let metadata = qs.parse(dubboServiceUrl.split('?')[1])
-      const ipAndHost = dubboServiceUrl.split('consumer://')[1].split('/')[0]
-      const ip = ipAndHost?.split(':')[0]
-      const port = ipAndHost?.split(':')[1] || 80
-      dlog('metadata and ipAndHost => ', metadata, ipAndHost)
-      await this.client.registerInstance(dubboServiceInterface, {
-        ip,
-        port,
-        metadata
-      })
+      await this.registerInstance(dubboServiceInterface, dubboServiceUrl)
     }
     await this.findDubboServiceUrls([...dubboInterfaces])
+  }
+
+  async registerInstance(
+    dubboServiceInterface: string,
+    dubboServiceUrl: string
+  ) {
+    const metadata = {}
+    const urlObj = new URL(dubboServiceUrl)
+    dlog('urlObj => %O', urlObj)
+    const { hostname: ip, port, searchParams } = urlObj
+    for (const key of searchParams.keys()) {
+      metadata[key] = searchParams.get(key)
+    }
+    await this.client.registerInstance(dubboServiceInterface, {
+      ip,
+      port: port || 80,
+      metadata
+    })
   }
 
   close(): void {
@@ -152,6 +160,27 @@ export class NacosRegistry
 
   getClient() {
     return this.client
+  }
+
+  /**
+   * check nacos prop
+   * @param props
+   */
+  private static checkProps(props: INaocsClientProps) {
+    if (!props.connect) {
+      throw new Error(`Please specify nacos props, connect is required`)
+    }
+    if (!util.isString(props.connect)) {
+      throw new Error(`Please specify nacos props, connect should be a string`)
+    }
+    if (props.namespace && !util.isString(props.namespace)) {
+      throw new Error(
+        `Please specify nacos props, namespace should be a string`
+      )
+    }
+    if (!props.logger) {
+      throw new Error(`Please specify nacos props, logger is required`)
+    }
   }
 }
 
