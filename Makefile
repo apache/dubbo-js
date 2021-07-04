@@ -15,6 +15,8 @@
 
 default: build-interpret-util dubbo-common dubbo-registry dubbo-serialization dubbo-service dubbo-consumer
 
+clean-all: clean-dubbo-common clean-dubbo-registry clean-dubbo-registry clean-dubbo-serialization clean-dubbo-consumer clean-dubbo-service clean-interpret-util
+
 dubbo-common: clean-dubbo-common
 	npx tsc --project ./packages/dubbo-common/tsconfig.json
 	@echo "compile dubbo-common successfully ❤️\n"
@@ -68,17 +70,5 @@ build-demo-api:clean-demo-api
 	cd ./java/dubbo-demo/dubbo-demo-api && mvn install dependency:copy-dependencies
 	@echo "build demo-api successfully 👌\n"
 
-clean-demo-api:
-	cd ./java/dubbo-demo/dubbo-demo-api && mvn clean
-	@echo "clean demo-api successfully 👌\n"
-
 interpret-jar:build-demo-api
 	ts-node ./packages/interpret-cli/src/cli.ts interpret -c dubbo.json
-
-build-dubbo-invoker:clean-dubbo-invoker
-	npx tsc --project ./packages/dubbo-invoker/tsconfig.json
-	@echo "compile dubbo-invoker successfully 👏\n"
-
-clean-dubbo-invoker:
-	rm -rf ./packages/dubbo-invoker/lib
-	@echo "clean dubbo-invoker successfully 👏\n"

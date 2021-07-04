@@ -1,11 +1,8 @@
 # Release Notes
 
-
 ## 4.0.0
 
 ![image](https://user-images.githubusercontent.com/533008/124376606-67f4a680-dcda-11eb-91b9-96933828bf42.png)
-
-
 
 After long-term community feedback and collaboration, and thanks to the efforts of the vivo open source collaboration team, we finally ushered in the release of apache dubbo-js 4.0.0.
 
@@ -19,12 +16,11 @@ In the process of building dubbo-js, we adhere to the consistent principle.
 
 3. High performance and observable.
 
-
 ### Arch
 
 ![image](https://user-images.githubusercontent.com/533008/124376584-43003380-dcda-11eb-9917-8c8d439b1edb.png)
 
-### change log 
+### change log
 
 - Separate modules, refactor code, simplify implementation logic, and remove unnecessary defensive programming
 - Zookeeper's node underlying library is replaced with zookeeper's native c implementation, replacing the existing node-zookeeper-client
@@ -52,9 +48,8 @@ In the process of building dubbo-js, we adhere to the consistent principle.
 ### 【Bug fix】
 
 - Fix serialization of decodeDubboResponse of dubbo-consumer and deserialization of err object of error response
-- Repair the heartbeat mechanism between the consumer and the server to avoid a large number of heartbeat storms. At present,  The server will reply immediately after receiving the heartbeat, and the consumer will check and send periodically.
+- Repair the heartbeat mechanism between the consumer and the server to avoid a large number of heartbeat storms. At present, The server will reply immediately after receiving the heartbeat, and the consumer will check and send periodically.
 - Fix the version setting of dubboVersion of dubbo-consumer, this version should be the protocol version of dubbo protocal, not the version of dubbo library
-
 
 ## 3.0.0
 
