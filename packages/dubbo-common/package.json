@@ -1,5 +1,5 @@
 {
-  "name": "@apache/dubbo-common",
+  "name": "apache-dubbo-common",
   "version": "0.0.1",
   "main": "./lib/index.js",
   "types": "./lib/typings/index.d.ts",
