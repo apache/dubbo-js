@@ -20,7 +20,7 @@ import BaseRegistry from './registry-base'
 import { IRegistry } from './registry'
 import { INaocsClientProps, TDubboInterface, TDubboUrl } from './types'
 import qs from 'querystring'
-import { util } from '@apache/dubbo-common'
+import { util } from 'apache-dubbo-common'
 
 // log
 const dlog = debug('dubbo:nacos~')
@@ -29,8 +29,7 @@ const NacosNamingClient = require('nacos').NacosNamingClient
 // nacos debug
 export class NacosRegistry
   extends BaseRegistry
-  implements IRegistry<typeof NacosNamingClient>
-{
+  implements IRegistry<typeof NacosNamingClient> {
   // nacos props
   private nacosProps: INaocsClientProps
   private client: typeof NacosNamingClient

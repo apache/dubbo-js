@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { IRegistry } from '@apache/dubbo-registry'
+import { IRegistry } from 'apache-dubbo-registry'
 import DubboTcpTransport from './dubbo-tcp-transport'
 import { DubboSetting } from './dubbo-setting'
 

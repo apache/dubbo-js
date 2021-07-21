@@ -16,7 +16,7 @@
  */
 
 import debug from 'debug'
-import { util } from '@apache/dubbo-common'
+import { util } from 'apache-dubbo-common'
 import DubboTcpTransport from './dubbo-tcp-transport'
 import select from './select'
 import {

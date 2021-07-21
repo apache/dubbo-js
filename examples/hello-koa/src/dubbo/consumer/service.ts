@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Dubbo, java, TDubboCallResult } from '@apache/dubbo-consumer'
+import { Dubbo, java, TDubboCallResult } from 'apache-dubbo-consumer'
 
 //=====================types===========================
 export interface IUserResponse {

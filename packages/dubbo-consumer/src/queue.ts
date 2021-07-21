@@ -24,7 +24,7 @@ import {
   TQueueObserver,
   TRequestId
 } from './types'
-import { util } from '@apache/dubbo-common'
+import { util } from 'apache-dubbo-common'
 
 const { noop } = util
 const log = debug('dubbo:queue')
@@ -76,7 +76,7 @@ export default class Queue implements IDubboObservable<TQueueObserver> {
       log(`add queue,requestId#${requestId}, interface: ${dubboInterface}`)
       this.queue.set(requestId, ctx)
 
-      // set max timout
+      // set max timeout
       ctx.setMaxTimeout(() => {
         // delete this context
         this.queue.delete(ctx.requestId)

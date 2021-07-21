@@ -16,7 +16,7 @@
  */
 
 import debug from 'debug'
-import { byte, util } from '@apache/dubbo-common'
+import { byte, util } from 'apache-dubbo-common'
 import { IObservable, TDecodeBuffSubscriber } from './types'
 import {
   DUBBO_HEADER_LENGTH,

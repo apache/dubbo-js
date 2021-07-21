@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { util } from '@apache/dubbo-common'
+import { util } from 'apache-dubbo-common'
 import {
   IDubboSetting,
   TDubboInterface,

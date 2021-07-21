@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@apache/dubbo-tedst",
+  "name": "apache-dubbo-test",
   "version": "0.0.1",
   "main": "./lib/index.js",
   "types": "./lib/typings/index.d.ts",
@@ -19,7 +19,7 @@
     "url": "https://github.com/apache/dubbo-js"
   },
   "dependencies": {
-    "@apache/dubbo-consumer": "*",
-    "@apache/dubbo-service": "*"
+    "apache-dubbo-consumer": "*",
+    "apache-dubbo-service": "*"
   }
 }

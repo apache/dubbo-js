@@ -1,6 +1,6 @@
 {
-  "name": "@apache/dubbo-serialization",
-  "version": "0.0.1",
+  "name": "apache-dubbo-serialization",
+  "version": "0.0.2",
   "main": "./lib/index.js",
   "types": "./lib/typings/index.d.ts",
   "license": "Apache Licence 2.0",
@@ -18,6 +18,6 @@
     "url": "https://github.com/apache/dubbo-js"
   },
   "dependencies": {
-    "@apache/dubbo-common": "0.0.1"
+    "apache-dubbo-common": "0.0.1"
   }
 }

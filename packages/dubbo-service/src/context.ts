@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Request, DUBBO_RESPONSE_STATUS } from '@apache/dubbo-serialization'
+import { Request, DUBBO_RESPONSE_STATUS } from 'apache-dubbo-serialization'
 
 export default class Context<T = any> {
   private readonly req: Request

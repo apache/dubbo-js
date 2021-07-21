@@ -18,7 +18,7 @@
 import debug from 'debug'
 import { Socket } from 'net'
 import Hessian from 'hessian.js'
-import { util } from '@apache/dubbo-common'
+import { util } from 'apache-dubbo-common'
 import {
   DUBBO_FLAG_REQUEST,
   DUBBO_FLAG_TWOWAY,

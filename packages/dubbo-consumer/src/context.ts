@@ -18,7 +18,7 @@
 import debug from 'debug'
 import cfg from './config'
 import { id } from './request-id'
-import { util } from '@apache/dubbo-common'
+import { util } from 'apache-dubbo-common'
 import { DubboInvokeTimeout } from './err'
 import { IContextRequestParam, IDubboResult, IHessianType } from './types'
 

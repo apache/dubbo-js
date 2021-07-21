@@ -20,7 +20,7 @@ import ip from 'ip'
 import debug from 'debug'
 import qs from 'querystring'
 import compose, { Middleware } from 'koa-compose'
-import { Retry, util } from '@apache/dubbo-common'
+import { Retry, util } from 'apache-dubbo-common'
 import {
   DecodeBuffer,
   decodeDubboRequest,
@@ -28,7 +28,7 @@ import {
   DubboResponseEncoder,
   HeartBeat,
   Request
-} from '@apache/dubbo-serialization'
+} from 'apache-dubbo-serialization'
 import Context from './context'
 import { randomPort } from './port'
 import { DubboSetting } from './dubbo-setting'

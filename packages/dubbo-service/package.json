@@ -1,5 +1,5 @@
 {
-  "name": "@apache/dubbo-service",
+  "name": "apache-dubbo-service",
   "version": "0.0.1",
   "main": "./lib/index.js",
   "types": "./lib/typings/index.d.ts",
@@ -19,8 +19,8 @@
   },
   "dependencies": {
     "ip": "^1.1.5",
-    "@apache/dubbo-serialization": "0.0.1",
-    "@apache/dubbo-common": "0.0.1",
+    "apache-dubbo-serialization": "^0.0.2",
+    "apache-dubbo-common": "^0.0.1",
     "get-port": "^5.1.1"
   }
 }

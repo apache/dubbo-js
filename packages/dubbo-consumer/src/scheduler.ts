@@ -18,12 +18,12 @@
 import debug from 'debug'
 import DubboCluster from './dubbo-cluster'
 import Queue from './queue'
-import { IRegistry } from '@apache/dubbo-registry'
+import { IRegistry } from 'apache-dubbo-registry'
 import Context from './context'
 import DubboUrl from './dubbo-url'
 import { DubboScheduleError } from './err'
 import DubboTcpTransport from './dubbo-tcp-transport'
-import { DEFAULT_DUBBO_PROTOCOL_VERSION } from '@apache/dubbo-serialization'
+import { DEFAULT_DUBBO_PROTOCOL_VERSION } from 'apache-dubbo-serialization'
 import {
   Host,
   HostName,

@@ -17,7 +17,7 @@
 
 import debug from 'debug'
 import Hessian from 'hessian.js'
-import { byte } from '@apache/dubbo-common'
+import { byte } from 'apache-dubbo-common'
 import { DubboDecodeError, DubboServiceError } from './err'
 import { IDubboResponse } from './types'
 import {
@@ -30,9 +30,8 @@ import {
 } from './constants'
 import Request from './request'
 
-const reqLog = debug('dubbo:decodeDubboRequest');
+const reqLog = debug('dubbo:decodeDubboRequest')
 export function decodeDubboRequest(buff: Buffer): Request {
-
   const flag = buff[2]
   // get requestId
   const requestId = byte.fromBytes8(buff.slice(4, 12))
@@ -82,7 +81,6 @@ export function decodeDubboRequest(buff: Buffer): Request {
 const resLog = debug('dubbo:decodeDubboResponse')
 //com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec.encodeResponse/decode
 export function decodeDubboResponse<T>(bytes: Buffer): IDubboResponse<T> {
-
   let res = null
   let err = null
   let attachments = {}

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { IDubboService } from '@apache/dubbo-service'
+import { IDubboService } from 'apache-dubbo-service'
 import { TypeRequest } from '../TypeRequest'
 
 export class BasicTypeProvider implements IDubboService {

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import { Zk } from '@apache/dubbo-registry'
-import { DubboDirectlyInvoker, java } from '@apache/dubbo-consumer'
-import { DubboService } from '@apache/dubbo-service'
+import { Zk } from 'apache-dubbo-registry'
+import { DubboDirectlyInvoker, java } from 'apache-dubbo-consumer'
+import { DubboService } from 'apache-dubbo-service'
 import consumer from '../providers/org/apache/dubbo/demo/consumer'
 import provider from '../providers/org/apache/dubbo/demo/provider'
 import { UserRequest } from '../providers/org/apache/dubbo/demo/UserRequest'

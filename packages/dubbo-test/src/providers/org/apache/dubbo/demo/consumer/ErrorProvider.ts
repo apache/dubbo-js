@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Dubbo, TDubboCallResult } from '@apache/dubbo-consumer'
+import { Dubbo, TDubboCallResult } from 'apache-dubbo-consumer'
 import { argumentMap } from 'interpret-util'
 
 export interface IErrorProvider {

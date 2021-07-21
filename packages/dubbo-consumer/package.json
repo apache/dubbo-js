@@ -1,5 +1,5 @@
 {
-  "name": "@apache/dubbo-consumer",
+  "name": "apache-dubbo-consumer",
   "version": "4.0.0",
   "main": "./lib/index.js",
   "types": "./lib/typings/index.d.ts",
@@ -24,8 +24,8 @@
     "ip": "1.1.5",
     "js-to-java": "2.4.0",
     "koa-compose": "4.0.0",
-    "@apache/dubbo-common": "0.0.1",
-    "@apache/dubbo-serialization": "0.0.1",
-    "@apache/dubbo-registry": "0.0.1"
+    "apache-dubbo-common": "^0.0.1",
+    "apache-dubbo-serialization": "^0.0.2",
+    "apache-dubbo-registry": "^0.0.2"
   }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Dubbo, TDubboCallResult, java } from '@apache/dubbo-consumer'
+import { Dubbo, TDubboCallResult, java } from 'apache-dubbo-consumer'
 
 export interface IHelloService {
   hello(name: string): Promise<TDubboCallResult<string>>

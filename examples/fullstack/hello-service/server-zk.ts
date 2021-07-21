@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { DubboService } from '@apache/dubbo-service'
-import { Zk } from '@apache/dubbo-registry'
+import { DubboService } from 'apache-dubbo-service'
+import { Zk } from 'apache-dubbo-registry'
 import services from './service'
 
 // start

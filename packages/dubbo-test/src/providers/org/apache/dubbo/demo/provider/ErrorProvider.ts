@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { IDubboService } from '@apache/dubbo-service'
+import { IDubboService } from 'apache-dubbo-service'
 
 export class ErrorProvider implements IDubboService {
   dubboInterface = 'org.apache.dubbo.demo.ErrorProvider'

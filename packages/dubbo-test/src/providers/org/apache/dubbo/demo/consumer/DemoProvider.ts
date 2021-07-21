@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Dubbo, TDubboCallResult, java } from '@apache/dubbo-consumer'
+import { Dubbo, TDubboCallResult } from 'apache-dubbo-consumer'
 import { argumentMap, JavaString } from 'interpret-util'
 import { UserRequest } from '../UserRequest'
 import { UserResponse } from '../UserResponse'

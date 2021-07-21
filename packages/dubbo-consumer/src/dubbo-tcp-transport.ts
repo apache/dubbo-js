@@ -17,13 +17,13 @@
 
 import net from 'net'
 import debug from 'debug'
-import { util, Retry } from '@apache/dubbo-common'
+import { util, Retry } from 'apache-dubbo-common'
 import {
   DecodeBuffer,
   decodeDubboResponse,
   DubboRequestEncoder,
   HeartBeat
-} from '@apache/dubbo-serialization'
+} from 'apache-dubbo-serialization'
 import Context from './context'
 import { STATUS } from './dubbo-status'
 import { IDubboObservable, IDubboTransportSubscriber } from './types'

@@ -1,5 +1,5 @@
 {
-  "name": "@apache/dubbo-monitor",
+  "name": "apache-dubbo-monitor",
   "version": "0.0.1",
   "main": "./lib/index.js",
   "types": "./lib/typings/index.d.ts",

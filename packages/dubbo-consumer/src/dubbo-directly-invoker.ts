@@ -16,7 +16,7 @@
  */
 
 import debug from 'debug'
-import { go } from '@apache/dubbo-common'
+import { go } from 'apache-dubbo-common'
 import Context from './context'
 import { STATUS } from './dubbo-status'
 import DubboTcpTransport from './dubbo-tcp-transport'

@@ -17,7 +17,7 @@
 
 import debug from 'debug'
 import Hessian from 'hessian.js'
-import { byte, util } from '@apache/dubbo-common'
+import { byte, util } from 'apache-dubbo-common'
 import { DubboEncodeError } from './err'
 import {
   DUBBO_MAGIC_HEADER,

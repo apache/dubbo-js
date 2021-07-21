@@ -16,8 +16,8 @@
  */
 
 import Koa from 'koa'
-import { Dubbo } from '@apache/dubbo-consumer'
-import { Zk } from '@apache/dubbo-registry'
+import { Dubbo } from 'apache-dubbo-consumer'
+import { Zk } from 'apache-dubbo-registry'
 import services from './service'
 
 const dubbo = new Dubbo<typeof services>({
