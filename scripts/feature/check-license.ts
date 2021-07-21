@@ -20,7 +20,6 @@ import glob from 'glob'
 import fs from 'fs-extra'
 import chalk from 'chalk'
 import prettier from 'prettier'
-import pkg from '../package.json'
 
 const prettierConfig = fs.readJSONSync('../.prettierrc')
 
@@ -104,14 +103,14 @@ const meta = {
   }
 }
 
-// check file apache license
-;(async function checkLicense() {
-  // 是否需要fixed当前的文件
-  const fixed = process.argv[2]
+/**
+ * check file apache license
+ */
+export async function checkLicense() {
+  const haveNoLicenceFiles = []
+
   // 1. specify scan scope
   const files = await globFiles()
-
-  const haveNoLicenceFiles = []
 
   // 2. check weather include license or not
   for await (let { file, content } of asyncReadFiles(files)) {
@@ -126,14 +125,21 @@ const meta = {
   // fixed
   if (haveNoLicenceFiles.length === 0) {
     console.log(chalk.greenBright(`Yes, All file have apache license`))
-  } else if (fixed) {
-    console.log(`\n fixed......`)
-    // fixed files
-    for await (let { file } of asyncWriteFiles(haveNoLicenceFiles)) {
-      console.log(chalk.greenBright(`${file} fixed ok`))
-    }
   }
-})()
+
+  return haveNoLicenceFiles
+}
+
+/**
+ * fixed license issue file
+ */
+export async function fixedFileLicense() {
+  const haveNoLicenceFiles = await checkLicense()
+  console.log(`\nfixed......`)
+  for await (let { file } of asyncWriteFiles(haveNoLicenceFiles)) {
+    console.log(chalk.greenBright(`${file} fixed ok`))
+  }
+}
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ util ~~~~~~~~~~~~~~~~~~~~~~~~~~
 function globFiles(): Promise<Array<string>> {
