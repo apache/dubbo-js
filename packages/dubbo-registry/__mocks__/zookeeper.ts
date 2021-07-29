@@ -55,6 +55,10 @@ export default class ZookeeperMock extends EventEmitter {
     cb(null)
   }
 
+  mockConnectErr() {
+    this.isConnectErr = true
+  }
+
   create(
     path: string,
     data: string | Buffer,
