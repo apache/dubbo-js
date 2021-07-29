@@ -35,7 +35,7 @@ describe('test zookeeper registry', () => {
     })
     expect(zk.getProps()).toEqual({
       connect: 'localhost:2181',
-      timeout: 5000,
+      timeout: 40000,
       debug_level: Zookeeper.constants.ZOO_LOG_LEVEL_WARN,
       host_order_deterministic: false,
       zkRootPath: '/dubbo'
@@ -54,7 +54,7 @@ describe('test zookeeper registry', () => {
 
     expect(zk.getProps()).toEqual({
       connect: 'localhost:2181',
-      timeout: 5000,
+      timeout: 40000,
       debug_level: Zookeeper.constants.ZOO_LOG_LEVEL_WARN,
       host_order_deterministic: false,
       zkRootPath: '/test/com.demo.dubbo'
@@ -103,6 +103,7 @@ describe('test zookeeper registry', () => {
       connect: 'localhost:2181'
     })
 
+    await zk.ready()
     await zk.registerServices(services)
 
     zk.close()
@@ -126,8 +127,11 @@ describe('test zookeeper registry', () => {
       onData(data) {
         expect(data).toMatchSnapshot()
       },
-      onError(err) {}
+      onError(err) {
+        expect(err).toMatchSnapshot()
+      }
     })
+    await zk.ready()
     await zk.registerConsumers(services)
     zk.close()
   })

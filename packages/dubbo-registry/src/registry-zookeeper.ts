@@ -32,7 +32,8 @@ const dlog = debug('dubbo:zookeeper~')
 
 export class ZookeeperRegistry
   extends BaseRegistry
-  implements IRegistry<Zookeeper> {
+  implements IRegistry<Zookeeper>
+{
   private readonly props: IZkClientConfig
   private client: Zookeeper
   private timeout: Timeout
@@ -44,7 +45,7 @@ export class ZookeeperRegistry
   constructor(props: IZkClientConfig) {
     super()
     dlog(`init zookeeper with %O`, props)
-    this.checkProps(props)
+    ZookeeperRegistry.checkProps(props)
     this.props = props
 
     this.props.zkRootPath = this.props.zkRootPath || DUBBO_ZK_ROOT_PATH
@@ -56,6 +57,7 @@ export class ZookeeperRegistry
     })
 
     this.timeout = new Timeout({
+      maxTimeout: this.props.timeout || 40 * 1000,
       onTimeout: () => {
         this.reject(
           new Error(`zookeeper connect ${this.props.connect} timeout`)
@@ -67,20 +69,19 @@ export class ZookeeperRegistry
   }
 
   // ~~~~~~~~~~~~~~~~ private ~~~~~~~~~~~~~~~~~~~~~~~~~~
-  private checkProps(props: IZkClientConfig) {
+  private static checkProps(props: IZkClientConfig) {
     if (!props.connect) {
       throw new Error(`Please specify zookeeper connect url`)
     }
   }
 
   private init() {
-    // cache this.client
     if (this.client) {
-      return this.client
+      return
     }
 
     // set default props value
-    this.props.timeout = this.props.timeout || 5000
+    this.props.timeout = this.props.timeout || 40 * 1000
     this.props.debug_level =
       this.props.debug_level || Zookeeper.constants.ZOO_LOG_LEVEL_WARN
     this.props.host_order_deterministic =
@@ -106,6 +107,8 @@ export class ZookeeperRegistry
     this.client.on('close', () => {
       dlog(`zookeeper closed`)
       this.emitErr(new Error(`Zookeeper was closed`))
+      this.close()
+      this.init()
     })
 
     this.client.on('error', (err) => {
@@ -115,7 +118,7 @@ export class ZookeeperRegistry
     })
 
     process.nextTick(() => {
-      this.client.init(this.props)
+      this.client.init({})
     })
   }
 
@@ -241,7 +244,9 @@ export class ZookeeperRegistry
 
   close(): void {
     this.timeout.clearTimeout()
+    this.client?.removeAllListeners()
     this.client?.close()
+    this.client = null
   }
 
   getClient() {

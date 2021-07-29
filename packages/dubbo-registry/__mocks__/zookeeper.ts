@@ -55,10 +55,6 @@ export default class ZookeeperMock extends EventEmitter {
     cb(null)
   }
 
-  mockConnectErr() {
-    this.isConnectErr = true
-  }
-
   create(
     path: string,
     data: string | Buffer,
@@ -74,7 +70,7 @@ export default class ZookeeperMock extends EventEmitter {
   }
 
   exists(path: string) {
-    return Promise.reject(new Error(`node was not exists`))
+    return Promise.reject(new Error(`${path} was not exists`))
   }
 
   w_get_children(servicePath: string) {
