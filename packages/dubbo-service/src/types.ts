@@ -26,6 +26,8 @@ export type TMatchThunk = (
 ) => IDubboServiceSetting
 
 export interface IDubboServerProps {
+  application?: { name: string }
+  dubbo?: string
   registry: IRegistry<any>
   services: { [name in string]: IDubboService }
   dubboSetting?: DubboSetting

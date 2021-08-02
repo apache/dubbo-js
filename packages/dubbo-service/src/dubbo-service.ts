@@ -58,6 +58,9 @@ export default class DubboService {
   private reject: Function
   private readonly readyPromise: Promise<void>
 
+  private application: { name: string }
+  private dubbo: string
+
   private retry: Retry
   private port: number
   private server: net.Server
@@ -69,6 +72,10 @@ export default class DubboService {
 
   constructor(props: IDubboServerProps) {
     DubboService.checkProps(props)
+
+    // set application name
+    this.application = props.application
+    this.dubbo = props.dubbo
 
     // init ready promise
     this.readyPromise = new Promise((resolve, reject) => {
@@ -290,18 +297,29 @@ export default class DubboService {
   private buildUrl(service: IDubboService) {
     const { dubboInterface, group, version, methods } = service
     const methodName = Object.keys(methods).join()
+    const params = {
+      interface: dubboInterface,
+      methods: methodName,
+      side: 'provider',
+      pid: process.pid,
+      protocol: 'dubbo',
+      anyhost: true,
+      timestamp: Date.now()
+    }
+    if (this.application) {
+      params['application'] = this.application.name || 'node-dubbo-service'
+    }
+    if (this.dubbo) {
+      params['dubbo'] = this.dubbo
+    }
+    if (group !== '') {
+      params['group'] = group
+    }
+    if (version !== '0.0.0') {
+      params['version'] = version
+    }
     return (
-      `dubbo://${ipAddr}:${this.port}/${dubboInterface}?` +
-      qs.stringify({
-        group,
-        version,
-        methods: methodName,
-        side: 'provider',
-        pid: process.pid,
-        protocol: 'dubbo',
-        anyhost: true,
-        timestamp: Date.now()
-      })
+      `dubbo://${ipAddr}:${this.port}/${dubboInterface}?` + qs.stringify(params)
     )
   }
 
