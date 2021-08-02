@@ -15,13 +15,24 @@
  * limitations under the License.
  */
 
-import { dubboSetting } from '../dubbo-setting'
+import * as s from '../dubbo-setting'
 
 describe('dubbo-service dubbo setting test suite', () => {
+  it('test group and version', () => {
+    const cfg = s.Setting()
+    expect(cfg.version).toEqual('0.0.0')
+    expect(cfg.group).toEqual('')
+
+    const cfg1 = s.Setting(s.group('a'), s.version('1.0.0'))
+    expect(cfg1.group).toEqual('a')
+    expect(cfg1.version).toEqual('1.0.0')
+  })
+
   it('test config string', () => {
-    const cfg = dubboSetting
-      .match('com.hello.a.service', { group: 'A', version: '1.0.0' })
-      .match('com.hello.b.service', { group: 'b', version: '1.0.0' })
+    const cfg = s.Setting(
+      s.service('com.hello.a.service', { group: 'A', version: '1.0.0' }),
+      s.service('com.hello.b.service', { group: 'b', version: '1.0.0' })
+    )
 
     expect(
       cfg.getDubboSetting({ dubboServiceInterface: 'com.hello.a.service' })
@@ -39,16 +50,20 @@ describe('dubbo-service dubbo setting test suite', () => {
 
     expect(
       cfg.getDubboSetting({ dubboServiceInterface: 'com.hello.c.service' })
-    ).toBeNull()
+    ).toEqual({
+      group: '',
+      version: '0.0.0'
+    })
   })
 
   it('test config regx', () => {
-    const cfg = dubboSetting
-      .match(/com.hello.service*/, {
+    const cfg = s.Setting(
+      s.service(/com.hello.service*/, {
         group: 'regx',
         version: '1.0.0'
-      })
-      .match(/com.foo.service*/, { group: 'foo', version: '1.0.0' })
+      }),
+      s.service(/com.foo.service*/, { group: 'foo', version: '1.0.0' })
+    )
 
     expect(
       cfg.getDubboSetting({
@@ -70,21 +85,26 @@ describe('dubbo-service dubbo setting test suite', () => {
 
     expect(
       cfg.getDubboSetting({ dubboServiceInterface: 'com.other.service' })
-    ).toBeNull()
+    ).toEqual({
+      group: '',
+      version: '0.0.0'
+    })
   })
 
   it('test config thunk', () => {
-    const cfg = dubboSetting.matchThunk((shortName: string) => {
-      if (shortName === 'helloServiceGroupA') {
-        return { group: 'A', version: '1.0.0' }
-      }
+    const cfg = s.Setting(
+      s.serviceThunk((shortName: string) => {
+        if (shortName === 'helloServiceGroupA') {
+          return { group: 'A', version: '1.0.0' }
+        }
 
-      if (shortName === 'fooService2') {
-        return { group: '2', version: '1.0.0' }
-      }
+        if (shortName === 'fooService2') {
+          return { group: '2', version: '1.0.0' }
+        }
 
-      return null
-    })
+        return null
+      })
+    )
 
     expect(
       cfg.getDubboSetting({ dubboServiceShortName: 'helloServiceGroupA' })
@@ -102,6 +122,9 @@ describe('dubbo-service dubbo setting test suite', () => {
 
     expect(
       cfg.getDubboSetting({ dubboServiceShortName: 'barService' })
-    ).toBeNull()
+    ).toEqual({
+      version: '0.0.0',
+      group: ''
+    })
   })
 })

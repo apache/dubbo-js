@@ -24,7 +24,7 @@ import { go, util } from 'apache-dubbo-common'
 import Scheduler from './scheduler'
 import qs from 'querystring'
 import ip from 'ip'
-import { DubboSetting } from './dubbo-setting'
+import * as s from './dubbo-setting'
 import {
   IDubboProps,
   IDubboProvider,
@@ -53,7 +53,7 @@ log('dubbo-js version :=> %s', packageVersion)
  */
 export default class Dubbo<TService = Object> {
   private readonly queue: Queue
-  private readonly dubboSetting: DubboSetting
+  private readonly dubboSetting: s.DubboSetting
   private readonly props: IDubboProps
   private readonly middlewares: Array<Middleware<Context>>
   private readonly consumers: Array<{
@@ -74,7 +74,7 @@ export default class Dubbo<TService = Object> {
     this.consumers = []
     this.middlewares = []
     this.queue = Queue.init()
-    this.dubboSetting = props.dubboSetting
+    this.dubboSetting = props.dubboSetting || s.Setting()
 
     // init service
     this.service = <TDubboService<TService>>{}
@@ -86,7 +86,10 @@ export default class Dubbo<TService = Object> {
     //For the consumer client, if the user sets the interface level timeout time, the interface level is used
     //If the user does not set the user level, the default is the maximum timeout
     const { dubboInvokeTimeout } = props
-    config.dubboInvokeTimeout = dubboInvokeTimeout || config.dubboInvokeTimeout
+    config.dubboInvokeTimeout =
+      dubboInvokeTimeout ||
+      this.dubboSetting.maxTimeout ||
+      config.dubboInvokeTimeout
 
     log('config:|> %O', config)
 
@@ -110,15 +113,10 @@ export default class Dubbo<TService = Object> {
   private consumeService(services: Object) {
     for (let [shortName, serviceProxy] of Object.entries(services)) {
       const service = serviceProxy(this) as IDubboProvider
-      const meta = this.dubboSetting
-        ? this.dubboSetting.getDubboSetting({
-            dubboServiceShortName: shortName,
-            dubboServiceInterface: service.dubboInterface
-          })
-        : {
-            group: '',
-            version: '0.0.0'
-          }
+      const meta = this.dubboSetting.getDubboSetting({
+        dubboServiceShortName: shortName,
+        dubboServiceInterface: service.dubboInterface
+      })
       service.group = meta.group
       service.version = meta.version
       this.service[shortName] = this.composeService(service)
@@ -134,16 +132,17 @@ export default class Dubbo<TService = Object> {
       dubboServiceInterface: dubboInterface,
       dubboServiceUrl: `consumer://${ip.address()}/${dubboInterface}?${qs.stringify(
         {
-          interface: dubboInterface,
           application: this.props.application.name,
+          interface: dubboInterface,
           category: 'consumers',
           method: '',
-          revision: '',
+          revision: version,
           version: group,
           group: version,
           timeout: timeout,
           side: 'consumer',
-          check: false
+          check: false,
+          pid: process.pid
         }
       )}`
     })

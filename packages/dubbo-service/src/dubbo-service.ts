@@ -31,7 +31,7 @@ import {
 } from 'apache-dubbo-serialization'
 import Context from './context'
 import { randomPort } from './port'
-import { DubboSetting } from './dubbo-setting'
+import * as s from './dubbo-setting'
 import {
   DubboServiceClazzName,
   IDubboServerProps,
@@ -41,6 +41,7 @@ import {
   TDubboServiceUrl
 } from './types'
 
+const ipAddr = ip.address()
 const log = debug('dubbo-server ~')
 
 /**
@@ -60,7 +61,7 @@ export default class DubboService {
   private retry: Retry
   private port: number
   private server: net.Server
-  private readonly dubboSetting: DubboSetting
+  private readonly dubboSetting: s.DubboSetting
   private registry: IRegistry
   private readonly services: { [name in string]: IDubboService }
   private serviceRouter: Map<DubboServiceClazzName, Array<IDubboService>>
@@ -76,7 +77,7 @@ export default class DubboService {
     })
 
     // init dubbo setting
-    this.dubboSetting = props.dubboSetting
+    this.dubboSetting = props.dubboSetting || s.Setting()
 
     // init registry
     this.registry = props.registry
@@ -174,6 +175,7 @@ export default class DubboService {
    */
   private async invokeComposeChainRequest(data: Buffer) {
     const request = decodeDubboRequest(data)
+    log('receive request %O', request)
     const service = this.matchService(request)
     const ctx = new Context(request)
 
@@ -184,6 +186,9 @@ export default class DubboService {
 
     // service not found
     if (!service) {
+      log(
+        `Service not found with ${path} and ${methodName}, group:${group}, version:${version}`
+      )
       ctx.status = DUBBO_RESPONSE_STATUS.SERVICE_NOT_FOUND
       ctx.body.err = new Error(
         `Service not found with ${path} and ${methodName}, group:${group}, version:${version}`
@@ -197,10 +202,6 @@ export default class DubboService {
         const method = service.methods[request.methodName]
         ctx.status = DUBBO_RESPONSE_STATUS.OK
         try {
-          const res = await method.apply(service, [
-            ...(request.args || []),
-            ctx
-          ])
           // FIXEDME waiting dubbo/dj
           // check hessian type
           // if (!util.checkRetValHessian(res)) {
@@ -209,7 +210,10 @@ export default class DubboService {
           //   )
           //   return
           // }
-          ctx.body.res = res
+          ctx.body.res = await method.apply(service, [
+            ...(request.args || []),
+            ctx
+          ])
         } catch (err) {
           log(`handle request error %s`, err)
           ctx.body.err = err
@@ -237,7 +241,7 @@ export default class DubboService {
   private async registerServices() {
     await this.registry.ready().catch((err) => {
       log('registry service error %s', err)
-      this.reject()
+      this.reject(err)
       throw err
     })
 
@@ -248,12 +252,10 @@ export default class DubboService {
     for (let [dubboServiceShortName, service] of Object.entries(
       this.services
     )) {
-      const meta = this.dubboSetting
-        ? this.dubboSetting.getDubboSetting({
-            dubboServiceShortName,
-            dubboServiceInterface: service.dubboInterface
-          })
-        : { group: '', version: '0.0.0' }
+      const meta = this.dubboSetting.getDubboSetting({
+        dubboServiceShortName,
+        dubboServiceInterface: service.dubboInterface
+      })
       service.group = meta.group
       service.version = meta.version
 
@@ -286,22 +288,17 @@ export default class DubboService {
    * @returns
    */
   private buildUrl(service: IDubboService) {
-    const ipAddr = ip.address()
     const { dubboInterface, group, version, methods } = service
     const methodName = Object.keys(methods).join()
-
     return (
       `dubbo://${ipAddr}:${this.port}/${dubboInterface}?` +
       qs.stringify({
         group,
         version,
-        method: methodName,
+        methods: methodName,
         side: 'provider',
         pid: process.pid,
-        generic: false,
         protocol: 'dubbo',
-        dynamic: true,
-        category: 'providers',
         anyhost: true,
         timestamp: Date.now()
       })

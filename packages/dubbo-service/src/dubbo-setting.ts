@@ -23,13 +23,18 @@ import {
   TMatchThunk
 } from './types'
 
+export type TSettingFunctionOption = (setting: DubboSetting) => void
+
 export class DubboSetting {
+  group: string = ''
+  version: string = '0.0.0'
+
+  private readonly matchDubboRegx: Map<RegExp, IDubboServiceSetting>
+  private readonly matchDubboThunk: Set<TMatchThunk>
   private readonly matchDubboInterface: Map<
     TDubboServiceInterface,
     IDubboServiceSetting
   >
-  private readonly matchDubboRegx: Map<RegExp, IDubboServiceSetting>
-  private readonly matchDubboThunk: Set<TMatchThunk>
 
   constructor() {
     this.matchDubboInterface = new Map()
@@ -37,7 +42,7 @@ export class DubboSetting {
     this.matchDubboThunk = new Set()
   }
 
-  match(
+  service(
     rule: TDubboServiceInterface | Array<TDubboServiceInterface> | RegExp,
     meta: IDubboServiceSetting
   ) {
@@ -48,12 +53,10 @@ export class DubboSetting {
     } else if (rule instanceof RegExp) {
       this.matchDubboRegx.set(rule, meta)
     }
-    return this
   }
 
-  matchThunk(thunk: TMatchThunk) {
+  serviceThunk(thunk: TMatchThunk) {
     this.matchDubboThunk.add(thunk)
-    return this
   }
 
   getDubboSetting({
@@ -63,29 +66,77 @@ export class DubboSetting {
     dubboServiceShortName?: TDubboServiceShortName
     dubboServiceInterface?: TDubboServiceInterface
   }) {
+    const defaultMeta = {
+      group: this.group,
+      version: this.version
+    }
     // first, we search thunk
     for (let thunk of this.matchDubboThunk) {
       const meta = thunk(dubboServiceShortName)
       if (meta) {
-        return meta
+        return {
+          ...defaultMeta,
+          ...meta
+        }
       }
     }
 
     // second, search from dubboInterface
     if (this.matchDubboInterface.has(dubboServiceInterface)) {
-      return this.matchDubboInterface.get(dubboServiceInterface)
+      const meta = this.matchDubboInterface.get(dubboServiceInterface)
+      return {
+        ...defaultMeta,
+        ...meta
+      }
     }
 
     // third, search from regx
     for (let [r, meta] of this.matchDubboRegx) {
       if (r.test(dubboServiceInterface)) {
-        return meta
+        return {
+          ...defaultMeta,
+          ...meta
+        }
       }
     }
 
-    // no match anything
-    return null
+    // no service anything
+    return defaultMeta
   }
 }
 
-export const dubboSetting = new DubboSetting()
+// ~~~~~~~~~~~~~ factory method ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+export function Setting(...args: Array<TSettingFunctionOption>) {
+  const dubboSetting = new DubboSetting()
+  for (let arg of args) {
+    arg(dubboSetting)
+  }
+  return dubboSetting
+}
+
+export function group(g: string) {
+  return (dubboSetting: DubboSetting) => {
+    dubboSetting.group = g
+  }
+}
+
+export function version(v: string) {
+  return (dubboSetting: DubboSetting) => {
+    dubboSetting.version = v
+  }
+}
+
+export function service(
+  rule: TDubboServiceInterface | Array<TDubboServiceInterface> | RegExp,
+  meta: IDubboServiceSetting
+) {
+  return (dubboSetting: DubboSetting) => {
+    return dubboSetting.service(rule, meta)
+  }
+}
+
+export function serviceThunk(thunk: TMatchThunk) {
+  return (dubboSetting: DubboSetting) => {
+    dubboSetting.serviceThunk(thunk)
+  }
+}

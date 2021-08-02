@@ -20,14 +20,14 @@ middleware 是很多 web 框架设计的非常好的一个扩展方案如 expres
 ```typescript
 const dubbo = new Dubbo({
   /*..各种参数..*/
-});
+})
 
 dubbo.use(async (ctx, next) => {
-  const startTime = Date.now();
-  await next();
-  const endTime = Date.now();
-  console.log('costtime: %d', endTime - startTime);
-});
+  const startTime = Date.now()
+  await next()
+  const endTime = Date.now()
+  console.log('costtime: %d', endTime - startTime)
+})
 ```
 
 在这个基础上我们去实现 node 和 dubbo 日志的跟踪就变得很简单了,可以从 ctx 中获取调用链路上各种参数。
@@ -43,33 +43,33 @@ npm install dubbo-invoker
 ```
 
 ```javascript
-import {dubboInvoker, matcher} from 'dubbo-invoker';
+import { dubboInvoker, matcher } from 'dubbo-invoker'
 
 //init
-const dubbo = Dubbo.from(/*....*/);
+const dubbo = Dubbo.from(/*....*/)
 
 const matchRuler = matcher
   //精确匹配接口
-  .match('com.alibaba.demo.UserProvider', {
+  .service('com.alibaba.demo.UserProvider', {
     version: '1.0.0',
-    group: 'user',
+    group: 'user'
   })
-  //match thunk
-  .match(ctx => {
+  //service thunk
+  .service((ctx) => {
     if (ctx.dubboInterface === 'com.alibaba.demo.ProductProvider') {
-      ctx.version = '2.0.0';
-      ctx.group = 'product-center';
+      ctx.version = '2.0.0'
+      ctx.group = 'product-center'
       //通知dubboInvoker匹配成功
-      return true;
+      return true
     }
   })
   //正则匹配
-  .match(/^com.alibaba.dubbo/, {
+  .service(/^com.alibaba.dubbo/, {
     version: '2.0.0',
-    group: '',
-  });
+    group: ''
+  })
 
-dubbo.use(dubboInvoke(matchRuler));
+dubbo.use(dubboInvoke(matchRuler))
 ```
 
 <strong> 我想应该还有其他的花式玩法，㊗ ️😊 </strong>

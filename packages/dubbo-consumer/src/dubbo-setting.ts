@@ -23,7 +23,11 @@ import {
   TMatchThunk
 } from './types'
 
+export type TSettingFunctionOption = (setting: DubboSetting) => void
+
 export class DubboSetting {
+  maxTimeout: number = 5 * 1000
+
   private readonly matchDubboInterface: Map<TDubboInterface, IDubboSetting>
   private readonly matchDubboRegx: Map<RegExp, IDubboSetting>
   private readonly matchDubboThunk: Set<TMatchThunk>
@@ -34,7 +38,7 @@ export class DubboSetting {
     this.matchDubboThunk = new Set()
   }
 
-  match(
+  service(
     rule: TDubboInterface | Array<TDubboInterface> | RegExp,
     meta: IDubboSetting
   ) {
@@ -45,12 +49,10 @@ export class DubboSetting {
     } else if (rule instanceof RegExp) {
       this.matchDubboRegx.set(rule, meta)
     }
-    return this
   }
 
-  matchThunk(thunk: TMatchThunk) {
+  serviceThunk(thunk: TMatchThunk) {
     this.matchDubboThunk.add(thunk)
-    return this
   }
 
   getDubboSetting({
@@ -60,29 +62,71 @@ export class DubboSetting {
     dubboServiceShortName?: TDubboServiceShortName
     dubboServiceInterface?: TDubboInterface
   }) {
+    const defaultMeta = {
+      group: '',
+      version: '0.0.0'
+    }
     // first, we search thunk
     for (let thunk of this.matchDubboThunk) {
       const meta = thunk(dubboServiceShortName)
       if (meta) {
-        return meta
+        return {
+          ...defaultMeta,
+          ...meta
+        }
       }
     }
 
     // second, search from dubboInterface
     if (this.matchDubboInterface.has(dubboServiceInterface)) {
-      return this.matchDubboInterface.get(dubboServiceInterface)
+      const meta = this.matchDubboInterface.get(dubboServiceInterface)
+      return {
+        ...defaultMeta,
+        ...meta
+      }
     }
 
     // third, search from regx
     for (let [r, meta] of this.matchDubboRegx) {
       if (r.test(dubboServiceInterface)) {
-        return meta
+        return {
+          ...defaultMeta,
+          ...meta
+        }
       }
     }
 
-    // no match anything
-    return null
+    // no service anything
+    return defaultMeta
   }
 }
 
-export const dubboSetting = new DubboSetting()
+// ~~~~~~~~~~~~~ factory method ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+export function Setting(...args: Array<TSettingFunctionOption>) {
+  const dubboSetting = new DubboSetting()
+  for (let arg of args) {
+    arg(dubboSetting)
+  }
+  return dubboSetting
+}
+
+export function maxTimeout(timeout: number) {
+  return (dubboSetting: DubboSetting) => {
+    dubboSetting.maxTimeout = timeout
+  }
+}
+
+export function service(
+  rule: TDubboInterface | Array<TDubboInterface> | RegExp,
+  meta: IDubboSetting
+) {
+  return (dubboSetting: DubboSetting) => {
+    return dubboSetting.service(rule, meta)
+  }
+}
+
+export function serviceThunk(thunk: TMatchThunk) {
+  return (dubboSetting: DubboSetting) => {
+    dubboSetting.serviceThunk(thunk)
+  }
+}
