@@ -58,8 +58,8 @@ export default class DubboService {
   private reject: Function
   private readonly readyPromise: Promise<void>
 
-  private application: { name: string }
-  private dubbo: string
+  private readonly application: { name: string }
+  private readonly dubbo: string
 
   private retry: Retry
   private port: number
@@ -319,7 +319,10 @@ export default class DubboService {
       params['version'] = version
     }
     return (
-      `dubbo://${ipAddr}:${this.port}/${dubboInterface}?` + qs.stringify(params)
+      `dubbo://${ipAddr}:${this.port}/${dubboInterface}?` +
+      qs.stringify(params, null, null, {
+        encodeURIComponent: (str) => str
+      })
     )
   }
 
