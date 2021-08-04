@@ -2,4 +2,4 @@
 . "$(dirname "$0")/_/husky.sh"
 
 npx pretty-quick --staged
-yarn test
+npx jest --no-cache

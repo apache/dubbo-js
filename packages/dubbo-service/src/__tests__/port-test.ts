@@ -26,7 +26,7 @@ describe('port test suite', () => {
     const port = await portManager.getReusedPort()
     expect(port).toBeTruthy()
     expect(
-      fs.existsSync(path.join(process.cwd(), '.dubbojs/dubbo.lock'))
+      fs.existsSync(path.join(process.cwd(), '.dubbojs/dubbo'))
     ).toBeTruthy()
   })
 
