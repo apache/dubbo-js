@@ -15,24 +15,104 @@
  * limitations under the License.
  */
 
+import path from 'path'
+import cluster from 'cluster'
 import getPort from 'get-port'
 import debug from 'debug'
+import fs from 'fs-extra'
+import lockfile from 'proper-lockfile'
 
 const dlog = debug('dubbo-server:get-port')
+const ROOT = path.join(process.cwd(), '.dubbojs')
+const LOCK_FILE = path.join(ROOT, 'dubbo')
 
-export async function randomPort() {
-  // 本地空闲的端口
-  // 在多进程同时启动的时候，端口的获取不是竞态的，所以可能导致不同的进程获取的端口是相同的
-  // 这时候只有其中一个进程listen该端口，导致其他的进程，监听失败，导致进程启动失败
-  //
-  // 通过以下核心方式来解决
-  // 获取一段的空闲端口，随机选择一个， 通过随机来降低端口冲突的概率
-  // 如果冲突 再次获取
-  const ports = []
-  for (let i = 0; i < 10; i++) {
-    const port = await getPort({ port: getPort.makeRange(20888, 30000) })
-    ports.push(port)
+export class PortManager {
+  private port: number
+
+  constructor() {
+    if (this.isMasterProcess) {
+      // create dubbo lock file
+      fs.ensureFileSync(LOCK_FILE)
+    } else {
+      this.clearPidPort()
+    }
   }
-  dlog(`get ports %s`, ports.join())
-  return ports[Math.floor(Math.random() * 10)]
+
+  async getReusedPort(): Promise<number> {
+    if (this.isMasterProcess) {
+      this.port = await this.getFreePort()
+      return this.port
+    }
+
+    try {
+      // set file lock
+      const release = await lockfile.lock(LOCK_FILE, {
+        retries: { retries: 5, maxTimeout: 5000 }
+      })
+      dlog('pid %d get lock', process.pid)
+      // find available reused port
+      const dirs = await fs.readdir(ROOT)
+      dlog('scan %s dir includes %O', ROOT, dirs)
+      const excludes = []
+      const portPidFiles = dirs.filter((dir) => !dir.startsWith('dubbo'))
+      for (let portPid of portPidFiles) {
+        const file = fs.readFileSync(path.join(ROOT, portPid)).toString()
+        if (file === '') {
+          release()
+          fs.writeFileSync(path.join(ROOT, portPid), String(process.pid))
+          this.port = Number(portPid)
+          return this.port
+        } else {
+          excludes.push(Number(portPid))
+        }
+      }
+
+      this.port = await this.getFreePort(excludes)
+      fs.writeFileSync(path.join(ROOT, String(this.port)), String(process.pid))
+      release()
+      return this.port
+    } catch (err) {
+      throw err
+    }
+  }
+
+  async getFreePort(exclude: Array<number> = []) {
+    const ports = []
+    for (let i = 0; i < 10; i++) {
+      // gen new port
+      const port = await getPort({ port: getPort.makeRange(20888, 30000) })
+      ports.push(port)
+    }
+
+    const availablePort = ports.filter((port) => !exclude.includes(port))[0]
+    dlog('get random port %d in master mode', availablePort)
+    return availablePort
+  }
+
+  clearPidPort = () => {
+    const cleanup = () => {
+      const pid = process.pid
+      dlog('clear port pid %d', pid)
+      fs.writeFileSync(path.join(ROOT, String(this.port)), '')
+    }
+    ;[
+      'exit',
+      'SIGINT',
+      'SIGUSR2',
+      'SIGUSR1',
+      'SIGTERM',
+      'uncaughtException'
+    ].forEach((event) => {
+      process.on(event, cleanup)
+    })
+  }
+
+  get isMasterProcess() {
+    const isClusterMode = cluster.isMaster
+    const isPm2MasterMode =
+      process.env.NODE_APP_INSTANCE && process.env.NODE_APP_INSTANCE === '0'
+    return isClusterMode || isPm2MasterMode
+  }
 }
+
+export const portManager = new PortManager()

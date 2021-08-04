@@ -30,7 +30,7 @@ import {
   Request
 } from 'apache-dubbo-serialization'
 import Context from './context'
-import { randomPort } from './port'
+import { portManager } from './port'
 import * as s from './dubbo-setting'
 import {
   DubboServiceClazzName,
@@ -127,7 +127,7 @@ export default class DubboService {
    * start tcp server
    */
   private listen = async () => {
-    this.port = await randomPort()
+    this.port = await portManager.getReusedPort()
     log(`init service with port: %d`, this.port)
 
     this.server = net
@@ -209,7 +209,7 @@ export default class DubboService {
         const method = service.methods[request.methodName]
         ctx.status = DUBBO_RESPONSE_STATUS.OK
         try {
-          // FIXEDME waiting dubbo/dj
+          // FIXME waiting dubbo/dj
           // check hessian type
           // if (!util.checkRetValHessian(res)) {
           //   ctx.body.err = new Error(

@@ -15,9 +15,20 @@
  * limitations under the License.
  */
 
-import getPort from 'get-port'
+import cluster from 'cluster'
+import path from 'path'
+import fs from 'fs-extra'
+import { portManager } from '../port'
 
-it('test get port', async () => {
-  const port = await getPort()
-  expect(port).toBeTruthy()
+describe('port test suite', () => {
+  it('test master process', async () => {
+    expect(portManager.isMasterProcess).toBeTruthy()
+    const port = await portManager.getReusedPort()
+    expect(port).toBeTruthy()
+    expect(
+      fs.existsSync(path.join(process.cwd(), '.dubbojs/dubbo.lock'))
+    ).toBeTruthy()
+  })
+
+  it('test cluster mode', async () => {})
 })
