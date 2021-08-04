@@ -20,7 +20,7 @@
   "dependencies": {
     "ip": "^1.1.5",
     "proper-lockfile": "^4.1.2",
-    "fs-extra": "^10.0.0",
+    "fs-extra": "^9.1.0",
     "apache-dubbo-serialization": "^0.0.2",
     "apache-dubbo-common": "^0.0.1",
     "get-port": "^5.1.1"
