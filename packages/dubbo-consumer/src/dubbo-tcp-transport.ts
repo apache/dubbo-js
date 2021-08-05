@@ -37,7 +37,8 @@ const log = debug('dubbo:tcp-transport ~')
  * 3.socket断开自动重试
  */
 export default class DubboTcpTransport
-  implements IDubboObservable<IDubboTransportSubscriber> {
+  implements IDubboObservable<IDubboTransportSubscriber>
+{
   public readonly host: string
   private _status: STATUS
   private forceClose: boolean
@@ -60,8 +61,8 @@ export default class DubboTcpTransport
     }
 
     this.retry = new Retry({
-      maxRetry: 20,
-      delay: 3000,
+      maxRetry: 120,
+      delay: 500,
       retry: () => {
         this._status = STATUS.RETRY
         this.init()
