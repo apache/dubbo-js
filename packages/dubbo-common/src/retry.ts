@@ -24,12 +24,14 @@ const dlog = debug('dubbo-server:retry~')
 export class Retry {
   private retryNum: number
   private readonly delay: number
+  private readonly maxRetryCount: number
 
   private readonly retry: Function
   private readonly end: Function
 
   constructor(props: IRetryProps) {
-    this.retryNum = props.maxRetry || MAX_RETRIES
+    this.maxRetryCount = props.maxRetry || MAX_RETRIES
+    this.retryNum = this.maxRetryCount
     this.retry = props.retry
     this.end = props.end
     this.delay = props.delay || 1000
@@ -58,6 +60,6 @@ export class Retry {
 
   reset() {
     dlog('reset')
-    this.retryNum = MAX_RETRIES
+    this.retryNum = this.maxRetryCount
   }
 }
