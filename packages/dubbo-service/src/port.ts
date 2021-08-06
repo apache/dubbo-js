@@ -33,17 +33,13 @@ export class PortManager {
     if (this.isMasterProcess) {
       // create dubbo lock file
       fs.ensureFileSync(LOCK_FILE)
-    } else {
-      this.clearPidPort()
     }
+    // listen process exit event
+    // and clean port/pid file content
+    this.clearPidPort()
   }
 
   async getReusedPort(): Promise<number> {
-    if (this.isMasterProcess) {
-      this.port = await this.getFreePort()
-      return this.port
-    }
-
     try {
       // set file lock
       const release = await lockfile.lock(LOCK_FILE, {
@@ -58,9 +54,9 @@ export class PortManager {
       for (let portPid of portPidFiles) {
         const file = fs.readFileSync(path.join(ROOT, portPid)).toString()
         if (file === '') {
-          release()
           fs.writeFileSync(path.join(ROOT, portPid), String(process.pid))
           this.port = Number(portPid)
+          await release()
           return this.port
         } else {
           excludes.push(Number(portPid))
@@ -69,7 +65,7 @@ export class PortManager {
 
       this.port = await this.getFreePort(excludes)
       fs.writeFileSync(path.join(ROOT, String(this.port)), String(process.pid))
-      release()
+      await release()
       return this.port
     } catch (err) {
       throw err
@@ -85,7 +81,11 @@ export class PortManager {
     }
 
     const availablePort = ports.filter((port) => !exclude.includes(port))[0]
-    dlog('get random port %d in master mode', availablePort)
+    dlog(
+      'get random port %d in %s mode',
+      availablePort,
+      this.isMasterProcess ? 'master' : 'worker'
+    )
     return availablePort
   }
 
@@ -100,9 +100,11 @@ export class PortManager {
       'SIGINT',
       'SIGUSR2',
       'SIGUSR1',
+      'SIGKILL',
       'SIGTERM',
       'uncaughtException'
     ].forEach((event) => {
+      dlog('bind %s event', event)
       process.on(event, cleanup)
     })
   }
