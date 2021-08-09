@@ -1,5 +1,19 @@
 # Release Notes
 
+## 4.0.1
+
+[enhancement]
+
+- Improve the port reuse mechanism of beehive-service
+- Improve the frequency of tcp reconnection, faster frequency
+- redesign beehive-consumer, beehive-service config api
+- Add periodic refresh dubbo-cluster capability
+
+[fixed]
+
+- Fix the reset bug of the retry module
+- Fix beehive-service registry url
+
 ## 4.0.0
 
 ![image](https://user-images.githubusercontent.com/533008/124376606-67f4a680-dcda-11eb-91b9-96933828bf42.png)
