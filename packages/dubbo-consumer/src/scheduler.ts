@@ -49,6 +49,7 @@ export default class Scheduler {
   private status: STATUS
   private readonly queue: Queue
   private readonly registry: IRegistry<any>
+  private readonly refreshTimer: NodeJS.Timer
   private readonly dubboCluster: DubboCluster
   private readonly dubboServiceUrlMapper: Map<TDubboInterface, Array<DubboUrl>>
 
@@ -72,6 +73,9 @@ export default class Scheduler {
       },
       onClose: this.handleTransportClose
     })
+    this.refreshTimer = setInterval(() => {
+      this.refreshDubboCluster()
+    }, 10 * 1000)
 
     // init registry
     this.registry = registry
@@ -86,7 +90,24 @@ export default class Scheduler {
   }
 
   close() {
+    clearTimeout(this.refreshTimer)
     this.dubboCluster.close()
+  }
+
+  private refreshDubboCluster() {
+    const serviceHostMap = new Map<HostName, Set<Host>>()
+    for (let urls of this.dubboServiceUrlMapper.values()) {
+      for (let { hostname, port } of urls) {
+        const host = `${hostname}:${port}`
+        if (serviceHostMap.has(hostname)) {
+          serviceHostMap.get(hostname).add(host)
+        } else {
+          serviceHostMap.set(hostname, new Set([host]))
+        }
+      }
+    }
+    log('refreshDubboCluster with map %O', serviceHostMap)
+    this.dubboCluster.refresh(serviceHostMap)
   }
 
   /**

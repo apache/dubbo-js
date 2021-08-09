@@ -34,7 +34,8 @@ const log = debug('dubbo:dubbo-cluster')
  */
 
 export default class DubboCluster
-  implements IDubboObservable<IDubboTransportSubscriber> {
+  implements IDubboObservable<IDubboTransportSubscriber>
+{
   private subscriber: IDubboTransportSubscriber
   private readonly dubboClusterTransportMap: Map<
     HostName,
@@ -53,21 +54,19 @@ export default class DubboCluster
 
   // ~~~~~~~~~~~~~~~~~~~~private methods~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  private handleTransportClose = (
-    transport: DubboTcpTransport,
-    hostname: string
-  ) => (host: string) => {
-    log('receive dubbo-tcp-transport closed %s', transport.host)
-    if (!this.dubboClusterTransportMap.has(hostname)) {
-      return
-    }
+  private handleTransportClose =
+    (transport: DubboTcpTransport, hostname: string) => (host: string) => {
+      log('receive dubbo-tcp-transport closed %s', transport.host)
+      if (!this.dubboClusterTransportMap.has(hostname)) {
+        return
+      }
 
-    const transports = this.dubboClusterTransportMap.get(hostname)
-    log('delete dubbo-tcp-transport %s', transport.host)
-    transports.delete(transport)
-    log('current dubbo-tcp-transport map %O', this.dubboClusterTransportMap)
-    this.subscriber.onClose(host)
-  }
+      const transports = this.dubboClusterTransportMap.get(hostname)
+      log('delete dubbo-tcp-transport %s', transport.host)
+      transports.delete(transport)
+      log('current dubbo-tcp-transport map %O', this.dubboClusterTransportMap)
+      this.subscriber.onClose(host)
+    }
 
   private updateDubboClusterTransports(hostname: HostName, hosts: Set<Host>) {
     const transports = this.dubboClusterTransportMap.get(hostname)
@@ -151,6 +150,23 @@ export default class DubboCluster
   subscribe(subscriber: IDubboTransportSubscriber) {
     this.subscriber = subscriber
     return this
+  }
+
+  refresh(serviceHostMap: Map<HostName, Set<Host>>) {
+    for (let [hostname, hosts] of serviceHostMap.entries()) {
+      if (this.dubboClusterTransportMap.has(hostname)) {
+        const transports = this.dubboClusterTransportMap.get(hostname)
+        const transportHosts = [...transports].map(
+          (transport) => transport.host
+        )
+        const diff = [...hosts].filter((host) => !transportHosts.includes(host))
+        if (diff.length > 0) {
+          this.addDubboClusterTransports(hostname, new Set(diff))
+        }
+      } else {
+        this.addDubboClusterTransports(hostname, hosts)
+      }
+    }
   }
 
   close() {
