@@ -28,6 +28,7 @@ describe('port test suite', () => {
     expect(
       fs.existsSync(path.join(process.cwd(), '.dubbojs/dubbo'))
     ).toBeTruthy()
+    fs.rmSync(path.join(process.cwd(), '.dubbojs', `${port}`))
   })
 
   it('test cluster mode', async () => {})

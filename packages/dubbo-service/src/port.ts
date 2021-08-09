@@ -100,7 +100,6 @@ export class PortManager {
       'SIGINT',
       'SIGUSR2',
       'SIGUSR1',
-      'SIGKILL',
       'SIGTERM',
       'uncaughtException'
     ].forEach((event) => {
