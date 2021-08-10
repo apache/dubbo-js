@@ -15,12 +15,38 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra'
-import chalk, { stderr } from 'chalk'
-import { checkLicense } from './check-license'
 import { join } from 'path'
 import { exec } from 'child_process'
+import fs from 'fs-extra'
+import chalk from 'chalk'
 import pkg from '../../package.json'
+import { checkLicense } from './check-license'
+import checkNotice from '../feature/check-notice'
+import checkCopyright from '../feature/check-copyright'
+
+const log = (str: string) => console.log(chalk.greenBright(str))
+const logErr = (err: Error | string) => console.log(chalk.redBright(err))
+const sh = (str: TemplateStringsArray, ...keys: Array<string>) => {
+  const shell = str.reduce((r, v, i) => {
+    r += v
+    if (i < keys.length) {
+      r += keys[i]
+    }
+    return r
+  }, '')
+  return new Promise((resolve, reject) => {
+    log(`run shell => \n${shell}`)
+    exec(shell, (err, stdout, stderr) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      log(stdout)
+      logErr(stderr)
+      resolve(stdout || stderr)
+    })
+  })
+}
 
 /**
  * source code release， auto pipeline
@@ -31,20 +57,34 @@ import pkg from '../../package.json'
  */
 
 export async function prepareRelease(dest: string) {
-  console.log(chalk.greenBright(`- check license`))
-  // check license
-  const noLicenseFiles = await checkLicense()
-  if (noLicenseFiles.length > 0) {
+  log(`current cwd ${process.cwd()}`)
+  log(`- check notice year`)
+  const err = checkNotice()
+  if (err) {
+    logErr(err)
+    return
+  }
+
+  log(`- check license`)
+  const loseLicenseFiles = await checkLicense()
+  if (loseLicenseFiles.length > 0) {
+    return
+  }
+
+  log(`- check copyright`)
+  const problem = await checkCopyright()
+  if (problem.length > 0) {
+    logErr(problem.join(','))
     return
   }
 
   // copy current project to dest dir
   const outputDir = join(dest, 'dubbo-js')
-  console.log(chalk.greenBright(`\n- export dubbo-js to ${outputDir} dir`))
-  fs.copySync('../', outputDir)
+  log(`\n- export dubbo-js => ${outputDir} dir`)
+  fs.copySync('.', outputDir)
 
   // clean each module lib
-  console.log(chalk.greenBright(`\n- clean node_modules`))
+  log(`\n- clean node_modules`)
   await sh`
     cd ${outputDir}
     lerna clean -y
@@ -52,14 +92,14 @@ export async function prepareRelease(dest: string) {
   `
 
   // clean .git
-  console.log(chalk.greenBright(`\n- clean .git`))
+  log(`\n- clean .git`)
   await sh`
     cd ${outputDir}
     rm -rf .git
   `
 
   // clean __MACOSX and .DS_Store
-  console.log(chalk.greenBright(`\n- clean __MACOSX and .DS_Store`))
+  log(`\n- clean __MACOSX and .DS_Store`)
   await sh`
     cd ${outputDir}
     find . | grep .DS_Store | xargs rm
@@ -67,14 +107,14 @@ export async function prepareRelease(dest: string) {
   `
 
   // clean java target class
-  console.log(chalk.greenBright(`\n- clean dubbo-demo`))
+  log(`\n- clean dubbo-demo`)
   await sh`
     cd ${outputDir}/dubbo-java/dubbo-demo 
     mvn clean
   `
 
   // clean example node_modules
-  console.log(chalk.greenBright(`\n- clean example node_modules`))
+  log(`\n- clean example node_modules`)
   await sh`
     cd ${outputDir}
     rm -rf fullstack/node_modules
@@ -84,7 +124,7 @@ export async function prepareRelease(dest: string) {
   `
 
   // clean misc files
-  console.log(chalk.greenBright(`\n- clean misc files`))
+  log(`\n- clean misc files`)
   await sh`
   cd ${outputDir}
   rm package-lock.json
@@ -97,33 +137,12 @@ export async function prepareRelease(dest: string) {
   `
 
   // zip source dir
-  console.log(chalk.greenBright(`\n- zip dubbo-js dir`))
+  log(`\n- zip dubbo-js dir`)
   await sh`
     cd ${dest}
-    zip -r apache-dubbo-js-${pkg.version}-source-release.zip ${outputDir}
+    zip -r apache-dubbo-js-${pkg.version}-source-release.zip dubbo-js 
     shasum -a 512 apache-dubbo-js-${pkg.version}-source-release.zip >> apache-dubbo-js-${pkg.version}-source-release.zip.sha512
     gpg -ab apache-dubbo-js-${pkg.version}-source-release.zip
     gpg --verify apache-dubbo-js-${pkg.version}-source-release.zip.asc apache-dubbo-js-${pkg.version}-source-release.zip 
   `
-}
-
-function sh(str: TemplateStringsArray, ...keys: Array<string>) {
-  const shell = str.reduce((r, v, i) => {
-    r += v
-    if (i < keys.length) {
-      r += keys[i]
-    }
-    return r
-  }, '')
-  return new Promise((resolve, reject) => {
-    console.log(chalk.greenBright(shell))
-    exec(shell, (err, stdout, stderr) => {
-      if (err) {
-        reject(err)
-        return
-      }
-      console.log(chalk.greenBright(stdout || stderr))
-      resolve(stdout || stderr)
-    })
-  })
 }

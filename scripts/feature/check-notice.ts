@@ -15,32 +15,18 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander'
-import { checkLicense, fixedFileLicense } from './command/check-license'
-import { prepareRelease } from './command/prepare-release'
+import fs from 'fs-extra'
 
-const program = new Command()
+export default function checkNotice() {
+  const notice = fs.readFileSync('NOTICE').toString()
+  const isMatch = /2018-(\d+)/.test(notice)
+  if (!isMatch) {
+    return new Error(`Could not find any date pattern`)
+  }
 
-program
-  .version('1.0.0', '-v, --version', 'output the current version')
-  .description('🚀 dubbo-js shipit tools 🚀')
-
-program
-  .command('check-license [fixed]')
-  .description('check file license')
-  .action(async (fixed = '') => {
-    if (fixed !== 'fixed') {
-      checkLicense()
-    } else {
-      fixedFileLicense()
-    }
-  })
-
-program
-  .command('prepare-release [dest]')
-  .description('prepare source release')
-  .action((dest: string = '/tmp') => {
-    prepareRelease(dest)
-  })
-
-program.parse(process.argv)
+  const [pattern, endYear] = notice.match(/2018-(\d+)/)
+  const year = new Date().getFullYear()
+  if (Number(endYear) !== year) {
+    return new Error(`notice ${pattern} end year ${endYear} != ${year}`)
+  }
+}
