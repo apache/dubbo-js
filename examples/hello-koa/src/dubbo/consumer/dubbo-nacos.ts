@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-import {Dubbo, setting, nacos} from 'apache-dubbo-js'
-import * as service from './service'
+import { Dubbo, dubboSetting } from 'apache-dubbo-consumer'
+import { Nacos } from 'apache-dubbo-registry'
+import * as services from './service'
 
 /**
  * setting dubbo invoke params, such version, group etc.
  */
-const dubboSetting = setting
+const setting = dubboSetting
   .match(
     [
       'org.apache.dubbo.demo.DemoProvider',
@@ -31,18 +32,19 @@ const dubboSetting = setting
       version: '1.0.0',
     },
   )
-  .match('org.apache.dubbo.demo.BasicTypeProvider', {version: '2.0.0'})
+  .match('org.apache.dubbo.demo.BasicTypeProvider', { version: '2.0.0' })
 
 /**
  * create dubbo instance, it create proxyService
  */
-// console.log('nacos-----', nacos);
-const dubbo = new Dubbo<typeof service>({
-  application: {name: 'dubbo-node-consumer'},
-  service,
-  dubboSetting,
-  registry: nacos({
-    url: 'nacos:localhost:8848',
+const dubbo = new Dubbo<typeof services>({
+  application: {
+    name: 'dubbo-node-consumer'
+  },
+  services,
+  dubboSetting: setting,
+  registry: Nacos({
+    connect: 'localhost:8848',
   }),
 })
 
@@ -52,15 +54,6 @@ const dubbo = new Dubbo<typeof service>({
 dubbo.use(async (ctx, next) => {
   await next()
   console.log('-providerAttachments-->', ctx.providerAttachments)
-})
-
-/**
- * subscribe apache-dubbo-js inner message
- */
-dubbo.subscribe({
-  onTrace(msg) {
-    console.log(msg)
-  },
 })
 
 export default dubbo

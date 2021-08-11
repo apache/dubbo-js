@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "A simple demo",
   "scripts": {
-    "debug:start": "DEBUG=dubbo* ts-node ./src/server-zookeeper.ts",
+    "debug:start": "cross-env DEBUG=dubbo* ts-node ./src/server-zookeeper.ts",
     "start": "ts-node ./src/server-zookeeper.ts",
     "dubbo-server": "ts-node ./src/dubbo/provider/server-zookeeper.ts",
-    "debug:dubbo-server": "DEBUG=dubbo* ts-node ./src/dubbo/provider/server-zookeeper.ts",
-    "debug:start-nacos": "DEBUG=dubbo* ts-node ./src/server-nacos.ts",
+    "debug:dubbo-server": "cross-env DEBUG=dubbo* ts-node ./src/dubbo/provider/server-zookeeper.ts",
+    "debug:start-nacos": "cross-env DEBUG=dubbo* ts-node ./src/server-nacos.ts",
     "start-nacos": "ts-node ./src/server-nacos.ts",
     "dubbo-server-nacos": "ts-node ./src/dubbo/provider/server-nacos.ts",
-    "debug:dubbo-server-nacos": "DEBUG=dubbo* ts-node ./src/dubbo/provider/server-nacos.ts"
+    "debug:dubbo-server-nacos": "cross-env DEBUG=dubbo* ts-node ./src/dubbo/provider/server-nacos.ts"
   },
   "keywords": [
     "apache-dubbo-js"
@@ -19,9 +19,13 @@
   "license": "Apache Licence 2.0",
   "devDependencies": {
     "@types/koa": "^2.11.4",
-    "@types/koa-router": "^7.4.1"
+    "@types/koa-router": "^7.4.1",
+    "cross-env": "^7.0.3"
   },
   "dependencies": {
+    "apache-dubbo-consumer": "^4.0.0",
+    "apache-dubbo-registry": "0.0.2",
+    "interpret-util": "0.0.6",
     "ip": "^1.1.5",
     "koa": "^2.4.1",
     "koa-router": "^7.3.0"
