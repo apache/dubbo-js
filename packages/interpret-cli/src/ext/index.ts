@@ -46,7 +46,8 @@ export async function extra(extraParam: IDubboExtInfo): Promise<IExtraResult> {
     execCmd.stdout.on('data', (rowData: Buffer) => {
       let output = rowData.toString('utf8')
       if (output.includes(startFlag)) {
-        jarDir = output.match(/Output at :(.*)(\nelapsed.*?s)?/)[1]
+        const reg = new RegExp(`${startFlag}(.*)(\nelapsed.*?s)?`)
+        jarDir = output.match(reg)[1]
       }
     })
 
