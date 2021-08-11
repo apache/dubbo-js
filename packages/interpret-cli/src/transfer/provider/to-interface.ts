@@ -92,7 +92,7 @@ export async function toInterface(
 
   intepretHandle.sourceFile.addImport({
     moduleSpecifier: 'interpret-util',
-    defaultImport: `{${extraImport.join(',')}}`
+    defaultImport: `{ ${extraImport.join(', ')} }`
   })
 
   log('转换 名称::%s 属性 :%j  方法:%j', typeDef.name, properties, methods)

@@ -64,8 +64,8 @@ export async function toTypescript(
         sourceFile.addInterface(await toInterface(astJava, intepretHandle))
         sourceFile.addVariableStatement(toWrapperClass(astJava, intepretHandle))
         sourceFile.addImport({
-          moduleSpecifier: 'dubbo-js',
-          defaultImport: '{TDubboCallResult,Dubbo}'
+          moduleSpecifier: 'apache-dubbo-consumer',
+          defaultImport: '{ TDubboCallResult, Dubbo }'
         })
         sourceFile.addFunction(
           toProxyFunc({
