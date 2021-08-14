@@ -22,13 +22,10 @@ import { portManager } from '../port'
 
 describe('port test suite', () => {
   it('test master process', async () => {
-    expect(portManager.isMasterProcess).toBeTruthy()
     const port = await portManager.getReusedPort()
     expect(port).toBeTruthy()
-    expect(
-      fs.existsSync(path.join(process.cwd(), '.dubbojs/dubbo'))
-    ).toBeTruthy()
-    fs.writeFileSync(path.join(process.cwd(), '.dubbojs', `${port}`), '')
+    expect(fs.existsSync(path.join(process.cwd(), '.dubbojs'))).toBeTruthy()
+    fs.unlinkSync(path.join(process.cwd(), '.dubbojs', `${port}`))
   })
 
   it('test cluster mode', async () => {})

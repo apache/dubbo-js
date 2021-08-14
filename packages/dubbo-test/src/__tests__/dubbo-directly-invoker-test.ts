@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import path from 'path'
+import fs from 'fs-extra'
 import { Zk } from 'apache-dubbo-registry'
 import { DubboDirectlyInvoker, java } from 'apache-dubbo-consumer'
 import { DubboService } from 'apache-dubbo-service'
@@ -43,6 +45,10 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
+  // clear port file
+  fs.rmSync(
+    path.join(process.cwd(), '.dubbojs', String(dubboService.getPort()))
+  )
   dubbo.close()
   await dubboService.close()
 })
