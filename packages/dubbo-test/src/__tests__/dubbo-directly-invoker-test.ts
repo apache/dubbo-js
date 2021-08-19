@@ -46,7 +46,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   // clear port file
-  fs.rmSync(
+  fs.unlinkSync(
     path.join(process.cwd(), '.dubbojs', String(dubboService.getPort()))
   )
   dubbo.close()
