@@ -137,9 +137,9 @@ export default class Dubbo<TService = Object> {
           category: 'consumers',
           method: '',
           revision: version,
-          version,
-          group,
-          timeout,
+          version: version,
+          group: group,
+          timeout: timeout,
           side: 'consumer',
           check: false,
           pid: process.pid

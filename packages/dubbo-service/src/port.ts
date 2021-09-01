@@ -16,76 +16,74 @@
  */
 
 import path from 'path'
-import cluster from 'cluster'
 import getPort from 'get-port'
 import debug from 'debug'
 import fs from 'fs-extra'
 import lockfile from 'proper-lockfile'
 
 const dlog = debug('dubbo-server:get-port')
+// port cache file
 const ROOT = path.join(process.cwd(), '.dubbojs')
-const LOCK_FILE = path.join(ROOT, 'dubbo')
+// dubbo lock file path
+const LOCK_FILE = path.join(__dirname, '..', '.dubbo')
 
 export class PortManager {
   private port: number
 
   constructor() {
-    if (this.isMasterProcess) {
-      // create dubbo lock file
-      fs.ensureFileSync(LOCK_FILE)
-    }
-    // listen process exit event
-    // and clean port/pid file content
+    // listen process exit event and clean port/pid file content
     this.clearPidPort()
   }
 
   async getReusedPort(): Promise<number> {
-    try {
-      // set file lock
-      const release = await lockfile.lock(LOCK_FILE, {
-        retries: { retries: 5, maxTimeout: 5000 }
-      })
-      dlog('pid %d get lock', process.pid)
-      // find available reused port
-      const dirs = await fs.readdir(ROOT)
-      dlog('scan %s dir includes %O', ROOT, dirs)
-      const excludes = []
-      const portPidFiles = dirs.filter((dir) => !dir.startsWith('dubbo'))
-      for (let portPid of portPidFiles) {
-        const file = fs.readFileSync(path.join(ROOT, portPid)).toString()
-        if (file === '') {
-          fs.writeFileSync(path.join(ROOT, portPid), String(process.pid))
-          this.port = Number(portPid)
-          await release()
-          return this.port
-        } else {
-          excludes.push(Number(portPid))
-        }
+    // set file lock
+    const release = await lockfile.lock(LOCK_FILE, {
+      retries: { retries: 5, maxTimeout: 5000 }
+    })
+    dlog('pid %d get lock', process.pid)
+    fs.ensureDirSync(ROOT)
+    // find available reused port
+    const dirs = await fs.readdir(ROOT)
+    dlog('scan %s dir includes %O', ROOT, dirs)
+    const excludes = []
+    for (let portPid of dirs) {
+      const fullFilePath = path.join(ROOT, portPid)
+      // if current file name not number
+      // delete it, because it was invalid file
+      if (!/\d+/.test(portPid)) {
+        fs.rmSync(fullFilePath)
+        continue
       }
 
-      this.port = await this.getFreePort(excludes)
-      fs.writeFileSync(path.join(ROOT, String(this.port)), String(process.pid))
-      await release()
-      return this.port
-    } catch (err) {
-      throw err
+      // if current file content was empty
+      // the file name port was reused
+      const file = fs.readFileSync(fullFilePath).toString()
+      if (file === '') {
+        // write current port
+        fs.writeFileSync(path.join(ROOT, portPid), String(process.pid))
+        this.port = Number(portPid)
+        await release()
+        return this.port
+      } else {
+        excludes.push(Number(portPid))
+      }
     }
+
+    this.port = await this.getFreePort(excludes)
+    fs.writeFileSync(path.join(ROOT, String(this.port)), String(process.pid))
+    await release()
+    return this.port
   }
 
   async getFreePort(exclude: Array<number> = []) {
     const ports = []
     for (let i = 0; i < 10; i++) {
-      // gen new port
       const port = await getPort({ port: getPort.makeRange(20888, 30000) })
       ports.push(port)
     }
 
     const availablePort = ports.filter((port) => !exclude.includes(port))[0]
-    dlog(
-      'get random port %d in %s mode',
-      availablePort,
-      this.isMasterProcess ? 'master' : 'worker'
-    )
+    dlog('get random port %d', availablePort)
     return availablePort
   }
 
@@ -106,13 +104,6 @@ export class PortManager {
       dlog('bind %s event', event)
       process.on(event, cleanup)
     })
-  }
-
-  get isMasterProcess() {
-    const isClusterMode = cluster.isMaster
-    const isPm2MasterMode =
-      process.env.NODE_APP_INSTANCE && process.env.NODE_APP_INSTANCE === '0'
-    return isClusterMode || isPm2MasterMode
   }
 }
 
