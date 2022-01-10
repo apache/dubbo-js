@@ -179,9 +179,7 @@ export class DubboRequestEncoder {
     for (let arg of args) {
       let type: string = arg['$class']
 
-      //暂时不支持二维数组
-      //如果将来支持，这个地方要while判断下
-      if (type[0] === '[') {
+      while (type[0] === '[') {
         //1. c is array
         desc.push('[')
         type = type.slice(1)
