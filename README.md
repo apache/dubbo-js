@@ -22,7 +22,7 @@ Dubbo-js, using Node.js to embrace the Dubbo ecosystem. See this [Demo](https://
 ## Getting Started
 
 ```
-yarn add apache-dubbo-js
+yarn add apache-dubbo-consumer
 ```
 
 ## Usage
@@ -43,7 +43,7 @@ export default {
 }
 
 // =============== dubbo.ts ========================
-import { Dubbo } from 'apache-dubbo-js'
+import { Dubbo } from 'apache-dubbo-consumer'
 import service from './service'
 
 // create dubbo object
@@ -69,7 +69,7 @@ The automatically translated typescript type definitions are not necessary, belo
 
 ```typescript
 // create the service to be injected
-import { Dubbo } from 'apache-dubbo-js'
+import { Dubbo } from 'apache-dubbo-consumer'
 
 const demoProvider = (dubbo) =>
   dubbo.proxyService({
