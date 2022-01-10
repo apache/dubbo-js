@@ -5,17 +5,18 @@ nodejs 使用原生的 dubbo 协议打通了 dubbo 的 rpc 方法调用 .
 ## Getting Started
 
 ```shell
-yarn add dubbo-js
+yarn add apache-dubbo-consumer
 ```
 
 ## How to Usage?
 
 ```typescript
-import { Dubbo, java, TDubboCallResult } from 'dubbo'
+import { Dubbo, java, TDubboCallResult } from 'apache-dubbo-consumer'
+import { Zk, Nacos } from 'apache-dubbo-registry'
 
-//定义dubbo方法类型接口
-//方便代码自动提示
-//如果写的JavaScript忽略
+// 定义 dubbo 方法类型接口
+// 方便代码自动提示
+// 如果写的 JavaScript 忽略
 interface IDemoService {
   sayHello(name: string): TDubboCallResult<string>
 
@@ -29,22 +30,33 @@ interface IDemoService {
   }>
 }
 
-//创建dubbo对象
+// 创建 dubbo 对象
 const dubbo = new Dubbo({
-  application: { name: 'dubbo-js' },
-  //zookeeper address
-  register: 'localhost:2181',
-  dubboVersion: '2.0.0',
-  interfaces: ['org.apache.dubbo.demo.DemoService']
+  application: {
+    name: 'dubbo-js',
+  },
+  // nacos
+  // registry: Nacos({
+  //   connect: 'localhost:8848',
+  // }),
+
+  // zookeeper
+  registry: Zk({
+    connect: 'localhost:2181',
+  }),
+  dubboVersion: '2.0.2',
+  services: {
+    demoService,
+  }
 })
 
-//代理本地对象->dubbo对象
+// 代理本地对象 -> dubbo 对象
 const demoService = dubbo.proxyService<IDemoService>({
   dubboInterface: 'org.apache.dubbo.demo.DemoService',
   version: '1.0.0',
   methods: {
     sayHello(name) {
-      //仅仅做参数hessian化转换
+      // 仅仅做参数 hessian 化转换
       return [java.String(name)]
     },
 
@@ -53,7 +65,7 @@ const demoService = dubbo.proxyService<IDemoService>({
     test() {},
 
     getUserInfo() {
-      //仅仅做参数hessian化转换
+      // 仅仅做参数 hessian 化转换
       return [
         java.combine('com.alibaba.dubbo.demo.UserRequest', {
           id: 1,
@@ -66,12 +78,12 @@ const demoService = dubbo.proxyService<IDemoService>({
 })
 
 const result1 = await demoService.sayHello('node')
-//print {err: null, res:'hello node from dubbo service'}
+// print { err: null, res:'hello node from dubbo service' }
 const res = await demoService.echo()
-//print {err: null, res: 'pang'}
+// print { err: null, res: 'pang' }
 
 const res = await demoService.getUserInfo()
-//status: 'ok', info: { id: '1', name: 'test' }
+// status: 'ok', info: { id: '1', name: 'test' }
 ```
 
 ## as developer
@@ -80,7 +92,7 @@ const res = await demoService.getUserInfo()
 brew install zookeeper
 brew services start zookeeper
 
-#运行java/dubbo-simple下面的例子
+# 运行 java/dubbo-simple 下面的例子
 
 yarn run test
 
@@ -94,39 +106,32 @@ DEBUG=dubbo*
 
 ```javascript
 const dubbo = new Dubbo({
-  dubboVersion          //当前dubbo的版本 (string类型); 必传
-  application           //记录应用的名称，zookeeper的调用时候写入consumer 类型：({name: string};) 可选
-  enableHeartBeat       //是否启用心跳机制 默认true 可选 类型 boolean
-  dubboInvokeTimeout    //设置dubbo调用超时时间默认10s 可选 类型number
-  dubboSocketPool       //设置dubbo创建socket的pool大小，默认4 可选 类型number
-  logger                //设置logger对象，可选
-  register              //设置zookeeper注册中心地址 必填 类型string
-  zkRoot                //zk的默认根路径，默认/dubbo 类型string
-  interfaces            //设置zk监听的接口名称 类型 Array<string> 必填
+  registry            // zookeeper/nacos 注册中心地址，类型 IRegistry，必填
+  services            // 接口服务，必填
+  dubboVersion        // 当前 dubbo 的版本，类型 string，必填 
+  application         // 注册 consumer 应用的名称，类型：({ name: string })，可选
+  enableHeartBeat     // 是否启用心跳机制，默认 true，类型 boolean，可选 
+  dubboInvokeTimeout  // dubbo 调用超时时间，默认 10s， 类型 number， 可选 
+  dubboSocketPool     // dubbo 创建 socket 的 pool 大小，默认 4， 类型 number， 可选 
+  logger              // logger 对象，默认 console，可选
+  zkRoot              // zk 的默认根路径，默认 /dubbo， 类型 string， 可选，如果是 nacos 注册中心，则不需要该字段 
 });
 
 // Or
 const dubbo = Dubbo.from({
-  dubboVersion          //当前dubbo的版本 (string类型); 必传
-  application           //记录应用的名称，zookeeper的调用时候写入consumer 类型：({name: string};) 可选
-  enableHeartBeat       //是否启用心跳机制 默认true 可选 类型 boolean
-  dubboInvokeTimeout    //设置dubbo调用超时时间默认10s 可选 类型number
-  dubboSocketPool       //设置dubbo创建socket的pool大小，默认4 可选 类型number
-  logger                //设置logger对象，可选
-  register              //设置zookeeper注册中心地址 必填 类型string
-  zkRoot                //zk的默认根路径，默认/dubbo 类型string
-  interfaces            //设置zk监听的接口名称 类型 Array<string> 必填
+  ...
+  // 参数同上
 })
 
-//dubbo的代理服务
+// dubbo 的代理服务
 const demoSerivce = Dubbo.proxService({
-  //代理的服务接口 - string 必传
+  // 代理的服务接口 - string 必传
   dubboInterface: 'com.alibaba.dubbo.demo.DemoService',
-  //服务接口的版本 - string 必传
+  // 服务接口的版本 - string 必传
   version: '1.0.0',
-  //接口内的方法 - Array<Function> 必传
+  // 接口内的方法 - Array<Function> 必传
   methods: {
-    //method name
+    // method name
     xx(params) {
       return [
         params
@@ -139,7 +144,7 @@ const demoSerivce = Dubbo.proxService({
 ## FAQ
 
 ```javascript
-import { Dubbo } from 'dubbo-js'
+import { Dubbo } from 'apache-dubbo-consumer'
 ```
 
 默认导入的 dubbo-js 是按照 es2017 进行编译的，支持 node7.10 以上。
@@ -147,5 +152,5 @@ import { Dubbo } from 'dubbo-js'
 如果更低的 node 版本，可以使用
 
 ```javascript
-import { Dubbo } from 'dubbo-js/es6'
+import { Dubbo } from 'apache-dubbo-consuner/es6'
 ```

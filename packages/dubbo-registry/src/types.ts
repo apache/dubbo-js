@@ -26,7 +26,7 @@ export interface ITimeoutProps {
 export interface INaocsClientProps {
   namespace?: string
   connect: string
-  logger: Console
+  logger?: Console
 }
 export interface IRegistrySubscriber {
   onData: (map: Map<TDubboInterface, Array<TDubboUrl>>) => void
