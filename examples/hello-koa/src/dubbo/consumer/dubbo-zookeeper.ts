@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-import { Dubbo, dubboSetting } from 'apache-dubbo-consumer'
+import { Dubbo, s } from 'apache-dubbo-consumer'
 import { Zk } from 'apache-dubbo-registry'
 import * as services from './service'
 
 /**
  * setting dubbo invoke params, such version, group etc.
  */
-const setting = dubboSetting
-  .match(
+const setting = s.Setting(
+  s.service(
     [
       'org.apache.dubbo.demo.DemoProvider',
       'org.apache.dubbo.demo.ErrorProvider'
     ],
-    {
-      version: '1.0.0'
-    }
-  )
-  .match('org.apache.dubbo.demo.BasicTypeProvider', { version: '2.0.0' })
+    { version: '1.0.0' }
+  ),
+  s.service('org.apache.dubbo.demo.BasicTypeProvider', { version: '2.0.0' })
+)
 
 /**
  * create dubbo instance, it create proxyService
