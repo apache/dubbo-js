@@ -109,7 +109,7 @@ export async function prepareRelease(dest: string) {
   // clean java target class
   log(`\n- clean dubbo-demo`)
   await sh`
-    cd ${outputDir}/dubbo-java/dubbo-demo 
+    cd ${outputDir}/dubbo-java/dubbo-demo
     mvn clean
   `
 
@@ -140,9 +140,9 @@ export async function prepareRelease(dest: string) {
   log(`\n- zip dubbo-js dir`)
   await sh`
     cd ${dest}
-    zip -r apache-dubbo-js-${pkg.version}-source-release.zip dubbo-js 
+    zip -r apache-dubbo-js-${pkg.version}-source-release.zip dubbo-js
     shasum -a 512 apache-dubbo-js-${pkg.version}-source-release.zip >> apache-dubbo-js-${pkg.version}-source-release.zip.sha512
     gpg -ab apache-dubbo-js-${pkg.version}-source-release.zip
-    gpg --verify apache-dubbo-js-${pkg.version}-source-release.zip.asc apache-dubbo-js-${pkg.version}-source-release.zip 
+    gpg --verify apache-dubbo-js-${pkg.version}-source-release.zip.asc apache-dubbo-js-${pkg.version}-source-release.zip
   `
 }

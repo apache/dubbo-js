@@ -17,11 +17,11 @@
 
 import ip from 'ip'
 import java from 'js-to-java'
-import {IDubboService} from 'apache-dubbo-js'
+import { IDubboService } from 'apache-dubbo-js'
 
 enum Sex {
   male,
-  female,
+  female
 }
 
 interface IUserRequest {
@@ -38,19 +38,19 @@ class UserResponse {
   __fields2java() {
     return java('org.apache.dubbo.demo.UserResponse', {
       status: java.String(this.status),
-      info: this.info,
+      info: this.info
     })
   }
 }
 
 class TypeRequest {
   map: Map<string, string>
-  bigDecimal: {value: string}
+  bigDecimal: { value: string }
 
   __fields2java() {
     return java('org.apache.dubbo.demo.TypeRequest', {
       map: this.map,
-      bigDecimal: java.BigDecimal(this.bigDecimal.value),
+      bigDecimal: java.BigDecimal(this.bigDecimal.value)
     })
   }
 }
@@ -63,7 +63,7 @@ class DemoProvider implements IDubboService {
   methods = {
     sayHello(name: string) {
       return java.String(
-        `Hello ${name}, response from provider ${ip.address()}`,
+        `Hello ${name}, response from provider ${ip.address()}`
       )
     },
 
@@ -84,7 +84,7 @@ class DemoProvider implements IDubboService {
       map.set('name', 'test')
       res.info = map
       return res
-    },
+    }
   }
 }
 
@@ -94,13 +94,13 @@ const basicTypeProvider = {
   methods: {
     testBasicType(req: TypeRequest) {
       const response = new TypeRequest()
-      response.bigDecimal = {value: '100.00'}
+      response.bigDecimal = { value: '100.00' }
       const map = new Map()
       map.set('hello', 'world')
       response.map = map
       return response
-    },
-  },
+    }
+  }
 } as IDubboService
 
 class ErrorProvider implements IDubboService {
@@ -110,7 +110,7 @@ class ErrorProvider implements IDubboService {
   methods = {
     errorTest() {
       throw new Error('ErrorProvider error')
-    },
+    }
   }
 }
 

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import {DefaultConfig} from './config.default';
+import { DefaultConfig } from './config.default'
 
 export default () => {
-  const config: DefaultConfig = {};
-  return config;
-};
+  const config: DefaultConfig = {}
+  return config
+}

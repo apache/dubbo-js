@@ -20,26 +20,26 @@
  * parseInt: 187.971ms
  * number: 95.057ms
  */
-console.time('parseInt');
+console.time('parseInt')
 for (let i = 0; i < 1000000; i++) {
-  parseInt(i + '');
+  parseInt(i + '')
 }
-console.timeEnd('parseInt');
+console.timeEnd('parseInt')
 
-console.time('parseInt 10');
+console.time('parseInt 10')
 for (let i = 0; i < 1000000; i++) {
-  parseInt(i + '', 10);
+  parseInt(i + '', 10)
 }
-console.timeEnd('parseInt 10');
+console.timeEnd('parseInt 10')
 
-console.time('prefix plus');
+console.time('prefix plus')
 for (let i = 0; i < 1000000; i++) {
-  +(i + '');
+  ;+(i + '')
 }
-console.timeEnd('prefix plus');
+console.timeEnd('prefix plus')
 
-console.time('number');
+console.time('number')
 for (let i = 0; i < 1000000; i++) {
-  Number(i + '');
+  Number(i + '')
 }
-console.timeEnd('number');
+console.timeEnd('number')

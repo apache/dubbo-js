@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import {Dubbo, setting} from 'apache-dubbo-js'
-import {Application, Context} from 'midway'
+import { Dubbo, setting } from 'apache-dubbo-js'
+import { Application, Context } from 'midway'
 import service from './service'
 
 export default async (app: Application) => {
@@ -27,20 +27,20 @@ export default async (app: Application) => {
     .match(
       [
         'org.apache.dubbo.demo.DemoProvider',
-        'org.apache.dubbo.demo.ErrorProvider',
+        'org.apache.dubbo.demo.ErrorProvider'
       ],
       {
-        version: '1.0.0',
-      },
+        version: '1.0.0'
+      }
     )
-    .match('org.apache.dubbo.demo.BasicTypeProvider', {version: '2.0.0'})
+    .match('org.apache.dubbo.demo.BasicTypeProvider', { version: '2.0.0' })
 
-  const {application, registry} = app.config.dubbo
+  const { application, registry } = app.config.dubbo
   const dubbo = new Dubbo<typeof service>({
     application,
     registry,
     service,
-    dubboSetting,
+    dubboSetting
   })
 
   dubbo.use(async (ctx: Context, next: any) => {

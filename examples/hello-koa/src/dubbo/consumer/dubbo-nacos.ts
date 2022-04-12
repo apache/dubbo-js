@@ -26,11 +26,11 @@ const setting = dubboSetting
   .match(
     [
       'org.apache.dubbo.demo.DemoProvider',
-      'org.apache.dubbo.demo.ErrorProvider',
+      'org.apache.dubbo.demo.ErrorProvider'
     ],
     {
-      version: '1.0.0',
-    },
+      version: '1.0.0'
+    }
   )
   .match('org.apache.dubbo.demo.BasicTypeProvider', { version: '2.0.0' })
 
@@ -44,8 +44,8 @@ const dubbo = new Dubbo<typeof services>({
   services,
   dubboSetting: setting,
   registry: Nacos({
-    connect: 'localhost:8848',
-  }),
+    connect: 'localhost:8848'
+  })
 })
 
 /**

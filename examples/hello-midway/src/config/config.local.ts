@@ -23,7 +23,7 @@ export const development = {
     'config',
     'app.ts',
     'agent.ts',
-    'interface.ts',
+    'interface.ts'
   ],
-  overrideDefault: true,
-};
+  overrideDefault: true
+}

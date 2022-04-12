@@ -72,3 +72,13 @@ build-demo-api:clean-demo-api
 
 interpret-jar:build-demo-api
 	ts-node ./packages/interpret-cli/src/cli.ts interpret -c dubbo.json
+
+ts-check:
+	npx tsc --project ./packages/dubbo-common/tsconfig.json --noEmit
+	npx tsc --project ./packages/dubbo-registry/tsconfig.json --noEmit
+	npx tsc --project ./packages/dubbo-serialization/tsconfig.json --noEmit
+	npx tsc --project ./packages/dubbo-consumer/tsconfig.json --noEmit
+	npx tsc --project ./packages/dubbo-service/tsconfig.json --noEmit
+	npx tsc --project ./packages/interpret-util/tsconfig.json --noEmit
+
+

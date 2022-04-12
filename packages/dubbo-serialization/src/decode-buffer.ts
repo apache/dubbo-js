@@ -33,7 +33,8 @@ const log = debug('dubbo:decode-buffer')
  * 我们需要抽取一个buffer来统一处理这些数据
  */
 export default class DecodeBuffer
-  implements IObservable<TDecodeBuffSubscriber> {
+  implements IObservable<TDecodeBuffSubscriber>
+{
   private buffer: Buffer
   private transport: Socket
   private subscriber: Function

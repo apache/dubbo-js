@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {EggPlugin} from 'midway';
+import { EggPlugin } from 'midway'
 export default {
-  static: true, // default is true
-} as EggPlugin;
+  static: true // default is true
+} as EggPlugin

@@ -28,13 +28,13 @@ router.get('/', (ctx) => {
 })
 
 router.get('/hello', async (ctx) => {
-  const {res, err} = await dubbo.service.demoProvider.sayHello('test')
+  const { res, err } = await dubbo.service.demoProvider.sayHello('test')
   console.log(await dubbo.service.basicTypeProvider.testBasicType())
   ctx.body = err ? err.message : res
 })
 
 router.get('/user', async (ctx) => {
-  const {res, err} = await dubbo.service.demoProvider.getUserInfo()
+  const { res, err } = await dubbo.service.demoProvider.getUserInfo()
   ctx.body = res || err.message
 })
 
@@ -43,19 +43,19 @@ router.get('/echo', async (ctx) => {
 })
 
 router.get('/type', async (ctx) => {
-  const {res, err} = await dubbo.service.basicTypeProvider.testBasicType()
+  const { res, err } = await dubbo.service.basicTypeProvider.testBasicType()
   ctx.body = res || err.message
 })
 
 router.get('/exp', async (ctx) => {
-  const {res, err} = await dubbo.service.errorProvider.errorTest()
+  const { res, err } = await dubbo.service.errorProvider.errorTest()
   console.log(res)
   ctx.body = err.message
 })
 
 router.get('/tracer', async (ctx) => {
-  const {res: hello} = await dubbo.service.demoProvider.sayHello('test')
-  const {res: userInfo} = await dubbo.service.demoProvider.getUserInfo()
+  const { res: hello } = await dubbo.service.demoProvider.sayHello('test')
+  const { res: userInfo } = await dubbo.service.demoProvider.getUserInfo()
 
   setTimeout(async () => {
     await dubbo.service.basicTypeProvider.testBasicType()
@@ -66,7 +66,7 @@ router.get('/tracer', async (ctx) => {
 
   ctx.body = {
     hello,
-    userInfo,
+    userInfo
   }
 })
 

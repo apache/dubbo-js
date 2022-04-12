@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-'ues strict';
+'ues strict'
 
 module.exports = {
   write: true,
@@ -27,5 +27,5 @@ module.exports = {
   devdep: ['autod', 'autod-egg', 'egg-bin', 'tslib', 'typescript'],
   keep: [],
   semver: [],
-  test: 'scripts',
-};
+  test: 'scripts'
+}

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {EggAppConfig, EggAppInfo, PowerPartial} from 'egg'
+import { EggAppConfig, EggAppInfo, PowerPartial } from 'egg'
 
 // for config.{env}.ts
 export type DefaultConfig = PowerPartial<EggAppConfig & BizConfig>
@@ -47,9 +47,9 @@ export default (appInfo: EggAppInfo) => {
    *
    */
   config.dubbo = {
-    application: {name: 'node-egg-bff'},
+    application: { name: 'node-egg-bff' },
     // zookeeper 的链接
-    registry: 'localhost:2181,localhost:2182,localhost:2183',
+    registry: 'localhost:2181,localhost:2182,localhost:2183'
     // nacos 的链接 要以 nacos:// 开头
     // registry: 'nacos://localhost:8848',
   }

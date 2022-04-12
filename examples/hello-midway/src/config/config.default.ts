@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {EggAppConfig, EggAppInfo, PowerPartial} from 'midway'
+import { EggAppConfig, EggAppInfo, PowerPartial } from 'midway'
 
 export type DefaultConfig = PowerPartial<EggAppConfig>
 
@@ -40,11 +40,11 @@ export default (appInfo: EggAppInfo) => {
    *
    */
   config.dubbo = {
-    application: {name: 'node-midway-bff'},
+    application: { name: 'node-midway-bff' },
     // zookeeper 的链接
     // registry: 'localhost:2181,localhost:2182,localhost:2183',
     // nacos 的链接 要以 nacos:// 开头
-    registry: 'nacos://localhost:8848',
+    registry: 'nacos://localhost:8848'
   }
 
   return config

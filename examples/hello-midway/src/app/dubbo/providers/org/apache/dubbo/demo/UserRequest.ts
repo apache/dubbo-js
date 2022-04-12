@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-import {java} from 'apache-dubbo-js';
-import {Sex} from './Sex';
+import { java } from 'apache-dubbo-consumer'
+import { Sex } from './Sex'
 
 export interface IUserRequest {
-  sex?: Sex;
-  name?: string;
-  id?: number;
-  email?: string;
+  sex?: Sex
+  name?: string
+  id?: number
+  email?: string
 }
 
 export class UserRequest {
   constructor(params: IUserRequest) {
-    this.sex = params.sex;
-    this.name = params.name;
-    this.id = params.id;
-    this.email = params.email;
+    this.sex = params.sex
+    this.name = params.name
+    this.id = params.id
+    this.email = params.email
   }
 
-  sex?: Sex;
-  name?: string;
-  id?: number;
-  email?: string;
+  sex?: Sex
+  name?: string
+  id?: number
+  email?: string
 
   __fields2java() {
     return {
@@ -45,9 +45,9 @@ export class UserRequest {
         sex: java['enum']('org.apache.dubbo.demo.Sex', Sex[this.sex]),
         name: java.String(this.name),
         id: java.Integer(this.id),
-        email: java.String(this.email),
-      },
-    };
+        email: java.String(this.email)
+      }
+    }
   }
 }
 
