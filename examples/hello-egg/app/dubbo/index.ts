@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import {Context, Dubbo, setting} from 'apache-dubbo-js'
-import {EggApplication} from 'egg'
+import { Context, Dubbo, s } from 'apache-dubbo-js'
+import { EggApplication } from 'egg'
 import service from './service'
 
 declare module 'egg' {
@@ -26,32 +26,30 @@ declare module 'egg' {
 }
 
 // dubbo interface setting
-const dubboSetting = setting
-  .match(
+const dubboSetting = s.Setting(
+  s.service(
     [
       'org.apache.dubbo.demo.DemoProvider',
-      'org.apache.dubbo.demo.ErrorProvider',
+      'org.apache.dubbo.demo.ErrorProvider'
     ],
-    {
-      version: '1.0.0',
-    },
-  )
-  .match('org.apache.dubbo.demo.BasicTypeProvider', {version: '2.0.0'})
-
+    { version: '1.0.0' }
+  ),
+  s.service('org.apache.dubbo.demo.BasicTypeProvider', { version: '2.0.0' })
+)
 export default (app: EggApplication) => {
   // create a dubboo object
-  const {application, registry} = app.config.dubbo
+  const { application, registry } = app.config.dubbo
   const dubbo = new Dubbo<typeof service>({
     application,
     registry,
     service,
-    dubboSetting,
+    dubboSetting
   })
 
   dubbo.subscribe({
     onTrace(err) {
       console.log(err)
-    },
+    }
   })
 
   // extends middleware
@@ -60,7 +58,7 @@ export default (app: EggApplication) => {
     await next()
     const end = Date.now()
     app.coreLogger.info(
-      `${ctx.dubboInterface} was invoked, cost-time ${end - start}`,
+      `${ctx.dubboInterface} was invoked, cost-time ${end - start}`
     )
   })
 

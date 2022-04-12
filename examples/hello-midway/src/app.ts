@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-import {Application} from 'midway';
-import dubbo from './app/dubbo';
+import { Application } from 'midway'
+import dubbo from './app/dubbo'
 
 export default async (app: Application) => {
-  console.log('🚀 Your awesome APP is launching...');
-  await dubbo(app);
-  console.log('dubbo was ready..');
-  await app.dubbo.ready();
-  console.log('✅  Your awesome APP launched');
-};
+  console.log('🚀 Your awesome APP is launching...')
+  await dubbo(app)
+  console.log('dubbo was ready..')
+  await app.dubbo.ready()
+  console.log('✅  Your awesome APP launched')
+}

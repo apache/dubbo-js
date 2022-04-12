@@ -21,9 +21,9 @@ $ open http://localhost:7001/
 
 ```js
 config.dubbo = {
-  application: {name: 'node-midway-bff'},
+  application: { name: 'node-midway-bff' },
   // nacos 的链接 要以 nacos:// 开头
-  registry: 'nacos://localhost:8848',
+  registry: 'nacos://localhost:8848'
 }
 ```
 

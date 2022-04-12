@@ -33,7 +33,7 @@ interface IDemoService {
 // 创建 dubbo 对象
 const dubbo = new Dubbo({
   application: {
-    name: 'dubbo-js',
+    name: 'dubbo-js'
   },
   // nacos
   // registry: Nacos({
@@ -42,11 +42,11 @@ const dubbo = new Dubbo({
 
   // zookeeper
   registry: Zk({
-    connect: 'localhost:2181',
+    connect: 'localhost:2181'
   }),
   dubboVersion: '2.0.2',
   services: {
-    demoService,
+    demoService
   }
 })
 
@@ -108,13 +108,13 @@ DEBUG=dubbo*
 const dubbo = new Dubbo({
   registry            // zookeeper/nacos 注册中心地址，类型 IRegistry，必填
   services            // 接口服务，必填
-  dubboVersion        // 当前 dubbo 的版本，类型 string，必填 
+  dubboVersion        // 当前 dubbo 的版本，类型 string，必填
   application         // 注册 consumer 应用的名称，类型：({ name: string })，可选
-  enableHeartBeat     // 是否启用心跳机制，默认 true，类型 boolean，可选 
-  dubboInvokeTimeout  // dubbo 调用超时时间，默认 10s， 类型 number， 可选 
-  dubboSocketPool     // dubbo 创建 socket 的 pool 大小，默认 4， 类型 number， 可选 
+  enableHeartBeat     // 是否启用心跳机制，默认 true，类型 boolean，可选
+  dubboInvokeTimeout  // dubbo 调用超时时间，默认 10s， 类型 number， 可选
+  dubboSocketPool     // dubbo 创建 socket 的 pool 大小，默认 4， 类型 number， 可选
   logger              // logger 对象，默认 console，可选
-  zkRoot              // zk 的默认根路径，默认 /dubbo， 类型 string， 可选，如果是 nacos 注册中心，则不需要该字段 
+  zkRoot              // zk 的默认根路径，默认 /dubbo， 类型 string， 可选，如果是 nacos 注册中心，则不需要该字段
 });
 
 // Or

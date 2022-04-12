@@ -19,56 +19,66 @@ clean-all: clean-dubbo-common clean-dubbo-registry clean-dubbo-registry clean-du
 
 dubbo-common: clean-dubbo-common
 	npx tsc --project ./packages/dubbo-common/tsconfig.json
-	@echo "compile dubbo-common successfully ❤️\n"
+	@echo "👌 compile dubbo-common successfully \n"
 
 clean-dubbo-common:
 	rm -rf ./packages/dubbo-common/lib
-	@echo "clean dubbo-invoker successfully 👏\n"
+	@echo "👌 clean dubbo-invoker successfully\n"
 
 dubbo-registry: clean-dubbo-registry
 	npx tsc --project ./packages/dubbo-registry/tsconfig.json
-	@echo "compile dubbo-registry successfully ❤️\n"
+	@echo "👌 compile dubbo-registry successfully\n"
 
 clean-dubbo-registry:
 	rm -rf ./packages/dubbo-registry/lib
-	@echo "clean dubbo-registry successfully 👏\n"
+	@echo "👌 clean dubbo-registry successfully\n"
 
 dubbo-serialization: clean-dubbo-serialization
 	npx tsc --project ./packages/dubbo-serialization/tsconfig.json
-	@echo "compile dubbo-serialization successfully ❤️\n"
+	@echo "👌 compile dubbo-serialization successfully\n"
 
 clean-dubbo-serialization:
 	rm -rf ./packages/dubbo-serialization/lib
-	@echo "clean dubbo-serialization successfully 👏\n"
+	@echo "👌 clean dubbo-serialization successfully\n"
 
 dubbo-consumer: clean-dubbo-consumer
 	npx tsc --project ./packages/dubbo-consumer/tsconfig.json
-	@echo "compile dubbo-consumer successfully ❤️\n"
+	@echo "👌 compile dubbo-consumer successfully\n"
 
 clean-dubbo-consumer:
 	rm -rf ./packages/dubbo-consumer/lib
-	@echo "clean dubbo-consumer successfully 👏\n"
+	@echo "👌 clean dubbo-consumer successfully\n"
 
 dubbo-service: clean-dubbo-service
 	npx tsc --project ./packages/dubbo-service/tsconfig.json
-	@echo "compile dubbo-service successfully ❤️\n"
+	@echo "👌 compile dubbo-service successfully\n"
 
 clean-dubbo-service:
 	rm -rf ./packages/dubbo-service/lib
-	@echo "clean dubbo-service successfully 👏\n"
+	@echo "👌 clean dubbo-service successfully\n"
 
 build-interpret-util:clean-interpret-util
 	npx tsc --project ./packages/interpret-util/tsconfig.json
-	@echo "compile interpret-util successfully 👌\n"
+	@echo "👌 compile interpret-util successfully\n"
 
 clean-interpret-util:
 	rm -rf ./packages/interpret-util/lib
-	@echo "clean interpret-util successfully 👌\n"
+	@echo "👌 clean interpret-util successfully\n"
 
 build-demo-api:clean-demo-api
 	cd ./java/dubbo-demo/dubbo-demo-api && mvn package
 	cd ./java/dubbo-demo/dubbo-demo-api && mvn install dependency:copy-dependencies
-	@echo "build demo-api successfully 👌\n"
+	@echo "👌 build demo-api successfully\n"
 
 interpret-jar:build-demo-api
 	ts-node ./packages/interpret-cli/src/cli.ts interpret -c dubbo.json
+
+ts-check:
+	npx tsc --project ./packages/dubbo-common/tsconfig.json --noEmit
+	npx tsc --project ./packages/dubbo-registry/tsconfig.json --noEmit
+	npx tsc --project ./packages/dubbo-serialization/tsconfig.json --noEmit
+	npx tsc --project ./packages/dubbo-consumer/tsconfig.json --noEmit
+	npx tsc --project ./packages/dubbo-service/tsconfig.json --noEmit
+	npx tsc --project ./packages/interpret-util/tsconfig.json --noEmit
+
+

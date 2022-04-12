@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-import {Application} from 'egg';
+import { Application } from 'egg'
 
 export default (app: Application) => {
-  const {controller, router} = app;
+  const { controller, router } = app
 
-  router.get('/', controller.home.index);
-  router.get('/hello', controller.home.sayHello);
-  router.get('/user-info', controller.home.userInfo);
-  router.get('/echo', controller.home.echo);
-  router.get('/basic-type', controller.home.basicType);
-};
+  router.get('/', controller.home.index)
+  router.get('/hello', controller.home.sayHello)
+  router.get('/user-info', controller.home.userInfo)
+  router.get('/echo', controller.home.echo)
+  router.get('/basic-type', controller.home.basicType)
+}

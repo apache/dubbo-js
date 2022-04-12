@@ -29,7 +29,8 @@ const NacosNamingClient = require('nacos').NacosNamingClient
 // nacos debug
 export class NacosRegistry
   extends BaseRegistry
-  implements IRegistry<typeof NacosNamingClient> {
+  implements IRegistry<typeof NacosNamingClient>
+{
   // nacos props
   private nacosProps: INaocsClientProps
   private client: typeof NacosNamingClient

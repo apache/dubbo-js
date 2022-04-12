@@ -17,6 +17,6 @@
 
 export enum Sex {
   female = 'female',
-  male = 'male',
+  male = 'male'
 }
 //generate by interpret-cli apache-dubbo-js

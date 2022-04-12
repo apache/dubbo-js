@@ -117,13 +117,8 @@ export class DubboRequestEncoder {
     //hessian v2
     const encoder = new Hessian.EncoderV2()
 
-    const {
-      dubboVersion,
-      dubboInterface,
-      version,
-      methodName,
-      methodArgs
-    } = this.ctx
+    const { dubboVersion, dubboInterface, version, methodName, methodArgs } =
+      this.ctx
 
     //dubbo version
     encoder.write(dubboVersion)

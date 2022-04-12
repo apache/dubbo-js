@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import {DubboServer, nacos} from 'apache-dubbo-js'
+import { DubboServer, nacos } from 'apache-dubbo-js'
 import service from './service'
 
 const server = new DubboServer({
   port: 20880,
   // default zookeeper
   registry: nacos({
-    url: 'nacos:localhost:8848',
+    url: 'nacos:localhost:8848'
   }),
-  services: service,
+  services: service
 })
 
 server.start()

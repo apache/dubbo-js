@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-import {EggApplication} from 'egg';
-import dubbo from './app/dubbo';
+import { EggApplication } from 'egg'
+import dubbo from './app/dubbo'
 
 export default async (app: EggApplication) => {
   /**
    * init dubbo
    */
-  dubbo(app);
-  await app.dubbo.ready();
-  app.coreLogger.info('dubbo was ready');
-};
+  dubbo(app)
+  await app.dubbo.ready()
+  app.coreLogger.info('dubbo was ready')
+}

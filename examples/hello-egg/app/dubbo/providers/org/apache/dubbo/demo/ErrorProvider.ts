@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-import {Dubbo, TDubboCallResult} from 'apache-dubbo-js';
-import {argumentMap} from 'interpret-util';
+import { Dubbo, TDubboCallResult } from 'apache-dubbo-js'
+import { argumentMap } from 'interpret-util'
 
 export interface IErrorProvider {
-  errorTest(): TDubboCallResult<void>;
+  errorTest(): TDubboCallResult<void>
 }
 
-export const ErrorProviderWrapper = {errorTest: argumentMap};
+export const ErrorProviderWrapper = { errorTest: argumentMap }
 
 export function ErrorProvider(dubbo: Dubbo): IErrorProvider {
   return dubbo.proxyService<IErrorProvider>({
     dubboInterface: 'org.apache.dubbo.demo.ErrorProvider',
-    methods: ErrorProviderWrapper,
-  });
+    methods: ErrorProviderWrapper
+  })
 }
 
 //generate by interpret-cli apache-dubbo-js
