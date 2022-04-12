@@ -43,14 +43,27 @@ export default {
 }
 
 // =============== dubbo.ts ========================
-import { Dubbo } from 'apache-dubbo-consumer'
+import { Dubbo, s } from 'apache-dubbo-consumer'
 import service from './service'
+
+// dubbo interface setting
+const dubboSetting = s.Setting(
+  s.service(
+    [
+      'org.apache.dubbo.demo.DemoProvider',
+      'org.apache.dubbo.demo.ErrorProvider'
+    ],
+    { version: '1.0.0' }
+  ),
+  s.service('org.apache.dubbo.demo.BasicTypeProvider', { version: '2.0.0' })
+)
 
 // create dubbo object
 const dubbo = new Dubbo<typeof service>({
   application: { name: 'dubbo-js' },
   // zookeeper address
   register: 'localhost:2181',
+  dubboSetting,
   service
 })
 
