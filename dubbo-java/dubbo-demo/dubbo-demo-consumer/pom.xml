@@ -24,7 +24,7 @@
     <name>${project.artifactId}</name>
     <description>The demo consumer module of dubbo project</description>
     <properties>
-        <dubbo.version>2.7.4.1</dubbo.version>
+        <dubbo.version>2.7.15</dubbo.version>
         <javassist_version>3.20.0-GA</javassist_version>
         <netty_version>3.2.5.Final</netty_version>
         <zookeeper_version>3.4.9</zookeeper_version>
