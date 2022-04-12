@@ -29,7 +29,7 @@ http://maven.apache.org/POM/4.0.0 ">
     <dubbo.version>2.7.15</dubbo.version>
     <javassist_version>3.20.0-GA</javassist_version>
     <netty_version>3.2.5.Final</netty_version>
-    <zookeeper_version>3.4.9</zookeeper_version>
+    <zookeeper_version>3.4.14</zookeeper_version>
     <zkclient_version>0.2</zkclient_version>
     <curator_version>2.12.0</curator_version>
     <fastjson_version>1.2.31</fastjson_version>
