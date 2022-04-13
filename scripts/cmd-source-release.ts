@@ -19,10 +19,9 @@ import { join } from 'path'
 import { exec } from 'child_process'
 import fs from 'fs-extra'
 import chalk from 'chalk'
-import pkg from '../../package.json'
-import { checkLicense } from './check-license'
-import checkNotice from '../feature/check-notice'
-import checkCopyright from '../feature/check-copyright'
+import pkg from '../package.json'
+import { checkLicense } from './cmd-check-license'
+import { checkCopyright, checkNotice } from './helper'
 
 const log = (str: string) => console.log(chalk.greenBright(str))
 const logErr = (err: Error | string) => console.log(chalk.redBright(err))
@@ -56,7 +55,7 @@ const sh = (str: TemplateStringsArray, ...keys: Array<string>) => {
  * - lerna
  */
 
-export async function prepareRelease(dest: string) {
+export async function sourceRelease(dest: string) {
   log(`current cwd ${process.cwd()}`)
   log(`- check notice year`)
   const err = checkNotice()

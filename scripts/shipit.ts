@@ -16,8 +16,9 @@
  */
 
 import { Command } from 'commander'
-import { checkLicense, fixedFileLicense } from './command/check-license'
-import { prepareRelease } from './command/prepare-release'
+import { sourceRelease } from './cmd-source-release'
+import { npmRelease } from './cmd-npm-release'
+import { checkLicense, fixedFileLicense } from './cmd-check-license'
 
 const program = new Command()
 
@@ -25,6 +26,7 @@ program
   .version('1.0.0', '-v, --version', 'output the current version')
   .description('🚀 dubbo-js shipit tools 🚀')
 
+// check license
 program
   .command('check-license [fixed]')
   .description('check file license')
@@ -36,11 +38,26 @@ program
     }
   })
 
+// source release
 program
-  .command('prepare-release [dest]')
-  .description('prepare source release')
+  .command('source-release [dest]')
+  .description('source source release')
   .action((dest: string = '/tmp') => {
-    prepareRelease(dest)
+    sourceRelease(dest)
+  })
+
+// npm release
+program
+  .command('npm-release')
+  .description('npm module release')
+  .action(() => {
+    npmRelease()
+      .then(() => {
+        console.log(`release ok.`)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   })
 
 program.parse(process.argv)
