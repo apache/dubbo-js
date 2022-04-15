@@ -13,72 +13,57 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-default: build-interpret-util dubbo-common dubbo-registry dubbo-serialization dubbo-service dubbo-consumer
+dubbo-common = ./packages/dubbo-common
+dubbo-registry = ./packages/dubbo-registry
+dubbo-serialization = ./packages/dubbo-serialization
+dubbo-service = ./packages/dubbo-service
+dubbo-consumer = ./packages/dubbo-consumer
+interpret-cli = ./packages/interpret-cli
+interpret-util = ./packages/interpret-util
+zone-context = ./packages/zone-context
 
-clean-all: clean-dubbo-common clean-dubbo-registry clean-dubbo-registry clean-dubbo-serialization clean-dubbo-consumer clean-dubbo-service clean-interpret-util
+default: build
 
-dubbo-common: clean-dubbo-common
-	npx tsc --project ./packages/dubbo-common/tsconfig.json
-	@echo "👌 compile dubbo-common successfully \n"
+build: clean
+	npx tsc -p ${dubbo-common}/tsconfig.json
+	npx tsc -p ${dubbo-registry}/tsconfig.json
+	npx tsc -p ${dubbo-serialization}/tsconfig.json
+	npx tsc -p ${dubbo-service}/tsconfig.json
+	npx tsc -p ${dubbo-consumer}/tsconfig.json
+	npx tsc -p ${interpret-cli}/tsconfig.json
+	npx tsc -p ${interpret-util}/tsconfig.json
+	npx tsc -p ${zone-context}/tsconfig.json
+	@echo "build success👏\n"
 
-clean-dubbo-common:
-	rm -rf ./packages/dubbo-common/lib
-	@echo "👌 clean dubbo-invoker successfully\n"
+clean:
+	rm -rf ${dubbo-common}/lib
+	rm -rf ${dubbo-registry}/lib
+	rm -rf ${dubbo-serialization}/lib
+	rm -rf ${dubbo-consumer}/lib
+	rm -rf ${dubbo-service}/lib
+	rm -rf ${interpret-cli}/lib
+	rm -rf ${interpret-util}/lib
+	rm -rf ${zone-context}/lib
+	@echo "clean success👏\n"
 
-dubbo-registry: clean-dubbo-registry
-	npx tsc --project ./packages/dubbo-registry/tsconfig.json
-	@echo "👌 compile dubbo-registry successfully\n"
+check:
+	npx tsc -p ${dubbo-common}/tsconfig.json --noEmit
+	npx tsc -p ${dubbo-registry}/tsconfig.json --noEmit
+	npx tsc -p ${dubbo-serialization}/tsconfig.json --noEmit
+	npx tsc -p ${dubbo-service}/tsconfig.json --noEmit
+	npx tsc -p ${dubbo-consumer}/tsconfig.json --noEmit
+	npx tsc -p ${interpret-cli}/tsconfig.json --noEmit
+	npx tsc -p ${interpret-util}/tsconfig.json --noEmit
+	npx tsc -p ${zone-context}/tsconfig.json --noEmit
+	@echo "check success👏\n"
 
-clean-dubbo-registry:
-	rm -rf ./packages/dubbo-registry/lib
-	@echo "👌 clean dubbo-registry successfully\n"
-
-dubbo-serialization: clean-dubbo-serialization
-	npx tsc --project ./packages/dubbo-serialization/tsconfig.json
-	@echo "👌 compile dubbo-serialization successfully\n"
-
-clean-dubbo-serialization:
-	rm -rf ./packages/dubbo-serialization/lib
-	@echo "👌 clean dubbo-serialization successfully\n"
-
-dubbo-consumer: clean-dubbo-consumer
-	npx tsc --project ./packages/dubbo-consumer/tsconfig.json
-	@echo "👌 compile dubbo-consumer successfully\n"
-
-clean-dubbo-consumer:
-	rm -rf ./packages/dubbo-consumer/lib
-	@echo "👌 clean dubbo-consumer successfully\n"
-
-dubbo-service: clean-dubbo-service
-	npx tsc --project ./packages/dubbo-service/tsconfig.json
-	@echo "👌 compile dubbo-service successfully\n"
-
-clean-dubbo-service:
-	rm -rf ./packages/dubbo-service/lib
-	@echo "👌 clean dubbo-service successfully\n"
-
-build-interpret-util:clean-interpret-util
-	npx tsc --project ./packages/interpret-util/tsconfig.json
-	@echo "👌 compile interpret-util successfully\n"
-
-clean-interpret-util:
-	rm -rf ./packages/interpret-util/lib
-	@echo "👌 clean interpret-util successfully\n"
-
-build-demo-api:clean-demo-api
-	cd ./java/dubbo-demo/dubbo-demo-api && mvn package
+build-java-demo:
+	cd ./java/dubbo-demo/dubbo-demo-api && mvn clean package
 	cd ./java/dubbo-demo/dubbo-demo-api && mvn install dependency:copy-dependencies
-	@echo "👌 build demo-api successfully\n"
+	@echo "build java-demo success👏\n"
 
 interpret-jar:build-demo-api
 	ts-node ./packages/interpret-cli/src/cli.ts interpret -c dubbo.json
-
-ts-check:
-	npx tsc --project ./packages/dubbo-common/tsconfig.json --noEmit
-	npx tsc --project ./packages/dubbo-registry/tsconfig.json --noEmit
-	npx tsc --project ./packages/dubbo-serialization/tsconfig.json --noEmit
-	npx tsc --project ./packages/dubbo-consumer/tsconfig.json --noEmit
-	npx tsc --project ./packages/dubbo-service/tsconfig.json --noEmit
-	npx tsc --project ./packages/interpret-util/tsconfig.json --noEmit
+	@echo "interpret-jar success👏\n"
 
 

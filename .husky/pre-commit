@@ -2,5 +2,5 @@
 . "$(dirname "$0")/_/husky.sh"
 
 npx pretty-quick --staged
-make ts-check
+make check
 npx jest --no-cache
