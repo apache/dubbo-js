@@ -17,7 +17,7 @@
 
 import { Command } from 'commander'
 import { sourceRelease } from './cmd-source-release'
-import { npmRelease } from './cmd-npm-release'
+import npmRelease from './cmd-npm-release'
 import { checkLicense, fixedFileLicense } from './cmd-check-license'
 
 const program = new Command()
@@ -51,7 +51,13 @@ program
   .command('npm-release')
   .description('npm module release')
   .action(() => {
-    npmRelease()
+    npmRelease([
+      './package/dubbo-common',
+      './package/dubbo-registry',
+      './package/dubbo-serialization',
+      './package/dubbo-service',
+      './package/dubbo-consumer'
+    ])
       .then(() => {
         console.log(`release ok.`)
       })
