@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
+import chalk from 'chalk'
 import { Command } from 'commander'
-import { sourceRelease } from './cmd-source-release'
-import npmRelease from './cmd-npm-release'
-import { checkLicense, fixedFileLicense } from './cmd-check-license'
+import { sourceRelease } from './cmd-release-source'
+import npmRelease from './cmd-release-npm'
+import { checkLicense, checkNotice, fixedFileLicense } from './cmd-check-source'
 
 const program = new Command()
 
@@ -28,22 +29,44 @@ program
 
 // check license
 program
-  .command('check-license [fixed]')
+  .command('check')
   .description('check file license')
-  .action(async (fixed = '') => {
-    if (fixed !== 'fixed') {
-      checkLicense()
+  .action(async () => {
+    // check notice
+    checkNotice()
+    // check license
+    const invalidFiles = await checkLicense()
+    if (invalidFiles.size === 0) {
+      console.log(chalk.greenBright(`Yes, All file have apache license`))
     } else {
-      fixedFileLicense()
+      for (let [file] of invalidFiles) {
+        console.log(chalk.yellowBright(`${file} => have not apache license`))
+      }
     }
+  })
+
+// fixed notice and license
+program
+  .command('fix')
+  .description('fixed notice and license issues')
+  .action(async () => {
+    await fixedFileLicense()
   })
 
 // source release
 program
   .command('source-release [dest]')
   .description('source source release')
-  .action((dest: string = '/tmp') => {
-    sourceRelease(dest)
+  .action(async (dest: string = '/tmp') => {
+    const invalidFiles = await checkLicense()
+
+    if (invalidFiles.size >= 0) {
+      console.log(chalk.yellowBright(`These files have not apache license`))
+      console.log(chalk.yellowBright(`${[...invalidFiles.keys()].join(`\n`)}`))
+      console.log(chalk.redBright(`please fixed those issues.`))
+      return
+    }
+    await sourceRelease(dest)
   })
 
 // npm release
