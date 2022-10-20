@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`基本类型转换 map泛型二层转换 1`] = `"{[name: string]: Array<string>}"`;
