@@ -1,4 +1,0 @@
-# Please don't delete this file
-
-# In order to enable the process of dubbo-service to obtain reusable ports, we use file locks
-# Make each child process obtain available ports in turn to solve the problem of simultaneous port conflicts
