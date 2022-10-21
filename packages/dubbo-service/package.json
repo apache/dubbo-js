@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "ip": "^1.1.5",
+    "debug": "3.1.0",
     "proper-lockfile": "^4.1.2",
     "fs-extra": "^9.1.0",
     "apache-dubbo-serialization": "^0.0.2",

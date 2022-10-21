@@ -20,7 +20,7 @@
     },
     "test": {
       "inputs": ["^default", "^production", "{workspaceRoot}/jest.config.ts"],
-      "dependsOn": ["^test"]
+      "dependsOn": ["^build", "^test"]
     },
     "format": {
       "inputs": ["default", "^production", "${workspaceRoot}/.prettierrc"],

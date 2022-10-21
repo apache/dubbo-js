@@ -18,6 +18,7 @@
     "url": "https://github.com/apache/dubbo-js"
   },
   "dependencies": {
+    "debug": "3.1.0",
     "apache-dubbo-common": "0.0.1"
   }
 }

@@ -64,8 +64,10 @@ importers:
 
   packages/dubbo-common:
     specifiers:
+      debug: 3.1.0
       ip: ^1.1.5
     dependencies:
+      debug: 3.1.0
       ip: 1.1.8
 
   packages/dubbo-consumer:
@@ -96,11 +98,13 @@ importers:
   packages/dubbo-registry:
     specifiers:
       apache-dubbo-common: 0.0.1
+      debug: 3.1.0
       ip: 1.1.5
       nacos: 2.1.1
       zookeeper: ^5.5.0
     dependencies:
       apache-dubbo-common: link:../dubbo-common
+      debug: 3.1.0
       ip: 1.1.5
       nacos: 2.1.1
       zookeeper: 5.5.1
@@ -108,13 +112,16 @@ importers:
   packages/dubbo-serialization:
     specifiers:
       apache-dubbo-common: 0.0.1
+      debug: 3.1.0
     dependencies:
       apache-dubbo-common: link:../dubbo-common
+      debug: 3.1.0
 
   packages/dubbo-service:
     specifiers:
       apache-dubbo-common: ^0.0.1
       apache-dubbo-serialization: ^0.0.2
+      debug: 3.1.0
       fs-extra: ^9.1.0
       get-port: ^5.1.1
       ip: ^1.1.5
@@ -122,6 +129,7 @@ importers:
     dependencies:
       apache-dubbo-common: link:../dubbo-common
       apache-dubbo-serialization: link:../dubbo-serialization
+      debug: 3.1.0
       fs-extra: 9.1.0
       get-port: 5.1.1
       ip: 1.1.8
@@ -132,11 +140,13 @@ importers:
       apache-dubbo-consumer: workspace:*
       apache-dubbo-registry: workspace:*
       apache-dubbo-service: workspace:*
+      debug: 3.1.0
       interpret-util: workspace:*
     dependencies:
       apache-dubbo-consumer: link:../dubbo-consumer
       apache-dubbo-registry: link:../dubbo-registry
       apache-dubbo-service: link:../dubbo-service
+      debug: 3.1.0
       interpret-util: link:../interpret-util
 
   packages/interpret-cli:
@@ -2051,7 +2061,7 @@ packages:
       }
     engines: { node: '>= 8.0.0' }
     dependencies:
-      debug: 3.1.0
+      debug: 3.2.7
       long: 4.0.0
       utility: 1.17.0
     transitivePeerDependencies:
@@ -4774,7 +4784,7 @@ packages:
     dependencies:
       cluster-client: 2.1.2
       co-gather: 1.0.1
-      debug: 3.1.0
+      debug: 3.2.7
       iconv-lite: 0.4.24
       is-type-of: 1.2.1
       mz: 2.7.0
