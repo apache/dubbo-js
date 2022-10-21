@@ -7,3 +7,5 @@ node_modules
 output
 temp
 demo
+project.json
+jest.config.js

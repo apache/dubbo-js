@@ -22,7 +22,8 @@ const originNum = Number
 beforeAll(() => {
   // @ts-ignore
   global.Number = {
-    MAX_SAFE_INTEGER: 6
+    MAX_SAFE_INTEGER: 6,
+    isInteger: originNum.isInteger
   }
 })
 

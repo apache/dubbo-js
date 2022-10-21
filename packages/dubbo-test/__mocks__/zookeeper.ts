@@ -18,9 +18,16 @@
 import debug from 'debug'
 import EventEmitter from 'events'
 import Zookeeper from 'zookeeper'
-import { IZkClientConfig } from '../src/types'
 
 const log = debug('dubbo:zookeeper:mock')
+
+export interface IZkClientConfig {
+  connect: string
+  timeout?: number
+  debug_level?: number
+  host_order_deterministic?: boolean
+  zkRootPath?: string
+}
 
 /**
  * mock node_modules/zookeeper

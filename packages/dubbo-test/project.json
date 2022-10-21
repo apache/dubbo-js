@@ -1,0 +1,36 @@
+{
+  "name": "dubbo-test",
+  "root": "packages/dubbo-test",
+  "sourceRoot": "packages/dubbo-test/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc",
+        "cwd": "packages/dubbo-test"
+      }
+    },
+    "ts-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc --noEmit",
+        "cwd": "packages/dubbo-test"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx jest",
+        "cwd": "packages/dubbo-test"
+      }
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prettier --write \"**/*.{ts,tsx,md}\"",
+        "cwd": "packages/dubbo-test"
+      }
+    }
+  }
+}

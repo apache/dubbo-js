@@ -22,7 +22,7 @@ import { go } from '../go'
 describe('go test suite', () => {
   it('test promise resolve 1', async () => {
     const test = (): Promise<string> => {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         resolve('1')
       })
     }
@@ -33,7 +33,7 @@ describe('go test suite', () => {
 
   it('test reject error', async () => {
     const test = (): Promise<string> => {
-      return new Promise((resolve, reject) => {
+      return new Promise((_resolve, reject) => {
         reject(new Error('I am wrong.'))
       })
     }

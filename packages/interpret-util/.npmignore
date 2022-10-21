@@ -5,3 +5,5 @@ tsconfig.json
 node_modules
 *.log
 output
+project.json
+jest.config.js

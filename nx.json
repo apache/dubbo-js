@@ -1,0 +1,31 @@
+{
+  "extends": "nx/presets/npm.json",
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": ["test", "build", "format", "ts-check"]
+      }
+    }
+  },
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*"],
+    "production": ["!{projectRoot}/**/*.test.ts"]
+  },
+  "targetDefaults": {
+    "build": {
+      "inputs": ["default", "^production"],
+      "dependsOn": ["^build"],
+      "outputs": ["{projectRoot}/lib"]
+    },
+    "test": {
+      "inputs": ["^default", "^production", "{workspaceRoot}/jest.config.ts"],
+      "dependsOn": ["^test"]
+    },
+    "format": { "dependsOn": ["^format"] },
+    "ts-check": { "dependsOn": ["^ts-check"] }
+  },
+  "affected": {
+    "defaultBase": "master"
+  }
+}

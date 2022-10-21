@@ -19,7 +19,9 @@
     "url": "https://github.com/apache/dubbo-js"
   },
   "dependencies": {
-    "apache-dubbo-consumer": "*",
-    "apache-dubbo-service": "*"
+    "apache-dubbo-consumer": "workspace:*",
+    "apache-dubbo-service": "workspace:*",
+    "interpret-util": "workspace:*",
+    "apache-dubbo-registry": "workspace:*"
   }
 }

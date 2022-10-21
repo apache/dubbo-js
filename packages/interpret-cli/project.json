@@ -1,0 +1,36 @@
+{
+  "name": "interpret-cli",
+  "root": "packages/interpret-cli",
+  "sourceRoot": "packages/interpret-cli/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc",
+        "cwd": "packages/interpret-cli"
+      }
+    },
+    "ts-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc --noEmit",
+        "cwd": "packages/interpret-cli"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx jest",
+        "cwd": "packages/interpret-cli"
+      }
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prettier --write \"**/*.{ts,tsx,md}\"",
+        "cwd": "packages/interpret-cli"
+      }
+    }
+  }
+}

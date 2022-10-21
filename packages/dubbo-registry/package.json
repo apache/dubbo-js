@@ -21,6 +21,6 @@
     "ip": "1.1.5",
     "apache-dubbo-common": "0.0.1",
     "nacos": "2.1.1",
-    "zookeeper": "^4.10.0"
+    "zookeeper": "^5.5.0"
   }
 }

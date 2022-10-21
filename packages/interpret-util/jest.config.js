@@ -16,13 +16,5 @@
  */
 
 module.exports = {
-  testEnvironment: 'node',
-  transform: {
-    '^.+\\.(t|j)sx?$': '@swc/jest'
-  },
-  testPathIgnorePatterns: [
-    '<rootDir>/node_modules',
-    '<rootDir>/examples',
-    '<rootDir>/java'
-  ]
+  preset: '../../jest.config.js'
 }

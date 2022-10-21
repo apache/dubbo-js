@@ -3,3 +3,5 @@
 src
 tsconfig.json
 node_modules
+jest.config.js
+project.json
