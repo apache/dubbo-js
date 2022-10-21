@@ -100,7 +100,7 @@ importers:
       debug: 3.1.0
       ip: 1.1.5
       nacos: 2.1.1
-      zookeeper: ^5.5.0
+      zookeeper: ^5.5.1
     dependencies:
       apache-dubbo-common: link:../dubbo-common
       debug: 3.1.0
@@ -144,6 +144,7 @@ importers:
       debug: 3.1.0
       fs-extra: ^9.1.0
       interpret-util: workspace:*
+      zookeeper: ^5.5.1
     dependencies:
       apache-dubbo-consumer: link:../dubbo-consumer
       apache-dubbo-registry: link:../dubbo-registry
@@ -151,6 +152,7 @@ importers:
       debug: 3.1.0
       fs-extra: 9.1.0
       interpret-util: link:../interpret-util
+      zookeeper: 5.5.1
 
   packages/interpret-cli:
     specifiers:

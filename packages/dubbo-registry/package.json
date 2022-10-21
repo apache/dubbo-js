@@ -22,6 +22,6 @@
     "debug": "3.1.0",
     "apache-dubbo-common": "0.0.1",
     "nacos": "2.1.1",
-    "zookeeper": "^5.5.0"
+    "zookeeper": "^5.5.1"
   }
 }

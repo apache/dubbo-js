@@ -21,6 +21,7 @@
   "dependencies": {
     "debug": "3.1.0",
     "fs-extra": "^9.1.0",
+    "zookeeper": "^5.5.1",
     "apache-dubbo-consumer": "workspace:*",
     "apache-dubbo-service": "workspace:*",
     "interpret-util": "workspace:*",
