@@ -2,7 +2,7 @@
   "private": true,
   "name": "dubbo-js-private",
   "version": "4.0.1",
-  "packageManager": "pnpm",
+  "packageManager": "pnpm@7.13.6",
   "scripts": {
     "affected:build": "npx nx affected --target=build",
     "affected:test": "npx nx affected --target=test",
