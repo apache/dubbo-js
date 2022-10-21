@@ -27,7 +27,11 @@
       "dependsOn": ["^format"]
     },
     "ts-check": {
-      "inputs": ["default"],
+      "inputs": [
+        "default",
+        "{workspaceRoot}/tsconfig.json",
+        "{projectRoot}/tsconfig.json"
+      ],
       "dependsOn": ["^ts-check"]
     }
   },
