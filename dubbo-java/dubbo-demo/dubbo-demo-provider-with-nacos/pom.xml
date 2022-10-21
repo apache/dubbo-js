@@ -24,7 +24,7 @@
     <name>${project.artifactId}</name>
     <description>The demo provider module of dubbo project</description>
     <properties>
-        <nacos.version>2.7.15</nacos.version>
+        <nacos.version>2.7.18</nacos.version>
         <dubbo.version>2.7.4.1</dubbo.version>
         <javassist_version>3.20.0-GA</javassist_version>
         <netty_version>3.2.5.Final</netty_version>
