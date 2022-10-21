@@ -68,7 +68,7 @@ export default class ZookeeperMock extends EventEmitter {
     return new Promise((resolve) => {
       const paths = path.split('/')
       const dir = paths.splice(0, 4).join('/')
-      this.cache.get(dir).push(paths[0])
+      this.cache.get(dir)!.push(paths[0])
       resolve()
     })
   }

@@ -15,18 +15,6 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra'
-
-export default function checkNotice() {
-  const notice = fs.readFileSync('NOTICE').toString()
-  const isMatch = /2018-(\d+)/.test(notice)
-  if (!isMatch) {
-    return new Error(`Could not find any date pattern`)
-  }
-
-  const [pattern, endYear] = notice.match(/2018-(\d+)/)
-  const year = new Date().getFullYear()
-  if (Number(endYear) !== year) {
-    return new Error(`notice ${pattern} end year ${endYear} != ${year}`)
-  }
+module.exports = {
+  preset: '../../jest.config.js'
 }

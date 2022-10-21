@@ -1,0 +1,36 @@
+{
+  "name": "zone-context",
+  "root": "packages/zone-context",
+  "sourceRoot": "packages/zone-context/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc",
+        "cwd": "packages/zone-context"
+      }
+    },
+    "ts-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc --noEmit",
+        "cwd": "packages/zone-context"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx jest",
+        "cwd": "packages/zone-context"
+      }
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prettier --write \"**/*.{ts,tsx,md}\"",
+        "cwd": "packages/zone-context"
+      }
+    }
+  }
+}

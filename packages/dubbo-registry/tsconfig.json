@@ -8,5 +8,5 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
-  "exclude": ["./src/__tests__/**", "__mocks__"]
+  "exclude": ["./src/__tests__/**", "__mocks__", "./lib/**"]
 }

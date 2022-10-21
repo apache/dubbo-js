@@ -19,7 +19,13 @@
     "url": "https://github.com/apache/dubbo-js"
   },
   "dependencies": {
-    "apache-dubbo-consumer": "*",
-    "apache-dubbo-service": "*"
+    "debug": "3.1.0",
+    "fs-extra": "^9.1.0",
+    "zookeeper": "^5.5.1",
+    "js-to-java": "2.4.0",
+    "apache-dubbo-consumer": "workspace:*",
+    "apache-dubbo-service": "workspace:*",
+    "interpret-util": "workspace:*",
+    "apache-dubbo-registry": "workspace:*"
   }
 }

@@ -18,10 +18,8 @@ import debug from 'debug'
 
 const log = debug('j2t:core:paramEnhance')
 
-export function argumentMap() {
-  let _arguments = Array.from(arguments)
-
-  return _arguments.map((argumentItem) =>
+export function argumentMap(...args: Array<any>) {
+  return args.map((argumentItem) =>
     argumentItem.__fields2java
       ? paramEnhance(argumentItem.__fields2java())
       : argumentItem

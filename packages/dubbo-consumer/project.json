@@ -1,0 +1,36 @@
+{
+  "name": "dubbo-consumer",
+  "root": "packages/dubbo",
+  "sourceRoot": "packages/dubbo-consumer/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc",
+        "cwd": "packages/dubbo-consumer"
+      }
+    },
+    "ts-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc --noEmit",
+        "cwd": "packages/dubbo-consumer"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx jest",
+        "cwd": "packages/dubbo-consumer"
+      }
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prettier --write \"**/*.{ts,tsx,md}\"",
+        "cwd": "packages/dubbo-consumer"
+      }
+    }
+  }
+}

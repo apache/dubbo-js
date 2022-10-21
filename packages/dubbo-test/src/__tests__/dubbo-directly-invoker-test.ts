@@ -24,46 +24,40 @@ import consumer from '../providers/org/apache/dubbo/demo/consumer'
 import provider from '../providers/org/apache/dubbo/demo/provider'
 import { UserRequest } from '../providers/org/apache/dubbo/demo/UserRequest'
 
-let dubbo: DubboDirectlyInvoker = null
-let dubboService: DubboService = null
-let demoService = null
-const zk = Zk({ connect: 'localhost:2182' })
-
-beforeAll(async () => {
-  dubboService = new DubboService({
+describe('dubbo invoker directly test suites', () => {
+  const zk = Zk({ connect: 'localhost:2182' })
+  const dubboService = new DubboService({
     registry: zk,
     services: provider
   })
+  let dubbo: DubboDirectlyInvoker
 
-  await dubboService.ready()
-
-  dubbo = DubboDirectlyInvoker.from({
-    dubboHost: `127.0.0.1:${dubboService.getPort()}`,
-    dubboVersion: '2.0.2'
+  beforeAll(async () => {
+    await dubboService.ready()
+    dubbo = DubboDirectlyInvoker.from({
+      dubboHost: `127.0.0.1:${dubboService.getPort()}`,
+      dubboVersion: '2.0.2'
+    })
   })
-  demoService = consumer.DemoProvider(dubbo as any)
-})
 
-afterAll(async () => {
-  // clear port file
-  fs.unlinkSync(
-    path.join(process.cwd(), '.dubbojs', String(dubboService.getPort()))
-  )
-  dubbo.close()
-  await dubboService.close()
-})
-
-describe('dubbo test suite', () => {
-  it('test demo type provider', async () => {
+  it('test dubbo invoke', async () => {
+    const demoService = consumer.DemoProvider(dubbo as any)
+    // test hello
     const hello = await demoService.sayHello(java.String('dubbo'))
     expect(hello.res).toEqual('hello dubbo')
     expect(hello.err).toBeNull()
+
+    // test ehco
     const echo = await demoService.echo()
     expect(echo.res).toEqual('pong')
     expect(echo.err).toBeNull()
+
+    // test test method
     const test = await demoService.test()
     expect(test.res).toBeNull()
     expect(test.err).toBeNull()
+
+    // test getUserInfo
     const userInfo = await demoService.getUserInfo(
       new UserRequest({
         id: 1,
@@ -75,5 +69,14 @@ describe('dubbo test suite', () => {
       info: { id: '1', name: 'dubbo-js', email: 'hufeng@apache.org' },
       status: 'ok'
     })
+  })
+
+  afterAll(async () => {
+    // clear port file
+    fs.unlinkSync(
+      path.join(process.cwd(), '.dubbojs', String(dubboService.getPort()))
+    )
+    dubbo.close()
+    await dubboService.close()
   })
 })

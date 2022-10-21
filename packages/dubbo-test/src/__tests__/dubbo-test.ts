@@ -25,37 +25,24 @@ import provider from '../providers/org/apache/dubbo/demo/provider'
 import { UserRequest } from '../providers/org/apache/dubbo/demo/UserRequest'
 import { TypeRequest } from '../providers/org/apache/dubbo/demo/TypeRequest'
 
-let dubbo: Dubbo<typeof consumer> = null
-let dubboService: DubboService = null
-const zk = Zk({ connect: 'localhost:2182' })
-
-beforeAll(async () => {
-  dubboService = new DubboService({
+describe('dubbo test suite', () => {
+  const zk = Zk({ connect: 'localhost:2182' })
+  let dubbo: Dubbo<typeof consumer>
+  const dubboService = new DubboService({
     registry: zk,
     services: provider
   })
 
-  await dubboService.ready()
-
-  dubbo = new Dubbo<typeof consumer>({
-    application: { name: 'dubbo-test' },
-    registry: zk,
-    services: consumer,
-    dubboInvokeTimeout: 10 * 1000
+  beforeAll(async () => {
+    await dubboService.ready()
+    dubbo = new Dubbo<typeof consumer>({
+      application: { name: 'dubbo-test' },
+      registry: zk,
+      services: consumer,
+      dubboInvokeTimeout: 10 * 1000
+    })
   })
-})
 
-afterAll(async () => {
-  // clear port file
-  fs.unlinkSync(
-    path.join(process.cwd(), '.dubbojs', String(dubboService.getPort()))
-  )
-
-  dubbo.close()
-  await dubboService.close()
-})
-
-describe('dubbo test suite', () => {
   it('test demo type provider', async () => {
     const hello = await dubbo.service.DemoProvider.sayHello(
       java.String('dubbo')
@@ -102,5 +89,15 @@ describe('dubbo test suite', () => {
     const result = await dubbo.service.ErrorProvider.errorTest()
     expect(result.res).toBeNull()
     expect(result.err.message).toEqual('exception')
+  })
+
+  afterAll(async () => {
+    // clear port file
+    fs.unlinkSync(
+      path.join(process.cwd(), '.dubbojs', String(dubboService.getPort()))
+    )
+
+    dubbo.close()
+    await dubboService.close()
   })
 })

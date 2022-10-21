@@ -37,7 +37,7 @@ exports[`数组显示问题 string[] string[] 2`] = `
 `;
 
 exports[`枚举类型转换 Enum<Phone> 用法的支持: 枚举类型转换 1`] = `
-Array [
+[
   "type:java['enum'](
                   'com.qianmi.gavin.comm.Phone',
                   Phone[this.type]

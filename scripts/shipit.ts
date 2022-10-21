@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
+import chalk from 'chalk'
 import { Command } from 'commander'
-import { checkLicense, fixedFileLicense } from './command/check-license'
-import { prepareRelease } from './command/prepare-release'
+import { sourceRelease } from './cmd-release-source'
+import npmRelease from './cmd-release-npm'
+import { checkLicense, checkNotice, fixedFileLicense } from './cmd-check-source'
 
 const program = new Command()
 
@@ -25,22 +27,66 @@ program
   .version('1.0.0', '-v, --version', 'output the current version')
   .description('🚀 dubbo-js shipit tools 🚀')
 
+// check license
 program
-  .command('check-license [fixed]')
+  .command('check')
   .description('check file license')
-  .action(async (fixed = '') => {
-    if (fixed !== 'fixed') {
-      checkLicense()
+  .action(async () => {
+    // check notice
+    checkNotice()
+    // check license
+    const invalidFiles = await checkLicense()
+    if (invalidFiles.size === 0) {
+      console.log(chalk.greenBright(`Yes, All file have apache license`))
     } else {
-      fixedFileLicense()
+      for (let [file] of invalidFiles) {
+        console.log(chalk.yellowBright(`${file} => have not apache license`))
+      }
     }
   })
 
+// fixed notice and license
 program
-  .command('prepare-release [dest]')
-  .description('prepare source release')
-  .action((dest: string = '/tmp') => {
-    prepareRelease(dest)
+  .command('fix')
+  .description('fixed notice and license issues')
+  .action(async () => {
+    await fixedFileLicense()
+  })
+
+// source release
+program
+  .command('source-release [dest]')
+  .description('source source release')
+  .action(async (dest: string = '/tmp') => {
+    const invalidFiles = await checkLicense()
+
+    if (invalidFiles.size >= 0) {
+      console.log(chalk.yellowBright(`These files have not apache license`))
+      console.log(chalk.yellowBright(`${[...invalidFiles.keys()].join(`\n`)}`))
+      console.log(chalk.redBright(`please fixed those issues.`))
+      return
+    }
+    await sourceRelease(dest)
+  })
+
+// npm release
+program
+  .command('npm-release')
+  .description('npm module release')
+  .action(() => {
+    npmRelease([
+      './package/dubbo-common',
+      './package/dubbo-registry',
+      './package/dubbo-serialization',
+      './package/dubbo-service',
+      './package/dubbo-consumer'
+    ])
+      .then(() => {
+        console.log(`release ok.`)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   })
 
 program.parse(process.argv)
