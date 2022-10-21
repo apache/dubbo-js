@@ -146,6 +146,7 @@ importers:
       debug: 3.1.0
       fs-extra: ^9.1.0
       interpret-util: workspace:*
+      js-to-java: 2.4.0
       zookeeper: ^5.5.1
     dependencies:
       apache-dubbo-consumer: link:../dubbo-consumer
@@ -154,6 +155,7 @@ importers:
       debug: 3.1.0
       fs-extra: 9.1.0
       interpret-util: link:../interpret-util
+      js-to-java: 2.4.0
       zookeeper: 5.5.1
 
   packages/interpret-cli:
