@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [14, 16]
+        node-version: [14, 16, 19]
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
@@ -31,10 +31,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install Dependencies
-        run:  npm install -g pnpm && pnpm i
-
-      - name: compile all modules
-        run: pnpm build
+        run: npm install -g pnpm && pnpm i
 
       - name: Continuous Integration
         run: pnpm test
