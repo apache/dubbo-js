@@ -113,9 +113,11 @@ importers:
     specifiers:
       apache-dubbo-common: 0.0.1
       debug: 3.1.0
+      hessian.js: 2.5.0
     dependencies:
       apache-dubbo-common: link:../dubbo-common
       debug: 3.1.0
+      hessian.js: 2.5.0
 
   packages/dubbo-service:
     specifiers:
