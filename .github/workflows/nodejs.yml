@@ -31,7 +31,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install Dependencies
-        run: npm install -g pnpm
+        run:  npm install -g pnpm && pnpm i
 
       - name: compile all modules
         run: pnpm build
