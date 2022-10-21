@@ -14,20 +14,20 @@
   },
   "targetDefaults": {
     "build": {
-      "inputs": ["default", "^production"],
+      "inputs": ["production", "^production"],
       "dependsOn": ["^build"],
       "outputs": ["{projectRoot}/lib"]
     },
     "test": {
-      "inputs": ["^default", "^production", "{workspaceRoot}/jest.config.ts"],
+      "inputs": ["default", "^production", "{workspaceRoot}/jest.config.js"],
       "dependsOn": ["^build", "^test"]
     },
     "format": {
-      "inputs": ["default", "^production", "${workspaceRoot}/.prettierrc"],
+      "inputs": ["default", "{workspaceRoot}/.prettierrc"],
       "dependsOn": ["^format"]
     },
     "ts-check": {
-      "inputs": ["default", "^production"],
+      "inputs": ["default"],
       "dependsOn": ["^ts-check"]
     }
   },
