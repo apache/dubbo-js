@@ -6,6 +6,17 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipDefaultLibCheck": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
+    "baseUrl": "./packages",
+    "paths": {
+      "apache-dubbo-common": ["dubbo-common/src/*"],
+      "apache-dubbo-consumer": ["dubbo-consumer/src/*"],
+      "apache-dubbo-monitor": ["dubbo-monitor/src/*"],
+      "apache-dubbo-registry": ["dubbo-registry/src/*"],
+      "apache-dubbo-serialization": ["dubbo-serialization/src/*"],
+      "apache-dubbo-service": ["dubbo-service/src/*"],
+      "interpret-util": ["interpret-util/src/*"]
+    }
   }
 }
