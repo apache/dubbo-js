@@ -22,8 +22,14 @@
       "inputs": ["^default", "^production", "{workspaceRoot}/jest.config.ts"],
       "dependsOn": ["^test"]
     },
-    "format": { "dependsOn": ["^format"] },
-    "ts-check": { "dependsOn": ["^ts-check"] }
+    "format": {
+      "inputs": ["default", "^production", "${workspaceRoot}/.prettierrc"],
+      "dependsOn": ["^format"]
+    },
+    "ts-check": {
+      "inputs": ["default", "^production"],
+      "dependsOn": ["^ts-check"]
+    }
   },
   "affected": {
     "defaultBase": "master"
