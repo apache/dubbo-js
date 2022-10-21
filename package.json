@@ -6,10 +6,10 @@
   "scripts": {
     "affected:build": "npx nx affected --target=build",
     "affected:test": "npx nx affected --target=test",
-    "build": "npx nx run-many --target=test",
+    "build": "npx nx run-many --target=build",
+    "test": "npx nx run-many --target=test",
     "format": "npx nx run-many --target=format",
     "ts-check": "npx nx run-many --target=ts-check",
-    "test": "npx nx run-many --target=test",
     "prepare": "husky install"
   },
   "devDependencies": {
