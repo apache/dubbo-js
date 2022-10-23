@@ -2,5 +2,4 @@
 . "$(dirname "$0")/_/husky.sh"
 
 npx pretty-quick --staged
-pnpm ts-check
-npm test
+pnpm test

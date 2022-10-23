@@ -62,3 +62,4 @@ examples/hello-egg/typings
 examples/hello-midway/src/typings
 
 dubbo-java/nacos-docker/example/standalone-logs/
+dj_lint
