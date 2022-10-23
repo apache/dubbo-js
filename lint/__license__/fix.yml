@@ -13,17 +13,4 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-
-build-lint:
-	cd ./lint && go build -o ../dj_lint
-
-build-java-demo:
-	cd ./java/dubbo-demo/dubbo-demo-api && mvn clean package
-	cd ./java/dubbo-demo/dubbo-demo-api && mvn install dependency:copy-dependencies
-	@echo "build java-demo success👏\n"
-
-interpret-jar:build-demo-api
-	ts-node ./packages/interpret-cli/src/cli.ts interpret -c dubbo.json
-	@echo "interpret-jar success👏\n"
-
-
+version: 1
