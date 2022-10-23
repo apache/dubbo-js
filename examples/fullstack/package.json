@@ -10,7 +10,7 @@
     "hello-api:nacos": "DEBUG=dubbo* ts-node ./hello-api/server-nacos.ts"
   },
   "dependencies": {
-    "koa": "^2.13.1",
+    "koa": "^2.13.4",
     "ts-node": "^10.0.0"
   }
 }
