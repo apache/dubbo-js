@@ -30,7 +30,7 @@
         <zookeeper_version>3.4.14</zookeeper_version>
         <zkclient_version>0.2</zkclient_version>
         <curator_version>2.12.0</curator_version>
-        <fastjson_version>1.2.31</fastjson_version>
+        <fastjson_version>1.2.83</fastjson_version>
         <log4j_version>1.2.16</log4j_version>
         <spring_version>4.3.10.RELEASE</spring_version>
         <slf4j_version>1.7.7</slf4j_version>
