@@ -1,0 +1,13 @@
+{
+  "name": "dubbo-js-docs",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build"
+  },
+  "devDependencies": {
+    "vitepress": "^1.0.0-alpha.21",
+    "vue": "^3.2.41",
+    "@vuepress/plugin-search": "^1.8.2"
+  }
+}
