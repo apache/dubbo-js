@@ -19,8 +19,8 @@ package main
 
 import (
 	"errors"
-	"io/ioutil"
-	"path/filepath"
+  "os"
+  "path/filepath"
 	"strings"
 	"testing"
 )
@@ -63,16 +63,16 @@ func TestLicenseLinter_lint(t *testing.T) {
 
 func TestLicenseLinter_fix(t *testing.T) {
 	// write test data
-	ioutil.WriteFile("./__license__/fix.go", []byte("package main"), 0644)
-	ioutil.WriteFile("./__license__/fix.js", []byte("console.log('hello');"), 0644)
-	ioutil.WriteFile("./__license__/fix.ts", []byte("console.log('hello');"), 0644)
-	ioutil.WriteFile("./__license__/fix.sh", []byte("echo 'hello'"), 0644)
-	ioutil.WriteFile("./__license__/fix.yml", []byte(`version: 1`), 0644)
-	ioutil.WriteFile("./__license__/Makefile", []byte(``), 0644)
-	ioutil.WriteFile("./__license__/.npmignore", []byte(``), 0644)
-	ioutil.WriteFile("./__license__/fix.java", []byte(`public class fix {}`), 0644)
-	ioutil.WriteFile("./__license__/fix.xml", []byte(`<project></project>`), 0644)
-	ioutil.WriteFile("./__license__/fix_head.xml", []byte(`<?xml version="1.0" encoding="UTF-8"?><project></project>`), 0644)
+	os.WriteFile("./__license__/fix.go", []byte("package main"), 0644)
+	os.WriteFile("./__license__/fix.js", []byte("console.log('hello');"), 0644)
+	os.WriteFile("./__license__/fix.ts", []byte("console.log('hello');"), 0644)
+	os.WriteFile("./__license__/fix.sh", []byte("echo 'hello'"), 0644)
+	os.WriteFile("./__license__/fix.yml", []byte(`version: 1`), 0644)
+	os.WriteFile("./__license__/Makefile", []byte(``), 0644)
+	os.WriteFile("./__license__/.npmignore", []byte(``), 0644)
+	os.WriteFile("./__license__/fix.java", []byte(`public class fix {}`), 0644)
+	os.WriteFile("./__license__/fix.xml", []byte(`<project></project>`), 0644)
+	os.WriteFile("./__license__/fix_head.xml", []byte(`<?xml version="1.0" encoding="UTF-8"?><project></project>`), 0644)
 
 	l := &LicenseLinter{
 		Dir: "./__license__",

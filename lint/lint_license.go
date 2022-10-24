@@ -19,8 +19,8 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"path/filepath"
+  "os"
+  "path/filepath"
 	"strings"
 	"sync"
 )
@@ -46,7 +46,7 @@ func (l *LicenseLinter) lint() ([]string, error) {
 		wg.Add(1)
 		go func(f string) {
 			defer wg.Done()
-			b, err := ioutil.ReadFile(f)
+			b, err := os.ReadFile(f)
 			if err != nil {
 				panic(err)
 			}
@@ -96,7 +96,7 @@ func (l *LicenseLinter) fix_file(f string) error {
 	}
 
 	// read file
-	b, err := ioutil.ReadFile(f)
+	b, err := os.ReadFile(f)
 	if err != nil {
 		panic(err)
 	}
@@ -107,13 +107,14 @@ func (l *LicenseLinter) fix_file(f string) error {
 	x := `<?xml version="1.0" encoding="UTF-8"?>`
 	if ext == ".xml" && strings.Contains(s, x) {
 		nx := strings.Replace(s, x, x+"\n\n"+license.get(f)+"\n\n", 1)
-		ioutil.WriteFile(f, []byte(nx), 0644)
-	} else {
+		if err := os.WriteFile(f, []byte(nx), 0644); err != nil {
+      return err
+    }
+  } else {
 		// common
-		err = ioutil.WriteFile(f, []byte(fmt.Sprintf("%s\n\n%s", license.get(f), b)), 0644)
-		if err != nil {
-			return err
-		}
+    if err := os.WriteFile(f, []byte(fmt.Sprintf("%s\n\n%s", license.get(f), b)), 0644); err != nil {
+      return err
+    }
 	}
 	return nil
 }
