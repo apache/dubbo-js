@@ -15,4 +15,28 @@
  * limitations under the License.
  */
 
-export const name = 'dubbo-js'
+package main
+
+import (
+	"flag"
+)
+
+var (
+	fix = flag.String("fix", "", "fix mode")
+)
+
+func main() {
+	flag.Parse()
+
+	switch *fix {
+	case "":
+		// lint all files
+		lint(nl, ll)
+	case "all":
+		// fix all files
+		fix_all(nl, ll)
+	default:
+		// fix single file
+		fix_one(nl, ll, *fix)
+	}
+}

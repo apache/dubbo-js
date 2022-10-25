@@ -15,4 +15,4 @@
  * limitations under the License.
  */
 
-export const name = 'dubbo-js'
+public class fix {}
