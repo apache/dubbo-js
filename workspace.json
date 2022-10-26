@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "projects": {
+    "docs": {
+      "root": "docs"
+    },
+    "dubbo": {
+      "root": "packages/dubbo"
+    }
+  }
+}

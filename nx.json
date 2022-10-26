@@ -1,41 +1,28 @@
 {
   "extends": "nx/presets/npm.json",
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "npmScope": "dubbo-js",
+  "affected": {
+    "defaultBase": "main"
+  },
+  "implicitDependencies": {
+    "package.json": {
+      "dependencies": "*",
+      "devDependencies": "*"
+    }
+  },
   "tasksRunnerOptions": {
     "default": {
-      "runner": "nx/tasks-runners/default",
+      "runner": "@nrwl/workspace/tasks-runners/default",
       "options": {
-        "cacheableOperations": ["test", "build", "format", "ts-check"]
+        "cacheableOperations": ["build", "lint", "test", "e2e"],
+        "parallel": 3
       }
     }
   },
-  "namedInputs": {
-    "default": ["{projectRoot}/**/*"],
-    "production": ["!{projectRoot}/**/*.test.ts"]
-  },
   "targetDefaults": {
     "build": {
-      "inputs": ["production", "^production"],
-      "dependsOn": ["^build"],
-      "outputs": ["{projectRoot}/lib"]
-    },
-    "test": {
-      "inputs": ["default", "^production", "{workspaceRoot}/jest.config.js"],
-      "dependsOn": ["^build", "^test"]
-    },
-    "format": {
-      "inputs": ["default", "{workspaceRoot}/.prettierrc"],
-      "dependsOn": ["^format"]
-    },
-    "ts-check": {
-      "inputs": [
-        "default",
-        "{workspaceRoot}/tsconfig.json",
-        "{projectRoot}/tsconfig.json"
-      ],
-      "dependsOn": ["^ts-check"]
+      "dependsOn": ["^build"]
     }
-  },
-  "affected": {
-    "defaultBase": "master"
   }
 }
