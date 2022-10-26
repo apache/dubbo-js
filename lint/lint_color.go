@@ -15,4 +15,21 @@
  * limitations under the License.
  */
 
-export const name = 'dubbo-js'
+package main
+
+import "fmt"
+
+// failed, show red text
+func failed(text string) string {
+	return fmt.Sprintf("\033[91m%s\033[0m", text)
+}
+
+// success, show green text
+func success(text string) string {
+	return fmt.Sprintf("\033[92m%s\033[0m", text)
+}
+
+// warning, show yellow text
+func warn(text string) string {
+	return fmt.Sprintf("\033[93m%s\033[0m", text)
+}
