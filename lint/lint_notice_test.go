@@ -15,4 +15,41 @@
  * limitations under the License.
  */
 
-export const name = 'dubbo-js'
+package main
+
+import (
+	"io/ioutil"
+	"testing"
+)
+
+func TestNoticeLinter_lint(t *testing.T) {
+	l := NoticeLinter{
+		File: "./__notice__/NOTICE",
+	}
+	err := l.lint()
+	if err == nil {
+		t.Fatalf("lint error")
+	}
+}
+
+func TestNoticeLinter_fixed(t *testing.T) {
+	// write test data
+	ioutil.WriteFile("./__notice__/NOTICE_1", []byte("Copyright 2018-2021 The Apache Software Foundation"), 0644)
+
+	// init notice linter
+	l := NoticeLinter{
+		File: "./__notice__/NOTICE_1",
+	}
+
+	// fixed notice
+	err := l.fix()
+	if err != nil {
+		t.Fatalf("fixed error")
+	}
+
+	// check notice
+	err = l.lint()
+	if err != nil {
+		t.Fatalf("lint error")
+	}
+}

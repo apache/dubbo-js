@@ -15,4 +15,47 @@
  * limitations under the License.
  */
 
-export const name = 'dubbo-js'
+package main
+
+import (
+	"io/fs"
+	"path/filepath"
+)
+
+// G is a dir and file filter setting
+type G struct {
+	DirFilter  func(root string) bool
+	FileFilter func(root string) bool
+}
+
+// glob files with given filter
+func glob(dir string, g G) ([]string, error) {
+	var files []string
+
+	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if d.IsDir() {
+			// skip dir
+			if g.DirFilter != nil && !g.DirFilter(path) {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+
+		// collect files
+		if g.FileFilter != nil && g.FileFilter(path) {
+			files = append(files, path)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return files, nil
+}
