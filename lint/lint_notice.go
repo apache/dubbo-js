@@ -19,7 +19,7 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -33,7 +33,7 @@ type NoticeLinter struct {
 
 func parseYear(file string) (string, error) {
 	// read notice file
-	b, err := ioutil.ReadFile(file)
+	b, err := os.ReadFile(file)
 	if err != nil {
 		return "", fmt.Errorf("read %s error %s", file, err)
 	}
@@ -78,14 +78,14 @@ func (n *NoticeLinter) fix() error {
 	}
 
 	// read file content
-	b, err := ioutil.ReadFile(n.File)
+	b, err := os.ReadFile(n.File)
 	if err != nil {
 		return err
 	}
 
 	// replace with current year
 	s := strings.Replace(string(b), y, strconv.Itoa(time.Now().Year()), 0644)
-	if err := ioutil.WriteFile(n.File, []byte(s), 0644); err != nil {
+	if err := os.WriteFile(n.File, []byte(s), 0644); err != nil {
 		return err
 	}
 

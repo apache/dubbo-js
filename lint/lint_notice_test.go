@@ -18,7 +18,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"os"
 	"testing"
 )
 
@@ -34,7 +34,7 @@ func TestNoticeLinter_lint(t *testing.T) {
 
 func TestNoticeLinter_fixed(t *testing.T) {
 	// write test data
-	ioutil.WriteFile("./__notice__/NOTICE_1", []byte("Copyright 2018-2021 The Apache Software Foundation"), 0644)
+	os.WriteFile("./__notice__/NOTICE_1", []byte("Copyright 2018-2021 The Apache Software Foundation"), 0644)
 
 	// init notice linter
 	l := NoticeLinter{
