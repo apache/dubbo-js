@@ -3,7 +3,7 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "npmScope": "dubbo-js",
   "affected": {
-    "defaultBase": "main"
+    "defaultBase": "master"
   },
   "implicitDependencies": {
     "package.json": {
@@ -11,18 +11,60 @@
       "devDependencies": "*"
     }
   },
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*"
+    ],
+    "production": [
+      "!{projectRoot}/**/*.test.ts"
+    ]
+  },
   "tasksRunnerOptions": {
     "default": {
       "runner": "@nrwl/workspace/tasks-runners/default",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"],
-        "parallel": 3
+        "cacheableOperations": [
+          "build",
+          "test",
+          "test:watch",
+          "ts-check",
+          "format"
+        ],
+        "parallel": 8
       }
     }
   },
   "targetDefaults": {
     "build": {
-      "dependsOn": ["^build"]
+      "inputs": [
+        "production"
+      ],
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "{projectRoot}/lib"
+      ]
+    },
+    "test": {
+      "inputs": [
+        "default",
+        "^production",
+        "{projectRoot}/vitest.config.ts"
+      ],
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "ts-check": {
+      "inputs": [
+        "default",
+        "{workspaceRoot}/tsconfig.json",
+        "{projectRoot}/tsconfig.json"
+      ],
+      "dependsOn": [
+        "^ts-check"
+      ]
     }
   }
 }

@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./lib",
+    "declarationDir": "./lib/typings"
+  },
+  "exclude": ["node_modules", "__tests__/**", "./lib/**", "vitest.config.ts"]
+}

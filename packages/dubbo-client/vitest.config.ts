@@ -15,8 +15,11 @@
  * limitations under the License.
  */
 
-import { name } from '../index'
+/// <reference types="vitest" />
+import { defineConfig } from 'vite'
 
-it("test name", () => {
-  expect(name).toBe("dubbo-js")
+export default defineConfig({
+  test: {
+    globals: true
+  }
 })

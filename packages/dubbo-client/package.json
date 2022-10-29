@@ -1,0 +1,13 @@
+{
+  "name": "@apache/dubbo3-client",
+  "version": "0.0.1",
+  "main": "./lib/index.js",
+  "types": "./lib/typings/index.d.ts",
+  "description": "apache dubbo3 client",
+  "keywords": [
+    "dubbo3",
+    "nodejs",
+    "dubbo-client"
+  ],
+  "license": "Apache-2.0"
+}

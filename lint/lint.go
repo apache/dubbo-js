@@ -26,7 +26,7 @@ import (
 
 var (
 	//skip dir
-	rx      = regexp.MustCompile("node_modules|vendor|lib|target|__license__|__notice__|husky")
+	rx      = regexp.MustCompile("node_modules|vendor|lib|target|__license__|__notice__|husky|.vitepress")
 	license = NewLicense()
 	// lint notice
 	nl = &NoticeLinter{File: "./NOTICE"}
