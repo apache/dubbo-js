@@ -12,12 +12,8 @@
     }
   },
   "namedInputs": {
-    "default": [
-      "{projectRoot}/**/*"
-    ],
-    "production": [
-      "!{projectRoot}/**/*.test.ts"
-    ]
+    "default": ["{projectRoot}/**/*"],
+    "production": ["!{projectRoot}/**/*.test.ts"]
   },
   "tasksRunnerOptions": {
     "default": {
@@ -36,25 +32,13 @@
   },
   "targetDefaults": {
     "build": {
-      "inputs": [
-        "production"
-      ],
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        "{projectRoot}/lib"
-      ]
+      "inputs": ["production"],
+      "dependsOn": ["^build"],
+      "outputs": ["{projectRoot}/lib"]
     },
     "test": {
-      "inputs": [
-        "default",
-        "^production",
-        "{projectRoot}/vitest.config.ts"
-      ],
-      "dependsOn": [
-        "^build"
-      ]
+      "inputs": ["default", "^production", "{projectRoot}/vitest.config.ts"],
+      "dependsOn": ["^build"]
     },
     "ts-check": {
       "inputs": [
@@ -62,9 +46,7 @@
         "{workspaceRoot}/tsconfig.json",
         "{projectRoot}/tsconfig.json"
       ],
-      "dependsOn": [
-        "^ts-check"
-      ]
+      "dependsOn": ["^ts-check"]
     }
   }
 }

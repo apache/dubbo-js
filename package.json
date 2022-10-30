@@ -11,7 +11,7 @@
     "test": "npx nx run-many --target=test",
     "test:watch": "npx nx run-many --target=test:watch",
     "ts-check": "npx nx run-many --target=ts-check",
-    "format": "npx nx run-many --target=format",
+    "format": "npx prettier --write \"**/*.{ts,js,json,md}\"",
     "prepare": "husky install"
   },
   "dependencies": {},

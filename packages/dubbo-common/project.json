@@ -31,13 +31,6 @@
         "command": "npx vitest",
         "cwd": "packages/dubbo-common"
       }
-    },
-    "format": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx prettier --write \"**/*.{ts,tsx,md}\"",
-        "cwd": "packages/dubbo-common"
-      }
     }
   }
 }

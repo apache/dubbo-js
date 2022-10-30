@@ -1,7 +1,7 @@
 ---
 layout: home
 
-title:  Dubbo-js
+title: Dubbo-js
 titleTemplate: blazing Fast Node RPC framework
 
 hero:
@@ -16,5 +16,4 @@ hero:
     - theme: alt
       text: View on Github
       link: https://github.com/apache/dubbo-js
-
 ---
