@@ -83,9 +83,10 @@ func fix_all(nl *NoticeLinter, ll *LicenseLinter) {
 //lint lint all file
 func lint(nl *NoticeLinter, ll *LicenseLinter) {
 	now := time.Now()
+	var err error
 
 	// lint mode
-	if err := nl.lint(); err != nil {
+	if err = nl.lint(); err != nil {
 		fmt.Fprintln(os.Stderr, failed(err.Error()))
 	}
 
@@ -100,4 +101,8 @@ func lint(nl *NoticeLinter, ll *LicenseLinter) {
 	}
 
 	fmt.Println(success(fmt.Sprintf("lint cost: %v", time.Since(now))))
+
+	if err != nil {
+		os.Exit(1)
+	}
 }
