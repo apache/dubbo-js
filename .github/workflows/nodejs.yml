@@ -5,9 +5,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [master]
+    branches: [dubbo2]
   pull_request:
-    branches: [master]
+    branches: [dubbo2]
   schedule:
     - cron: '0 2 * * *'
 
