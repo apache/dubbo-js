@@ -22,7 +22,7 @@ jobs:
         go-version: 1.18
 
     - name: Build
-      run: make build-lint
+      run: cd ./lint && go build -o ../dj_lint
 
     - name: Test
       run: ./dj_lint
