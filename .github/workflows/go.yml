@@ -5,9 +5,9 @@ name: Go
 
 on:
   push:
-    branches: [ "master", "dubbo3" ]
+    branches: [ "dubbo2" ]
   pull_request:
-    branches: [ "master", "dubbo3" ]
+    branches: [ "dubbo2" ]
 
 jobs:
 
