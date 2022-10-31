@@ -28,7 +28,7 @@ github:
   description: "The Node.js implementation of Apache Dubbo. An RPC and microservice framework."
   labels:
     - rpc
-    - node.js
+    - nodejs
     - javascript
     - http2
     - microservices
