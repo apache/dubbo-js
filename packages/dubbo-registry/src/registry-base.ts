@@ -40,6 +40,7 @@ export default class BaseRegistry {
 
   unsubscribe(subscriber: IRegistrySubscriber) {
     this.subscribers.delete(subscriber)
+    return this
   }
 
   emitData(map: Map<TDubboInterface, Array<TDubboUrl>>) {

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import fs from 'fs'
+import fs from 'node:fs'
 import { promisify } from 'util'
 import { go } from '../go'
 

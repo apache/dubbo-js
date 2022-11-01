@@ -16,14 +16,17 @@
  */
 
 import debug from 'debug'
-import cfg from './config'
-import { id } from './request-id'
 import { util } from 'apache-dubbo-common'
-import { DubboInvokeTimeout } from './err'
+import cfg from './dubbo-config'
+import { id } from './dubbo-request-id'
+import { DubboInvokeTimeout } from './dubbo-err'
 import { IContextRequestParam, IDubboResult, IHessianType } from './types'
 
-const log = debug('dubbo:context')
+const log = debug('dubbo-client:ctx')
 
+/**
+ * Dubbo Client Invoke Context
+ */
 export default class Context<T = any> {
   /**
    * dubbo设置的application
@@ -33,50 +36,49 @@ export default class Context<T = any> {
    * 当前dubbo请求的参数
    */
   private readonly _request: IContextRequestParam
-
   /**
    * 当前dubbo返回的结果
    */
   private _body: IDubboResult<T>
-
   /**
    * 扩展attachments,支持自定义一些属性可以放在dubbo的encoder底层协议的attachment字段中
    */
   private _attachments: Object
-
   /**
    * dubbo2.6.3 增加了 provider => consumer的attachments的能力
    * https://github.com/apache/incubator-dubbo/issues/889
    */
   private _providerAttachments: Object
-
   /**
    * 是否支持dubbox,不希望通过版本2.8x来判断，不够语义化
    */
   private _isSupportedDubbox: boolean
-
   /**
    * 当前上下文唯一的id，方便全链路日志跟踪
    */
   private _traceId: string
-
+  /**
+   * record which tcp-transport invoke
+   */
   private _invokedByHost: string
-
+  /**
+   * timeout timer
+   */
   private timer: NodeJS.Timer
+  /**
+   * set timeout
+   */
   private _timeout: number
-
   /**
    * 当前promise的resolve
    */
   private _resolve: Function
-
   /**
    * 当前promise的reject
    */
   private _reject: Function
 
-  private constructor() {
-    log('new Context')
+  constructor() {
     this._traceId = ''
     this._invokedByHost = ''
     this._isSupportedDubbox = false
@@ -90,10 +92,6 @@ export default class Context<T = any> {
     }
     // max timeout
     this._timeout = this._request.timeout || cfg.dubboInvokeTimeout
-  }
-
-  static init<T = any>() {
-    return new Context<T>()
   }
 
   get isRequestMethodArgsHessianType() {
@@ -178,7 +176,7 @@ export default class Context<T = any> {
   }
 
   set path(path: string) {
-    log('requestId#%d set path: %d', this._request.requestId, path)
+    log('requestId#%d set path: %s', this._request.requestId, path)
     this._request.path = path
   }
 
@@ -216,6 +214,7 @@ export default class Context<T = any> {
 
   //============uuid setter&&getter==============
   set traceId(uuid: string) {
+    log(`set traceId %s`, uuid)
     this._traceId = uuid
   }
 
@@ -231,6 +230,7 @@ export default class Context<T = any> {
   }
 
   set invokedByHost(host: string) {
+    log(`set invoked tcp-transport host->%s`, host)
     this._invokedByHost = host
   }
 
@@ -240,7 +240,8 @@ export default class Context<T = any> {
 
   //======================isSupportedDubbox================
   set isSupportedDubbox(isSupportedDubbox: boolean) {
-    this._isSupportedDubbox = isSupportedDubbox
+    this._isSupportedDubbox = isSupportedDubbox || false
+    log(`set is support dubbox %s`, isSupportedDubbox)
   }
 
   get isSupportedDubbox() {
@@ -288,9 +289,14 @@ export default class Context<T = any> {
   }
 
   set timeout(timeout: number) {
+    log(`set timeout -> %d`, timeout)
     this._timeout = timeout || cfg.dubboInvokeTimeout
   }
 
+  /**
+   * set maxTimeout handler
+   * @param end
+   */
   setMaxTimeout(end: Function) {
     log(
       'requestId#%d, set max timeout handler, max timeout: %d',
@@ -309,6 +315,9 @@ export default class Context<T = any> {
     }, this._timeout)
   }
 
+  /**
+   * clean timeout
+   */
   cleanTimeout() {
     log('clean requestId#%d timeout', this.requestId)
     clearTimeout(this.timer)

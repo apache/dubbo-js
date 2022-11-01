@@ -15,9 +15,15 @@
  * limitations under the License.
  */
 
+import Dubbo from './dubbo'
 import { IRegistry } from 'apache-dubbo-registry'
-import DubboTcpTransport from './dubbo-tcp-transport'
 import { DubboSetting } from './dubbo-setting'
+import DubboTcpTransport from './dubbo-transport/dubbo-tcp-transport'
+
+export type RegisterConsumer = {
+  dubboServiceInterface: TDubboInterface
+  dubboServiceUrl: TDubboUrl
+}
 
 export type TQueueObserver = Function
 export type TRequestId = number
@@ -33,25 +39,25 @@ export interface IDubboProps {
   application: { name: string }
   registry: IRegistry<Object>
   //当前要注册到dubbo容器的服务对象
-  services: Object
+  services: { [name: string]: (dubbo: Dubbo) => unknown }
   isSupportedDubbox?: boolean
   //dubbo调用最大超时时间单位为秒，默认5000
-  dubboInvokeTimeout?: number
+  dubboMaxTimeout?: number
   dubboVersion?: string
   dubboSetting?: DubboSetting
 }
 
 export type TDubboService<T> = {
-  [k in keyof T]: T[k] extends (dubbo: any) => infer R ? R : any
+  [k in keyof T]: T[k] extends (dubbo: Dubbo) => infer R ? R : any
 }
 
-export interface IDubboProvider {
+export interface DubboService {
   dubboInterface: string
+  methods: { [methodName: string]: Function }
   path?: string
   version?: string
   timeout?: number
   group?: string
-  methods: { [methodName: string]: Function }
 }
 
 export interface IDirectlyDubboProps {

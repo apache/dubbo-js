@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import path from 'path'
+import path from 'node:path'
 import fs from 'fs-extra'
 import { Zk } from 'apache-dubbo-registry'
 import { DubboDirectlyInvoker, java } from 'apache-dubbo-consumer'

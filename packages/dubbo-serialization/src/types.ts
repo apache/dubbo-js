@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import net from 'net'
+import net from 'node:net'
 import Request from './request'
 
 export type TDecodeBuffSubscriber = (data: Buffer) => void

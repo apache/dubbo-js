@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import path from 'path'
+import path from 'node:path'
 import fs from 'fs-extra'
 import { Zk } from 'apache-dubbo-registry'
 import { Dubbo, java } from 'apache-dubbo-consumer'
@@ -39,8 +39,9 @@ describe('dubbo test suite', () => {
       application: { name: 'dubbo-test' },
       registry: zk,
       services: consumer,
-      dubboInvokeTimeout: 10 * 1000
+      dubboMaxTimeout: 100 * 1000
     })
+    await dubbo.ready()
   })
 
   it('test demo type provider', async () => {
@@ -49,7 +50,6 @@ describe('dubbo test suite', () => {
     )
     expect(hello.res).toEqual('hello dubbo')
     expect(hello.err).toBeNull()
-
     const echo = await dubbo.service.DemoProvider.echo()
     expect(echo.res).toEqual('pong')
     expect(echo.err).toBeNull()

@@ -19,7 +19,6 @@ import debug from 'debug'
 import Hessian from 'hessian.js'
 import { byte } from 'apache-dubbo-common'
 import { DubboDecodeError, DubboServiceError } from './err'
-import { IDubboResponse } from './types'
 import {
   DEFAULT_DUBBO_PROTOCOL_VERSION,
   DUBBO_FLAG_REQUEST,
@@ -29,6 +28,7 @@ import {
   HESSIAN2_SERIALIZATION_CONTENT_ID
 } from './constants'
 import Request from './request'
+import { IDubboResponse } from './types'
 
 const reqLog = debug('dubbo:decodeDubboRequest')
 export function decodeDubboRequest(buff: Buffer): Request {

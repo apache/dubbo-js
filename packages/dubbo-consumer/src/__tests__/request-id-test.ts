@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { id } from '../request-id'
+import { id } from '../dubbo-request-id'
 
 const originNum = Number
 

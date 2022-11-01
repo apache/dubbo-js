@@ -17,12 +17,12 @@
 
 import debug from 'debug'
 import { go } from 'apache-dubbo-common'
-import Context from './context'
+import Context from './dubbo-context'
 import { STATUS } from './dubbo-status'
-import DubboTcpTransport from './dubbo-tcp-transport'
+import DubboTcpTransport from './dubbo-transport/dubbo-tcp-transport'
 import { IDirectlyDubboProps, IHessianType, IInvokeParam } from './types'
 
-const log = debug('dubbo-consumer:directly-dubbo ~')
+const log = debug('dubbo-client:directly-dubbo')
 
 /**
  * Directly connect to the dubbo service
@@ -42,11 +42,10 @@ export default class DubboDirectlyInvoker {
     this.queue = new Map()
 
     this.status = STATUS.PADDING
-    this.transport = DubboTcpTransport.from(this.props.dubboHost).subscribe({
-      onConnect: this.handleTransportConnect,
-      onData: this.handleTransportData,
-      onClose: this.handleTransportClose
-    })
+    this.transport = DubboTcpTransport.from(this.props.dubboHost)
+      .on('connect', this.handleTransportConnect)
+      .on('data', this.handleTransportData)
+      .on('close', this.handleTransportClose)
   }
 
   static from(props: IDirectlyDubboProps) {
@@ -74,7 +73,7 @@ export default class DubboDirectlyInvoker {
       proxy[methodName] = (...args: Array<IHessianType>) => {
         return go(
           new Promise((resolve, reject) => {
-            const ctx = Context.init()
+            const ctx = new Context()
             ctx.resolve = resolve
             ctx.reject = reject
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import net, { Socket } from 'net'
+import net, { Socket } from 'node:net'
 import ip from 'ip'
 import debug from 'debug'
 import qs from 'querystring'

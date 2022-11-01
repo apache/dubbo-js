@@ -18,7 +18,12 @@
 import debug from 'debug'
 import BaseRegistry from './registry-base'
 import { IRegistry } from './registry'
-import { INaocsClientProps, TDubboInterface, TDubboUrl } from './types'
+import {
+  INaocsClientProps,
+  RegisterConsumerService,
+  TDubboInterface,
+  TDubboUrl
+} from './types'
 import qs from 'querystring'
 import { util } from 'apache-dubbo-common'
 
@@ -121,19 +126,14 @@ export class NacosRegistry
   }
 
   // 注册服务消费
-  async registerConsumers(
-    consumers: Array<{
-      dubboServiceInterface: TDubboInterface
-      dubboServiceUrl: TDubboUrl
-    }>
-  ) {
+  async registerConsumers(consumers: RegisterConsumerService) {
     dlog('consumers => %O', consumers)
-    const dubboInterfaces = new Set<string>()
-    for (let { dubboServiceInterface, dubboServiceUrl } of consumers) {
-      dubboInterfaces.add(dubboServiceInterface)
-      await this.registerInstance(dubboServiceInterface, dubboServiceUrl)
-    }
-    await this.findDubboServiceUrls([...dubboInterfaces])
+    // const dubboInterfaces = new Set<string>()
+    // for (let { dubboServiceInterface, dubboServiceUrl } of consumers) {
+    //   dubboInterfaces.add(dubboServiceInterface)
+    //   await this.registerInstance(dubboServiceInterface, dubboServiceUrl)
+    // }
+    // await this.findDubboServiceUrls([...dubboInterfaces])
   }
 
   async registerInstance(

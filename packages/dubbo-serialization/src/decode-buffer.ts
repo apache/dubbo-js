@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import { Socket } from 'node:net'
 import debug from 'debug'
 import { byte, util } from 'apache-dubbo-common'
 import { IObservable, TDecodeBuffSubscriber } from './types'
@@ -23,7 +24,6 @@ import {
   DUBBO_MAGIC_HIGH,
   DUBBO_MAGIC_LOW
 } from './constants'
-import { Socket } from 'net'
 
 const log = debug('dubbo:decode-buffer')
 

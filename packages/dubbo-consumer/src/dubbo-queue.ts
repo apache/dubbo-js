@@ -16,18 +16,10 @@
  */
 
 import debug from 'debug'
-import Context from './context'
-import { DubboMethodParamNotHessianError } from './err'
-import {
-  IDubboObservable,
-  IDubboResponse,
-  TQueueObserver,
-  TRequestId
-} from './types'
-import { util } from 'apache-dubbo-common'
+import Context from './dubbo-context'
+import { IDubboResponse, TRequestId } from './types'
 
-const { noop } = util
-const log = debug('dubbo:queue')
+const log = debug('dubbo-client:queue')
 
 /**
  * Node的异步特性就会让我们在思考问题的时候，要转换一下思考问题的思维
@@ -38,14 +30,12 @@ const log = debug('dubbo:queue')
  * 等待后面的资源初始化结束进行处理，如果超过超时时间就自动进行timeout超时处理
  */
 
-export default class Queue implements IDubboObservable<TQueueObserver> {
-  private subscriber: Function
+export default class Queue {
   private readonly queue: Map<TRequestId, Context>
 
   constructor() {
     log('new Queue')
     this.queue = new Map()
-    this.subscriber = noop
   }
 
   static init() {
@@ -58,32 +48,15 @@ export default class Queue implements IDubboObservable<TQueueObserver> {
   }
 
   push = (ctx: Context) => {
-    return new Promise((resolve, reject) => {
-      ctx.resolve = resolve
-      ctx.reject = reject
+    //add queue
+    const { requestId, dubboInterface } = ctx.request
+    log(`add queue,requestId#${requestId}, interface: ${dubboInterface}`)
+    this.queue.set(requestId, ctx)
 
-      if (!ctx.isRequestMethodArgsHessianType) {
-        ctx.reject(
-          new DubboMethodParamNotHessianError(
-            `${ctx.dubboInterface}#${ctx.request.methodName} not all arguments are valid hessian type`
-          )
-        )
-        return
-      }
-
-      //add queue
-      const { requestId, dubboInterface } = ctx.request
-      log(`add queue,requestId#${requestId}, interface: ${dubboInterface}`)
-      this.queue.set(requestId, ctx)
-
-      // set max timeout
-      ctx.setMaxTimeout(() => {
-        // delete this context
-        this.queue.delete(ctx.requestId)
-      })
-
-      //通知scheduler
-      this.subscriber(ctx)
+    // set max timeout
+    ctx.setMaxTimeout(() => {
+      // delete this context
+      this.queue.delete(ctx.requestId)
     })
   }
 
@@ -94,41 +67,43 @@ export default class Queue implements IDubboObservable<TQueueObserver> {
     return this.queue
   }
 
-  subscribe(cb: Function) {
-    this.subscriber = cb
-    return this
-  }
-
   consume(msg: IDubboResponse) {
+    log('consume -> %j', msg)
+
     const { requestId, res, err, attachments } = msg
     const ctx = this.queue.get(requestId)
     if (!ctx) {
       return
     }
+
+    // clear timeout
     ctx.cleanTimeout()
-    //dubbo2.6.3
+    //add attachments since dubbo2.6.3
     ctx.providerAttachments = attachments
+
+    log(
+      'handle consumer requestId:%d traceId: %s, res: %O, err: %s',
+      requestId,
+      ctx.traceId,
+      res,
+      err
+    )
+
+    // handle error
     if (err) {
-      log(
-        'queue schedule failed requestId#%d, traceId:%s err: %s',
-        requestId,
-        ctx.traceId,
-        err
-      )
       //删除该属性，不然会导致JSON.Stringify失败
       if (err['cause']) {
         delete err['cause']['cause']
       }
+
       ctx.reject(err)
-    } else {
-      log(
-        'resolve requestId:%d traceId: %s, res: %O',
-        requestId,
-        ctx.traceId,
-        res
-      )
-      ctx.resolve(res)
+      this.clear(requestId)
+      return
     }
+
+    // handle success
+    ctx.resolve(res)
+    // clean
     this.clear(requestId)
   }
 }

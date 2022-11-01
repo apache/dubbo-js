@@ -15,20 +15,44 @@
  * limitations under the License.
  */
 
+/**
+ * dubbo invoke timeout error
+ */
 export class DubboInvokeTimeout extends Error {}
 
+/**
+ * dubbo encoder error
+ */
 export class DubboEncodeError extends Error {}
 
+/**
+ * dubbo timeout error
+ */
 export class DubboTimeoutError extends Error {}
 
+/**
+ * dubbo method param not hessian error
+ */
 export class DubboMethodParamNotHessianError extends Error {}
 
+/**
+ * dubbo schedule error
+ */
 export class DubboScheduleError extends Error {}
 
+/**
+ * socket error
+ */
 export class SocketError extends Error {}
 
+/**
+ * zookeeper expired error
+ */
 export class ZookeeperExpiredError extends Error {}
 
+/**
+ * fault exit error
+ */
 export class FaultExitError extends Error {
   //copy message and stack
   constructor(err: Error) {

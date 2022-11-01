@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { EventEmitter } from 'events'
+import { EventEmitter } from 'node:events'
 import { IHessianType } from './types'
 
 export const msg = new EventEmitter()

@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
+import { Socket } from 'node:net'
 import debug from 'debug'
-import { Socket } from 'net'
 import Hessian from 'hessian.js'
 import { util } from 'apache-dubbo-common'
 import {

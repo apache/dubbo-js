@@ -110,18 +110,6 @@ describe('test zookeeper registry', () => {
   })
 
   it('test registryConsumer', async () => {
-    const services = [
-      {
-        dubboServiceInterface: 'org.apache.demo.service.HelloService',
-        dubboServiceUrl:
-          'consumer://127.0.01:20880/org.apache.demo.HelloService?version=1.0.0'
-      },
-      {
-        dubboServiceInterface: 'org.apache.demo.service.UserService',
-        dubboServiceUrl:
-          'consumer://127.0.01:20880/org.apache.demo.UserService?version=1.0.0'
-      }
-    ]
     const zk = Zk({ connect: 'localhost:2181' })
     zk.subscribe({
       onData(data) {
@@ -131,8 +119,19 @@ describe('test zookeeper registry', () => {
         expect(err).toMatchSnapshot()
       }
     })
-    await zk.ready()
-    await zk.registerConsumers(services)
+    await zk.registerConsumers({
+      application: { name: 'zookeeper-test' },
+      services: [
+        {
+          dubboInterface: 'org.apache.demo.service.HelloService',
+          version: '1.0.0'
+        },
+        {
+          dubboInterface: 'org.apache.demo.service.UserService',
+          version: '1.0.0'
+        }
+      ]
+    })
     zk.close()
   })
 })

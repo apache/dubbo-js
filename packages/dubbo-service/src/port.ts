@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import path from 'path'
+import path from 'node:path'
 import getPort from 'get-port'
 import debug from 'debug'
 import fs from 'fs-extra'

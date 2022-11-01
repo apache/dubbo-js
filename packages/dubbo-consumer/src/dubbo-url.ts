@@ -19,7 +19,7 @@ import debug from 'debug'
 import qs from 'querystring'
 import { IQueryObj } from './types'
 
-const log = debug('dubbo:dubbo-url')
+const log = debug('dubbo-client:dubbo-url')
 
 /**
  *
@@ -39,7 +39,7 @@ export default class DubboUrl {
   public readonly version: string
   public readonly group: string
 
-  private constructor(dubboServiceUrl: string) {
+  constructor(dubboServiceUrl: string) {
     log('DubboUrl from -> %s', dubboServiceUrl)
     this.url = new URL(dubboServiceUrl)
     this.query = qs.parse(dubboServiceUrl) as any

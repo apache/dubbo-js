@@ -17,30 +17,18 @@
 
 import debug from 'debug'
 import compose from 'koa-compose'
-import Queue from './queue'
-import config from './config'
-import Context from './context'
 import { go, util } from 'apache-dubbo-common'
-import Scheduler from './scheduler'
-import qs from 'querystring'
-import ip from 'ip'
+import config from './dubbo-config'
+import Context from './dubbo-context'
+import Scheduler from './dubbo-scheduler'
 import * as s from './dubbo-setting'
-import {
-  IDubboProps,
-  IDubboProvider,
-  Middleware,
-  TDubboInterface,
-  TDubboService,
-  TDubboUrl
-} from './types'
+import { IDubboProps, DubboService, Middleware, TDubboService } from './types'
 
-const log = debug('dubbo:bootstrap')
-const packageVersion = require('../package.json').version
-log('dubbo-js version :=> %s', packageVersion)
+const log = debug('dubbo-client')
+log('version => %s', require('../package.json').version)
 
 /**
- * Dubbo
- *
+ * Dubbo client = dubbo service consumer side
  * 1. Connect to the registration center zookeeper
  * 2. Initiate method call of remote dubbo service
  * 3. Serialization/deserialization of dubbo protocol
@@ -51,150 +39,40 @@ log('dubbo-js version :=> %s', packageVersion)
  * 8. Full link tracking of dubbo calls can be realized through zone-context
  * 9. Centralized message management
  */
-export default class Dubbo<TService = Object> {
-  private readonly queue: Queue
-  private readonly dubboSetting: s.DubboSetting
+export default class Dubbo<T = object> {
   private readonly props: IDubboProps
-  private readonly middlewares: Array<Middleware<Context>>
-  private readonly consumers: Array<{
-    dubboServiceInterface: TDubboInterface
-    dubboServiceUrl: TDubboUrl
-  }>
-  private scheduler: Scheduler
-  public readonly service: TDubboService<TService>
+  private readonly scheduler: Scheduler
+  private readonly middlewares: Array<Middleware<Context>> = []
+  // collection dubbo service meta data
+  private readonly dubboServices: Array<DubboService> = []
+  // invoke rpc method from service
+  public readonly service: TDubboService<T> = {} as TDubboService<T>
+
+  private dubboSetting: s.DubboSetting
 
   constructor(props: IDubboProps) {
+    // init props
     this.props = props
-
     // check dubbo register
-    if (!util.isObj(this.props.registry)) {
-      throw new Error('please specify registry instance')
-    }
-
-    this.consumers = []
-    this.middlewares = []
-    this.queue = Queue.init()
-    this.dubboSetting = props.dubboSetting || s.Setting()
-
-    // init service
-    this.service = <TDubboService<TService>>{}
-    this.consumeService(this.props.services)
-    log('consumerService: %O', this.consumers)
-
+    this.checkProps()
     //Initialize config
-    //Global timeout (maximum fusing time) similar to <dubbo:consumer timeout="sometime"/>
-    //For the consumer client, if the user sets the interface level timeout time, the interface level is used
-    //If the user does not set the user level, the default is the maximum timeout
-    const { dubboInvokeTimeout } = props
-    config.dubboInvokeTimeout =
-      dubboInvokeTimeout ||
-      this.dubboSetting.maxTimeout ||
-      config.dubboInvokeTimeout
-
-    log('config:|> %O', config)
-
-    this.init().catch((err) => console.log(err))
-  }
-
-  // ========================private method=======================
-  private async init() {
-    await this.props.registry.ready()
+    this.initConfig()
+    // init service
+    this.aggregationStubServices(this.props.services)
     //create scheduler
-    this.scheduler = Scheduler.from(this.props.registry, this.queue)
-    await this.props.registry.registerConsumers(this.consumers)
-  }
-
-  /**
-   * registry consume service
-   * service style:
-   * {[key: string]: (dubbo): T => dubbo.proxyService<T>({...})}
-   * @param services
-   */
-  private consumeService(services: Object) {
-    for (let [shortName, serviceProxy] of Object.entries(services)) {
-      const service = serviceProxy(this) as IDubboProvider
-      const meta = this.dubboSetting.getDubboSetting({
-        dubboServiceShortName: shortName,
-        dubboServiceInterface: service.dubboInterface
+    this.scheduler = Scheduler.from(this.props.registry)
+    // register cosnumer info
+    this.props.registry
+      .registerConsumers({
+        application: this.props.application,
+        services: this.dubboServices
       })
-      service.group = meta.group
-      service.version = meta.version
-      this.service[shortName] = this.composeService(service)
-    }
+      .then(() => log(`registry consumer success`))
+      .catch((err) => log(`registry consumer error %s`, err))
   }
 
-  private composeService = (provider: IDubboProvider) => {
-    const { application, isSupportedDubbox } = this.props
-    const { dubboInterface, methods, timeout, group, version } = provider
-    const proxyObj = Object.create(null)
+  // ~~~~~~~~~~~~~~~~~~~~~~~ public method ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    this.consumers.push({
-      dubboServiceInterface: dubboInterface,
-      dubboServiceUrl: `consumer://${ip.address()}/${dubboInterface}?${qs.stringify(
-        {
-          application: this.props.application.name,
-          interface: dubboInterface,
-          category: 'consumers',
-          method: '',
-          revision: version,
-          version: version,
-          group: group,
-          timeout: timeout,
-          side: 'consumer',
-          check: false,
-          pid: process.pid
-        }
-      )}`
-    })
-
-    //proxy methods
-    Object.keys(methods).forEach((name) => {
-      proxyObj[name] = async (...args: any[]) => {
-        log('%s create context', name)
-        //创建dubbo调用的上下文
-        const ctx = Context.init()
-        ctx.application = application
-        ctx.isSupportedDubbox = isSupportedDubbox
-
-        // set dubbo version
-        ctx.dubboVersion = this.props.dubboVersion
-
-        const method = methods[name]
-        ctx.methodName = name
-        ctx.methodArgs = method.call(provider, ...args) || []
-
-        ctx.dubboInterface = dubboInterface
-        ctx.version = version
-        ctx.timeout = timeout
-        ctx.group = group
-
-        const self = this
-        const middlewares = [
-          ...this.middlewares, //handle request middleware
-          async function handleRequest(ctx) {
-            log('start middleware handle dubbo request')
-            ctx.body = await go(self.queue.push(ctx))
-            log('end handle dubbo request')
-          }
-        ]
-
-        log('middleware->', middlewares)
-        const fn = compose(middlewares)
-
-        try {
-          await fn(ctx)
-        } catch (err) {
-          log(err)
-        }
-
-        return ctx.body
-      }
-    })
-
-    return proxyObj
-  }
-
-  //========================public method===================
   /**
    * static factory method
    * @param props
@@ -204,10 +82,12 @@ export default class Dubbo<TService = Object> {
   }
 
   /**
-   * 代理dubbo的服务
+   * proxy dubbo stub service
+   * @param provider
+   * @returns
    */
-  proxyService<T = any>(provider: IDubboProvider): T {
-    return provider as any
+  proxyService<T = any>(provider: DubboService): T {
+    return provider as T
   }
 
   /**
@@ -224,11 +104,7 @@ export default class Dubbo<TService = Object> {
   }
 
   /**
-   * The connection of dubbo is asynchronous. Whether the connection is successful or not is usually known at runtime.
-   * At this time, it may give us some trouble, we must send a request to know the status of dubbo
-   * Based on this scenario, we provide a method to tell the outside whether dubbo is initialized successfully,
-   * In this way, we will know the connection status of dubbo during node startup, if we can't connect, we can
-   * Timely fixed
+   * waiting dubbo client was ready
    *
    * For example, in conjunction with egg, egg provides a beforeStart method
    * Wait for the successful initialization of dubbo through the ready method
@@ -241,8 +117,6 @@ export default class Dubbo<TService = Object> {
    *  console.log('dubbo was ready...');
    * })
    *}
-   *
-   * Other frameworks are similar
    */
   ready() {
     return this.props.registry.ready()
@@ -253,6 +127,129 @@ export default class Dubbo<TService = Object> {
    */
   close() {
     this.props.registry.close()
-    this.scheduler.close()
+    this.scheduler.destroy()
+  }
+
+  // ======================== private method =======================
+
+  /**
+   * check current props
+   */
+  private checkProps() {
+    if (!util.isObj(this.props.registry)) {
+      throw new Error('please specify registry instance')
+    }
+    // check stub service
+    if (!util.isObj(this.props.services)) {
+      throw new Error(`Please specify dubbo stub services`)
+    }
+  }
+
+  /**
+   * init dubbo client config
+   */
+  private initConfig() {
+    //Global timeout (maximum fusing time) similar to <dubbo:consumer timeout="sometime"/>
+    //For the consumer client, if the user sets the interface level timeout time, the interface level is used
+    //If the user does not set the user level, the default is the maximum timeout
+    this.dubboSetting = this.props.dubboSetting || s.Setting()
+    config.dubboInvokeTimeout =
+      this.props.dubboMaxTimeout ||
+      this.dubboSetting.maxTimeout ||
+      config.dubboInvokeTimeout
+    log('config: %O', config)
+  }
+
+  /**
+   * aggregation stub service into one service object
+   * service style:
+   * {[key: string]: (dubbo): T => dubbo.proxyService<T>({...})}
+   * @param services
+   */
+  private aggregationStubServices(services: IDubboProps['services']) {
+    for (let [id, proxyService] of Object.entries(services)) {
+      // call dubbo.proxyService
+      const service = proxyService(this) as DubboService
+      // collection proxy service return dubbo service
+      this.dubboServices.push(service)
+
+      // get service meta data, such as group,version etc
+      const meta = this.dubboSetting.getDubboSetting({
+        dubboServiceShortName: id,
+        dubboServiceInterface: service.dubboInterface
+      })
+
+      // stub service => service
+      service.group = meta.group
+      service.version = meta.version
+      this.service[id] = this.stubService(service)
+    }
+  }
+
+  /**
+   * stub service and make invoke middleware chains
+   * @param service
+   * @returns
+   */
+  private stubService = (service: DubboService) => {
+    const { application, isSupportedDubbox } = this.props
+    const { dubboInterface, methods, timeout, group, version } = service
+
+    //stub service method
+    return Object.keys(methods).reduce((r, name) => {
+      r[name] = async (...args: any[]) => {
+        log('%s#%s create context', dubboInterface, name)
+        // create new context
+        const ctx = new Context()
+
+        // set application and is supoort dubbox
+        ctx.application = application
+        ctx.isSupportedDubbox = isSupportedDubbox
+        // set dubbo version
+        ctx.dubboVersion = this.props.dubboVersion
+
+        // set dubbo interface
+        ctx.dubboInterface = dubboInterface
+        // set method name
+        ctx.methodName = name
+        // set method args
+        const method = methods[name]
+        ctx.methodArgs = method.call(service, ...args) || []
+
+        // set group && version && timeout
+        ctx.group = group
+        ctx.version = version
+        ctx.timeout = timeout
+
+        // invoke
+        return await this.invokeMiddlewareChain(ctx)
+      }
+      return r
+    }, Object.create(null))
+  }
+
+  /**
+   * invoke rpc method
+   * @param ctx
+   * @returns
+   */
+  private async invokeMiddlewareChain(ctx: Context) {
+    const fn = compose([...this.middlewares, this.handleRequestMiddleware])
+    try {
+      await fn(ctx)
+    } catch (err) {
+      log(err)
+    }
+    return ctx.body
+  }
+
+  /**
+   * handle request middleware
+   * @param ctx
+   */
+  private handleRequestMiddleware = async (ctx: Context) => {
+    log('middleware:handle request -> %j', ctx.request)
+    ctx.body = await go(this.scheduler.handleDubboInvoke(ctx))
+    log('middleware:end request %j', ctx.body)
   }
 }
