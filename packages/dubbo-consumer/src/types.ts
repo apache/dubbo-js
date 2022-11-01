@@ -18,14 +18,10 @@
 import Dubbo from './dubbo'
 import { IRegistry } from 'apache-dubbo-registry'
 import { DubboSetting } from './dubbo-setting'
-import DubboTcpTransport from './dubbo-transport/dubbo-tcp-transport'
 
-export type RegisterConsumer = {
-  dubboServiceInterface: TDubboInterface
-  dubboServiceUrl: TDubboUrl
-}
+export type HostName = string
+export type Host = string
 
-export type TQueueObserver = Function
 export type TRequestId = number
 export type TDubboInterface = string
 export type TDubboUrl = string
@@ -70,6 +66,7 @@ export interface IHessianType {
   $class: string
   $: any
 }
+
 export interface IInvokeParam {
   dubboInterface: string
   methods: { [methodName: string]: Function }
@@ -81,19 +78,6 @@ export interface IInvokeParam {
   isSupportedDubbox?: boolean
 }
 
-export interface IDubboObservable<T> {
-  subscribe(subscriber: T): this
-}
-
-export interface IDubboTransportSubscriber {
-  onConnect: (props: { host: string; transport: DubboTcpTransport }) => void
-  onData: (data: any) => void
-  onClose: (host: string) => void
-}
-
-export type HostName = string
-export type Host = string
-
 export interface IQueryObj {
   application: string
   dubbo: string
@@ -102,12 +86,6 @@ export interface IQueryObj {
   methods: string
   version: string
   group: string
-}
-
-export interface IDubboSetting {
-  group?: string
-  version?: string
-  timeout?: number
 }
 
 export interface IDubboSetting {

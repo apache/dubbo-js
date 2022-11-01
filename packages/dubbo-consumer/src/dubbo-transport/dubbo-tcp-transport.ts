@@ -53,7 +53,13 @@ export default class DubboTcpTransport extends EventEmitter {
     this._status = STATUS.PADDING
     this.host = host
     this.forceClose = false
+
+    // init transport
     this.transport = new net.Socket()
+    this.transport.setNoDelay()
+    this.transport
+      .on('error', this.handleTransportErr)
+      .on('close', this.handleTransportClose)
 
     log('init tcp-transport %j', {
       host,
@@ -82,11 +88,7 @@ export default class DubboTcpTransport extends EventEmitter {
     log(`tcp-transport =connecting=> ${this.host}`)
     const [host, port] = this.host.split(':')
 
-    this.transport.setNoDelay()
-    this.transport
-      .connect(Number(port), host, this.handleTransportConnect)
-      .on('error', this.handleTransportErr)
-      .on('close', this.handleTransportClose)
+    this.transport.connect(Number(port), host, this.handleTransportConnect)
 
     DecodeBuffer.from(this.transport, `tcp-transport#${this.host}`).subscribe(
       (data) => {
@@ -173,5 +175,9 @@ export default class DubboTcpTransport extends EventEmitter {
   close() {
     this.forceClose = true
     this.transport.destroy()
+    // free
+    this.transport = null
+    this.retry = null
+    this.heartBeat = null
   }
 }

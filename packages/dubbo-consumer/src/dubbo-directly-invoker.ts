@@ -20,9 +20,15 @@ import { go } from 'apache-dubbo-common'
 import Context from './dubbo-context'
 import { STATUS } from './dubbo-status'
 import DubboTcpTransport from './dubbo-transport/dubbo-tcp-transport'
-import { IDirectlyDubboProps, IHessianType, IInvokeParam } from './types'
+import {
+  IDirectlyDubboProps,
+  IDubboResponse,
+  IHessianType,
+  IInvokeParam,
+  TRequestId
+} from './types'
 
-const log = debug('dubbo-client:directly-dubbo')
+const log = debug('dubbo-directly-invoker')
 
 /**
  * Directly connect to the dubbo service
@@ -33,9 +39,21 @@ const log = debug('dubbo-client:directly-dubbo')
 export default class DubboDirectlyInvoker {
   private status: STATUS
   private readonly props: IDirectlyDubboProps
-  private readonly transport: DubboTcpTransport
-  private readonly queue: Map<number, Context>
+  private transport: DubboTcpTransport
+  private queue: Map<TRequestId, Context>
 
+  /**
+   * static factory method
+   * @param props
+   * @returns
+   */
+  static from(props: IDirectlyDubboProps) {
+    return new DubboDirectlyInvoker(props)
+  }
+
+  /**
+   * constructor
+   */
   constructor(props: IDirectlyDubboProps) {
     log('bootstrap....%O', this.props)
     this.props = props
@@ -48,14 +66,21 @@ export default class DubboDirectlyInvoker {
       .on('close', this.handleTransportClose)
   }
 
-  static from(props: IDirectlyDubboProps) {
-    return new DubboDirectlyInvoker(props)
-  }
-
+  /**
+   * close transport
+   */
   close() {
     this.transport.close()
+    // free
+    this.queue = null
+    this.transport = null
   }
 
+  /**
+   * stub proxy service
+   * @param invokeParam
+   * @returns
+   */
   proxyService<T extends Object>(invokeParam: IInvokeParam): T {
     const {
       dubboInterface,
@@ -67,6 +92,7 @@ export default class DubboDirectlyInvoker {
       attachments = {},
       isSupportedDubbox = false
     } = invokeParam
+
     const proxy = Object.create(null)
 
     for (let methodName of Object.keys(methods)) {
@@ -77,10 +103,13 @@ export default class DubboDirectlyInvoker {
             ctx.resolve = resolve
             ctx.reject = reject
 
+            // set method name
             ctx.methodName = methodName
+            // set method args
             const method = methods[methodName]
             ctx.methodArgs = method.call(invokeParam, ...args) || []
 
+            // set invoke params
             ctx.dubboVersion = this.props.dubboVersion
             ctx.dubboInterface = dubboInterface
             ctx.path = path || dubboInterface
@@ -105,11 +134,16 @@ export default class DubboDirectlyInvoker {
             ctx.timeout = this.props.dubboInvokeTimeout
 
             ctx.setMaxTimeout(() => {
+              log(
+                `invoke service %d method %s timeout`,
+                ctx.dubboInterface,
+                ctx.methodName
+              )
               this.queue.delete(ctx.requestId)
             })
 
             //add task to queue
-            this.addQueue(ctx)
+            this.handleInvoke(ctx)
           })
         )
       }
@@ -121,23 +155,12 @@ export default class DubboDirectlyInvoker {
   // ~~~~~~~~~~~~~~~~private~~~~~~~~~~~~~~~~~~~~~~~~
 
   /**
-   * Successfully process the task of the queue
-   *
-   * @param requestId
-   * @param err
-   * @param res
+   * consum queue task
    */
-  private consume({
-    requestId,
-    err,
-    res
-  }: {
-    requestId: number
-    err?: Error
-    res?: any
-  }) {
+  private consume({ requestId, err, res }: IDubboResponse) {
     const ctx = this.queue.get(requestId)
     if (!ctx) {
+      log(`could not find context by requestId#%d`, requestId)
       return
     }
 
@@ -147,7 +170,9 @@ export default class DubboDirectlyInvoker {
       ctx.resolve(res)
     }
 
+    // clear timeout
     ctx.cleanTimeout()
+    // clear task
     this.queue.delete(requestId)
   }
 
@@ -156,7 +181,7 @@ export default class DubboDirectlyInvoker {
    *
    * @param ctx
    */
-  private addQueue(ctx: Context) {
+  private handleInvoke(ctx: Context) {
     const { requestId } = ctx
     this.queue.set(requestId, ctx)
 
@@ -165,8 +190,10 @@ export default class DubboDirectlyInvoker {
     //根据当前socket的worker的状态，来对任务进行处理
     switch (this.status) {
       case STATUS.PADDING:
+        log(`current status was padding, waiting...`)
         break
       case STATUS.CONNECTED:
+        log(`send request`)
         this.transport.write(ctx)
         break
       case STATUS.CLOSED:
@@ -178,9 +205,10 @@ export default class DubboDirectlyInvoker {
     }
   }
 
-  //===================socket event===================
+  //==================handle transport event===================
   private handleTransportConnect = () => {
     this.status = STATUS.CONNECTED
+
     for (let ctx of this.queue.values()) {
       //如果还没有被处理
       if (!ctx.wasInvoked) {
