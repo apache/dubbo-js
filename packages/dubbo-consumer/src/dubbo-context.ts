@@ -131,7 +131,7 @@ export default class Context<T = any> {
   }
 
   set methodArgs(args: Array<IHessianType>) {
-    log('requestId#%d set methodArgs: %O', this._request.requestId, args)
+    log('requestId#%d set methodArgs: ', this._request.requestId, args)
     this._request.methodArgs = args
   }
 

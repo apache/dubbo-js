@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-import { Request, DUBBO_RESPONSE_STATUS } from 'apache-dubbo-serialization'
+import { d$ } from 'apache-dubbo-common'
+import { Request } from 'apache-dubbo-serialization'
 
 export default class Context<T = any> {
   private readonly req: Request
@@ -52,7 +53,7 @@ export default class Context<T = any> {
     }
   }
 
-  set status(code: DUBBO_RESPONSE_STATUS) {
+  set status(code: d$.DUBBO_RESPONSE_STATUS) {
     this._status = code
   }
 

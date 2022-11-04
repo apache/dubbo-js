@@ -20,13 +20,12 @@ import ip from 'ip'
 import debug from 'debug'
 import qs from 'querystring'
 import compose, { Middleware } from 'koa-compose'
-import { Retry, util } from 'apache-dubbo-common'
+import { Retry, util, d$ } from 'apache-dubbo-common'
 import {
   DecodeBuffer,
-  decodeDubboRequest,
-  DUBBO_RESPONSE_STATUS,
-  DubboResponseEncoder,
   HeartBeat,
+  Hessian2Decoder,
+  Hessian2Encoder,
   Request
 } from 'apache-dubbo-serialization'
 import Context from './context'
@@ -42,7 +41,7 @@ import {
 } from './types'
 
 const ipAddr = ip.address()
-const log = debug('dubbo-server ~')
+const log = debug('dubbo-server')
 
 /**
  * DubboServer - expose dubbo service by nodejs
@@ -54,12 +53,15 @@ const log = debug('dubbo-server ~')
  */
 
 export default class DubboService {
-  private resolve: Function
-  private reject: Function
   private readonly readyPromise: Promise<void>
-
   private readonly application: { name: string }
   private readonly dubbo: string
+
+  private resolve: Function
+  private reject: Function
+
+  private encoder: Hessian2Encoder
+  private decoder: Hessian2Decoder
 
   private retry: Retry
   private port: number
@@ -76,6 +78,9 @@ export default class DubboService {
     // set application name
     this.application = props.application
     this.dubbo = props.dubbo
+
+    this.encoder = new Hessian2Encoder()
+    this.decoder = new Hessian2Decoder()
 
     // init ready promise
     this.readyPromise = new Promise((resolve, reject) => {
@@ -156,7 +161,7 @@ export default class DubboService {
 
     // init heartbeat
     const heartbeat = HeartBeat.from({
-      type: 'response',
+      type: 'server',
       transport: socket,
       onTimeout: () => socket.destroy()
     })
@@ -171,7 +176,7 @@ export default class DubboService {
 
       const ctx = await this.invokeComposeChainRequest(data)
       heartbeat.setWriteTimestamp()
-      socket.write(new DubboResponseEncoder(ctx).encode())
+      socket.write(this.encoder.encodeDubboResponse(ctx))
     })
   }
 
@@ -181,7 +186,7 @@ export default class DubboService {
    * @returns
    */
   private async invokeComposeChainRequest(data: Buffer) {
-    const request = decodeDubboRequest(data)
+    const request = this.decoder.decodeDubboRequest(data)
     log('receive request %O', request)
     const service = this.matchService(request)
     const ctx = new Context(request)
@@ -196,7 +201,7 @@ export default class DubboService {
       log(
         `Service not found with ${path} and ${methodName}, group:${group}, version:${version}`
       )
-      ctx.status = DUBBO_RESPONSE_STATUS.SERVICE_NOT_FOUND
+      ctx.status = d$.DUBBO_RESPONSE_STATUS.SERVICE_NOT_FOUND
       ctx.body.err = new Error(
         `Service not found with ${path} and ${methodName}, group:${group}, version:${version}`
       )
@@ -207,7 +212,7 @@ export default class DubboService {
       ...this.middlewares,
       async function handleRequest(ctx: Context) {
         const method = service.methods[request.methodName]
-        ctx.status = DUBBO_RESPONSE_STATUS.OK
+        ctx.status = d$.DUBBO_RESPONSE_STATUS.OK
         try {
           // FIXME waiting dubbo/dj
           // check hessian type
@@ -235,7 +240,7 @@ export default class DubboService {
       await fn(ctx)
     } catch (err) {
       log(err)
-      ctx.status = DUBBO_RESPONSE_STATUS.SERVER_ERROR
+      ctx.status = d$.DUBBO_RESPONSE_STATUS.SERVER_ERROR
       ctx.body.err = err
     }
 

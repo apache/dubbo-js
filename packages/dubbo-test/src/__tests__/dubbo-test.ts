@@ -53,11 +53,9 @@ describe('dubbo test suite', () => {
     const echo = await dubbo.service.DemoProvider.echo()
     expect(echo.res).toEqual('pong')
     expect(echo.err).toBeNull()
-
     const test = await dubbo.service.DemoProvider.test()
     expect(test.res).toBeNull()
     expect(test.err).toBeNull()
-
     const userInfo = await dubbo.service.DemoProvider.getUserInfo(
       new UserRequest({
         id: 1,

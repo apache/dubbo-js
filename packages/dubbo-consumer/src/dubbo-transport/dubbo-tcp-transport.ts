@@ -20,9 +20,9 @@ import debug from 'debug'
 import { Retry } from 'apache-dubbo-common'
 import {
   DecodeBuffer,
-  decodeDubboResponse,
-  DubboRequestEncoder,
-  HeartBeat
+  HeartBeat,
+  Hessian2Decoder,
+  Hessian2Encoder
 } from 'apache-dubbo-serialization'
 import Context from '../dubbo-context'
 import { STATUS } from '../dubbo-status'
@@ -38,6 +38,10 @@ const log = debug('dubbo-client:tcp-transport')
  */
 export default class DubboTcpTransport extends EventEmitter {
   public readonly host: string
+
+  private encoder: Hessian2Encoder
+  private decoder: Hessian2Decoder
+
   private _status: STATUS
   private forceClose: boolean
   private retry: Retry
@@ -53,6 +57,9 @@ export default class DubboTcpTransport extends EventEmitter {
     this._status = STATUS.PADDING
     this.host = host
     this.forceClose = false
+
+    this.encoder = new Hessian2Encoder()
+    this.decoder = new Hessian2Decoder()
 
     // init transport
     this.transport = new net.Socket()
@@ -91,11 +98,11 @@ export default class DubboTcpTransport extends EventEmitter {
     this.transport.connect(Number(port), host, this.handleTransportConnect)
 
     DecodeBuffer.from(this.transport, `tcp-transport#${this.host}`).subscribe(
-      (data) => {
-        if (HeartBeat.isHeartBeat(data)) {
+      (buff) => {
+        if (HeartBeat.isHeartBeat(buff)) {
           log('tcp-transport#%s <=receive= heartbeat data.', this.host)
         } else {
-          const res = decodeDubboResponse(data)
+          const res = this.decoder.decodeDubboResponse(buff)
           log('tcp-transport#%s <=received=> dubbo result %O', this.host, res)
           this.emit(`data`, res)
         }
@@ -108,7 +115,7 @@ export default class DubboTcpTransport extends EventEmitter {
     this.retry.reset()
     this._status = STATUS.CONNECTED
     this.heartBeat = HeartBeat.from({
-      type: 'request',
+      type: 'client',
       transport: this.transport,
       onTimeout: () => this.transport.destroy()
     })
@@ -140,7 +147,7 @@ export default class DubboTcpTransport extends EventEmitter {
     // update heartbeat lastWriteTimestamp
     this.heartBeat.setWriteTimestamp()
     // send dubbo serialization request data
-    this.transport.write(new DubboRequestEncoder(ctx).encode())
+    this.transport.write(this.encoder.encodeDubboRequest(ctx))
   }
 
   get status() {
@@ -179,5 +186,7 @@ export default class DubboTcpTransport extends EventEmitter {
     this.transport = null
     this.retry = null
     this.heartBeat = null
+    this.encoder = null
+    this.decoder = null
   }
 }

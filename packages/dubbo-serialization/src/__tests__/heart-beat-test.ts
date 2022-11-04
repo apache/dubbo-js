@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import HeartBeat from '../heartbeat'
+import HeartBeat from '../dubbo-heartbeat'
 
 it('心跳值测试e2', () => {
   const buffer = Buffer.from([

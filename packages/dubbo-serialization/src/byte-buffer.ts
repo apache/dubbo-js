@@ -37,11 +37,6 @@ export interface ReadWriteProp {
    * set read or write endian
    */
   endian?: 'LE' | 'BE'
-
-  /**
-   * specify read bytes length
-   */
-  len?: number
 }
 
 const DEFAULT_ALLOC_SIZE = 1024
@@ -51,15 +46,12 @@ const DEFAULT_ALLOC_SIZE = 1024
  * which can be used to read and write data to buffer.
  */
 export default class ByteBuffer {
+  private readonly defaultAllocSize: number
+
   private buff: Buffer
-
-  private writeIndex: number
-  private readIndex: number
-
+  private cursor: number
   private length: number
   private capacity: number
-
-  private readonly defaultAllocSize: number
 
   /**
    * constructor
@@ -74,18 +66,30 @@ export default class ByteBuffer {
     if (prop.buffer) {
       this.buff = prop.buffer
 
-      this.readIndex = 0
-      this.writeIndex = this.buff.length - 1
+      this.cursor = this.buff.length - 1
       this.length = this.buff.length
       this.capacity = Math.max(this.buff.length, this.defaultAllocSize)
     } else {
       this.buff = Buffer.alloc(this.defaultAllocSize)
 
-      this.writeIndex = 0
-      this.readIndex = 0
+      this.cursor = 0
       this.length = 0
       this.capacity = this.defaultAllocSize
     }
+  }
+
+  /**
+   * reset cursor position
+   * @param idx
+   * @returns
+   */
+  resetCursor(idx: number = 0) {
+    this.cursor = idx || 0
+    return this
+  }
+
+  getCursor() {
+    return this.cursor
   }
 
   /**
@@ -95,13 +99,16 @@ export default class ByteBuffer {
    * @returns
    */
   writeByte(val: number, prop?: ReadWriteProp) {
-    const opt = this.defaultReadWriteProp('write', prop)
-    const next = opt.index + 1
+    const opt = this.defaultReadWriteProp(prop)
+    this.cursor = opt.index
+    const next = this.cursor + 1
     this.checkCapacity(next)
 
-    this.buff.writeUInt8(val, opt.index)
+    opt.unsigned
+      ? this.buff.writeUInt8(val, this.cursor)
+      : this.buff.writeInt8(val, this.cursor)
 
-    this.writeIndex = next
+    this.cursor = next
     if (next > this.length) {
       this.length = next
     }
@@ -114,11 +121,10 @@ export default class ByteBuffer {
    * @param prop offset
    */
   readByte(prop?: ReadWriteProp) {
-    const opt = this.defaultReadWriteProp('read', prop)
-    const val = this.buff.readUInt8(opt.index)
-
-    this.readIndex = opt.index + 1
-
+    const opt = this.defaultReadWriteProp(prop)
+    this.cursor = opt.index
+    const val = this.buff.readUInt8(this.cursor)
+    this.cursor++
     return val
   }
 
@@ -129,21 +135,22 @@ export default class ByteBuffer {
    * @returns
    */
   writeShort(val: number, prop?: ReadWriteProp) {
-    const opt = this.defaultReadWriteProp('write', prop)
-    const next = opt.index + 2
+    const opt = this.defaultReadWriteProp(prop)
+    this.cursor = opt.index
+    const next = this.cursor + 2
     this.checkCapacity(next)
 
     if (opt.endian === 'BE') {
       opt.unsigned
-        ? this.buff.writeInt16BE(val, opt.index)
-        : this.buff.writeUInt16BE(val, opt.index)
+        ? this.buff.writeInt16BE(val, this.cursor)
+        : this.buff.writeUInt16BE(val, this.cursor)
     } else {
       opt.unsigned
-        ? this.buff.writeInt16LE(val, opt.index)
-        : this.buff.writeUint16LE(val, opt.index)
+        ? this.buff.writeInt16LE(val, this.cursor)
+        : this.buff.writeUint16LE(val, this.cursor)
     }
 
-    this.writeIndex = next
+    this.cursor = next
     if (next > this.length) {
       this.length = next
     }
@@ -157,21 +164,21 @@ export default class ByteBuffer {
    * @returns
    */
   readShort(prop?: ReadWriteProp) {
-    const opt = this.defaultReadWriteProp('read', prop)
+    const opt = this.defaultReadWriteProp(prop)
+    this.cursor = prop.index
 
-    let val
+    let val: number
     if (opt.endian === 'BE') {
       val = opt.unsigned
-        ? this.buff.readUInt16BE(opt.index)
-        : this.buff.readInt16BE(opt.index)
+        ? this.buff.readUInt16BE(this.cursor)
+        : this.buff.readInt16BE(this.cursor)
     } else {
       val = opt.unsigned
-        ? this.buff.readUint16LE(opt.index)
-        : this.buff.readInt16LE(opt.index)
+        ? this.buff.readUint16LE(this.cursor)
+        : this.buff.readInt16LE(this.cursor)
     }
 
-    this.readIndex += 2
-
+    this.cursor += 2
     return val
   }
 
@@ -182,21 +189,22 @@ export default class ByteBuffer {
    * @returns
    */
   writeInt(val: number, prop?: ReadWriteProp) {
-    const opt = this.defaultReadWriteProp('write', prop)
-    const next = opt.index + 4
+    const opt = this.defaultReadWriteProp(prop)
+    this.cursor = opt.index
+    const next = this.cursor + 4
     this.checkCapacity(next)
 
     if (opt.endian === 'BE') {
       opt.unsigned
-        ? this.buff.writeUInt32BE(val, opt.index)
-        : this.buff.writeInt32BE(val, opt.index)
+        ? this.buff.writeUInt32BE(val, this.cursor)
+        : this.buff.writeInt32BE(val, this.cursor)
     } else {
       opt.unsigned
-        ? this.buff.writeUInt32LE(val, opt.index)
-        : this.buff.writeInt32LE(val, opt.index)
+        ? this.buff.writeUInt32LE(val, this.cursor)
+        : this.buff.writeInt32LE(val, this.cursor)
     }
 
-    this.writeIndex = next
+    this.cursor = next
     if (next > this.length) {
       this.length = next
     }
@@ -209,10 +217,10 @@ export default class ByteBuffer {
    * @returns
    */
   readInt(prop?: ReadWriteProp) {
-    const opt = this.defaultReadWriteProp('read', prop)
+    const opt = this.defaultReadWriteProp(prop)
+    this.cursor = opt.index
 
-    let val
-
+    let val: number
     if (opt.endian === 'BE') {
       val = opt.unsigned
         ? this.buff.readUInt32BE(opt.index)
@@ -223,8 +231,58 @@ export default class ByteBuffer {
         : this.buff.readInt32LE(opt.index)
     }
 
-    this.readIndex += 4
+    this.cursor += 4
+    return val
+  }
 
+  /**
+   * write 8 bytes
+   * @param num
+   * @param prop
+   * @returns
+   */
+  writeLong(num: number, prop?: ReadWriteProp) {
+    const opt = this.defaultReadWriteProp(prop)
+    this.cursor = opt.index
+    const next = this.cursor + 8
+
+    this.checkCapacity(next)
+
+    if (opt.endian === 'BE') {
+      opt.unsigned
+        ? this.buff.writeBigUInt64BE(BigInt(num), this.cursor)
+        : this.buff.writeBigInt64BE(BigInt(num), this.cursor)
+    } else {
+      opt.unsigned
+        ? this.buff.writeBigUInt64LE(BigInt(num), this.cursor)
+        : this.buff.writeBigInt64LE(BigInt(num), this.cursor)
+    }
+
+    this.cursor = next
+    if (next > this.length) {
+      this.length = next
+    }
+
+    return this
+  }
+
+  readLong(prop?: ReadWriteProp) {
+    const opt = this.defaultReadWriteProp(prop)
+    this.cursor = opt.index
+
+    let val: bigint
+
+    if (opt.endian === 'BE') {
+      val = opt.unsigned
+        ? this.buff.readBigUInt64BE(this.cursor)
+        : this.buff.readBigInt64BE(this.cursor)
+    } else {
+      val = opt.unsigned
+        ? this.buff.readBigUInt64LE(this.cursor)
+        : this.buff.readBigUInt64LE(this.cursor)
+    }
+
+    this.cursor += 8
     return val
   }
 
@@ -235,13 +293,29 @@ export default class ByteBuffer {
    * @returns
    */
   writeBytes(val: Buffer, prop?: ReadWriteProp) {
-    const opt = this.defaultReadWriteProp('write', prop)
-    const next = opt.index + val.length
+    const opt = this.defaultReadWriteProp(prop)
+    this.cursor = opt.index
+    const next = this.cursor + val.length
 
     this.checkCapacity(next)
-    val.copy(this.buff, opt.index, 0)
+    val.copy(this.buff, this.cursor, 0, val.length)
 
-    this.writeIndex = next
+    this.cursor = next
+    if (next > this.length) {
+      this.length = next
+    }
+
+    return this
+  }
+
+  concat(val: Buffer) {
+    this.cursor = this.length === 0 ? 0 : this.length - 1
+    const next = this.cursor + val.length
+
+    this.checkCapacity(next)
+    val.copy(this.buff, this.cursor, 0)
+
+    this.cursor = next
     if (next > this.length) {
       this.length = next
     }
@@ -254,13 +328,18 @@ export default class ByteBuffer {
    *
    * @returns
    */
-  readBytes(prop?: ReadWriteProp) {
-    const opt = this.defaultReadWriteProp('read', prop)
-    const end = Math.min(opt.index + opt.len, this.buff.length)
-    const val = this.buff.subarray(opt.index, end)
+  readBytes(prop: { index?: number; size?: number } = {}) {
+    prop.index ||= this.cursor
+    prop.size ||= this.buff.length
 
-    this.readIndex = end
+    if (typeof prop.index === 'undefined') {
+      prop.index = this.cursor
+    }
 
+    const end = Math.min(this.cursor + prop.size, this.buff.length)
+    const val = this.buff.subarray(prop.index, end)
+
+    this.cursor = end
     return val
   }
 
@@ -279,9 +358,8 @@ export default class ByteBuffer {
    * read string from buffer
    * @returns
    */
-  readString(prop?: ReadWriteProp) {
-    const opt = this.defaultReadWriteProp('read', prop)
-    const val = this.readBytes(opt)
+  readString(prop: { index?: number; size?: number } = {}) {
+    const val = this.readBytes(prop)
     return val.toString()
   }
 
@@ -294,6 +372,11 @@ export default class ByteBuffer {
     return this.buff.indexOf(val)
   }
 
+  /**
+   * return true if include val
+   * @param val
+   * @returns
+   */
   includes(val: number | string | Buffer) {
     return this.buff.includes(val)
   }
@@ -314,9 +397,8 @@ export default class ByteBuffer {
    * @returns
    */
   splice(start: number, end?: number) {
-    end ||= this.length
-    if (end > this.capacity) {
-      end = this.capacity
+    if (!end && end > this.length) {
+      end = this.length
     }
 
     const val = this.buff.subarray(start, end)
@@ -326,13 +408,11 @@ export default class ByteBuffer {
     ])
 
     this.length -= end - start
-
-    if (this.writeIndex > end) {
-      this.writeIndex -= end - start
-    }
-
-    if (this.readIndex > end) {
-      this.readIndex -= end - start
+    this.capacity -= end - start
+    if (this.cursor >= end) {
+      this.cursor -= end - start
+    } else if (this.cursor > start) {
+      this.cursor = start
     }
 
     return val
@@ -345,46 +425,6 @@ export default class ByteBuffer {
    */
   buffer() {
     return this.buff.subarray(0, this.length)
-  }
-
-  /**
-   * get read index
-   * @returns read index
-   */
-  getReadIndex() {
-    return this.readIndex
-  }
-
-  /**
-   * get read index
-   * @param index
-   * @returns
-   */
-  resetReadIndex(index?: number) {
-    index ||= 0
-    this.readIndex = index
-
-    return this
-  }
-
-  /**
-   * get write index
-   * @returns write index
-   */
-  getWriteIndex() {
-    return this.writeIndex
-  }
-
-  /**
-   * reset write index
-   * @param index
-   * @returns
-   */
-  resetWriteIndex(index?: number) {
-    index ||= 0
-    this.writeIndex = index
-
-    return this
   }
 
   /**
@@ -410,16 +450,13 @@ export default class ByteBuffer {
    * @param prop
    * @returns
    */
-  private defaultReadWriteProp(
-    type: string,
-    prop?: ReadWriteProp
-  ): Required<ReadWriteProp> {
+  private defaultReadWriteProp(prop?: ReadWriteProp): Required<ReadWriteProp> {
     prop || (prop = {})
-    prop.index ||= type === 'write' ? this.writeIndex : this.readIndex
     prop.endian ||= 'BE'
     prop.unsigned ||= false
-    prop.len ||= this.length
-
+    if (typeof prop.index === 'undefined') {
+      prop.index = this.cursor
+    }
     return prop as Required<ReadWriteProp>
   }
 
@@ -442,7 +479,7 @@ export default class ByteBuffer {
 
     // copy
     const buff = Buffer.alloc(this.capacity)
-    this.buff.copy(buff, 0, 0, this.writeIndex)
+    this.buff.copy(buff, 0, 0, this.cursor)
     this.buff = buff
   }
 }

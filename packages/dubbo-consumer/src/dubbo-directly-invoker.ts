@@ -71,7 +71,12 @@ export default class DubboDirectlyInvoker {
    */
   close() {
     this.transport.close()
+
     // free
+    for (let ctx of this.queue.values()) {
+      ctx.cleanTimeout()
+    }
+    this.queue.clear()
     this.queue = null
     this.transport = null
   }
@@ -139,6 +144,7 @@ export default class DubboDirectlyInvoker {
                 ctx.dubboInterface,
                 ctx.methodName
               )
+              console.log(this.queue)
               this.queue.delete(ctx.requestId)
             })
 
@@ -183,6 +189,7 @@ export default class DubboDirectlyInvoker {
    */
   private handleInvoke(ctx: Context) {
     const { requestId } = ctx
+
     this.queue.set(requestId, ctx)
 
     log(`current dubbo transport => ${this.status}`)

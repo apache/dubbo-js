@@ -72,9 +72,9 @@ export interface IResponseContext {
 }
 
 export interface IHeartBeatProps {
-  type: 'request' | 'response'
+  type: 'client' | 'server'
   transport: net.Socket
-  onTimeout?: Function
+  onTimeout: Function
 }
 
 export interface IAttachment {

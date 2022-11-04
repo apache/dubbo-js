@@ -17,7 +17,7 @@
 
 import EventEmitter from 'node:events'
 import debug from 'debug'
-import { DEFAULT_DUBBO_PROTOCOL_VERSION } from 'apache-dubbo-serialization'
+import { d$ } from 'apache-dubbo-common'
 
 import DubboUrl from '../dubbo-url'
 import Context from '../dubbo-context'
@@ -68,7 +68,7 @@ export default class DubboTransportManager extends EventEmitter {
     ctx.request.dubboVersion =
       ctx.request.dubboVersion ||
       url.dubboVersion ||
-      DEFAULT_DUBBO_PROTOCOL_VERSION
+      d$.DEFAULT_DUBBO_PROTOCOL_VERSION
     ctx.request.path = url.path
 
     transport.write(ctx)
