@@ -23,11 +23,10 @@ import { IRegistry } from './registry'
 import BaseRegistry from './registry-base'
 import Timeout from './timeout'
 import {
+  IDubboService,
   INodeProps,
   IZkClientConfig,
-  RegisterConsumerService,
-  TDubboInterface,
-  TDubboUrl
+  RegisterConsumerService
 } from './types'
 
 const dlog = debug('dubbo:zookeeper~')
@@ -166,6 +165,55 @@ export class ZookeeperRegistry
     }
   }
 
+  /**
+   * build dubbo service url
+   *
+   * @param service
+   * @returns
+   */
+  private buildUrl(
+    meta: {
+      application: { name: string }
+      port: number
+      dubbo?: string
+    },
+    service: IDubboService
+  ) {
+    const { dubboInterface, group, version, methods } = service
+    const methodName = Object.keys(methods).join()
+    // build params
+    const params = {
+      interface: dubboInterface,
+      methods: methodName,
+      side: 'provider',
+      pid: process.pid,
+      protocol: 'dubbo',
+      anyhost: true,
+      timestamp: Date.now()
+    }
+
+    // dynamic params
+    if (meta.application) {
+      params['application'] = meta.application.name || 'node-dubbo-service'
+    }
+    if (meta.dubbo) {
+      params['dubbo'] = meta.dubbo
+    }
+    if (group !== '') {
+      params['group'] = group
+    }
+    if (version !== '0.0.0') {
+      params['version'] = version
+    }
+
+    return (
+      `dubbo://${ipAddr}:${meta.port}/${dubboInterface}?` +
+      qs.stringify(params, null, null, {
+        encodeURIComponent: (str) => str
+      })
+    )
+  }
+
   // ~~~~~~~~~~~~~~~~ public ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   getProps() {
@@ -206,20 +254,26 @@ export class ZookeeperRegistry
     this.dubboServiceUrlMap.set(dubboInterface, urls)
   }
 
-  async registerServices(
-    services: Array<{
-      dubboServiceInterface: TDubboInterface
-      dubboServiceUrl: TDubboUrl
-    }>
-  ) {
+  async registerServices(meta: {
+    application: { name: string }
+    port: number
+    dubbo?: string
+    services: Array<IDubboService>
+  }) {
     // waiting status ready
     await this.ready()
+    dlog(`registry dubbo service`)
 
     // register service
-    for (let { dubboServiceInterface, dubboServiceUrl } of services) {
+    for (let { dubboInterface, ...rest } of meta.services) {
       // create service root path
-      const serviceRootPath = `${this.props.zkRootPath}/${dubboServiceInterface}/providers`
+      const serviceRootPath = `${this.props.zkRootPath}/${dubboInterface}/providers`
       await this.mkdirp(serviceRootPath)
+
+      // create service node
+      const dubboServiceUrl = this.buildUrl(meta, { dubboInterface, ...rest })
+      dlog(`${serviceRootPath}/${dubboServiceUrl}`)
+
       // create service node
       await this.createNode({
         path: `${serviceRootPath}/${encodeURIComponent(dubboServiceUrl)}`

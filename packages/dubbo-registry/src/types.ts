@@ -59,3 +59,10 @@ export interface RegisterConsumerService {
   application: { name: string }
   services: Array<DubboService>
 }
+
+export interface IDubboService {
+  dubboInterface: string
+  group?: string
+  version?: string
+  methods: { [key in string]: Function }
+}

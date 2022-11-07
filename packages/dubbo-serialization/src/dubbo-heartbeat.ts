@@ -23,9 +23,6 @@ import ByteBuffer from './byte-buffer'
 
 const log = debug('dubbo:heartbeat')
 
-// Reference
-// com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec#encodeRequest
-
 // 心跳频率
 const HEART_BEAT = 60 * 1000
 // retry heartbeat
@@ -33,6 +30,8 @@ const RETRY_HEARD_BEAT_TIME = 3
 
 /**
  * Heartbeat Manager
+ * Reference
+ *  com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec#encodeRequest
  */
 export default class HeartBeat {
   private readonly prop: IHeartBeatProps

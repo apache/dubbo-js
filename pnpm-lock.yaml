@@ -120,8 +120,9 @@ importers:
 
   packages/dubbo-service:
     specifiers:
-      apache-dubbo-common: ^0.0.1
-      apache-dubbo-serialization: ^0.0.2
+      apache-dubbo-common: workspace:*
+      apache-dubbo-registry: workspace:*
+      apache-dubbo-serialization: workspace:*
       debug: 3.1.0
       fs-extra: ^9.1.0
       get-port: ^5.1.1
@@ -130,6 +131,7 @@ importers:
       proper-lockfile: ^4.1.2
     dependencies:
       apache-dubbo-common: link:../dubbo-common
+      apache-dubbo-registry: link:../dubbo-registry
       apache-dubbo-serialization: link:../dubbo-serialization
       debug: 3.1.0
       fs-extra: 9.1.0

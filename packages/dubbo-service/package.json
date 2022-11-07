@@ -23,8 +23,9 @@
     "koa-compose": "4.0.0",
     "proper-lockfile": "^4.1.2",
     "fs-extra": "^9.1.0",
-    "apache-dubbo-serialization": "^0.0.2",
-    "apache-dubbo-common": "^0.0.1",
+    "apache-dubbo-serialization": "workspace:*",
+    "apache-dubbo-common": "workspace:*",
+    "apache-dubbo-registry": "workspace:*",
     "get-port": "^5.1.1"
   }
 }

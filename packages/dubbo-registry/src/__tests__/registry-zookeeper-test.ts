@@ -88,14 +88,24 @@ describe('test zookeeper registry', () => {
   it('test registerServices', async () => {
     const services = [
       {
-        dubboServiceInterface: 'org.apache.demo.service.HelloService',
-        dubboServiceUrl:
-          'dubbo://127.0.01:20880/org.apache.demo.HelloService?interface=org.apache.demo.service.HelloService&methods=sayHello,test,echo,getUserInfo&version=1.0.0'
+        dubboInterface: 'org.apache.demo.service.HelloService',
+        methods: {
+          sayHello() {},
+          test() {},
+          echo() {},
+          getUserInfo() {}
+        },
+        version: '1.0.0'
       },
       {
-        dubboServiceInterface: 'org.apache.demo.service.UserService',
-        dubboServiceUrl:
-          'dubbo://127.0.01:20880/org.apache.demo.UserService?interface=org.apache.demo.service.UserService&methods=sayHello,test,echo,getUserInfo&version=1.0.0'
+        dubboInterface: 'org.apache.demo.service.UserService',
+        methods: {
+          sayHello() {},
+          test() {},
+          echo() {},
+          getUserInfo() {}
+        },
+        version: '1.0.0'
       }
     ]
 
@@ -103,8 +113,12 @@ describe('test zookeeper registry', () => {
       connect: 'localhost:2181'
     })
 
-    await zk.ready()
-    await zk.registerServices(services)
+    await zk.registerServices({
+      application: { name: 'dubbo-service-test' },
+      port: 20880,
+      dubbo: '2.0.3',
+      services
+    })
 
     zk.close()
   })

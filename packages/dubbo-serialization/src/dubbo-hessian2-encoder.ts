@@ -41,7 +41,6 @@ export class Hessian2Encoder implements DubboEncoder {
   encodeDubboRequest(ctx: IRequestContext): Buffer {
     // body buffer
     const body = this.encodeRequestBody(ctx)
-    log('-----request--body ---%d', body.length)
 
     // byte buffer
     return (

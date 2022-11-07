@@ -18,8 +18,7 @@
 import {
   RegisterConsumerService,
   IRegistrySubscriber,
-  TDubboInterface,
-  TDubboUrl
+  IDubboService
 } from './types'
 
 export interface IRegistry<T> {
@@ -36,14 +35,14 @@ export interface IRegistry<T> {
 
   /**
    * register dubbo service
-   * @param services
+   * @param meta
    */
-  registerServices(
-    services: Array<{
-      dubboServiceInterface: TDubboInterface
-      dubboServiceUrl: TDubboUrl
-    }>
-  ): Promise<void>
+  registerServices(meta: {
+    application: { name: string }
+    port: number
+    dubbo?: string
+    services: Array<IDubboService>
+  }): Promise<void>
 
   /**
    * register dubbo consumer
