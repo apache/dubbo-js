@@ -22,7 +22,7 @@
     "pretty-quick": "^1.10.0",
     "nx": "14.8.3",
     "prettier": "^2.6.2",
-    "typescript": "~4.8.2",
+    "typescript": "^4.9.3",
     "vite": "^3.1.8",
     "vitest": "^0.24.3",
     "husky": "^6.0.0"
