@@ -15,6 +15,6 @@
  * limitations under the License.
  */
 
-import { loadProtoDir, lookup, encode, decode } from './proto'
+import { loadProto, lookup, encode, decode } from './proto'
 
-export { loadProtoDir, lookup, encode, decode }
+export { loadProto, lookup, encode, decode }

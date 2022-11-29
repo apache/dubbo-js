@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
-import { loadSync, Root, Type, Message } from 'protobufjs'
+import { loadSync, Root, Type } from 'protobufjs'
 
 let _proto: Root | undefined = undefined
 
@@ -10,7 +10,7 @@ let _proto: Root | undefined = undefined
  * @param dir 文件路径
  * @returns Root namespace
  */
-function loadProtoDir(dir: string) {
+function loadProto(dir: string) {
   const files = fs.readdirSync(dir)
   // todo 优化成flatMap
   const protoFiles = files
@@ -61,4 +61,4 @@ function decode<T = { [k: string]: unknown }>(data: Buffer, type: string): T {
   return Message.decode(data).toJSON() as T
 }
 
-export { loadProtoDir, lookup, encode, decode }
+export { loadProto, lookup, encode, decode }
