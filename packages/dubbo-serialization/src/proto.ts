@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
-import { loadSync, Root, Type } from 'protobufjs'
+import { loadSync, Root, Type, Message } from 'protobufjs'
 
 let _proto: Root | undefined = undefined
 
@@ -25,7 +25,7 @@ function loadProtoDir(dir: string) {
  * @param typeName
  * @returns Reflected message type
  */
-function lookupType(typeName: string): Type {
+function lookup(typeName: string): Type {
   if (!_.isString(typeName)) {
     throw new TypeError('typeName must be a string')
   }
@@ -37,17 +37,28 @@ function lookupType(typeName: string): Type {
 
 /**
  * Creates a new message of this type using the specified properties.
- * @param protoName 名称
  * @param params 参数
+ * @param protoName 名称
  * @returns 类型
  */
-function create(protoName: string, params: any) {
+function encode<T extends { [k: string]: unknown }>(data: T, type: string) {
   // 根据protoName找到对应的message
-  const Message = lookupType(protoName)
+  const Message = lookup(type)
   if (!Message) {
-    throw new TypeError(`${protoName} not found, please check it again`)
+    throw new TypeError(`${type} not found, please check it again`)
   }
-  return Message.create(params)
+  return Message.encode(Message.create(data)).finish()
 }
 
-export { loadProtoDir, lookupType, create }
+/**
+ *
+ * @param data 解码数据
+ * @param type pb类型
+ * @returns
+ */
+function decode<T = { [k: string]: unknown }>(data: Buffer, type: string): T {
+  const Message = lookup(type)
+  return Message.decode(data).toJSON() as T
+}
+
+export { loadProtoDir, lookup, encode, decode }

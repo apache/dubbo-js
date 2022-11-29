@@ -15,4 +15,6 @@
  * limitations under the License.
  */
 
-console.log('dubbo-serialization')
+import { loadProtoDir, lookup, encode, decode } from './proto'
+
+export { loadProtoDir, lookup, encode, decode }
