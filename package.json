@@ -20,6 +20,7 @@
     "@types/node": "latest",
     "@typescript-eslint/eslint-plugin": "^5.43.0",
     "@typescript-eslint/parser": "^5.43.0",
+    "@vitest/coverage-istanbul": "^0.25.3",
     "eslint": "^8.28.0",
     "husky": "^6.0.0",
     "nx": "14.8.3",

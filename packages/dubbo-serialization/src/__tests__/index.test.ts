@@ -15,8 +15,44 @@
  * limitations under the License.
  */
 
-describe(`dubbo-serialization test suites`, () => {
-  it('test 1+1=2', () => {
-    expect(1 + 1).toBe(2)
+import { loadProto, lookup, encode, decode } from '..'
+import { Type } from 'protobufjs'
+import path from 'path'
+
+describe('test serialization', () => {
+  test('loadProto', () => {
+    const root = loadProto(path.join(__dirname, './proto'))
+    // test current folder
+    expect(root.lookupType('test.Test1')).toBeInstanceOf(Type)
+    // test sub folder
+    expect(root.lookupType('sub.Test1')).toBeInstanceOf(Type)
+  })
+
+  test('lookup', () => {
+    // validate param type
+    expect(() => lookup(1)).toThrowError(/^typeName must be a string$/)
+    // TODO : load proto before lookup
+    // expect(() => lookup('')).toThrowError(/^Please load proto before lookup$/)
+    // lookupType
+    const root = loadProto(path.join(__dirname, './proto'))
+    expect(root.lookupType('test.Test1')).toBeInstanceOf(Type)
+  })
+
+  test('encode', () => {
+    loadProto(path.join(__dirname, './proto'))
+    // encode error type
+    expect(() => encode({}, 'test.Test2')).toThrowError(
+      /^no such type: test.Test2$/
+    )
+    expect(encode({ field1: '1' }, 'test.Test1')).toBeInstanceOf(Buffer)
+  })
+
+  test('decode', () => {
+    loadProto(path.join(__dirname, './proto'))
+    const msg = encode({ field1: '1' }, 'test.Test1')
+    // correct
+    expect(decode(msg, 'test.Test1')).toMatchObject({ field1: '1' })
+    // error
+    expect(decode(msg, 'test.Test1')).not.toMatchObject({ field1: '2' })
   })
 })

@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import glob from 'glob'
 import _ from 'lodash'
 import { loadSync, Root, Type } from 'protobufjs'
 
@@ -11,12 +12,8 @@ let _proto: Root | undefined = undefined
  * @returns Root namespace
  */
 function loadProto(dir: string) {
-  const files = fs.readdirSync(dir)
-  // todo 优化成flatMap
-  const protoFiles = files
-    .filter((fileName) => fileName.endsWith('.proto'))
-    .map((fileName) => path.join(dir, fileName))
-  _proto = loadSync(protoFiles)
+  const files = glob.sync(path.join(dir, '**/*.proto'))
+  _proto = loadSync(files)
   return _proto
 }
 
@@ -44,9 +41,6 @@ function lookup(typeName: string): Type {
 function encode<T extends { [k: string]: unknown }>(data: T, type: string) {
   // 根据protoName找到对应的message
   const Message = lookup(type)
-  if (!Message) {
-    throw new TypeError(`${type} not found, please check it again`)
-  }
   return Message.encode(Message.create(data)).finish()
 }
 
