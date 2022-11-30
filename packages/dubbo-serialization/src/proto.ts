@@ -1,10 +1,8 @@
-import fs from 'fs'
-import path from 'path'
+import path from 'node:path'
 import glob from 'glob'
-import _ from 'lodash'
 import { loadSync, Root, Type } from 'protobufjs'
 
-let _proto: Root | undefined = undefined
+let protoCache: Root | undefined = undefined
 
 /**
  * 加载所有的proto文件
@@ -13,8 +11,8 @@ let _proto: Root | undefined = undefined
  */
 function loadProto(dir: string) {
   const files = glob.sync(path.join(dir, '**/*.proto'))
-  _proto = loadSync(files)
-  return _proto
+  protoCache = loadSync(files)
+  return protoCache
 }
 
 /**
@@ -23,13 +21,13 @@ function loadProto(dir: string) {
  * @returns Reflected message type
  */
 function lookup(typeName: string): Type {
-  if (!_.isString(typeName)) {
-    throw new TypeError('typeName must be a string')
-  }
-  if (!_proto) {
+  if (!protoCache) {
     throw new TypeError('Please load proto before lookup')
   }
-  return _proto.lookupType(typeName)
+  if (typeof typeName !== 'string') {
+    throw new TypeError('typeName must be a string')
+  }
+  return protoCache.lookupType(typeName)
 }
 
 /**

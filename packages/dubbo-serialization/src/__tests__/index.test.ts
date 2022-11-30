@@ -17,7 +17,7 @@
 
 import { loadProto, lookup, encode, decode } from '..'
 import { Type } from 'protobufjs'
-import path from 'path'
+import path from 'node:path'
 
 describe('test serialization', () => {
   test('loadProto', () => {
