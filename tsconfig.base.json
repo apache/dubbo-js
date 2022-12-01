@@ -3,22 +3,19 @@
   "compilerOptions": {
     "strict": true,
     "target": "es2017",
+    "lib": ["ESNext"],
     "module": "CommonJS",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "esModuleInterop": true,
-
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-
     "baseUrl": "./packages",
     "paths": {},
-
     "types": ["vitest/globals"]
   },
   "exclude": ["node_modules", "tmp", "lint", "docs"]

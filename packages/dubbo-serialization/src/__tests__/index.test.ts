@@ -21,7 +21,7 @@ import path from 'node:path'
 
 describe('test serialization', () => {
   test('loadProto', () => {
-    const root = loadProto(path.join(__dirname, './proto'))
+    const root = loadProto(path.join(__dirname, 'proto'))
     // test current folder
     expect(root.lookupType('test.Test1')).toBeInstanceOf(Type)
     // test sub folder
@@ -39,7 +39,7 @@ describe('test serialization', () => {
   })
 
   test('encode', () => {
-    loadProto(path.join(__dirname, './proto'))
+    loadProto(path.join(__dirname, 'proto'))
     // encode error type
     expect(() => encode({}, 'test.Test2')).toThrowError(
       /^no such type: test.Test2$/
@@ -48,7 +48,7 @@ describe('test serialization', () => {
   })
 
   test('decode', () => {
-    loadProto(path.join(__dirname, './proto'))
+    loadProto(path.join(__dirname, 'proto'))
     const msg = encode({ field1: '1' }, 'test.Test1')
     // correct
     expect(decode(msg, 'test.Test1')).toMatchObject({ field1: '1' })
