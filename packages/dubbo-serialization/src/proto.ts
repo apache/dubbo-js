@@ -10,7 +10,7 @@ let protoCache: Root | undefined = undefined
  * @returns Root namespace
  */
 function loadProto(dir: string) {
-  const files = glob.sync(path.join(dir, '**/*.proto'))
+  const files = glob.sync(path.join(dir, '**', '*.proto'))
   protoCache = loadSync(files)
   return protoCache
 }

@@ -34,7 +34,7 @@ describe('test serialization', () => {
     // TODO : load proto before lookup
     // expect(() => lookup('')).toThrowError(/^Please load proto before lookup$/)
     // lookupType
-    const root = loadProto(path.join(__dirname, './proto'))
+    const root = loadProto(path.join(__dirname, 'proto'))
     expect(root.lookupType('test.Test1')).toBeInstanceOf(Type)
   })
 
