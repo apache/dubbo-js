@@ -3,14 +3,14 @@ export type TConsumerUrl = string
 
 export interface IDubboProps {
   // path
-  path:string
+  path: string
   //注册到dubbo容器服务对象
   services: { [name: string]: any }
 }
 
-export interface IMethodSetting {
-  maxTimeout?: number
-  maxRetryCount?: number
+export type IDubboMethod = {
+  path: string
+  method: Function
 }
 
 export interface IDubboService {

@@ -14,62 +14,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-interface DubboClientProp {
-  services: { [name: string]: any }
+interface IstubServices {
+  [name: string]: any
 }
-  import debug from 'debug'
-  import Context from './context'
-  import { IDubboService, TDubboService } from './types'
-  import compose from 'koa-compose'
-  
-  const log = debug('dubbo:bootstrap')  
-  export default class DubboClient<T = object> {
-    // private status
-    public readonly services: TDubboService<T>
-    private readonly middlewares: Array<any>
-    constructor(props: any) {
-      // init service
-      this.services = <TDubboService<T>>{}
-      this.middlewares = []
-      this.collectService(props.services)
-    }
-    // 返回元数据
-    proxyService<T>(service: IDubboService): T {
-      return service as T
-    }
-  
-    // 收集servive
-    private collectService(services: { [name: string]: any }) {
-      // 基于配置获取元信息
-      for (let [name, serviceProxy] of Object.entries(services)) {
-        const service = serviceProxy(this)
-        service.shortName = name
-        this.services[name] = this.composeService(service)
-      }
-    }
-    // 
-    private handleInvoke = async (ctx: Context) => {
-      // check beehive queue
-      ctx.body = await this.queue.push(ctx)
-    }
-
-    private composeService(service: IDubboService) {
-      const { path, methods } = service
-      const proxyMethods: {[name:string]:any} = new Object()
-      for (let [name, method] of Object.entries(methods)) {
-        proxyMethods[name] =async (args: Array<any>) => {
-          const ctx = new Context()
-          ctx.path = path
-          ctx.args = args || []
-          // 合成执行方法
-          const fn = compose([...this.middlewares],this.handleInvoke)
-          await fn(ctx)
-          return ctx.body
-        }
-      }
-      return proxyMethods
-    }
+import Context from './context'
+import { IDubboMethod } from './types'
+interface Iservice {
+  methodName: string
+  method: any
+}
+export default class DubboClient<T = object> {
+  // private status
+  public services
+  // private readonly middlewares: Array<any>
+  constructor(services: IstubServices) {
+    // init service
+    this.services = Object.create(null) as T
+    // this.middlewares = []
+    this.collectService(services)
   }
-  
-  //
-  
+
+  // collect servive
+  private collectService(services: { [name: string]: any }) {
+    // get method
+    const proxy = Object.create(null)
+    for (let [name, service] of Object.entries(services)) {
+      for (let [methodName, method] of Object.entries(service)) {
+        proxy[methodName] = this.composeService(method as IDubboMethod)
+      }
+    }
+    this.services = proxy
+    return proxy
+  }
+  // init ctx
+  private async composeService(method: IDubboMethod) {
+    const ctx = new Context()
+    ctx.method = method.method
+    ctx.setPath(method.path)
+    // ctx.resolve = function ()
+    // ctx.body = await dubboTranport.send(ctx)
+    return ctx.body
+  }
+}
