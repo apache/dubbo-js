@@ -4,10 +4,16 @@
   "main": "./lib/index.js",
   "types": "./lib/typings/index.d.ts",
   "description": "apache dubbo3 client",
+  "type": "module",
   "keywords": [
     "dubbo3",
     "nodejs",
     "dubbo-serialization"
   ],
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@types/glob": "^8.0.0",
+    "glob": "^8.0.3",
+    "protobufjs": "^7.1.2"
+  }
 }

@@ -20,6 +20,10 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   test: {
-    globals: true
+    globals: true,
+    coverage: {
+      provider: 'istanbul',
+      reporter: ['text', 'json', 'html']
+    }
   }
 })
