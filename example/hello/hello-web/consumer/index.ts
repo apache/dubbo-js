@@ -1,4 +1,4 @@
-import { Dubbo } from 'dubbo3-client'
+import { DubboClient } from 'apahce-dubbo3-client'
 
 export interface IHelloService {
   sayHello(
@@ -11,15 +11,14 @@ export interface IHelloService {
   getUser(id:number):Promise<string>
 }
 
-export const HelloService = (b:Dubbo):IHelloService => {
+export const HelloService = (b:DubboClient):IHelloService => {
   b.proxyService({
     name:'HelloService',
     methods:{
-      sayHello( id:number, name:string,email:string, password:string){
+      async sayHello( id:number, name:string,email:string, password:string){
         return [id, name, email, password]
       },
-    
-      getUser(id:number){
+      async getUser(id:number){
         return [id]
       }
     }

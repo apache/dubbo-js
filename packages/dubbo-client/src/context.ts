@@ -1,20 +1,15 @@
 export default class Context {
-  path: string
-  method: Function
-  args: Array<any>
-  // final result
-  body: any
-  request: any
+  private path: string
+  private method: Function
+  private args: Array<any>
+  private body: any
   constructor() {
     this.path = ''
-    this.method = new Function()
+    this.method = ()=>{}
     this.args = []
     this.body = {
       res: {},
       err: null
-    }
-    this.request = {
-      requestId: 12
     }
   }
 
@@ -24,9 +19,9 @@ export default class Context {
 
   setPath(path: string) {
     this.path = path
+    return this
   }
 
-  //
 
   get serialization() {
     return JSON.stringify({
