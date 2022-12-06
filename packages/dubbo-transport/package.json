@@ -1,0 +1,20 @@
+{
+  "name": "apache-dubbo3-transport",
+  "version": "0.0.1",
+  "main": "./lib/index.js",
+  "types": "./lib/typings/index.d.ts",
+  "description": "apache dubbo3 transport",
+  "keywords": [
+    "dubbo3",
+    "nodejs",
+    "dubbo3-transport"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "debug": "^4.3.4",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.189"
+  }
+}
