@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-/// <reference types="vitest" />
-import { defineConfig } from 'vite'
+export interface DubboContext {
+  url: string
+  body?: Object | null
+  port: number
+}
 
-export default defineConfig({
-  test: {
-    globals: true,
-    coverage: {
-      provider: 'istanbul',
-      reporter: ['text', 'json', 'html']
-    }
-  }
-})
+export interface IDubboClientTransport {
+  send(msg: DubboContext): Promise<any>
+}
+
+export interface IDubboServerTransport {
+  // start(msg: DubboContext): Promise<any>
+}

@@ -15,15 +15,43 @@
  * limitations under the License.
  */
 
-/// <reference types="vitest" />
-import { defineConfig } from 'vite'
+import { debug } from 'debug'
+import http2 from 'node:http2'
+import { IDubboClientTransport, DubboContext } from './transport'
 
-export default defineConfig({
-  test: {
-    globals: true,
-    coverage: {
-      provider: 'istanbul',
-      reporter: ['text', 'json', 'html']
-    }
+// init log
+const log = debug('dubbo3:transport:client')
+
+export class DubboClientTransport implements IDubboClientTransport {
+  // transport 实例
+  private transport: any
+  private ctx: DubboContext
+
+  constructor(opts: DubboContext) {
+    this.ctx = opts
+    this.connect()
   }
-})
+
+  get url() {
+    return this.ctx.url
+  }
+
+  /**
+   * 建立连接
+   */
+  connect() {
+    this.transport = http2.connect(this.url)
+
+    this.transport.once('connect', () => {
+      log('has connected')
+    })
+  }
+
+  /**
+   * 发送消息
+   * @param msg
+   */
+  async send(msg: DubboContext): Promise<void> {
+    this.transport.request(msg)
+  }
+}

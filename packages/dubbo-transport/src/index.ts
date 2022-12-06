@@ -15,15 +15,7 @@
  * limitations under the License.
  */
 
-/// <reference types="vitest" />
-import { defineConfig } from 'vite'
+import { DubboClientTransport } from './client'
+import { DubboServerTransport } from './server'
 
-export default defineConfig({
-  test: {
-    globals: true,
-    coverage: {
-      provider: 'istanbul',
-      reporter: ['text', 'json', 'html']
-    }
-  }
-})
+export { DubboClientTransport, DubboServerTransport }

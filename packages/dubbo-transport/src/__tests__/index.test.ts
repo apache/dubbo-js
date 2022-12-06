@@ -15,15 +15,21 @@
  * limitations under the License.
  */
 
-/// <reference types="vitest" />
-import { defineConfig } from 'vite'
+import { DubboClientTransport, DubboServerTransport } from '../index'
 
-export default defineConfig({
-  test: {
-    globals: true,
-    coverage: {
-      provider: 'istanbul',
-      reporter: ['text', 'json', 'html']
-    }
-  }
+describe(`dubbo-transport`, () => {
+  it('test dubbo-transport', () => {
+    // 创建服务端 transport 实例
+    const server = new DubboServerTransport({
+      url: 'http://localhost:3600',
+      port: 3600
+    })
+    expect(server.port).toBe(3600)
+    // 创建客户端 transport 实例
+    const client = new DubboClientTransport({
+      url: 'http://localhost:3600',
+      port: 3600
+    })
+    expect(client.url).toBe('http://localhost:3600')
+  })
 })
