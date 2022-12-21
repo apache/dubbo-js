@@ -35,19 +35,19 @@ export const Mvp = {
   SayHello: {
     path: '/helloworld.Mvp/SayHello',
     encode(data: HelloRequest) {
-      return ` hellorequest在对象path路径 `
+      return 'helloworld.HelloRequest'
     },
     decode(data: any) {
-      return `helloreplay 的path路径 `
+      return 'helloworld.HelloReply'
     }
   },
   Check: {
     path: '/helloworld.Mvp/Check',
     encode(data: HealthCheckRequest) {
-      return ` HealthCheckRequest在对象path路径 `
+      return 'helloworld.HealthCheckRequest'
     },
     decode(data: any) {
-      return `helloreplay 的path路径 `
+      return 'helloworld.HealthCheckResponse'
     }
   }
 }
