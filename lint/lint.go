@@ -26,8 +26,9 @@ import (
 
 var (
 	//skip dir
-	rx      = regexp.MustCompile("node_modules|vendor|lib|target|__license__|__notice__|husky|.vitepress")
-	license = NewLicense()
+	rx          = regexp.MustCompile("node_modules|vendor|lib|target|__license__|__notice__|husky|.vitepress")
+	ignore_file = regexp.MustCompile(".eslintrc.js|pnpm-lock.yaml")
+	license     = NewLicense()
 	// lint notice
 	nl = &NoticeLinter{File: "./NOTICE"}
 	// lint license
@@ -38,7 +39,7 @@ var (
 				return !rx.MatchString(path)
 			},
 			FileFilter: func(path string) bool {
-				return license.support(path)
+				return !ignore_file.MatchString(path) && license.support(path)
 			},
 		},
 	}
@@ -80,7 +81,7 @@ func fix_all(nl *NoticeLinter, ll *LicenseLinter) {
 	fmt.Println(warn(fmt.Sprintf("fix cost: %v", time.Since(now))))
 }
 
-//lint lint all file
+// lint lint all file
 func lint(nl *NoticeLinter, ll *LicenseLinter) {
 	now := time.Now()
 	var err error
@@ -103,6 +104,7 @@ func lint(nl *NoticeLinter, ll *LicenseLinter) {
 	fmt.Println(success(fmt.Sprintf("lint cost: %v", time.Since(now))))
 
 	if err != nil {
-		os.Exit(1)
+		fmt.Println("you can use ./dj_lint -fix all")
+		panic(err)
 	}
 }
