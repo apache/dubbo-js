@@ -61,7 +61,7 @@ export default class Dubbo<T = object> {
     this.aggregationStubServices(this.props.services)
     //create scheduler
     this.scheduler = Scheduler.from(this.props.registry)
-    // register cosnumer info
+    // register consumer info
     this.props.registry
       .registerConsumers({
         application: this.props.application,
@@ -95,9 +95,11 @@ export default class Dubbo<T = object> {
    * @param fn
    */
   use(fn: Middleware<Context>) {
+    // chec
     if (typeof fn != 'function') {
       throw new TypeError('middleware must be a function')
     }
+
     log('use middleware %s', (fn as any)._name || fn.name || '-')
     this.middlewares.push(fn)
     return this
