@@ -18,6 +18,6 @@
 import * as util from './util'
 import { go } from './go'
 import { Retry } from './retry'
-import * as d$ from './constants'
+import * as d$ from './meta'
 
 export { util, go, Retry, d$ }
