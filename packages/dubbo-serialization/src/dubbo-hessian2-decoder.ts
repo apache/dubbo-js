@@ -87,7 +87,7 @@ export class Hessian2Decoder implements DubboDecoder {
       `------------------------------decode dubbo response ------------------`,
       bytes
     )
-    const buff = new ByteBuffer({ buffer: bytes }).resetCursor()
+    const buff = ByteBuffer.from({ buffer: bytes }).resetOffset()
     // type id
     const typeId = buff.readByte({ index: 2 })
     // set request and serialization flag.

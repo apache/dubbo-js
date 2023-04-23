@@ -49,7 +49,7 @@ export default class ByteBuffer {
   private readonly defaultAllocSize: number
 
   private buff: Buffer
-  private cursor: number
+  private offset: number
   private length: number
   private capacity: number
 
@@ -66,16 +66,33 @@ export default class ByteBuffer {
     if (prop.buffer) {
       this.buff = prop.buffer
 
-      this.cursor = this.buff.length - 1
+      this.offset = this.buff.length - 1
       this.length = this.buff.length
       this.capacity = Math.max(this.buff.length, this.defaultAllocSize)
     } else {
       this.buff = Buffer.alloc(this.defaultAllocSize)
 
-      this.cursor = 0
+      this.offset = 0
       this.length = 0
       this.capacity = this.defaultAllocSize
     }
+  }
+
+  /**
+   * static method to create a ByteBuffer instance
+   * @param prop byte buffer prop
+   * @returns
+   */
+  static from(prop?: ByteBufferProp) {
+    return new ByteBuffer(prop)
+  }
+
+  /**
+   * set offset is 0
+   */
+  resetOffset() {
+    this.offset = 0
+    return this
   }
 
   /**
@@ -83,13 +100,32 @@ export default class ByteBuffer {
    * @param idx
    * @returns
    */
-  resetCursor(idx: number = 0) {
-    this.cursor = idx || 0
+  setOffset(idx: number) {
+    if (idx < 0) {
+      throw new Error('offset must be greater than 0')
+    }
+
+    this.offset = idx || 0
     return this
   }
 
-  getCursor() {
-    return this.cursor
+  /**
+   * get current offset
+   * @returns current offset
+   */
+  getOffset() {
+    return this.offset
+  }
+
+  /**
+   * skip offset
+   * @param len skip length
+   * @returns
+   */
+  skip(len: number) {
+    this.offset += len
+    this.checkCapacity(this.offset)
+    return this
   }
 
   /**
@@ -100,15 +136,15 @@ export default class ByteBuffer {
    */
   writeByte(val: number, prop?: ReadWriteProp) {
     const opt = this.defaultReadWriteProp(prop)
-    this.cursor = opt.index
-    const next = this.cursor + 1
+    this.offset = opt.index
+    const next = this.offset + 1
     this.checkCapacity(next)
 
     opt.unsigned
-      ? this.buff.writeUInt8(val, this.cursor)
-      : this.buff.writeInt8(val, this.cursor)
+      ? this.buff.writeUInt8(val, this.offset)
+      : this.buff.writeInt8(val, this.offset)
 
-    this.cursor = next
+    this.offset = next
     if (next > this.length) {
       this.length = next
     }
@@ -122,9 +158,9 @@ export default class ByteBuffer {
    */
   readByte(prop?: ReadWriteProp) {
     const opt = this.defaultReadWriteProp(prop)
-    this.cursor = opt.index
-    const val = this.buff.readUInt8(this.cursor)
-    this.cursor++
+    this.offset = opt.index
+    const val = this.buff.readUInt8(this.offset)
+    this.offset++
     return val
   }
 
@@ -136,21 +172,21 @@ export default class ByteBuffer {
    */
   writeShort(val: number, prop?: ReadWriteProp) {
     const opt = this.defaultReadWriteProp(prop)
-    this.cursor = opt.index
-    const next = this.cursor + 2
+    this.offset = opt.index
+    const next = this.offset + 2
     this.checkCapacity(next)
 
     if (opt.endian === 'BE') {
       opt.unsigned
-        ? this.buff.writeInt16BE(val, this.cursor)
-        : this.buff.writeUInt16BE(val, this.cursor)
+        ? this.buff.writeInt16BE(val, this.offset)
+        : this.buff.writeUInt16BE(val, this.offset)
     } else {
       opt.unsigned
-        ? this.buff.writeInt16LE(val, this.cursor)
-        : this.buff.writeUint16LE(val, this.cursor)
+        ? this.buff.writeInt16LE(val, this.offset)
+        : this.buff.writeUint16LE(val, this.offset)
     }
 
-    this.cursor = next
+    this.offset = next
     if (next > this.length) {
       this.length = next
     }
@@ -165,20 +201,20 @@ export default class ByteBuffer {
    */
   readShort(prop?: ReadWriteProp) {
     const opt = this.defaultReadWriteProp(prop)
-    this.cursor = prop.index
+    this.offset = prop.index
 
     let val: number
     if (opt.endian === 'BE') {
       val = opt.unsigned
-        ? this.buff.readUInt16BE(this.cursor)
-        : this.buff.readInt16BE(this.cursor)
+        ? this.buff.readUInt16BE(this.offset)
+        : this.buff.readInt16BE(this.offset)
     } else {
       val = opt.unsigned
-        ? this.buff.readUint16LE(this.cursor)
-        : this.buff.readInt16LE(this.cursor)
+        ? this.buff.readUint16LE(this.offset)
+        : this.buff.readInt16LE(this.offset)
     }
 
-    this.cursor += 2
+    this.offset += 2
     return val
   }
 
@@ -190,21 +226,21 @@ export default class ByteBuffer {
    */
   writeInt(val: number, prop?: ReadWriteProp) {
     const opt = this.defaultReadWriteProp(prop)
-    this.cursor = opt.index
-    const next = this.cursor + 4
+    this.offset = opt.index
+    const next = this.offset + 4
     this.checkCapacity(next)
 
     if (opt.endian === 'BE') {
       opt.unsigned
-        ? this.buff.writeUInt32BE(val, this.cursor)
-        : this.buff.writeInt32BE(val, this.cursor)
+        ? this.buff.writeUInt32BE(val, this.offset)
+        : this.buff.writeInt32BE(val, this.offset)
     } else {
       opt.unsigned
-        ? this.buff.writeUInt32LE(val, this.cursor)
-        : this.buff.writeInt32LE(val, this.cursor)
+        ? this.buff.writeUInt32LE(val, this.offset)
+        : this.buff.writeInt32LE(val, this.offset)
     }
 
-    this.cursor = next
+    this.offset = next
     if (next > this.length) {
       this.length = next
     }
@@ -218,7 +254,7 @@ export default class ByteBuffer {
    */
   readInt(prop?: ReadWriteProp) {
     const opt = this.defaultReadWriteProp(prop)
-    this.cursor = opt.index
+    this.offset = opt.index
 
     let val: number
     if (opt.endian === 'BE') {
@@ -231,7 +267,7 @@ export default class ByteBuffer {
         : this.buff.readInt32LE(opt.index)
     }
 
-    this.cursor += 4
+    this.offset += 4
     return val
   }
 
@@ -243,22 +279,22 @@ export default class ByteBuffer {
    */
   writeLong(num: number, prop?: ReadWriteProp) {
     const opt = this.defaultReadWriteProp(prop)
-    this.cursor = opt.index
-    const next = this.cursor + 8
+    this.offset = opt.index
+    const next = this.offset + 8
 
     this.checkCapacity(next)
 
     if (opt.endian === 'BE') {
       opt.unsigned
-        ? this.buff.writeBigUInt64BE(BigInt(num), this.cursor)
-        : this.buff.writeBigInt64BE(BigInt(num), this.cursor)
+        ? this.buff.writeBigUInt64BE(BigInt(num), this.offset)
+        : this.buff.writeBigInt64BE(BigInt(num), this.offset)
     } else {
       opt.unsigned
-        ? this.buff.writeBigUInt64LE(BigInt(num), this.cursor)
-        : this.buff.writeBigInt64LE(BigInt(num), this.cursor)
+        ? this.buff.writeBigUInt64LE(BigInt(num), this.offset)
+        : this.buff.writeBigInt64LE(BigInt(num), this.offset)
     }
 
-    this.cursor = next
+    this.offset = next
     if (next > this.length) {
       this.length = next
     }
@@ -268,21 +304,21 @@ export default class ByteBuffer {
 
   readLong(prop?: ReadWriteProp) {
     const opt = this.defaultReadWriteProp(prop)
-    this.cursor = opt.index
+    this.offset = opt.index
 
     let val: bigint
 
     if (opt.endian === 'BE') {
       val = opt.unsigned
-        ? this.buff.readBigUInt64BE(this.cursor)
-        : this.buff.readBigInt64BE(this.cursor)
+        ? this.buff.readBigUInt64BE(this.offset)
+        : this.buff.readBigInt64BE(this.offset)
     } else {
       val = opt.unsigned
-        ? this.buff.readBigUInt64LE(this.cursor)
-        : this.buff.readBigUInt64LE(this.cursor)
+        ? this.buff.readBigUInt64LE(this.offset)
+        : this.buff.readBigUInt64LE(this.offset)
     }
 
-    this.cursor += 8
+    this.offset += 8
     return val
   }
 
@@ -294,13 +330,13 @@ export default class ByteBuffer {
    */
   writeBytes(val: Buffer, prop?: ReadWriteProp) {
     const opt = this.defaultReadWriteProp(prop)
-    this.cursor = opt.index
-    const next = this.cursor + val.length
+    this.offset = opt.index
+    const next = this.offset + val.length
 
     this.checkCapacity(next)
-    val.copy(this.buff, this.cursor, 0, val.length)
+    val.copy(this.buff, this.offset, 0, val.length)
 
-    this.cursor = next
+    this.offset = next
     if (next > this.length) {
       this.length = next
     }
@@ -309,13 +345,13 @@ export default class ByteBuffer {
   }
 
   concat(val: Buffer) {
-    this.cursor = this.length === 0 ? 0 : this.length - 1
-    const next = this.cursor + val.length
+    this.offset = this.length === 0 ? 0 : this.length - 1
+    const next = this.offset + val.length
 
     this.checkCapacity(next)
-    val.copy(this.buff, this.cursor, 0)
+    val.copy(this.buff, this.offset, 0)
 
-    this.cursor = next
+    this.offset = next
     if (next > this.length) {
       this.length = next
     }
@@ -329,17 +365,17 @@ export default class ByteBuffer {
    * @returns
    */
   readBytes(prop: { index?: number; size?: number } = {}) {
-    prop.index ||= this.cursor
+    prop.index ||= this.offset
     prop.size ||= this.buff.length
 
     if (typeof prop.index === 'undefined') {
-      prop.index = this.cursor
+      prop.index = this.offset
     }
 
-    const end = Math.min(this.cursor + prop.size, this.buff.length)
+    const end = Math.min(this.offset + prop.size, this.buff.length)
     const val = this.buff.subarray(prop.index, end)
 
-    this.cursor = end
+    this.offset = end
     return val
   }
 
@@ -409,10 +445,10 @@ export default class ByteBuffer {
 
     this.length -= end - start
     this.capacity -= end - start
-    if (this.cursor >= end) {
-      this.cursor -= end - start
-    } else if (this.cursor > start) {
-      this.cursor = start
+    if (this.offset >= end) {
+      this.offset -= end - start
+    } else if (this.offset > start) {
+      this.offset = start
     }
 
     return val
@@ -455,7 +491,7 @@ export default class ByteBuffer {
     prop.endian ||= 'BE'
     prop.unsigned ||= false
     if (typeof prop.index === 'undefined') {
-      prop.index = this.cursor
+      prop.index = this.offset
     }
     return prop as Required<ReadWriteProp>
   }
@@ -479,7 +515,7 @@ export default class ByteBuffer {
 
     // copy
     const buff = Buffer.alloc(this.capacity)
-    this.buff.copy(buff, 0, 0, this.cursor)
+    this.buff.copy(buff, 0, 0, this.offset)
     this.buff = buff
   }
 }

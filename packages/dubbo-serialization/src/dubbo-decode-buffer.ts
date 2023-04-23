@@ -22,9 +22,9 @@ import ByteBuffer from './byte-buffer'
 import { TDecodeBuffSubscriber } from './types'
 
 /**
- * 在并发的tcp数据传输中，会出现少包，粘包的现象
- * 好在tcp的传输是可以保证顺序的
- * 我们需要抽取一个buffer来统一处理这些数据
+ * In concurrent TCP data transmission, there may be phenomena such as packet loss and packet merging.
+ * Fortunately, TCP transmission can ensure order.
+ * We need to extract a buffer to handle these data uniformly.
  */
 export default class DecodeBuffer {
   private readonly remoteAddr: string
@@ -71,10 +71,10 @@ export default class DecodeBuffer {
       .writeBytes(data, {
         index: this.buff.getLength() > 0 ? this.buff.getLength() - 1 : 0
       })
-      .resetCursor(0)
+      .setOffset(0)
     this.log(
       `write buffer %d %d ->`,
-      this.buff.getCursor(),
+      this.buff.getOffset(),
       this.buff.getLength(),
       this.buff.buffer()
     )
@@ -118,7 +118,7 @@ export default class DecodeBuffer {
       const buff = this.buff.splice(0, packetLength)
       this.log(
         `after splice-> cursor %d`,
-        this.buff.getCursor(),
+        this.buff.getOffset(),
         this.buff.buffer()
       )
       this.subscriber(buff)

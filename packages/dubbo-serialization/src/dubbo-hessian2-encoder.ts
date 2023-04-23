@@ -108,7 +108,7 @@ export class Hessian2Encoder implements DubboEncoder {
   }
 
   /**
-   * build request attachmenet hashmap
+   * build request attachment hashmap
    * @param ctx
    * @returns
    */
@@ -139,7 +139,7 @@ export class Hessian2Encoder implements DubboEncoder {
   encodeDubboResponse(ctx: IResponseContext): Buffer {
     const body = this.encodeResponseBody(ctx)
     return (
-      new ByteBuffer({ defaultAllocSize: body.length + 16 })
+      ByteBuffer.from({ defaultAllocSize: body.length + 16 })
         // set magic number
         .writeShort(d$.DUBBO_MAGIC_HEADER)
         // set request and serialization flag.

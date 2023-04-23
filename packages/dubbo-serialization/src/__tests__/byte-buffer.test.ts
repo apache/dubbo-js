@@ -22,7 +22,7 @@ describe('byte buffer test suite', () => {
     {
       // test init buffer with no argument
       const buffer = new ByteBuffer()
-      expect(buffer.getCursor()).toEqual(0)
+      expect(buffer.getOffset()).toEqual(0)
       expect(buffer.getLength()).toEqual(0)
       expect(buffer.getCapacity()).toEqual(1024)
     }
@@ -30,7 +30,7 @@ describe('byte buffer test suite', () => {
     {
       // test init buffer with buffer
       const buffer = new ByteBuffer({ buffer: Buffer.from('abc') })
-      expect(buffer.getCursor()).toEqual(2)
+      expect(buffer.getOffset()).toEqual(2)
       expect(buffer.getLength()).toEqual(3)
       expect(buffer.getCapacity()).toEqual(1024)
     }
@@ -49,11 +49,14 @@ describe('byte buffer test suite', () => {
   it('test write custom offset', () => {
     const buf = new ByteBuffer()
       .writeBytes(Buffer.from('123'))
-      .writeByte(10, { index: 10 })
+      .skip(7)
+      .writeByte(10)
+      .skip(-2)
       .writeByte(9, { index: 8 })
-      .resetCursor(11)
+      .setOffset(11)
       .writeString('abc')
-      .writeBytes(Buffer.alloc(5).fill(1), { index: 0 })
+      .resetOffset()
+      .writeBytes(Buffer.alloc(5).fill(1))
       .buffer()
     expect(buf.length).toEqual(14)
     expect(buf.subarray(11, 14).toString()).toEqual('abc')
@@ -82,13 +85,13 @@ describe('byte buffer test suite', () => {
       .writeString('world')
       .buffer()
 
-    const reader = new ByteBuffer({ buffer }).resetCursor()
+    const reader = new ByteBuffer({ buffer }).resetOffset()
     expect(reader.readByte()).toEqual(1)
     expect(reader.readLong()).toEqual(BigInt(Number.MAX_SAFE_INTEGER))
     expect(reader.readShort({ unsigned: true })).toEqual(21)
     expect(reader.readInt({ unsigned: false })).toEqual(0x01010101)
     expect(reader.readBytes({ size: 4 }).toString()).toEqual('hell')
-    console.log(reader.getCursor())
+    console.log(reader.getOffset())
     expect(reader.readString()).toEqual('oworld')
   })
 
@@ -96,7 +99,7 @@ describe('byte buffer test suite', () => {
     {
       // test slice
       const buff = new ByteBuffer({ buffer: Buffer.alloc(10) })
-      buff.resetCursor()
+      buff.resetOffset()
       buff.writeInt(0x01020304)
       const sub = buff.slice(2, 4)
       expect(sub[0]).toEqual(0x03)
@@ -105,10 +108,9 @@ describe('byte buffer test suite', () => {
 
     {
       // test splice
-      const buff = new ByteBuffer({ buffer: Buffer.alloc(10) })
-      buff.resetCursor(0)
+      const buff = new ByteBuffer({ buffer: Buffer.alloc(10) }).resetOffset()
 
-      expect(buff.getCursor()).toBe(0)
+      expect(buff.getOffset()).toBe(0)
 
       buff.writeInt(0x01020304)
       buff.writeInt(0x05060708)
@@ -119,7 +121,7 @@ describe('byte buffer test suite', () => {
       expect(sub[0]).toEqual(0x01)
       expect(sub[1]).toEqual(0x02)
       expect(buff.getLength()).toEqual(8)
-      expect(buff.getCursor()).toEqual(8)
+      expect(buff.getOffset()).toEqual(8)
       expect(buff.getCapacity()).toEqual(1022)
 
       // slice from middle
@@ -131,7 +133,7 @@ describe('byte buffer test suite', () => {
       expect(sub1[0]).toEqual(0x04)
       expect(sub1[1]).toEqual(0x05)
 
-      expect(buff.getCursor()).toEqual(6)
+      expect(buff.getOffset()).toEqual(6)
       expect(buff.getLength()).toEqual(6)
     }
   })
