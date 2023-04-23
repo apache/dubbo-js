@@ -19,14 +19,14 @@ import {
   VariableStatementStructure
 } from 'ts-simple-ast'
 import debug from 'debug'
-import { IntepretHandle } from '../../handle'
+import { InterpretHandle } from '../../handle'
 import { IJClass } from '../../typings'
 
 const log = debug('j2t:core:toWrapperClass')
 
 export function toWrapperClass(
   typeDef: IJClass,
-  intepretHandle: IntepretHandle
+  intepretHandle: InterpretHandle
 ): VariableStatementStructure {
   log('调用转换方法 toWrapperClass::')
   if (typeDef.isEnum) {
@@ -39,7 +39,7 @@ export function toWrapperClass(
 
 function toTypeWrapper(
   typeDef: IJClass,
-  intepretHandle: IntepretHandle
+  intepretHandle: InterpretHandle
 ): VariableStatementStructure {
   let typeName = intepretHandle.getTypeInfo(typeDef.name).className
   let _methods = [],

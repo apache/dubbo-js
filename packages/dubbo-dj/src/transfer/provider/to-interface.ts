@@ -24,13 +24,13 @@ import debug from 'debug'
 import { toField } from '../bean/to-field'
 import { IJClass } from '../../typings'
 import { toMethod } from '../to-method'
-import { IntepretHandle } from '../../handle'
+import { InterpretHandle } from '../../handle'
 
 const log = debug('j2t:core:toInterface')
 
 export async function toInterface(
   typeDef: IJClass,
-  intepretHandle: IntepretHandle
+  intepretHandle: InterpretHandle
 ): Promise<InterfaceDeclarationStructure> {
   log('调用转换方法 toInterface::')
   let methods: MethodSignatureStructure[] = []

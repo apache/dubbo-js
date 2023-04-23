@@ -16,7 +16,7 @@
  */
 import debug from 'debug'
 import { SourceFile } from 'ts-simple-ast'
-import { IntepretHandle } from '../handle'
+import { InterpretHandle } from '../handle'
 import { toEnum } from './bean/to-enum'
 import { toBeanClass } from './bean/to-vo'
 import { toInterface } from './provider/to-interface'
@@ -32,7 +32,7 @@ const log = debug('j2t:core:toTypewcript')
  * @returns {SourceFile}
  */
 export async function toTypescript(
-  intepretHandle: IntepretHandle
+  intepretHandle: InterpretHandle
 ): Promise<SourceFile> {
   log('调用转换方法 toTypescript::', intepretHandle.classPath)
   let { sourceFile, astJava } = intepretHandle

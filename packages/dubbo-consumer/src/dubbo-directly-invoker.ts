@@ -16,7 +16,6 @@
  */
 
 import debug from 'debug'
-import { go } from 'apache-dubbo-common'
 import Context from './dubbo-context'
 import { STATUS } from './dubbo-status'
 import DubboTcpTransport from './dubbo-transport/dubbo-tcp-transport'
@@ -71,8 +70,6 @@ export default class DubboDirectlyInvoker {
    */
   close() {
     this.transport.close()
-
-    // free
     for (let ctx of this.queue.values()) {
       ctx.cleanTimeout()
     }
@@ -102,56 +99,54 @@ export default class DubboDirectlyInvoker {
 
     for (let methodName of Object.keys(methods)) {
       proxy[methodName] = (...args: Array<IHessianType>) => {
-        return go(
-          new Promise((resolve, reject) => {
-            const ctx = new Context()
-            ctx.resolve = resolve
-            ctx.reject = reject
+        return new Promise((resolve, reject) => {
+          const ctx = new Context()
+          ctx.resolve = resolve
+          ctx.reject = reject
 
-            // set method name
-            ctx.methodName = methodName
-            // set method args
-            const method = methods[methodName]
-            ctx.methodArgs = method.call(invokeParam, ...args) || []
+          // set method name
+          ctx.methodName = methodName
+          // set method args
+          const method = methods[methodName]
+          ctx.methodArgs = method.call(invokeParam, ...args) || []
 
-            // set invoke params
-            ctx.dubboVersion = this.props.dubboVersion
-            ctx.dubboInterface = dubboInterface
-            ctx.path = path || dubboInterface
-            ctx.group = group
-            ctx.timeout = timeout
-            ctx.version = version
-            ctx.attachments = attachments
-            ctx.isSupportedDubbox = isSupportedDubbox
+          // set invoke params
+          ctx.dubboVersion = this.props.dubboVersion
+          ctx.dubboInterface = dubboInterface
+          ctx.path = path || dubboInterface
+          ctx.group = group
+          ctx.timeout = timeout
+          ctx.version = version
+          ctx.attachments = attachments
+          ctx.isSupportedDubbox = isSupportedDubbox
 
-            //check param
-            //param should be hessian data type
-            if (!ctx.isRequestMethodArgsHessianType) {
-              log(
-                `${dubboInterface} method: ${methodName} not all arguments are valid hessian type`
-              )
-              log(`arguments->%O`, ctx.request.methodArgs)
-              reject(new Error('not all arguments are valid hessian type'))
-              return
-            }
+          //check param
+          //param should be hessian data type
+          if (!ctx.isRequestMethodArgsHessianType) {
+            log(
+              `${dubboInterface} method: ${methodName} not all arguments are valid hessian type`
+            )
+            log(`arguments->%O`, ctx.request.methodArgs)
+            reject(new Error('not all arguments are valid hessian type'))
+            return
+          }
 
-            //超时检测
-            ctx.timeout = this.props.dubboInvokeTimeout
+          //超时检测
+          ctx.timeout = this.props.dubboInvokeTimeout
 
-            ctx.setMaxTimeout(() => {
-              log(
-                `invoke service %d method %s timeout`,
-                ctx.dubboInterface,
-                ctx.methodName
-              )
-              console.log(this.queue)
-              this.queue.delete(ctx.requestId)
-            })
-
-            //add task to queue
-            this.handleInvoke(ctx)
+          ctx.setMaxTimeout(() => {
+            log(
+              `invoke service %d method %s timeout`,
+              ctx.dubboInterface,
+              ctx.methodName
+            )
+            console.log(this.queue)
+            this.queue.delete(ctx.requestId)
           })
-        )
+
+          //add task to queue
+          this.handleInvoke(ctx)
+        })
       }
     }
 
@@ -161,7 +156,7 @@ export default class DubboDirectlyInvoker {
   // ~~~~~~~~~~~~~~~~private~~~~~~~~~~~~~~~~~~~~~~~~
 
   /**
-   * consum queue task
+   * consume queue task
    */
   private consume({ requestId, err, res }: IDubboResponse) {
     const ctx = this.queue.get(requestId)

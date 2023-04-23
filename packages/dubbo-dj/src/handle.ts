@@ -29,7 +29,7 @@ const ast = new Ast()
 /**
  * Translations for individual files
  */
-export class IntepretHandle implements ITypeSearch {
+export class InterpretHandle implements ITypeSearch {
   constructor(classPath: string, interpreterRequest: Request) {
     this.classPath = classPath
     this.request = interpreterRequest
@@ -102,7 +102,7 @@ export class IntepretHandle implements ITypeSearch {
    * @param className
    * @returns {Promise<void>}
    */
-  public async addDenpend(classPath: string): Promise<IDependItem> {
+  public async addDepend(classPath: string): Promise<IDependItem> {
     if (!(await this.request.hasAst(classPath))) {
       log(`No class ast found:${classPath}`)
       return
@@ -126,7 +126,7 @@ export class IntepretHandle implements ITypeSearch {
       if (!this.request.isRecorded(classPath)) {
         this.request.record(classPath)
         try {
-          await new IntepretHandle(classPath, this.request).work()
+          await new InterpretHandle(classPath, this.request).work()
         } catch (err) {
           console.error('Error in translating file::', classPath, err.stack)
           throw err

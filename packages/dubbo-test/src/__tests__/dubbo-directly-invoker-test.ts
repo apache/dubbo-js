@@ -44,28 +44,25 @@ describe('dubbo invoker directly test suites', () => {
     const demoService = consumer.DemoProvider(dubbo as any)
     // test hello
     const hello = await demoService.sayHello(java.String('dubbo'))
-    expect(hello.res).toEqual('hello dubbo')
-    expect(hello.err).toBeNull()
+    expect(hello).toEqual('hello dubbo')
 
-    // test ehco
+    // test echo method
     const echo = await demoService.echo()
-    expect(echo.res).toEqual('pong')
-    expect(echo.err).toBeNull()
+    expect(echo).toEqual('pong')
 
     // test test method
     const test = await demoService.test()
-    expect(test.res).toBeNull()
-    expect(test.err).toBeNull()
+    expect(test).toBeNull()
 
     // test getUserInfo
-    const userInfo = await demoService.getUserInfo(
+    const user = await demoService.getUserInfo(
       new UserRequest({
         id: 1,
         name: 'dubbo-js',
         email: 'hufeng@apache.org'
       })
     )
-    expect(userInfo.res).toEqual({
+    expect(user).toEqual({
       info: { id: '1', name: 'dubbo-js', email: 'hufeng@apache.org' },
       status: 'ok'
     })

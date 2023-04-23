@@ -16,13 +16,12 @@
  */
 
 import { Dubbo } from 'apache-dubbo-consumer'
-import { argumentMap } from 'interpret-util'
-
+import { dj } from 'apache-dubbo-common'
 export interface IErrorProvider {
   errorTest(): Promise<void>
 }
 
-export const ErrorProviderWrapper = { errorTest: argumentMap }
+export const ErrorProviderWrapper = { errorTest: dj.argumentMap }
 
 export function ErrorProvider(dubbo: Dubbo): IErrorProvider {
   return dubbo.proxyService<IErrorProvider>({

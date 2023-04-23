@@ -16,14 +16,14 @@
  */
 
 import { Dubbo } from 'apache-dubbo-consumer'
-import { argumentMap } from 'interpret-util'
+import { dj } from 'apache-dubbo-common'
 import { TypeRequest } from '../TypeRequest'
 
 export interface IBasicTypeProvider {
   testBasicType(request: TypeRequest): Promise<TypeRequest>
 }
 
-export const BasicTypeProviderWrapper = { testBasicType: argumentMap }
+export const BasicTypeProviderWrapper = { testBasicType: dj.argumentMap }
 
 export function BasicTypeProvider(dubbo: Dubbo): IBasicTypeProvider {
   return dubbo.proxyService<IBasicTypeProvider>({

@@ -16,7 +16,7 @@
  */
 import debug from 'debug'
 import { readJson } from 'fs-extra'
-import { IntepretHandle } from './handle'
+import { InterpretHandle } from './handle'
 import { IConfig, IJarInfo, IJClass, TypeInfoI } from './typings'
 
 const log = debug('j2t:core:application')
@@ -24,38 +24,37 @@ const log = debug('j2t:core:application')
 /**
  *
  *Translation request for provider
- *
- *
  */
 export class Request {
+  private config: IConfig
+  private interpretedFiles: string[] = []
+  private jarInfo: IJarInfo
+  private typeInfo: Map<string, TypeInfoI> = new Map()
+
   constructor(config: IConfig) {
     log('Request init')
     this.config = config
   }
 
-  private config: IConfig
+  static from(config: IConfig) {
+    return new Request(config)
+  }
 
-  private interpretedFiles: string[] = []
-
-  private jarInfo: IJarInfo
-
-  private typeInfo: Map<string, TypeInfoI> = new Map()
-
-  public isRecorded(fileAbsPath) {
+  isRecorded(fileAbsPath) {
     return this.interpretedFiles.includes(fileAbsPath)
   }
 
-  public record(fileAbsPath) {
+  record(fileAbsPath) {
     this.interpretedFiles.push(fileAbsPath)
   }
 
-  public async work() {
+  async run() {
     log('read jar config', this.config.jarInfo)
     this.jarInfo = await readJson(this.config.jarInfo)
     await this.interpret()
   }
 
-  public async interpret() {
+  async interpret() {
     if (this.jarInfo.providers.length === 0) {
       console.error(
         `未匹配到接口,请验证java接口文件是否以${this.config.entry}开头,以${this.providerSuffix}结尾`
@@ -63,11 +62,11 @@ export class Request {
     }
     for (let providerPath of this.jarInfo.providers) {
       log('start transaction for provider::', providerPath)
-      await new IntepretHandle(providerPath, this).work()
+      await new InterpretHandle(providerPath, this).work()
     }
   }
 
-  public getAst(classPath: string): IJClass {
+  getAst(classPath: string): IJClass {
     if (this.jarInfo.classes[classPath]) {
       return this.jarInfo.classes[classPath]
     } else {
@@ -75,7 +74,7 @@ export class Request {
     }
   }
 
-  public hasAst(classPath: string): boolean {
+  hasAst(classPath: string): boolean {
     return !!this.jarInfo.classes[classPath]
   }
 

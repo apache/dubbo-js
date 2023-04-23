@@ -16,7 +16,7 @@
  */
 import debug from 'debug'
 import { EnumDeclarationStructure } from 'ts-simple-ast'
-import { IntepretHandle } from '../../handle'
+import { InterpretHandle } from '../../handle'
 import { IJClass } from '../../typings'
 
 const log = debug('j2t:core:toField')
@@ -29,7 +29,7 @@ const log = debug('j2t:core:toField')
 export function toEnum(
   className: string,
   enumDef: IJClass,
-  intepretHandle: IntepretHandle
+  intepretHandle: InterpretHandle
 ): EnumDeclarationStructure {
   log('转换 为枚举:%o', enumDef)
 

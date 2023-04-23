@@ -16,22 +16,16 @@
  */
 import { readJson } from 'fs-extra'
 import { isAbsolute, join } from 'path'
-import { to } from './to'
 import { IConfig } from './typings'
 
 export default class Config {
-  static fromConfigPath(
-    configPath: string
-  ): Promise<{ err: Error; res: IConfig }> {
-    return to<IConfig>(
-      readJson(configPath).then((config) => {
-        // Relative path to absolute path
-        config.output = Config.getAbsolutePath(config.output)
-        config.entryJarPath = Config.getAbsolutePath(config.entryJarPath)
-        config.libDirPath = Config.getAbsolutePath(config.libDirPath)
-        return config
-      })
-    )
+  static async fromConfigPath(configPath: string): Promise<IConfig> {
+    // Relative path to absolute path
+    const config = await readJson(configPath)
+    config.output = Config.getAbsolutePath(config.output)
+    config.entryJarPath = Config.getAbsolutePath(config.entryJarPath)
+    config.libDirPath = Config.getAbsolutePath(config.libDirPath)
+    return config
   }
 
   static getAbsolutePath(filePath: string) {

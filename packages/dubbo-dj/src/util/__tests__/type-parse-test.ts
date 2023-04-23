@@ -33,12 +33,13 @@ describe('基本类型转换', () => {
     isTypeParam: (typeName) => {
       return false
     },
-    addDenpend: async (classPath: string) => {
+
+    addDepend: async (classPath: string) => {
       let _typeInfo = typeInfo.get(classPath)
       return {
-        classPath: _typeInfo.classPath,
-        name: _typeInfo.className,
-        importName: _typeInfo.className
+        classPath: _typeInfo?.classPath || '',
+        name: _typeInfo?.className || '',
+        importName: _typeInfo?.className || ''
       }
     },
     hasAst: (classPath: string) => {
@@ -47,7 +48,7 @@ describe('基本类型转换', () => {
 
     getTypeInfo: (classPath: string) => {
       if (typeInfo.has(classPath)) {
-        return typeInfo.get(classPath)
+        return typeInfo.get(classPath) as TypeInfoI
       } else {
         return {
           isProvider: false,

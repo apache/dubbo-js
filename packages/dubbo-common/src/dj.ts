@@ -16,7 +16,7 @@
  */
 import debug from 'debug'
 
-const log = debug('j2t:core:paramEnhance')
+const log = debug('dubbo-dj')
 
 export function argumentMap(...args: Array<any>) {
   return args.map((argumentItem) =>
@@ -29,7 +29,7 @@ export function argumentMap(...args: Array<any>) {
 //删除对象中包含undefined 与null的值情况
 function paramEnhance(javaParams: Array<object> | object) {
   if (javaParams instanceof Array) {
-    for (let i = 0, ilen = javaParams.length; i < ilen; i++) {
+    for (let i = 0, len = javaParams.length; i < len; i++) {
       let itemParam = javaParams[i]
       minusRedundancy(itemParam)
     }

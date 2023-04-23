@@ -23,7 +23,7 @@ import {
   PropertyDeclarationStructure,
   TypeParameterDeclarationStructure
 } from 'ts-simple-ast'
-import { IntepretHandle } from '../../handle'
+import { InterpretHandle } from '../../handle'
 import { IJClass } from '../../typings'
 import { jType2Ts } from '../../util/type-parse'
 import { toField } from './to-field'
@@ -38,7 +38,7 @@ const log = debug('j2t:core:toBeanClass')
  */
 export async function toBeanClass(
   typeDef: IJClass,
-  intepretHandle: IntepretHandle
+  intepretHandle: InterpretHandle
 ): Promise<ClassDeclarationStructure> {
   log('调用转换方法 toBeanClass::')
   let typeName = intepretHandle.getTypeInfo(typeDef.name).className

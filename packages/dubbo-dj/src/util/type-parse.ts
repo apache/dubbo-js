@@ -157,9 +157,9 @@ export async function classPath2TypeName(
   if (result) {
     return result
   } else if (typeOptions.hasAst(classPath)) {
-    let denpendItem = await typeOptions.addDenpend(classPath)
-    if (denpendItem) {
-      return denpendItem.importName
+    let dependItem = await typeOptions.addDepend(classPath)
+    if (dependItem) {
+      return dependItem.importName
     } else {
       console.warn('warning: not find class Type for :' + classPath)
       return 'any'

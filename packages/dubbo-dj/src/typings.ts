@@ -38,7 +38,7 @@ export interface IConfig extends IDubboExtInfo {
 
 export interface ITypeSearch {
   //添加依赖
-  addDenpend: IAddDenpend
+  addDepend: IAddDepend
   //是否是类泛型参数
   isTypeParam: isTypeParam
   //在配置文件中是否包含抽象语法树
@@ -78,7 +78,7 @@ export interface IDependItem {
   name: string
   importName: string
 }
-export interface IAddDenpend {
+export interface IAddDepend {
   (classPath: string): Promise<IDependItem>
 }
 

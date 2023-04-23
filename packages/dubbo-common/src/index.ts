@@ -19,5 +19,6 @@ import * as util from './util'
 import { go } from './go'
 import { Retry } from './retry'
 import * as d$ from './meta'
+import * as dj from './dj'
 
-export { util, go, Retry, d$ }
+export { util, go, Retry, d$, dj }

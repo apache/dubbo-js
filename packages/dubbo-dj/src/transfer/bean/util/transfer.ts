@@ -16,7 +16,7 @@
  */
 import debug from 'debug'
 import { TypeParameterDeclarationStructure } from 'ts-simple-ast'
-import { IntepretHandle } from '../../../handle'
+import { InterpretHandle } from '../../../handle'
 import { IJClass, IJFieldPropers, ITypeSearch } from '../../../typings'
 import { jType2Ts } from '../../../util/type-parse'
 
@@ -238,7 +238,7 @@ export async function fields2CtrContent(
 /**
  *
  *
- * @param {IntepretHandle} intepretHandle
+ * @param {InterpretHandle} intepretHandle
  * @param {string} name
  * @param {IJFieldPropers} fieldPropers
  */

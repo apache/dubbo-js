@@ -16,7 +16,7 @@
  */
 import debug from 'debug'
 import { MethodSignatureStructure } from 'ts-simple-ast'
-import { IntepretHandle } from '../handle'
+import { InterpretHandle } from '../handle'
 import { IJMethodPropers } from '../typings'
 import { jType2Ts } from '../util/type-parse'
 
@@ -30,7 +30,7 @@ const log = debug('j2t:core:toMethod')
 export async function toMethod(
   methodName: string,
   methodDef: IJMethodPropers,
-  intepretHandle: IntepretHandle
+  intepretHandle: InterpretHandle
 ): Promise<MethodSignatureStructure> {
   log('调用转换方法 toMethod::', methodName, methodDef)
   let parameters = []
