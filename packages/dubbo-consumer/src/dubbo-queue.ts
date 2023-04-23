@@ -22,12 +22,13 @@ import { IDubboResponse, TRequestId } from './types'
 const log = debug('dubbo-client:queue')
 
 /**
- * Node的异步特性就会让我们在思考问题的时候，要转换一下思考问题的思维
- * 无论是zookeeper的连接，还是socket的创建都是异步的特性。
- * 但是请求的incoming的时候，整体可能还没有初始化结束，如果我们试图去阻塞
- * 就会导致整个编程架构很痛苦。
- * 所有简单的处理就是，每次处理请求incoming的时候先把请求参数推入队列，然后
- * 等待后面的资源初始化结束进行处理，如果超过超时时间就自动进行timeout超时处理
+ * The asynchronous nature of Node requires us to think differently when approaching problems.
+ * Features such as Zookeeper connections and socket creations are all asynchronous in nature.
+ * However, when incoming requests arrive, the program may not have completed initialization yet.
+ * If we try to block the program, it can lead to painful programming architecture.
+ * Therefore, a simple solution is to push the incoming request parameters into a queue and wait for
+ * the necessary resources to finish initializing before processing them. If the timeout exceeds,
+ * the program will automatically handle the timeout.
  */
 
 export default class Queue {
@@ -38,15 +39,26 @@ export default class Queue {
     this.queue = new Map()
   }
 
+  /**
+   * init queue
+   */
   static init() {
     return new Queue()
   }
 
+  /**
+   * clear queue by request id
+   * @param requestId request id
+   */
   private clear(requestId: TRequestId) {
     log(`clear queue #${requestId}`)
     this.queue.delete(requestId)
   }
 
+  /**
+   * push invoke context to queue
+   * @param ctx context
+   */
   push = (ctx: Context) => {
     //add queue
     const { requestId, dubboInterface } = ctx.request
@@ -61,12 +73,17 @@ export default class Queue {
   }
 
   /**
-   * 获取当前请求队列
+   * get request queue
    */
   get requestQueue() {
     return this.queue
   }
 
+  /**
+   * consume queue task
+   * @param msg invoke result
+   * @returns
+   */
   consume(msg: IDubboResponse) {
     log('consume -> %j', msg)
 
@@ -91,7 +108,7 @@ export default class Queue {
 
     // handle error
     if (err) {
-      //删除该属性，不然会导致JSON.Stringify失败
+      // Remove this property, otherwise it will cause JSON.stringify to fail.
       if (err['cause']) {
         delete err['cause']['cause']
       }
