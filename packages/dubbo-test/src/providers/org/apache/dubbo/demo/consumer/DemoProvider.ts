@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import { Dubbo, TDubboCallResult } from 'apache-dubbo-consumer'
+import { Dubbo } from 'apache-dubbo-consumer'
 import { argumentMap, JavaString } from 'interpret-util'
 import { UserRequest } from '../UserRequest'
 import { UserResponse } from '../UserResponse'
 
 export interface IDemoProvider {
-  sayHello(name: JavaString): TDubboCallResult<string>
-  test(): TDubboCallResult<void>
-  echo(): TDubboCallResult<string>
-  getUserInfo(request: UserRequest): TDubboCallResult<UserResponse>
+  sayHello(name: JavaString): Promise<string>
+  test(): Promise<void>
+  echo(): Promise<string>
+  getUserInfo(request: UserRequest): Promise<UserResponse>
 }
 
 export const DemoProviderWrapper = {

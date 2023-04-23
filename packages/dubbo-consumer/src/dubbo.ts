@@ -17,7 +17,7 @@
 
 import debug from 'debug'
 import compose from 'koa-compose'
-import { go, util } from 'apache-dubbo-common'
+import { util } from 'apache-dubbo-common'
 import config from './dubbo-config'
 import Context from './dubbo-context'
 import Scheduler from './dubbo-scheduler'
@@ -239,10 +239,11 @@ export default class Dubbo<T = object> {
     const fn = compose([...this.middlewares, this.handleRequestMiddleware])
     try {
       await fn(ctx)
+      return ctx.body
     } catch (err) {
       log(err)
+      throw err
     }
-    return ctx.body
   }
 
   /**
@@ -251,7 +252,7 @@ export default class Dubbo<T = object> {
    */
   private handleRequestMiddleware = async (ctx: Context) => {
     log('middleware:handle request -> %j', ctx.request)
-    ctx.body = await go(this.scheduler.handleDubboInvoke(ctx))
+    ctx.body = await this.scheduler.handleDubboInvoke(ctx)
     log('middleware:end request %j', ctx.body)
   }
 }

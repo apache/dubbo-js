@@ -48,14 +48,14 @@ describe('dubbo test suite', () => {
     const hello = await dubbo.service.DemoProvider.sayHello(
       java.String('dubbo')
     )
-    expect(hello.res).toEqual('hello dubbo')
-    expect(hello.err).toBeNull()
+    expect(hello).toEqual('hello dubbo')
+
     const echo = await dubbo.service.DemoProvider.echo()
-    expect(echo.res).toEqual('pong')
-    expect(echo.err).toBeNull()
+    expect(echo).toEqual('pong')
+
     const test = await dubbo.service.DemoProvider.test()
-    expect(test.res).toBeNull()
-    expect(test.err).toBeNull()
+    expect(test).toBeNull()
+
     const userInfo = await dubbo.service.DemoProvider.getUserInfo(
       new UserRequest({
         id: 1,
@@ -63,7 +63,7 @@ describe('dubbo test suite', () => {
         email: 'hufeng@apache.org'
       })
     )
-    expect(userInfo.res).toEqual({
+    expect(userInfo).toEqual({
       info: { id: '1', name: 'dubbo-js', email: 'hufeng@apache.org' },
       status: 'ok'
     })
@@ -76,17 +76,19 @@ describe('dubbo test suite', () => {
         map: { ping: 'pong' }
       })
     )
-    expect(basicType.res).toEqual({
+    expect(basicType).toEqual({
       bigDecimal: { value: '1.0' },
       map: { ping: 'pong' }
     })
-    expect(basicType.err).toBeNull()
   })
 
   it('test ErrorProvider', async () => {
-    const result = await dubbo.service.ErrorProvider.errorTest()
-    expect(result.res).toBeNull()
-    expect(result.err.message).toEqual('exception')
+    try {
+      const result = await dubbo.service.ErrorProvider.errorTest()
+      expect(result).toBeNull()
+    } catch (err) {
+      expect(err.message).toEqual('exception')
+    }
   })
 
   afterAll(async () => {

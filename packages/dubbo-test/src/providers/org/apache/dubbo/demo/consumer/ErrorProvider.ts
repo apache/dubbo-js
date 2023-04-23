@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import { Dubbo, TDubboCallResult } from 'apache-dubbo-consumer'
+import { Dubbo } from 'apache-dubbo-consumer'
 import { argumentMap } from 'interpret-util'
 
 export interface IErrorProvider {
-  errorTest(): TDubboCallResult<void>
+  errorTest(): Promise<void>
 }
 
 export const ErrorProviderWrapper = { errorTest: argumentMap }

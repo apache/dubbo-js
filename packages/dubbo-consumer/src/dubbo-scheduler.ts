@@ -132,7 +132,7 @@ export default class Scheduler {
     this.transportManager.close()
   }
 
-  // ~~~~~~~~~~~~~~~~~~~~~~~  handle transport mangager event ~~~~~~~~~~~~~~~
+  // ~~~~~~~~~~~~~~~~~~~~~~~  handle transport manager event ~~~~~~~~~~~~~~~
   /**
    * handle transport connect
    * @param param0

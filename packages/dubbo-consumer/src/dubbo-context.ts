@@ -20,7 +20,7 @@ import { util } from 'apache-dubbo-common'
 import cfg from './dubbo-config'
 import { id } from './dubbo-request-id'
 import { DubboInvokeTimeout } from './dubbo-err'
-import { IContextRequestParam, IDubboResult, IHessianType } from './types'
+import { IContextRequestParam, IHessianType } from './types'
 
 const log = debug('dubbo-client:ctx')
 
@@ -39,7 +39,7 @@ export default class Context<T = any> {
   /**
    * 当前dubbo返回的结果
    */
-  private _body: IDubboResult<T>
+  private _body: T
   /**
    * 扩展attachments,支持自定义一些属性可以放在dubbo的encoder底层协议的attachment字段中
    */
@@ -82,7 +82,7 @@ export default class Context<T = any> {
     this._traceId = ''
     this._invokedByHost = ''
     this._isSupportedDubbox = false
-    this._body = { err: null, res: null }
+    this._body = null
     this._application = { name: 'dubbo-js' }
     this._attachments = {}
     this._providerAttachments = {}
@@ -107,7 +107,7 @@ export default class Context<T = any> {
     return this._body
   }
 
-  set body(body: IDubboResult<any>) {
+  set body(body: T) {
     this._body = body
   }
 

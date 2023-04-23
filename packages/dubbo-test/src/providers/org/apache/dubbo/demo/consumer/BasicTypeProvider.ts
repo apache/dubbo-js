@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import { Dubbo, TDubboCallResult } from 'apache-dubbo-consumer'
+import { Dubbo } from 'apache-dubbo-consumer'
 import { argumentMap } from 'interpret-util'
 import { TypeRequest } from '../TypeRequest'
 
 export interface IBasicTypeProvider {
-  testBasicType(request: TypeRequest): TDubboCallResult<TypeRequest>
+  testBasicType(request: TypeRequest): Promise<TypeRequest>
 }
 
 export const BasicTypeProviderWrapper = { testBasicType: argumentMap }
