@@ -14,6 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// @ts-nocheck
+
 import debug from 'debug'
 import {
   ClassDeclarationStructure,

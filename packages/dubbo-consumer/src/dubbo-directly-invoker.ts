@@ -20,11 +20,13 @@ import Context from './dubbo-context'
 import { STATUS } from './dubbo-status'
 import DubboTcpTransport from './dubbo-transport/dubbo-tcp-transport'
 import {
+  TDubboServiceReturnType,
   IDirectlyDubboProps,
   IDubboResponse,
   IHessianType,
   IInvokeParam,
-  TRequestId
+  TRequestId,
+  TServiceThunk
 } from './types'
 
 const log = debug('dubbo-directly-invoker')
@@ -35,28 +37,32 @@ const log = debug('dubbo-directly-invoker')
  * usually used to test the service connectivity in development
  */
 
-export default class DubboDirectlyInvoker {
+export default class DubboDirectlyInvoker<T extends TServiceThunk = any> {
   private status: STATUS
-  private readonly props: IDirectlyDubboProps
   private transport: DubboTcpTransport
   private queue: Map<TRequestId, Context>
+
+  private readonly props: IDirectlyDubboProps<T>
+  public readonly service: TDubboServiceReturnType<T>
 
   /**
    * static factory method
    * @param props
    * @returns
    */
-  static from(props: IDirectlyDubboProps) {
+  static from<T extends TServiceThunk>(props: IDirectlyDubboProps<T>) {
     return new DubboDirectlyInvoker(props)
   }
 
   /**
    * constructor
    */
-  constructor(props: IDirectlyDubboProps) {
+  constructor(props: IDirectlyDubboProps<T>) {
     log('bootstrap....%O', this.props)
     this.props = props
     this.queue = new Map()
+
+    this.service = this.props.service(this as any)
 
     this.status = STATUS.PADDING
     this.transport = DubboTcpTransport.from(this.props.dubboHost)

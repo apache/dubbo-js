@@ -33,7 +33,7 @@ log('version => %s', require('../package.json').version)
  * 2. Initiate method call of remote dubbo service
  * 3. Serialization/deserialization of dubbo protocol
  * 4. Manage tcp connection and heartbeat
- * 5. The corresponding method of automatically proxying interface through proxy mechanism
+ * 5. The corresponding method of automatically proxy interface through proxy mechanism
  * 6. Provide quick test interface in direct connection mode
  * 7. Middleware
  * 8. Full link tracking of dubbo calls can be realized through zone-context
@@ -95,7 +95,7 @@ export default class Dubbo<T = object> {
    * @param fn
    */
   use(fn: Middleware<Context>) {
-    // chec
+    // check middleware
     if (typeof fn != 'function') {
       throw new TypeError('middleware must be a function')
     }

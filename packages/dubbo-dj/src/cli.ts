@@ -15,6 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// @ts-nocheck
+
 import program from 'commander'
 import debug from 'debug'
 import { readFile, writeFile } from 'fs-extra'

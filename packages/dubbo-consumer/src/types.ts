@@ -47,6 +47,10 @@ export type TDubboService<T> = {
   [k in keyof T]: T[k] extends (dubbo: Dubbo) => infer R ? R : any
 }
 
+export type TDubboServiceReturnType<T> = T extends (dubbo: Dubbo) => infer R
+  ? R
+  : any
+
 export interface DubboService {
   dubboInterface: string
   methods: { [methodName: string]: Function }
@@ -56,10 +60,12 @@ export interface DubboService {
   group?: string
 }
 
-export interface IDirectlyDubboProps {
+export type TServiceThunk = (dubbo: Dubbo) => any
+export interface IDirectlyDubboProps<T extends TServiceThunk> {
   dubboHost: string
   dubboVersion: string
   dubboInvokeTimeout?: number
+  service: T
 }
 
 export interface IHessianType {
