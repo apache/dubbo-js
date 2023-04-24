@@ -22,7 +22,13 @@ import config from './dubbo-config'
 import Context from './dubbo-context'
 import Scheduler from './dubbo-scheduler'
 import * as s from './dubbo-setting'
-import { IDubboProps, DubboService, Middleware, TDubboService } from './types'
+import {
+  IDubboProps,
+  DubboService,
+  Middleware,
+  TDubboService,
+  TProxyService
+} from './types'
 
 const log = debug('dubbo-client')
 log('version => %s', require('../package.json').version)
@@ -39,8 +45,8 @@ log('version => %s', require('../package.json').version)
  * 8. Full link tracking of dubbo calls can be realized through zone-context
  * 9. Centralized message management
  */
-export default class Dubbo<T = object> {
-  private readonly props: IDubboProps
+export default class Dubbo<T extends TProxyService = any> {
+  private readonly props: IDubboProps<T>
   private readonly scheduler: Scheduler
   private readonly middlewares: Array<Middleware<Context>> = []
   // collection dubbo service meta data
@@ -50,7 +56,7 @@ export default class Dubbo<T = object> {
 
   private dubboSetting: s.DubboSetting
 
-  constructor(props: IDubboProps) {
+  constructor(props: IDubboProps<T>) {
     // init props
     this.props = props
     // check dubbo register
@@ -77,7 +83,7 @@ export default class Dubbo<T = object> {
    * static factory method
    * @param props
    */
-  static from(props: IDubboProps) {
+  static from<T extends TProxyService>(props: IDubboProps<T>) {
     return new Dubbo(props)
   }
 
@@ -168,7 +174,7 @@ export default class Dubbo<T = object> {
    * {[key: string]: (dubbo): T => dubbo.proxyService<T>({...})}
    * @param services
    */
-  private aggregationStubServices(services: IDubboProps['services']) {
+  private aggregationStubServices(services: IDubboProps<T>['services']) {
     for (let [id, proxyService] of Object.entries(services)) {
       // call dubbo.proxyService
       const service = proxyService(this) as DubboService
@@ -184,6 +190,7 @@ export default class Dubbo<T = object> {
       // stub service => service
       service.group = meta.group
       service.version = meta.version
+      //@ts-ignore
       this.service[id] = this.stubService(service)
     }
   }

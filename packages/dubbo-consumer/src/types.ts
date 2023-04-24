@@ -29,13 +29,14 @@ export type TDubboServiceShortName = string
 export type TMatchThunk = (shortName: TDubboServiceShortName) => IDubboSetting
 
 export type Middleware<T> = (context: T, next: () => Promise<any>) => any
+export type TProxyService = { [name: string]: (dubbo: Dubbo) => any }
 
-export interface IDubboProps {
+export interface IDubboProps<T extends TProxyService> {
   // 当前的应用标识
   application: { name: string }
   registry: IRegistry<Object>
   //当前要注册到dubbo容器的服务对象
-  services: { [name: string]: (dubbo: Dubbo) => unknown }
+  services: T
   isSupportedDubbox?: boolean
   //dubbo调用最大超时时间单位为秒，默认5000
   dubboMaxTimeout?: number

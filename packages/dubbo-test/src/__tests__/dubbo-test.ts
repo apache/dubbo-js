@@ -35,7 +35,7 @@ describe('dubbo test suite', () => {
 
   beforeAll(async () => {
     await dubboService.ready()
-    dubbo = new Dubbo<typeof consumer>({
+    dubbo = new Dubbo({
       application: { name: 'dubbo-test' },
       registry: zk,
       services: consumer,
