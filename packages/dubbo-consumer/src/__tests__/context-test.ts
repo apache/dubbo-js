@@ -22,5 +22,8 @@ describe('context test suite', () => {
     const ctx = new Context()
     expect(ctx.requestId).toEqual(1)
     expect(ctx.application).toEqual({ name: 'dubbo-js' })
+
+    ctx.generic = true
+    expect(ctx.generic).toEqual(true)
   })
 })

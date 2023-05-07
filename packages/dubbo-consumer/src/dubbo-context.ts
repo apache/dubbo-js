@@ -78,6 +78,12 @@ export default class Context<T = any> {
    */
   private _reject: Function
 
+  /**
+   * 当前上下文是否是泛化调用
+   * @private
+   */
+  private _generic: boolean
+
   constructor() {
     this._traceId = ''
     this._invokedByHost = ''
@@ -321,5 +327,21 @@ export default class Context<T = any> {
   cleanTimeout() {
     log('clean requestId#%d timeout', this.requestId)
     clearTimeout(this.timer)
+  }
+
+  /**
+   * get generic
+   * @return boolean
+   */
+  get generic() {
+    return this._generic
+  }
+
+  /**
+   * set generic
+   * @param generic
+   */
+  set generic(generic) {
+    this._generic = generic
   }
 }
