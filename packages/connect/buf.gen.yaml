@@ -1,0 +1,7 @@
+# buf.gen.yaml defines a local generation template.
+# For details, see https://docs.buf.build/configuration/v1/buf-gen-yaml
+version: v1
+plugins:
+  - plugin: es
+    out: src/protocol-grpc/gen
+    opt: target=ts

@@ -1,0 +1,34 @@
+{
+  "name": "@bufbuild/connect-web",
+  "version": "0.10.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bufbuild/connect-es.git",
+    "directory": "packages/connect-web"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "clean": "rm -rf ./dist/cjs/* ./dist/esm/* ./dist/types/*",
+    "build": "npm run build:cjs && npm run build:esm+types",
+    "build:cjs": "tsc --project tsconfig.json --module commonjs --outDir ./dist/cjs && echo >./dist/cjs/package.json '{\"type\":\"commonjs\"}'",
+    "build:esm+types": "tsc --project tsconfig.json --module ES2015 --verbatimModuleSyntax --outDir ./dist/esm --declaration --declarationDir ./dist/types"
+  },
+  "main": "./dist/cjs/index.js",
+  "type": "module",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    "types": "./dist/types/index.d.ts",
+    "import": "./dist/esm/index.js",
+    "require": "./dist/cjs/index.js"
+  },
+  "dependencies": {
+    "@bufbuild/connect": "0.10.0"
+  },
+  "peerDependencies": {
+    "@bufbuild/protobuf": "^1.2.1"
+  },
+  "files": [
+    "dist/**"
+  ]
+}
