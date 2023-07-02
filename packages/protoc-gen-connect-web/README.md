@@ -1,21 +1,21 @@
-# @bufbuild/protoc-gen-connect-web
+# @apache/protoc-gen-dubbo-web
 
 This package is deprecated.
 
-The code generator `protoc-gen-connect-web` can now be used for Connect on the 
-Web, and for Connect on Node.js.  
-For a better fit, we have renamed it to `protoc-gen-connect-es` in 
-[v0.8.0](https://github.com/bufbuild/connect-es/releases/tag/v0.8.0). 
+The code generator `protoc-gen-dubbo-web` can now be used for Dubbo on the 
+Web, and for Dubbo on Node.js.  
+For a better fit, we have renamed it to `protoc-gen-dubbo-web` in 
+[v0.0.1](https://github.com/apache/dubbo-js/releases/tag/v0.0.1). 
 
 The generated code is actually exactly the same, so it is not necessary to 
 update right away, but we are not going to maintain this package anymore.
 
-Switching to [@bufbuild/protoc-gen-connect-es](https://www.npmjs.com/package/@bufbuild/protoc-gen-connect-es) 
+Switching to [@apache/protoc-gen-dubbo-web](https://www.npmjs.com/package/@apache/protoc-gen-dubbo-web) 
 is straight-forward:
 
 ```bash
-npm remove @bufbuild/protoc-gen-connect-web
-npm install @bufbuild/protoc-gen-connect-es
+npm remove @apache/protoc-gen-dubbo-web
+npm install @apache/protoc-gen-dubbo-web
 ```
 
 Update your `buf.gen.yaml`:

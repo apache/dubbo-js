@@ -1,18 +1,18 @@
-# @bufbuild/connect-node
+# @apache/dubbo-node
 
 Connect is a family of libraries for building and consuming APIs on different languages and platforms, and 
-[@bufbuild/connect](https://www.npmjs.com/package/@bufbuild/connect) brings type-safe APIs with Protobuf to 
+[@apache/dubbo](https://www.npmjs.com/package/@apache/dubbo) brings type-safe APIs with Protobuf to 
 TypeScript.
 
-`@bufbuild/connect-node` provides the following adapters for Node.js:
+`@apache/dubbo-node` provides the following adapters for Node.js:
 
 ### createConnectTransport()
 
 Lets your clients running on Node.js talk to a server with the Connect protocol:
 
 ```diff
-import { createPromiseClient } from "@bufbuild/connect";
-+ import { createConnectTransport } from "@bufbuild/connect-node";
+import { createPromiseClient } from "@apache/dubbo";
++ import { createConnectTransport } from "@apache/dubbo-node";
 import { ElizaService } from "./gen/eliza_connect.js";
 
 + // A transport for clients using the Connect protocol with Node.js `http` module
@@ -31,8 +31,8 @@ console.log(sentence) // you said: I feel happy.
 Lets your clients running on Node.js talk to a server with the gRPC protocol:
 
 ```diff
-import { createPromiseClient } from "@bufbuild/connect";
-+ import { createGrpcTransport } from "@bufbuild/connect-node";
+import { createPromiseClient } from "@apache/dubbo";
++ import { createGrpcTransport } from "@apache/dubbo-node";
 import { ElizaService } from "./gen/eliza_connect.js";
 
 + // A transport for clients using the gRPC protocol with Node.js `http2` module
@@ -51,8 +51,8 @@ console.log(sentence) // you said: I feel happy.
 Lets your clients running on Node.js talk to a server with the gRPC-web protocol:
 
 ```diff
-import { createPromiseClient } from "@bufbuild/connect";
-+ import { createGrpcWebTransport } from "@bufbuild/connect-node";
+import { createPromiseClient } from "@apache/dubbo";
++ import { createGrpcWebTransport } from "@apache/dubbo-node";
 import { ElizaService } from "./gen/eliza_connect.js";
 
 + // A transport for clients using the Connect protocol with Node.js `http` module
@@ -73,7 +73,7 @@ Run your Connect RPCs on the Node.js `http`, `https`, or `http2` modules.
 
 ```ts
 // connect.ts
-import { ConnectRouter } from "@bufbuild/connect";
+import { ConnectRouter } from "@apache/dubbo";
 
 export default function(router: ConnectRouter) {
   // implement rpc Say(SayRequest) returns (SayResponse)
@@ -87,7 +87,7 @@ export default function(router: ConnectRouter) {
 // server.ts
 import * as http2 from "http2";
 + import routes from "connect";
-+ import { connectNodeAdapter } from "@bufbuild/connect-node";
++ import { connectNodeAdapter } from "@apache/dubbo-node";
 
 http2.createServer(
 + connectNodeAdapter({ routes }) // responds with 404 for other requests
@@ -119,8 +119,8 @@ curl \
 Node.js with the gRPC protocol:
 
 ```ts
-import { createPromiseClient } from "@bufbuild/connect";
-import { createGrpcTransport } from "@bufbuild/connect-node";
+import { createPromiseClient } from "@apache/dubbo";
+import { createGrpcTransport } from "@apache/dubbo-node";
 import { ElizaService } from "./gen/eliza_connect.js";
 
 const transport = createGrpcTransport({
@@ -134,7 +134,7 @@ console.log(sentence) // you said: I feel happy.
 ```
 
 A client for the web browser actually looks identical to this example - it would
-simply use `createConnectTransport` from [@bufbuild/connect-web](https://www.npmjs.com/package/@bufbuild/connect-web) 
+simply use `createConnectTransport` from [@apache/dubbo-web](https://www.npmjs.com/package/@apache/dubbo-web) 
 instead.
 
 

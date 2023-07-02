@@ -1,10 +1,10 @@
-# @bufbuild/connect-express
+# @apache/dubbo-express
 
 Connect is a family of libraries for building and consuming APIs on different languages and platforms, and
-[@bufbuild/connect](https://www.npmjs.com/package/@bufbuild/connect) brings type-safe APIs with Protobuf to
+[@apache/dubbo](https://www.npmjs.com/package/@apache/dubbo) brings type-safe APIs with Protobuf to
 TypeScript.
 
-`@bufbuild/connect-express` provides a middleware for [Express](https://expressjs.com/), the fast, 
+`@apache/dubbo-express` provides a middleware for [Express](https://expressjs.com/), the fast, 
 unopinionated, minimalist web framework for Node.js
 
 ### expressConnectMiddleware()
@@ -13,7 +13,7 @@ Adds your Connect RPCs to an Express server.
 
 ```ts
 // connect.ts
-import { ConnectRouter } from "@bufbuild/connect";
+import { ConnectRouter } from "@apache/dubbo";
 
 export default function(router: ConnectRouter) {
   // implement rpc Say(SayRequest) returns (SayResponse)
@@ -28,7 +28,7 @@ export default function(router: ConnectRouter) {
 import http from "http";
 import express from "express";
 + import routes from "connect";
-+ import { expressConnectMiddleware } from "@bufbuild/connect-express";
++ import { expressConnectMiddleware } from "@apache/dubbo-express";
 
 const app = express();
 
@@ -50,11 +50,11 @@ curl \
     http://localhost:8080/buf.connect.demo.eliza.v1.ElizaService/Say
 ```
 
-Node.js with the gRPC-web protocol (using a transport from [@bufbuild/connect-node](https://www.npmjs.com/package/@bufbuild/connect-node)):
+Node.js with the gRPC-web protocol (using a transport from [@apache/dubbo-node](https://www.npmjs.com/package/@apache/dubbo-node)):
 
 ```ts
-import { createPromiseClient } from "@bufbuild/connect";
-import { createGrpcWebTransport } from "@bufbuild/connect-node";
+import { createPromiseClient } from "@apache/dubbo";
+import { createGrpcWebTransport } from "@apache/dubbo-node";
 import { ElizaService } from "./gen/eliza_connect.js";
 
 const transport = createGrpcWebTransport({
@@ -68,7 +68,7 @@ console.log(sentence) // you said: I feel happy.
 ```
 
 A client for the web browser actually looks identical to this example - it would
-simply use `createConnectTransport` from [@bufbuild/connect-web](https://www.npmjs.com/package/@bufbuild/connect-web) 
+simply use `createConnectTransport` from [@apache/dubbo-web](https://www.npmjs.com/package/@apache/dubbo-web) 
 instead.
 
 Note that support for gRPC is limited, since many gRPC clients require HTTP/2, 
