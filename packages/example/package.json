@@ -1,5 +1,5 @@
 {
-  "name": "@bufbuild/example",
+  "name": "@apache/dubbo-example",
   "private": true,
   "type": "module",
   "scripts": {

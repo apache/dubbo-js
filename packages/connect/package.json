@@ -1,11 +1,11 @@
 {
-  "name": "@bufbuild/connect",
-  "version": "0.10.0",
+  "name": "@apache/dubbo",
+  "version": "0.0.1",
   "description": "Type-safe APIs with Protobuf and TypeScript.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bufbuild/connect-es.git",
+    "url": "https://github.com/apache/dubbo-js.git",
     "directory": "packages/connect"
   },
   "sideEffects": false,

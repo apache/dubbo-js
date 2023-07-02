@@ -1,5 +1,5 @@
 {
-  "name": "@bufbuild/connect-web-test",
+  "name": "@apache/dubbo-web-test",
   "private": true,
   "scripts": {
     "clean": "rm -rf ./dist/esm/*",

@@ -1,5 +1,5 @@
 {
-  "name": "@bufbuild/connect-web-bench",
+  "name": "@apache/dubbo-web-bench",
   "private": true,
   "scripts": {
     "generate": "buf generate",
