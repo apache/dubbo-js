@@ -17,7 +17,7 @@ import {
   encodeBinaryHeader,
   createCallbackClient,
   createPromiseClient,
-} from "@bufbuild/connect";
+} from "@apache/dubbo";
 import { TestService } from "../gen/grpc/testing/test_connect.js";
 import { describeTransports } from "../helpers/crosstestserver.js";
 import {

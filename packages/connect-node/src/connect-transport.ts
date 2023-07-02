@@ -18,9 +18,9 @@ import type {
   JsonReadOptions,
   JsonWriteOptions,
 } from "@bufbuild/protobuf";
-import type { Interceptor, Transport } from "@bufbuild/connect";
-import type { Compression } from "@bufbuild/connect/protocol";
-import { createTransport } from "@bufbuild/connect/protocol-connect";
+import type { Interceptor, Transport } from "@apache/dubbo";
+import type { Compression } from "@apache/dubbo/protocol";
+import { createTransport } from "@apache/dubbo/protocol-connect";
 import {
   type DeprecatedNodeTransportOptions,
   type NodeTransportOptions,

@@ -13,17 +13,17 @@
 // limitations under the License.
 
 import type { JsonValue } from "@bufbuild/protobuf";
-import { Code, ConnectError, createConnectRouter } from "@bufbuild/connect";
-import type { ConnectRouter, ConnectRouterOptions } from "@bufbuild/connect";
-import * as protoConnect from "@bufbuild/connect/protocol-connect";
-import * as protoGrpcWeb from "@bufbuild/connect/protocol-grpc-web";
-import * as protoGrpc from "@bufbuild/connect/protocol-grpc";
+import { Code, ConnectError, createConnectRouter } from "@apache/dubbo";
+import type { ConnectRouter, ConnectRouterOptions } from "@apache/dubbo";
+import * as protoConnect from "@apache/dubbo/protocol-connect";
+import * as protoGrpcWeb from "@apache/dubbo/protocol-grpc-web";
+import * as protoGrpc from "@apache/dubbo/protocol-grpc";
 import {
   compressionBrotli,
   compressionGzip,
   universalRequestFromNodeRequest,
   universalResponseToNodeResponse,
-} from "@bufbuild/connect-node";
+} from "@apache/dubbo-node";
 import type { FastifyInstance } from "fastify/types/instance";
 
 interface FastifyConnectPluginOptions extends ConnectRouterOptions {
@@ -33,7 +33,7 @@ interface FastifyConnectPluginOptions extends ConnectRouterOptions {
    * Create a file `connect.ts` with a default export such as this:
    *
    * ```ts
-   * import {ConnectRouter} from "@bufbuild/connect";
+   * import {ConnectRouter} from "@apache/dubbo";
    *
    * export default (router: ConnectRouter) => {
    *   router.service(ElizaService, {});

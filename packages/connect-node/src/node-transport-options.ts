@@ -15,8 +15,8 @@
 import type {
   CommonTransportOptions,
   UniversalClientFn,
-} from "@bufbuild/connect/protocol";
-import { validateReadWriteMaxBytes } from "@bufbuild/connect/protocol";
+} from "@apache/dubbo/protocol";
+import { validateReadWriteMaxBytes } from "@apache/dubbo/protocol";
 import { compressionBrotli, compressionGzip } from "./compression.js";
 import {
   createNodeHttpClient,

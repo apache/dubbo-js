@@ -14,13 +14,13 @@
 
 import { TestService } from "../gen/grpc/testing/test_connect.js";
 import { createTestServers } from "../helpers/testserver.js";
-import { Code, ConnectError } from "@bufbuild/connect";
-import { createMethodUrl } from "@bufbuild/connect/protocol";
+import { Code, ConnectError } from "@apache/dubbo";
+import { createMethodUrl } from "@apache/dubbo/protocol";
 import {
   codeFromHttpStatus,
   endStreamFromJson,
   errorFromJsonBytes,
-} from "@bufbuild/connect/protocol-connect";
+} from "@apache/dubbo/protocol-connect";
 import { http2Request } from "../helpers/http2-request.js";
 
 describe("unsupported content encoding", () => {
@@ -28,7 +28,7 @@ describe("unsupported content encoding", () => {
   beforeAll(async () => await servers.start());
 
   servers.describeServers(
-    ["@bufbuild/connect-node (h2c)", "connect-go (h2)"],
+    ["@apache/dubbo-node (h2c)", "connect-go (h2)"],
     (server, serverName) => {
       const rejectUnauthorized = serverName !== "connect-go (h2)"; // TODO set up cert for go server correctly
 

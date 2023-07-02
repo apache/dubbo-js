@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createConnectRouter } from "@bufbuild/connect";
-import type { ConnectRouter, ConnectRouterOptions } from "@bufbuild/connect";
-import type { UniversalHandler } from "@bufbuild/connect/protocol";
+import { createConnectRouter } from "@apache/dubbo";
+import type { ConnectRouter, ConnectRouterOptions } from "@apache/dubbo";
+import type { UniversalHandler } from "@apache/dubbo/protocol";
 import {
   compressionBrotli,
   compressionGzip,
   universalRequestFromNodeRequest,
   universalResponseToNodeResponse,
-} from "@bufbuild/connect-node";
+} from "@apache/dubbo-node";
 import type { NextApiRequest, NextApiResponse, PageConfig } from "next";
 import type { JsonValue } from "@bufbuild/protobuf";
 
@@ -37,7 +37,7 @@ interface NextJsApiRouterOptions extends ConnectRouterOptions {
    * Create a file `connect.ts` with a default export such as this:
    *
    * ```ts
-   * import {ConnectRouter} from "@bufbuild/connect";
+   * import {ConnectRouter} from "@apache/dubbo";
    *
    * export default (router: ConnectRouter) => {
    *   router.service(ElizaService, {});

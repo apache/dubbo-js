@@ -17,7 +17,7 @@ import {
   ConnectError,
   createCallbackClient,
   createPromiseClient,
-} from "@bufbuild/connect";
+} from "@apache/dubbo";
 import { UnimplementedService } from "../gen/grpc/testing/test_connect.js";
 import { describeTransports } from "../helpers/crosstestserver.js";
 import { Empty } from "../gen/grpc/testing/empty_pb.js";

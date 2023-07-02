@@ -29,7 +29,7 @@ import type {
   Transport,
   UnaryRequest,
   UnaryResponse,
-} from "@bufbuild/connect";
+} from "@apache/dubbo";
 import {
   createClientMethodSerializers,
   createEnvelopeReadableStream,
@@ -37,14 +37,14 @@ import {
   encodeEnvelope,
   runStreamingCall,
   runUnaryCall,
-} from "@bufbuild/connect/protocol";
+} from "@apache/dubbo/protocol";
 import {
   requestHeader,
   trailerFlag,
   trailerParse,
   validateResponse,
   validateTrailer,
-} from "@bufbuild/connect/protocol-grpc-web";
+} from "@apache/dubbo/protocol-grpc-web";
 import { assertFetchApi } from "./assert-fetch-api.js";
 
 /**

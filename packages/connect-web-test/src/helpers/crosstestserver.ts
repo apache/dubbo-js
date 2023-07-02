@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { type Transport, createRouterTransport } from "@bufbuild/connect";
+import { type Transport, createRouterTransport } from "@apache/dubbo";
 import {
   createConnectTransport,
   createGrpcWebTransport,
-} from "@bufbuild/connect-web";
+} from "@apache/dubbo-web";
 import { testRoutes } from "./test-routes.js";
 
 // The following servers are available through crosstests:
@@ -35,7 +35,7 @@ const connectNodeH1BaseUrl = "http://127.0.0.1:8085";
 
 const crosstestTransports = {
   // gRPC-web
-  "@bufbuild/connect-web (gRPC-web, binary) gRPC-web against connect-go (h1)": (
+  "@apache/dubbo-web (gRPC-web, binary) gRPC-web against connect-go (h1)": (
     options?: Record<string, unknown>
   ) =>
     createGrpcWebTransport({
@@ -43,7 +43,7 @@ const crosstestTransports = {
       baseUrl: crossTestConnectGoH1BaseUrl,
       useBinaryFormat: true,
     }),
-  "@bufbuild/connect-web (gRPC-web, JSON) gRPC-web against connect-go (h1)": (
+  "@apache/dubbo-web (gRPC-web, JSON) gRPC-web against connect-go (h1)": (
     options?: Record<string, unknown>
   ) =>
     createGrpcWebTransport({
@@ -51,14 +51,14 @@ const crosstestTransports = {
       baseUrl: crossTestConnectGoH1BaseUrl,
       useBinaryFormat: false,
     }),
-  "@bufbuild/connect-web (gRPC-web, binary) gRPC-web against @bufbuild/connect-node (h1)":
+  "@apache/dubbo-web (gRPC-web, binary) gRPC-web against @apache/dubbo-node (h1)":
     (options?: Record<string, unknown>) =>
       createGrpcWebTransport({
         ...options,
         baseUrl: connectNodeH1BaseUrl,
         useBinaryFormat: true,
       }),
-  "@bufbuild/connect-web (gRPC-web, JSON) gRPC-web against @bufbuild/connect-node (h1)":
+  "@apache/dubbo-web (gRPC-web, JSON) gRPC-web against @apache/dubbo-node (h1)":
     (options?: Record<string, unknown>) =>
       createGrpcWebTransport({
         ...options,
@@ -66,7 +66,7 @@ const crosstestTransports = {
         useBinaryFormat: false,
       }),
   // Connect
-  "@bufbuild/connect-web (Connect, binary) against connect-go (h1)": (
+  "@apache/dubbo-web (Connect, binary) against connect-go (h1)": (
     options?: Record<string, unknown>
   ) =>
     createConnectTransport({
@@ -74,7 +74,7 @@ const crosstestTransports = {
       baseUrl: crossTestConnectGoH1BaseUrl,
       useBinaryFormat: true,
     }),
-  "@bufbuild/connect-web (Connect, JSON) against connect-go (h1)": (
+  "@apache/dubbo-web (Connect, JSON) against connect-go (h1)": (
     options?: Record<string, unknown>
   ) =>
     createConnectTransport({
@@ -82,14 +82,14 @@ const crosstestTransports = {
       baseUrl: crossTestConnectGoH1BaseUrl,
       useBinaryFormat: false,
     }),
-  "@bufbuild/connect-web (Connect, binary) against @bufbuild/connect-node (h1)":
+  "@apache/dubbo-web (Connect, binary) against @apache/dubbo-node (h1)":
     (options?: Record<string, unknown>) =>
       createConnectTransport({
         ...options,
         baseUrl: connectNodeH1BaseUrl,
         useBinaryFormat: true,
       }),
-  "@bufbuild/connect-web (Connect, JSON) against @bufbuild/connect-node (h1)": (
+  "@apache/dubbo-web (Connect, JSON) against @apache/dubbo-node (h1)": (
     options?: Record<string, unknown>
   ) =>
     createConnectTransport({
@@ -99,7 +99,7 @@ const crosstestTransports = {
     }),
 
   // ConnectRouter
-  "@bufbuild/connect-web (ConnectRouter, binary)": (
+  "@apache/dubbo-web (ConnectRouter, binary)": (
     options?: Record<string, unknown>
   ) =>
     createRouterTransport(testRoutes, {
@@ -109,7 +109,7 @@ const crosstestTransports = {
       },
     }),
 
-  "@bufbuild/connect-web (ConnectRouter, JSON)": (
+  "@apache/dubbo-web (ConnectRouter, JSON)": (
     options?: Record<string, unknown>
   ) =>
     createRouterTransport(testRoutes, {
