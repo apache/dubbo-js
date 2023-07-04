@@ -3,20 +3,31 @@
   "compilerOptions": {
     "strict": true,
     "target": "es2017",
-    "lib": ["ESNext"],
-    "module": "CommonJS",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
+    "lib": [
+      "ES2017",
+      // DOM for the fetch and streams API
+      "DOM",
+      // ES2018.AsyncIterable for AsyncIterator
+      "ES2018.AsyncIterable"
+    ],
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "useUnknownInCatchVariables": true,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
     "esModuleInterop": true,
-    "declaration": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
-    "baseUrl": "./packages",
-    "paths": {},
-    "types": ["vitest/globals"]
+    
+    // We need node's module resolution, so we do not have to skip lib checks
+    "moduleResolution": "Node",
+    "skipLibCheck": false
   },
   "exclude": ["node_modules", "tmp", "lint", "docs"]
 }
+
