@@ -1,10 +1,10 @@
-# @apache/dubbo-fastify
+# apache-dubbo-fastify
 
 Connect is a family of libraries for building and consuming APIs on different languages and platforms, and
-[@apache/dubbo](https://www.npmjs.com/package/@apache/dubbo) brings type-safe APIs with Protobuf to
+[apache-dubbo](https://www.npmjs.com/package/apache-dubbo) brings type-safe APIs with Protobuf to
 TypeScript.
 
-`@apache/dubbo-fastify` provides a plugin for [fastify](https://www.fastify.io/), the fast and 
+`apache-dubbo-fastify` provides a plugin for [fastify](https://www.fastify.io/), the fast and 
 low overhead web framework, for Node.js.
 
 ### fastifyConnectPlugin()
@@ -13,7 +13,7 @@ Plug your Connect RPCs into a fastify server.
 
 ```ts
 // connect.ts
-import { ConnectRouter } from "@apache/dubbo";
+import { ConnectRouter } from "apache-dubbo";
 
 export default function(router: ConnectRouter) {
   // implement rpc Say(SayRequest) returns (SayResponse)
@@ -27,7 +27,7 @@ export default function(router: ConnectRouter) {
 // server.ts
 import { fastify } from "fastify";
 + import routes from "connect";
-+ import { fastifyConnectPlugin } from "@apache/dubbo-fastify";
++ import { fastifyConnectPlugin } from "apache-dubbo-fastify";
 
 const server = fastify({
   http2: true,
@@ -64,11 +64,11 @@ curl \
     http://localhost:8080/buf.connect.demo.eliza.v1.ElizaService/Say
 ```
 
-Node.js with the gRPC protocol (using a transport from [@apache/dubbo-node](https://www.npmjs.com/package/@apache/dubbo-node)):
+Node.js with the gRPC protocol (using a transport from [apache-dubbo-node](https://www.npmjs.com/package/apache-dubbo-node)):
 
 ```ts
-import { createPromiseClient } from "@apache/dubbo";
-import { createGrpcTransport } from "@apache/dubbo-node";
+import { createPromiseClient } from "apache-dubbo";
+import { createGrpcTransport } from "apache-dubbo-node";
 import { ElizaService } from "./gen/eliza_connect.js";
 
 const transport = createGrpcTransport({
@@ -82,7 +82,7 @@ console.log(sentence) // you said: I feel happy.
 ```
 
 A client for the web browser actually looks identical to this example - it would
-simply use `createConnectTransport` from [@apache/dubbo-web](https://www.npmjs.com/package/@apache/dubbo-web) 
+simply use `createConnectTransport` from [apache-dubbo-web](https://www.npmjs.com/package/apache-dubbo-web) 
 instead.
 
 

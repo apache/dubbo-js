@@ -13,15 +13,15 @@
 // limitations under the License.
 
 import type { JsonValue } from "@bufbuild/protobuf";
-import { createConnectRouter, Code, ConnectError } from "@apache/dubbo";
-import type { ConnectRouter, ConnectRouterOptions } from "@apache/dubbo";
-import type { UniversalHandler } from "@apache/dubbo/protocol";
+import { createConnectRouter, Code, ConnectError } from "apache-dubbo";
+import type { ConnectRouter, ConnectRouterOptions } from "apache-dubbo";
+import type { UniversalHandler } from "apache-dubbo/protocol";
 import {
   compressionBrotli,
   compressionGzip,
   universalRequestFromNodeRequest,
   universalResponseToNodeResponse,
-} from "@apache/dubbo-node";
+} from "apache-dubbo-node";
 import type * as express from "express";
 
 interface ExpressConnectMiddlewareOptions extends ConnectRouterOptions {
@@ -31,7 +31,7 @@ interface ExpressConnectMiddlewareOptions extends ConnectRouterOptions {
    * Create a file `connect.ts` with a default export such as this:
    *
    * ```ts
-   * import {ConnectRouter} from "@apache/dubbo";
+   * import {ConnectRouter} from "apache-dubbo";
    *
    * export default (router: ConnectRouter) => {
    *   router.service(ElizaService, {});

@@ -1,6 +1,6 @@
 {
-  "name": "@apache/dubbo",
-  "version": "0.0.1",
+  "name": "apache-dubbo",
+  "version": "0.0.2",
   "description": "Type-safe APIs with Protobuf and TypeScript.",
   "license": "Apache-2.0",
   "repository": {
@@ -70,5 +70,8 @@
     "@types/jasmine": "^4.3.0",
     "jasmine": "^5.0.0",
     "undici": "^5.22.0"
-  }
+  },
+  "files": [
+    "dist/**"
+  ]
 }

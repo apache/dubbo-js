@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createCallbackClient, createPromiseClient } from "@apache/dubbo";
+import { createCallbackClient, createPromiseClient } from "apache-dubbo";
 import { TestService } from "../gen/grpc/testing/test_connect.js";
 import { describeTransports } from "../helpers/crosstestserver.js";
 import { SimpleRequest } from "../gen/grpc/testing/messages_pb.js";

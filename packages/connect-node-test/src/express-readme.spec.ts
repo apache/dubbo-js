@@ -14,10 +14,10 @@
 
 import * as http from "http";
 import { Message, MethodKind, proto3 } from "@bufbuild/protobuf";
-import { createPromiseClient } from "@apache/dubbo";
-import type { ConnectRouter } from "@apache/dubbo";
-import { expressConnectMiddleware } from "@apache/dubbo-express";
-import { createGrpcWebTransport } from "@apache/dubbo-node";
+import { createPromiseClient } from "apache-dubbo";
+import type { ConnectRouter } from "apache-dubbo";
+import { expressConnectMiddleware } from "apache-dubbo-express";
+import { createGrpcWebTransport } from "apache-dubbo-node";
 import { importExpress } from "./helpers/import-express.js";
 
 describe("express readme", function () {

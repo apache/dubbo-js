@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createPromiseClient } from "@apache/dubbo";
-import { createConnectTransport } from "@apache/dubbo-node";
+import { createPromiseClient } from "apache-dubbo";
+import { createConnectTransport } from "apache-dubbo-node";
 import { ElizaService } from "./gen/eliza_connect.js";
 import { stdin, stdout, env } from "process";
 import * as readline from "node:readline/promises";

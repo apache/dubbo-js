@@ -18,8 +18,8 @@ import {
   ConnectError,
   decodeBinaryHeader,
   encodeBinaryHeader,
-} from "@apache/dubbo";
-import type { ConnectRouter, ServiceImpl } from "@apache/dubbo";
+} from "apache-dubbo";
+import type { ConnectRouter, ServiceImpl } from "apache-dubbo";
 import { TestService } from "../gen/grpc/testing/test_connect.js";
 import type { StreamingOutputCallRequest } from "../gen/grpc/testing/messages_pb.js";
 import {

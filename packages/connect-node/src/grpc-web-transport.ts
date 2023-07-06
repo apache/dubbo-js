@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { Interceptor, Transport } from "@apache/dubbo";
-import type { Compression } from "@apache/dubbo/protocol";
-import { createTransport } from "@apache/dubbo/protocol-grpc-web";
+import type { Interceptor, Transport } from "apache-dubbo";
+import type { Compression } from "apache-dubbo/protocol";
+import { createTransport } from "apache-dubbo/protocol-grpc-web";
 import type {
   BinaryReadOptions,
   BinaryWriteOptions,

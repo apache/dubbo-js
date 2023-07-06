@@ -15,5 +15,5 @@
  * limitations under the License.
  */
 
-import { DubboClient } from '@apache/dubbo3-client'
+import { DubboClient } from 'apache-dubbo3-client'
 console.log(DubboClient)

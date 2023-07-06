@@ -1,4 +1,4 @@
-# @apache/protoc-gen-dubbo-es
+# apache-protoc-gen-dubbo-es
 
 The code generator for Dubbo, a simple library to work with servers and clients
 in ECMAScript with the type-safety of TypeScript.  It generates code that is compatible with
@@ -13,21 +13,21 @@ like [buf](https://github.com/bufbuild/buf) and [protoc](https://github.com/prot
 It generates clients as well as server definitions from your Protocol Buffer schema, and works in tandem with
 [@bufbuild/protoc-gen-es](https://www.npmjs.com/package/@bufbuild/protoc-gen-es),
 the code generator plugin for all Protocol Buffer base types. The code these two 
-plugins generate requires the runtime libraries [@apache/dubbo](https://www.npmjs.com/package/@apache/dubbo), 
+plugins generate requires the runtime libraries [apache-dubbo](https://www.npmjs.com/package/apache-dubbo), 
 and [@bufbuild/protobuf](https://www.npmjs.com/package/@bufbuild/protobuf).
 
 To install `buf`, the plugins and their runtime libraries, run:
 
 ```shell
-npm install --save-dev @bufbuild/buf @bufbuild/protoc-gen-es @apache/protoc-gen-dubbo-es
-npm install @apache/dubbo @bufbuild/protobuf
+npm install --save-dev @bufbuild/buf @bufbuild/protoc-gen-es apache-protoc-gen-dubbo-es
+npm install apache-dubbo @bufbuild/protobuf
 ```
 
 If you want to call Dubbo or gRPC-web services from a web browsers, make sure to install 
-[@apache/dubbo-web](https://www.npmjs.com/package/@apache/dubbo-web). If you want servers too, 
-install [@apache/dubbo-node](https://www.npmjs.com/package/@apache/dubbo-node),
-[@apache/dubbo-fastify](https://www.npmjs.com/package/@apache/dubbo-fastify), or
-[@apache/dubbo-express](https://www.npmjs.com/package/@apache/dubbo-express)
+[apache-dubbo-web](https://www.npmjs.com/package/apache-dubbo-web). If you want servers too, 
+install [apache-dubbo-node](https://www.npmjs.com/package/apache-dubbo-node),
+[apache-dubbo-fastify](https://www.npmjs.com/package/apache-dubbo-fastify), or
+[apache-dubbo-express](https://www.npmjs.com/package/apache-dubbo-express)
 
 We use peer dependencies to ensure that code generator and runtime library are
 compatible with each other. Note that npm installs them automatically, but yarn
@@ -113,7 +113,7 @@ bundler configurations. If you prefer to generate TypeScript, use `target=ts`.
 
 ### `import_extension=.js`
 
-By default, [protoc-gen-dubbo-es](https://www.npmjs.com/package/@apache/protoc-gen-dubbo-es)
+By default, [protoc-gen-dubbo-es](https://www.npmjs.com/package/apache-protoc-gen-dubbo-es)
 (and all other plugins based on [@bufbuild/protoplugin](https://www.npmjs.com/package/@bufbuild/protoplugin))
 uses a `.js` file extensions in import paths, even in TypeScript files.
 
@@ -128,7 +128,7 @@ in import paths with the given value. For example, set
 
 ### `keep_empty_files=true`
 
-By default, [protoc-gen-apache-es](https://www.npmjs.com/package/@apache/protoc-gen-dubbo-es)
+By default, [protoc-gen-dubbo-es](https://www.npmjs.com/package/apache-protoc-gen-dubbo-es)
 (and all other plugins based on [@bufbuild/protoplugin](https://www.npmjs.com/package/@bufbuild/protoplugin))
 omit empty files from the plugin output. This option disables pruning of
 empty files, to allow for smooth interoperation with Bazel and similar

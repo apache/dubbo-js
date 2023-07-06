@@ -1,5 +1,5 @@
 {
-  "name": "@apache/dubbo-example",
+  "name": "apache-dubbo-example",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,14 +12,14 @@
     "node": ">=16"
   },
   "dependencies": {
-    "@apache/dubbo-node": "^0.0.1",
-    "@apache/dubbo-web": "^0.0.1",
+    "apache-dubbo-node": "^0.0.2",
+    "apache-dubbo-web": "^0.0.2",
     "@bufbuild/protobuf": "^1.2.1",
     "tsx": "^3.12.7"
   },
   "devDependencies": {
     "@bufbuild/buf": "^1.18.0-1",
-    "@apache/protoc-gen-dubbo-es": "^0.0.1",
+    "apache-protoc-gen-dubbo-es": "^0.0.3",
     "@bufbuild/protoc-gen-es": "^1.2.1",
     "@types/express": "^4.17.15",
     "esbuild": "^0.16.12",

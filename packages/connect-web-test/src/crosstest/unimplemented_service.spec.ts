@@ -17,7 +17,7 @@ import {
   createCallbackClient,
   createPromiseClient,
   Code,
-} from "@apache/dubbo";
+} from "apache-dubbo";
 import { UnimplementedService } from "../gen/grpc/testing/test_connect.js";
 import { describeTransports } from "../helpers/crosstestserver.js";
 

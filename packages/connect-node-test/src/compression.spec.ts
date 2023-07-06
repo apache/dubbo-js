@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ConnectError } from "@apache/dubbo";
-import { compressionBrotli, compressionGzip } from "@apache/dubbo-node";
+import { ConnectError } from "apache-dubbo";
+import { compressionBrotli, compressionGzip } from "apache-dubbo-node";
 import * as zlib from "zlib";
 
 describe("compression", () => {

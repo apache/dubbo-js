@@ -30,8 +30,8 @@ import type {
   Transport,
   UnaryRequest,
   UnaryResponse,
-} from "@apache/dubbo";
-import { appendHeaders } from "@apache/dubbo";
+} from "apache-dubbo";
+import { appendHeaders } from "apache-dubbo";
 import {
   createClientMethodSerializers,
   createEnvelopeReadableStream,
@@ -40,7 +40,7 @@ import {
   encodeEnvelope,
   runStreamingCall,
   runUnaryCall,
-} from "@apache/dubbo/protocol";
+} from "apache-dubbo/protocol";
 import {
   endStreamFlag,
   endStreamFromJson,
@@ -49,7 +49,7 @@ import {
   trailerDemux,
   transformConnectPostToGetRequest,
   validateResponse,
-} from "@apache/dubbo/protocol-connect";
+} from "apache-dubbo/protocol-connect";
 import { assertFetchApi } from "./assert-fetch-api.js";
 
 /**

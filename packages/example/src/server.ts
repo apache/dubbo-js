@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { ConnectRouter } from "@apache/dubbo";
-import { connectNodeAdapter } from "@apache/dubbo-node";
+import type { ConnectRouter } from "apache-dubbo";
+import { connectNodeAdapter } from "apache-dubbo-node";
 import { ElizaService } from "./gen/eliza_connect.js";
 import type {
   SayRequest,

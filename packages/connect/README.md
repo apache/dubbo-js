@@ -1,7 +1,7 @@
-# @apache/dubbo
+# apache-dubbo
 
 Connect is a family of libraries for building type-safe APIs with different languages and platforms.  
-[@apache/dubbo](https://www.npmjs.com/package/@apache/dubbo) brings them to TypeScript,
+[apache-dubbo](https://www.npmjs.com/package/apache-dubbo) brings them to TypeScript,
 the web browser, and to Node.js.
 
 

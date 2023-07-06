@@ -1,10 +1,10 @@
-# @apache/dubbo-next
+# apache-dubbo-next
 
 Connect is a family of libraries for building and consuming APIs on different languages and platforms, and
-[@apache/dubbo](https://www.npmjs.com/package/@apache/dubbo) brings type-safe APIs with Protobuf to
+[apache-dubbo](https://www.npmjs.com/package/apache-dubbo) brings type-safe APIs with Protobuf to
 TypeScript.
 
-`@apache/dubbo-next` provides a plugin for [Next.js](https://nextjs.org/), 
+`apache-dubbo-next` provides a plugin for [Next.js](https://nextjs.org/), 
 the React Framework for the Web.
 
 
@@ -25,7 +25,7 @@ add two files to your project:
 
 ```ts
 // connect.ts
-import { ConnectRouter } from "@apache/dubbo";
+import { ConnectRouter } from "apache-dubbo";
 
 export default function(router: ConnectRouter) {
   // implement rpc Say(SayRequest) returns (SayResponse)
@@ -39,7 +39,7 @@ export default function(router: ConnectRouter) {
 
 ```ts
 // pages/api/[[..connect]].ts
-import { nextJsApiRouter } from "@apache/dubbo-next";
+import { nextJsApiRouter } from "apache-dubbo-next";
 import routes from "../../connect";
 
 const {handler, config} = nextJsApiRouter({ routes });
@@ -59,11 +59,11 @@ curl \
     http://localhost:3000/api/buf.connect.demo.eliza.v1.ElizaService/Say
 ```
 
-Node.js with the gRPC-web protocol (using a transport from [@apache/dubbo-node](https://www.npmjs.com/package/@apache/dubbo-node)):
+Node.js with the gRPC-web protocol (using a transport from [apache-dubbo-node](https://www.npmjs.com/package/apache-dubbo-node)):
 
 ```ts
-import { createPromiseClient } from "@apache/dubbo";
-import { createGrpcWebTransport } from "@apache/dubbo-node";
+import { createPromiseClient } from "apache-dubbo";
+import { createGrpcWebTransport } from "apache-dubbo-node";
 import { ElizaService } from "./gen/eliza_connect.js";
 
 const transport = createGrpcWebTransport({
@@ -77,7 +77,7 @@ console.log(sentence) // you said: I feel happy.
 ```
 
 A client for the web browser actually looks identical to this example - it would
-simply use `createConnectTransport` from [@apache/dubbo-web](https://www.npmjs.com/package/@apache/dubbo-web)
+simply use `createConnectTransport` from [apache-dubbo-web](https://www.npmjs.com/package/apache-dubbo-web)
 instead.
 
 Note that support for gRPC is limited, since many gRPC clients require HTTP/2,
@@ -86,7 +86,7 @@ and Express does not support the Node.js `http2` module.
 
 ### Deploying to Vercel
 
-Currently, `@apache/dubbo-next` does not support the Vercel Edge runtime.
+Currently, `apache-dubbo-next` does not support the Vercel Edge runtime.
 It requires the Node.js server runtime, which is used by default when deploying
 to Vercel.  
 

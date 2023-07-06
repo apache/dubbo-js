@@ -1,6 +1,6 @@
 {
-  "name": "@apache/protoc-gen-dubbo-web",
-  "version": "0.0.1",
+  "name": "apache-protoc-gen-dubbo-web",
+  "version": "0.0.3",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -23,15 +23,18 @@
     "@bufbuild/protoplugin": "^1.2.1"
   },
   "peerDependencies": {
-    "@apache/dubbo": "^0.0.1",
+    "apache-dubbo": "^0.0.2",
     "@bufbuild/protoc-gen-es": "^1.2.1"
   },
   "peerDependenciesMeta": {
-    "@apache/dubbo": {
+    "apache-dubbo": {
       "optional": true
     },
     "@bufbuild/protoc-gen-es": {
       "optional": true
     }
-  }
+  },
+  "files": [
+    "dist/**"
+  ]
 }

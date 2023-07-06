@@ -1,7 +1,5 @@
 {
-  "compileOnSave": false,
   "compilerOptions": {
-    "strict": true,
     "target": "es2017",
     "lib": [
       "ES2017",
@@ -10,6 +8,10 @@
       // ES2018.AsyncIterable for AsyncIterator
       "ES2018.AsyncIterable"
     ],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": false,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
@@ -21,13 +23,9 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    
+
     // We need node's module resolution, so we do not have to skip lib checks
     "moduleResolution": "Node",
     "skipLibCheck": false
-  },
-  "exclude": ["node_modules", "tmp", "lint", "docs"]
+  }
 }
-

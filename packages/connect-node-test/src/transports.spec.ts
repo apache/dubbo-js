@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code, ConnectError } from "@apache/dubbo";
+import { Code, ConnectError } from "apache-dubbo";
 import {
   createConnectTransport,
   Http2SessionManager,
-} from "@apache/dubbo-node";
+} from "apache-dubbo-node";
 
 describe("createConnectTransport()", function () {
   it("should take just httpVersion and baseUrl", function () {

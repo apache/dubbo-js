@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createPromiseClient } from "@apache/dubbo";
-import { createConnectTransport } from "@apache/dubbo-web";
+import { createPromiseClient } from "apache-dubbo";
+import { createConnectTransport } from "apache-dubbo-web";
 import { ElizaService } from "./gen/eliza_connect.js";
 
 // Alternatively, use createGrpcWebTransport here for the gRPC-web

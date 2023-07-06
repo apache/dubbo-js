@@ -17,7 +17,7 @@ import {
   SimpleRequest,
   SimpleResponse,
 } from "./gen/grpc/testing/messages_pb.js";
-import { createConnectTransport } from "@apache/dubbo-web";
+import { createConnectTransport } from "apache-dubbo-web";
 
 describe("custom fetch", function () {
   describe("with Connect transport", () => {

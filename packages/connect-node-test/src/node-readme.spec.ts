@@ -14,14 +14,14 @@
 
 import * as http2 from "http2";
 import { Message, MethodKind, proto3 } from "@bufbuild/protobuf";
-import { createPromiseClient, createRouterTransport } from "@apache/dubbo";
-import type { ConnectRouter } from "@apache/dubbo";
+import { createPromiseClient, createRouterTransport } from "apache-dubbo";
+import type { ConnectRouter } from "apache-dubbo";
 import {
   connectNodeAdapter,
   createGrpcTransport,
   createGrpcWebTransport,
   createConnectTransport,
-} from "@apache/dubbo-node";
+} from "apache-dubbo-node";
 
 /* eslint-disable @typescript-eslint/require-await */
 

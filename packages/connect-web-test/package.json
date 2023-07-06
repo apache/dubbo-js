@@ -1,5 +1,5 @@
 {
-  "name": "@apache/dubbo-web-test",
+  "name": "apache-dubbo-web-test",
   "private": true,
   "scripts": {
     "clean": "rm -rf ./dist/esm/*",
@@ -17,8 +17,8 @@
     "default": "./dist/esm/index.js"
   },
   "dependencies": {
-    "@apache/dubbo-web": "^0.0.1",
-    "@apache/dubbo": "^0.0.1",
+    "apache-dubbo-web": "^0.0.2",
+    "apache-dubbo": "^0.0.2",
     "@types/jasmine": "^4.3.0",
     "esbuild": "^0.16.12",
     "jasmine": "^5.0.0",

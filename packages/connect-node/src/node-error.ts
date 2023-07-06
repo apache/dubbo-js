@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code, ConnectError } from "@apache/dubbo";
+import { Code, ConnectError } from "apache-dubbo";
 
 /**
  * Similar to ConnectError.from(), this function turns any value into

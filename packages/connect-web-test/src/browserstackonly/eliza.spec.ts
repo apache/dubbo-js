@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createPromiseClient } from "@apache/dubbo";
-import { createConnectTransport } from "@apache/dubbo-web";
+import { createPromiseClient } from "apache-dubbo";
+import { createConnectTransport } from "apache-dubbo-web";
 import { ElizaService } from "../gen/buf/connect/demo/eliza/v1/eliza_connect.js";
 import { IntroduceRequest } from "../gen/buf/connect/demo/eliza/v1/eliza_pb.js";
 

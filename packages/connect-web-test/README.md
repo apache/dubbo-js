@@ -1,6 +1,6 @@
 # Tests
 
-This package provides test coverage for @apache/dubbo-web with the test
+This package provides test coverage for apache-dubbo-web with the test
 framework [Jasmine](https://jasmine.github.io/) and the [Karma](https://karma-runner.github.io/) 
 test runner.
 
@@ -11,8 +11,8 @@ The test suite is run multiple times:
 3. In Node.js (v18 for the fetch API).
 
 The tests run against:
-- connect-go (h1/h2) via Docker
-- @apache/dubbo-node (h1)
+- dubbo-go (h1/h2) via Docker
+- apache-dubbo-node (h1)
 
 ### Running tests in a headless browser
 
@@ -31,7 +31,7 @@ and trust the self-signed certificate in the browser UI.
 
 ### Running tests in Node.js
 
-@apache/dubbo-web requires the fetch API. It is available since Node.js 
+apache-dubbo-web requires the fetch API. It is available since Node.js 
 v18, and you can run this suite of tests on it with `make testwebnode`.
 Note that client-streaming and bidi-streaming are not fully supported because
 of limitations in browser APIs.

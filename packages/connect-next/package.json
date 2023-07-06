@@ -1,6 +1,6 @@
 {
-  "name": "@apache/dubbo-next",
-  "version": "0.0.1",
+  "name": "apache-dubbo-next",
+  "version": "0.0.2",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -26,8 +26,8 @@
     "node": ">=16.0.0"
   },
   "dependencies": {
-    "@apache/dubbo": "^0.0.1",
-    "@apache/dubbo-node": "^0.0.1"
+    "apache-dubbo": "^0.0.2",
+    "apache-dubbo-node": "^0.0.2"
   },
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.2.1",

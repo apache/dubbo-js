@@ -17,7 +17,7 @@ import {
   createPromiseClient,
   decodeBinaryHeader,
   encodeBinaryHeader,
-} from "@apache/dubbo";
+} from "apache-dubbo";
 import { TestService } from "../gen/grpc/testing/test_connect.js";
 import {
   SimpleRequest,
