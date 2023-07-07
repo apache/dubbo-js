@@ -3,7 +3,7 @@
   "version": "0.0.2",
   "main": "./lib/index.js",
   "types": "./lib/typings/index.d.ts",
-  "license": "Apache Licence 2.0",
+  "license": "Apache License 2.0",
   "description": "Apache dubbo & dubbo-js & dubbo-common",
   "author": "hufeng@apache.org, xiaodongyang@apache.org",
   "maintainers": [

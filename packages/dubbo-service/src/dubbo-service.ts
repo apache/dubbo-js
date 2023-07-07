@@ -15,18 +15,15 @@
  * limitations under the License.
  */
 
-import net, { Socket } from 'net'
-import ip from 'ip'
+import net, { Socket } from 'node:net'
 import debug from 'debug'
-import qs from 'querystring'
 import compose, { Middleware } from 'koa-compose'
-import { Retry, util } from 'apache-dubbo-common'
+import { Retry, util, d$ } from 'apache-dubbo-common'
 import {
   DecodeBuffer,
-  decodeDubboRequest,
-  DUBBO_RESPONSE_STATUS,
-  DubboResponseEncoder,
   HeartBeat,
+  Hessian2Decoder,
+  Hessian2Encoder,
   Request
 } from 'apache-dubbo-serialization'
 import Context from './context'
@@ -36,13 +33,10 @@ import {
   DubboServiceClazzName,
   IDubboServerProps,
   IDubboService,
-  IRegistry,
-  TDubboServiceInterface,
-  TDubboServiceUrl
+  IRegistry
 } from './types'
 
-const ipAddr = ip.address()
-const log = debug('dubbo-server ~')
+const log = debug('dubbo-server')
 
 /**
  * DubboServer - expose dubbo service by nodejs
@@ -54,28 +48,40 @@ const log = debug('dubbo-server ~')
  */
 
 export default class DubboService {
-  private resolve: Function
-  private reject: Function
   private readonly readyPromise: Promise<void>
-
   private readonly application: { name: string }
   private readonly dubbo: string
+  // service invoke chain middlewares
+  private readonly middlewares: Array<Middleware<Context>>
+  // register service
+  private readonly services: { [name in string]: IDubboService }
+  // dubbo service setting
+  private readonly dubboSetting: s.DubboSetting
+
+  // resolve ready promise
+  private resolve: Function
+  // reject ready promise
+  private reject: Function
+
+  private encoder: Hessian2Encoder
+  private decoder: Hessian2Decoder
 
   private retry: Retry
   private port: number
   private server: net.Server
-  private readonly dubboSetting: s.DubboSetting
   private registry: IRegistry
-  private readonly services: { [name in string]: IDubboService }
   private serviceRouter: Map<DubboServiceClazzName, Array<IDubboService>>
-  private readonly middlewares: Array<Middleware<Context>>
 
   constructor(props: IDubboServerProps) {
+    // check props
     DubboService.checkProps(props)
 
     // set application name
     this.application = props.application
     this.dubbo = props.dubbo
+
+    this.encoder = new Hessian2Encoder()
+    this.decoder = new Hessian2Decoder()
 
     // init ready promise
     this.readyPromise = new Promise((resolve, reject) => {
@@ -98,7 +104,7 @@ export default class DubboService {
 
     // set retry container
     this.retry = new Retry({
-      retry: () => this.listen(),
+      retry: () => this.serve(),
       end: () => {
         throw new Error(
           'Oops, dubbo server can not start, can not find available port'
@@ -108,7 +114,7 @@ export default class DubboService {
 
     process.nextTick(async () => {
       // listen tcp server
-      await this.listen()
+      await this.serve()
     })
   }
 
@@ -126,16 +132,18 @@ export default class DubboService {
   /**
    * start tcp server
    */
-  private listen = async () => {
+  private serve = async () => {
     this.port = await portManager.getReusedPort()
     log(`init service with port: %d`, this.port)
 
     this.server = net
-      .createServer(this.handleSocketRequest)
+      .createServer(this.handleTcpRequest)
       .listen(this.port, () => {
         log('start dubbo-server with port %d', this.port)
         this.retry.reset()
-        this.registerServices()
+        this.registerServices().catch((err) =>
+          log(`register service error ${err.message}`)
+        )
       })
       .on('error', (err) => {
         log(`server listen %d port err: %s`, this.port, err)
@@ -151,12 +159,12 @@ export default class DubboService {
    * receive tcp message
    * @param socket
    */
-  private handleSocketRequest = (socket: Socket) => {
+  private handleTcpRequest = (socket: Socket) => {
     log('tcp socket establish connection %s', socket.remoteAddress)
 
     // init heartbeat
     const heartbeat = HeartBeat.from({
-      type: 'response',
+      type: 'server',
       transport: socket,
       onTimeout: () => socket.destroy()
     })
@@ -165,13 +173,14 @@ export default class DubboService {
       // send heartbeat
       if (HeartBeat.isHeartBeat(data)) {
         log(`receive socket client heartbeat`)
+        // emit heartbeat from server
         heartbeat.emit()
         return
       }
 
       const ctx = await this.invokeComposeChainRequest(data)
       heartbeat.setWriteTimestamp()
-      socket.write(new DubboResponseEncoder(ctx).encode())
+      socket.write(this.encoder.encodeDubboResponse(ctx))
     })
   }
 
@@ -181,7 +190,7 @@ export default class DubboService {
    * @returns
    */
   private async invokeComposeChainRequest(data: Buffer) {
-    const request = decodeDubboRequest(data)
+    const request = this.decoder.decodeDubboRequest(data)
     log('receive request %O', request)
     const service = this.matchService(request)
     const ctx = new Context(request)
@@ -196,7 +205,7 @@ export default class DubboService {
       log(
         `Service not found with ${path} and ${methodName}, group:${group}, version:${version}`
       )
-      ctx.status = DUBBO_RESPONSE_STATUS.SERVICE_NOT_FOUND
+      ctx.status = d$.DUBBO_RESPONSE_STATUS.SERVICE_NOT_FOUND
       ctx.body.err = new Error(
         `Service not found with ${path} and ${methodName}, group:${group}, version:${version}`
       )
@@ -207,7 +216,7 @@ export default class DubboService {
       ...this.middlewares,
       async function handleRequest(ctx: Context) {
         const method = service.methods[request.methodName]
-        ctx.status = DUBBO_RESPONSE_STATUS.OK
+        ctx.status = d$.DUBBO_RESPONSE_STATUS.OK
         try {
           // FIXME waiting dubbo/dj
           // check hessian type
@@ -235,7 +244,7 @@ export default class DubboService {
       await fn(ctx)
     } catch (err) {
       log(err)
-      ctx.status = DUBBO_RESPONSE_STATUS.SERVER_ERROR
+      ctx.status = d$.DUBBO_RESPONSE_STATUS.SERVER_ERROR
       ctx.body.err = err
     }
 
@@ -246,21 +255,11 @@ export default class DubboService {
    * register service into zookeeper or nacos
    */
   private async registerServices() {
-    await this.registry.ready().catch((err) => {
-      log('registry service error %s', err)
-      this.reject(err)
-      throw err
-    })
+    const services = [] as Array<IDubboService>
 
-    const registryServiceList = [] as Array<{
-      dubboServiceInterface: TDubboServiceInterface
-      dubboServiceUrl: TDubboServiceUrl
-    }>
-    for (let [dubboServiceShortName, service] of Object.entries(
-      this.services
-    )) {
+    for (let [id, service] of Object.entries(this.services)) {
       const meta = this.dubboSetting.getDubboSetting({
-        dubboServiceShortName,
+        dubboServiceShortName: id,
         dubboServiceInterface: service.dubboInterface
       })
       service.group = meta.group
@@ -273,57 +272,19 @@ export default class DubboService {
         this.serviceRouter.set(service.dubboInterface, [service])
       }
 
-      const dubboServiceUrl = this.buildUrl(service)
-      log('registry dubbo service url %s', dubboServiceUrl)
-      registryServiceList.push({
-        dubboServiceInterface: service.dubboInterface,
-        dubboServiceUrl
-      })
+      services.push(service)
     }
 
     // register service to registry, such as zookeeper or nacos
-    await this.registry.registerServices(registryServiceList)
+    await this.registry.registerServices({
+      application: this.application,
+      port: this.port,
+      dubbo: this.dubbo,
+      services
+    })
 
     // everything ready...
     this.resolve()
-  }
-
-  /**
-   * build dubbo service url
-   *
-   * @param service
-   * @returns
-   */
-  private buildUrl(service: IDubboService) {
-    const { dubboInterface, group, version, methods } = service
-    const methodName = Object.keys(methods).join()
-    const params = {
-      interface: dubboInterface,
-      methods: methodName,
-      side: 'provider',
-      pid: process.pid,
-      protocol: 'dubbo',
-      anyhost: true,
-      timestamp: Date.now()
-    }
-    if (this.application) {
-      params['application'] = this.application.name || 'node-dubbo-service'
-    }
-    if (this.dubbo) {
-      params['dubbo'] = this.dubbo
-    }
-    if (group !== '') {
-      params['group'] = group
-    }
-    if (version !== '0.0.0') {
-      params['version'] = version
-    }
-    return (
-      `dubbo://${ipAddr}:${this.port}/${dubboInterface}?` +
-      qs.stringify(params, null, null, {
-        encodeURIComponent: (str) => str
-      })
-    )
   }
 
   /**

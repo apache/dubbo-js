@@ -28,7 +28,6 @@ if (cluster.isMaster) {
   })
 } else {
   ;(async () => {
-    console.log('pid start---->', process.pid)
     const port = await portManager.getReusedPort()
     console.log(port)
   })()

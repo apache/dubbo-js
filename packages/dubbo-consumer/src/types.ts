@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
+import Dubbo from './dubbo'
 import { IRegistry } from 'apache-dubbo-registry'
-import DubboTcpTransport from './dubbo-tcp-transport'
 import { DubboSetting } from './dubbo-setting'
 
-export type TQueueObserver = Function
+export type HostName = string
+export type Host = string
+
 export type TRequestId = number
 export type TDubboInterface = string
 export type TDubboUrl = string
@@ -27,43 +29,51 @@ export type TDubboServiceShortName = string
 export type TMatchThunk = (shortName: TDubboServiceShortName) => IDubboSetting
 
 export type Middleware<T> = (context: T, next: () => Promise<any>) => any
+export type TProxyService = { [name: string]: (dubbo: Dubbo) => any }
 
-export interface IDubboProps {
+export interface IDubboProps<T extends TProxyService> {
   // 当前的应用标识
   application: { name: string }
   registry: IRegistry<Object>
   //当前要注册到dubbo容器的服务对象
-  services: Object
+  services: T
   isSupportedDubbox?: boolean
   //dubbo调用最大超时时间单位为秒，默认5000
-  dubboInvokeTimeout?: number
+  dubboMaxTimeout?: number
   dubboVersion?: string
   dubboSetting?: DubboSetting
 }
 
 export type TDubboService<T> = {
-  [k in keyof T]: T[k] extends (dubbo: any) => infer R ? R : any
+  [k in keyof T]: T[k] extends (dubbo: Dubbo) => infer R ? R : any
 }
 
-export interface IDubboProvider {
+export type TDubboServiceReturnType<T> = T extends (dubbo: Dubbo) => infer R
+  ? R
+  : any
+
+export interface DubboService {
   dubboInterface: string
+  methods: { [methodName: string]: Function }
   path?: string
   version?: string
   timeout?: number
   group?: string
-  methods: { [methodName: string]: Function }
 }
 
-export interface IDirectlyDubboProps {
+export type TServiceThunk = (dubbo: Dubbo) => any
+export interface IDirectlyDubboProps<T extends TServiceThunk> {
   dubboHost: string
   dubboVersion: string
   dubboInvokeTimeout?: number
+  service: T
 }
 
 export interface IHessianType {
   $class: string
   $: any
 }
+
 export interface IInvokeParam {
   dubboInterface: string
   methods: { [methodName: string]: Function }
@@ -75,19 +85,6 @@ export interface IInvokeParam {
   isSupportedDubbox?: boolean
 }
 
-export interface IDubboObservable<T> {
-  subscribe(subscriber: T): this
-}
-
-export interface IDubboTransportSubscriber {
-  onConnect: (props: { host: string; transport: DubboTcpTransport }) => void
-  onData: (data: any) => void
-  onClose: (host: string) => void
-}
-
-export type HostName = string
-export type Host = string
-
 export interface IQueryObj {
   application: string
   dubbo: string
@@ -96,12 +93,6 @@ export interface IQueryObj {
   methods: string
   version: string
   group: string
-}
-
-export interface IDubboSetting {
-  group?: string
-  version?: string
-  timeout?: number
 }
 
 export interface IDubboSetting {

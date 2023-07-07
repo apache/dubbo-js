@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-import { Request, DUBBO_RESPONSE_STATUS } from 'apache-dubbo-serialization'
+import { d$ } from 'apache-dubbo-common'
+import { Request } from 'apache-dubbo-serialization'
 
 export default class Context<T = any> {
   private readonly req: Request
-  private _attachments: Object
-  private _status: number
-
   /**
-   * 当前dubbo返回的结果
+   * dubbo service result
    */
   private readonly _body: { res: T; err: Error }
+  /**
+   * attachment
+   */
+  private _attachments: Object
+  /**
+   * server status
+   */
+  private _status: number
 
   constructor(req: Request) {
     this.req = req
@@ -52,7 +58,7 @@ export default class Context<T = any> {
     }
   }
 
-  set status(code: DUBBO_RESPONSE_STATUS) {
+  set status(code: d$.DUBBO_RESPONSE_STATUS) {
     this._status = code
   }
 

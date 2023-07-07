@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-import { Dubbo, TDubboCallResult } from 'apache-dubbo-consumer'
-import { argumentMap } from 'interpret-util'
-
+import { Dubbo } from 'apache-dubbo-consumer'
+import { dj } from 'apache-dubbo-common'
 export interface IErrorProvider {
-  errorTest(): TDubboCallResult<void>
+  errorTest(): Promise<void>
 }
 
-export const ErrorProviderWrapper = { errorTest: argumentMap }
+export const ErrorProviderWrapper = { errorTest: dj.argumentMap }
 
 export function ErrorProvider(dubbo: Dubbo): IErrorProvider {
   return dubbo.proxyService<IErrorProvider>({

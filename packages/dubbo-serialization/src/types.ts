@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import net from 'net'
+import net from 'node:net'
 import Request from './request'
 
 export type TDecodeBuffSubscriber = (data: Buffer) => void
@@ -72,9 +72,9 @@ export interface IResponseContext {
 }
 
 export interface IHeartBeatProps {
-  type: 'request' | 'response'
+  type: 'client' | 'server'
   transport: net.Socket
-  onTimeout?: Function
+  onTimeout: Function
 }
 
 export interface IAttachment {

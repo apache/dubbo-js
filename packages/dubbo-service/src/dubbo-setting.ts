@@ -18,8 +18,8 @@
 import { util } from 'apache-dubbo-common'
 import {
   IDubboServiceSetting,
-  TDubboServiceInterface,
-  TDubboServiceShortName,
+  TDubboInterface,
+  TDubboServiceId,
   TMatchThunk
 } from './types'
 
@@ -32,7 +32,7 @@ export class DubboSetting {
   private readonly matchDubboRegx: Map<RegExp, IDubboServiceSetting>
   private readonly matchDubboThunk: Set<TMatchThunk>
   private readonly matchDubboInterface: Map<
-    TDubboServiceInterface,
+    TDubboInterface,
     IDubboServiceSetting
   >
 
@@ -43,7 +43,7 @@ export class DubboSetting {
   }
 
   service(
-    rule: TDubboServiceInterface | Array<TDubboServiceInterface> | RegExp,
+    rule: TDubboInterface | Array<TDubboInterface> | RegExp,
     meta: IDubboServiceSetting
   ) {
     if (util.isString(rule)) {
@@ -63,8 +63,8 @@ export class DubboSetting {
     dubboServiceShortName,
     dubboServiceInterface
   }: {
-    dubboServiceShortName?: TDubboServiceShortName
-    dubboServiceInterface?: TDubboServiceInterface
+    dubboServiceShortName?: TDubboServiceId
+    dubboServiceInterface?: TDubboInterface
   }) {
     const defaultMeta = {
       group: this.group,
@@ -127,7 +127,7 @@ export function version(v: string) {
 }
 
 export function service(
-  rule: TDubboServiceInterface | Array<TDubboServiceInterface> | RegExp,
+  rule: TDubboInterface | Array<TDubboInterface> | RegExp,
   meta: IDubboServiceSetting
 ) {
   return (dubboSetting: DubboSetting) => {

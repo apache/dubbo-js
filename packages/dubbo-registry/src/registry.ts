@@ -15,30 +15,54 @@
  * limitations under the License.
  */
 
-import { IRegistrySubscriber, TDubboInterface, TDubboUrl } from './types'
+import {
+  RegisterConsumerService,
+  IRegistrySubscriber,
+  IDubboService
+} from './types'
 
 export interface IRegistry<T> {
+  /**
+   * waiting registry status ready
+   */
   ready(): Promise<void>
 
+  /**
+   * find dubbo service urls
+   * @param dubboInterfaces
+   */
   findDubboServiceUrls(dubboInterfaces: Array<string>): Promise<void>
 
-  registerServices(
-    services: Array<{
-      dubboServiceInterface: TDubboInterface
-      dubboServiceUrl: TDubboUrl
-    }>
-  ): Promise<void>
+  /**
+   * register dubbo service
+   * @param meta
+   */
+  registerServices(meta: {
+    application: { name: string }
+    port: number
+    dubbo?: string
+    services: Array<IDubboService>
+  }): Promise<void>
 
-  registerConsumers(
-    consumers: Array<{
-      dubboServiceInterface: TDubboInterface
-      dubboServiceUrl: TDubboUrl
-    }>
-  ): Promise<void>
+  /**
+   * register dubbo consumer
+   * @param consumers
+   */
+  registerConsumers(consumers: RegisterConsumerService): Promise<void>
 
-  subscribe(cb: IRegistrySubscriber): void
+  /**
+   * subscribe registry service status change
+   * @param cb
+   */
+  subscribe(cb: IRegistrySubscriber): this
 
+  /**
+   * close
+   */
   close(): void
 
+  /**
+   * get registry client such as zookeeper, nacos
+   */
   getClient(): T
 }

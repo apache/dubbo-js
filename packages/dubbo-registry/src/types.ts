@@ -46,3 +46,23 @@ export interface INodeProps {
   data?: Buffer | string
   isPersistent?: boolean
 }
+
+export interface DubboService {
+  dubboInterface: string
+  path?: string
+  version?: string
+  timeout?: number
+  group?: string
+}
+
+export interface RegisterConsumerService {
+  application: { name: string }
+  services: Array<DubboService>
+}
+
+export interface IDubboService {
+  dubboInterface: string
+  group?: string
+  version?: string
+  methods: { [key in string]: Function }
+}

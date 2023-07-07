@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-import { Dubbo, TDubboCallResult } from 'apache-dubbo-consumer'
-import { argumentMap, JavaString } from 'interpret-util'
+import { Dubbo } from 'apache-dubbo-consumer'
+import { dj } from 'apache-dubbo-common'
 import { UserRequest } from '../UserRequest'
 import { UserResponse } from '../UserResponse'
 
 export interface IDemoProvider {
-  sayHello(name: JavaString): TDubboCallResult<string>
-  test(): TDubboCallResult<void>
-  echo(): TDubboCallResult<string>
-  getUserInfo(request: UserRequest): TDubboCallResult<UserResponse>
+  sayHello(name: dj.JavaString): Promise<string>
+  test(): Promise<void>
+  echo(): Promise<string>
+  getUserInfo(request: UserRequest): Promise<UserResponse>
 }
 
 export const DemoProviderWrapper = {
-  sayHello: argumentMap,
-  test: argumentMap,
-  echo: argumentMap,
-  getUserInfo: argumentMap
+  sayHello: dj.argumentMap,
+  test: dj.argumentMap,
+  echo: dj.argumentMap,
+  getUserInfo: dj.argumentMap
 }
 
 export function DemoProvider(dubbo: Dubbo): IDemoProvider {

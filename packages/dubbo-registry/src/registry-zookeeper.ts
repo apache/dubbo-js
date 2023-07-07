@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
+import ip from 'ip'
 import debug from 'debug'
+import qs from 'querystring'
 import Zookeeper from 'zookeeper'
 import { IRegistry } from './registry'
 import BaseRegistry from './registry-base'
 import Timeout from './timeout'
 import {
+  IDubboService,
   INodeProps,
   IZkClientConfig,
-  TDubboInterface,
-  TDubboUrl
+  RegisterConsumerService
 } from './types'
 
-const DUBBO_ZK_ROOT_PATH: string = '/dubbo'
 const dlog = debug('dubbo:zookeeper~')
+const ipAddr = ip.address()
+const DUBBO_ZK_ROOT_PATH: string = '/dubbo'
 
 export class ZookeeperRegistry
   extends BaseRegistry
@@ -162,6 +165,55 @@ export class ZookeeperRegistry
     }
   }
 
+  /**
+   * build dubbo service url
+   *
+   * @param service
+   * @returns
+   */
+  private buildUrl(
+    meta: {
+      application: { name: string }
+      port: number
+      dubbo?: string
+    },
+    service: IDubboService
+  ) {
+    const { dubboInterface, group, version, methods } = service
+    const methodName = Object.keys(methods).join()
+    // build params
+    const params = {
+      interface: dubboInterface,
+      methods: methodName,
+      side: 'provider',
+      pid: process.pid,
+      protocol: 'dubbo',
+      anyhost: true,
+      timestamp: Date.now()
+    }
+
+    // dynamic params
+    if (meta.application) {
+      params['application'] = meta.application.name || 'node-dubbo-service'
+    }
+    if (meta.dubbo) {
+      params['dubbo'] = meta.dubbo
+    }
+    if (group !== '') {
+      params['group'] = group
+    }
+    if (version !== '0.0.0') {
+      params['version'] = version
+    }
+
+    return (
+      `dubbo://${ipAddr}:${meta.port}/${dubboInterface}?` +
+      qs.stringify(params, null, null, {
+        encodeURIComponent: (str) => str
+      })
+    )
+  }
+
   // ~~~~~~~~~~~~~~~~ public ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   getProps() {
@@ -202,16 +254,26 @@ export class ZookeeperRegistry
     this.dubboServiceUrlMap.set(dubboInterface, urls)
   }
 
-  async registerServices(
-    services: Array<{
-      dubboServiceInterface: TDubboInterface
-      dubboServiceUrl: TDubboUrl
-    }>
-  ) {
-    for (let { dubboServiceInterface, dubboServiceUrl } of services) {
+  async registerServices(meta: {
+    application: { name: string }
+    port: number
+    dubbo?: string
+    services: Array<IDubboService>
+  }) {
+    // waiting status ready
+    await this.ready()
+    dlog(`registry dubbo service`)
+
+    // register service
+    for (let { dubboInterface, ...rest } of meta.services) {
       // create service root path
-      const serviceRootPath = `${this.props.zkRootPath}/${dubboServiceInterface}/providers`
+      const serviceRootPath = `${this.props.zkRootPath}/${dubboInterface}/providers`
       await this.mkdirp(serviceRootPath)
+
+      // create service node
+      const dubboServiceUrl = this.buildUrl(meta, { dubboInterface, ...rest })
+      dlog(`${serviceRootPath}/${dubboServiceUrl}`)
+
       // create service node
       await this.createNode({
         path: `${serviceRootPath}/${encodeURIComponent(dubboServiceUrl)}`
@@ -219,26 +281,45 @@ export class ZookeeperRegistry
     }
   }
 
-  async registerConsumers(
-    consumers: Array<{
-      dubboServiceInterface: TDubboInterface
-      dubboServiceUrl: TDubboUrl
-    }>
-  ) {
-    dlog('registry consumers => %O', consumers)
+  async registerConsumers(consumer: RegisterConsumerService) {
+    dlog('registry consumers => %O', consumer)
+
+    // waiting ready
+    await this.ready()
+
     const dubboInterfaces = new Set<string>()
+    const { application, services } = consumer
     // registry consumer
-    for (let { dubboServiceInterface, dubboServiceUrl } of consumers) {
-      dubboInterfaces.add(dubboServiceInterface)
+    for (let { dubboInterface, timeout, group, version } of services) {
+      // collection dubbo interface
+      dubboInterfaces.add(dubboInterface)
+
+      // build dubbo consumer url
+      const dubboConsumerUrl = `consumer://${ipAddr}/${dubboInterface}?${qs.stringify(
+        {
+          application: application.name,
+          interface: dubboInterface,
+          category: 'consumers',
+          method: '',
+          revision: version,
+          version: version,
+          group: group,
+          timeout: timeout,
+          side: 'consumer',
+          check: false,
+          pid: process.pid
+        }
+      )}`
       // create consumer root path
-      const consumerRootPath = `${this.props.zkRootPath}/${dubboServiceInterface}/consumers`
+      const consumerRootPath = `${this.props.zkRootPath}/${dubboInterface}/consumers`
       await this.mkdirp(consumerRootPath)
-      // create service node
+      // create dubbo consumer node
       await this.createNode({
-        path: `${consumerRootPath}/${encodeURIComponent(dubboServiceUrl)}`
+        path: `${consumerRootPath}/${encodeURIComponent(dubboConsumerUrl)}`
       })
     }
 
+    // find dubbo service urls
     await this.findDubboServiceUrls([...dubboInterfaces])
   }
 

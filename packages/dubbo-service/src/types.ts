@@ -18,12 +18,10 @@
 import { DubboSetting } from './dubbo-setting'
 
 export type TDubboServiceUrl = string
-export type TDubboServiceShortName = string
-export type TDubboServiceInterface = string
+export type TDubboServiceId = string
+export type TDubboInterface = string
 export type DubboServiceClazzName = string
-export type TMatchThunk = (
-  shortName: TDubboServiceShortName
-) => IDubboServiceSetting
+export type TMatchThunk = (shortName: TDubboServiceId) => IDubboServiceSetting
 
 export interface IDubboServerProps {
   application?: { name: string }
@@ -48,12 +46,12 @@ export interface IDubboServiceSetting {
 
 export interface IRegistry<T = Object> {
   ready(): Promise<void>
-  registerServices(
-    services: Array<{
-      dubboServiceInterface: TDubboServiceInterface
-      dubboServiceUrl: TDubboServiceUrl
-    }>
-  ): Promise<void>
+  registerServices(meta: {
+    application: { name: string }
+    port: number
+    dubbo?: string
+    services: Array<IDubboService>
+  }): Promise<void>
   getClient(): T
 
   close(): void

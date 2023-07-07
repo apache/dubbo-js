@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-import * as byte from './byte'
 import * as util from './util'
 import { go } from './go'
 import { Retry } from './retry'
+import * as d$ from './meta'
+import * as dj from './dj'
 
-export { byte, util, go, Retry }
+export { util, go, Retry, d$, dj }

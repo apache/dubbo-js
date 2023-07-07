@@ -1,3 +1,17 @@
 {
-  "java.configuration.updateBuildConfiguration": "automatic"
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "cSpell.words": [
+    "Javaboolean",
+    "Javabyte",
+    "Javachar",
+    "Javachars",
+    "Javadouble",
+    "Javafloat",
+    "Javaint",
+    "Javalong",
+    "Javashort",
+    "jexpose",
+    "klaw",
+    "qianmi"
+  ]
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import path from 'path'
+import path from 'node:path'
 import fs from 'fs-extra'
 import { Zk } from 'apache-dubbo-registry'
 import { DubboDirectlyInvoker, java } from 'apache-dubbo-consumer'
@@ -30,45 +30,44 @@ describe('dubbo invoker directly test suites', () => {
     registry: zk,
     services: provider
   })
-  let dubbo: DubboDirectlyInvoker
 
   beforeAll(async () => {
     await dubboService.ready()
-    dubbo = DubboDirectlyInvoker.from({
-      dubboHost: `127.0.0.1:${dubboService.getPort()}`,
-      dubboVersion: '2.0.2'
-    })
   })
 
   it('test dubbo invoke', async () => {
-    const demoService = consumer.DemoProvider(dubbo as any)
-    // test hello
-    const hello = await demoService.sayHello(java.String('dubbo'))
-    expect(hello.res).toEqual('hello dubbo')
-    expect(hello.err).toBeNull()
+    let dubbo = DubboDirectlyInvoker.from({
+      dubboHost: `127.0.0.1:${dubboService.getPort()}`,
+      dubboVersion: '2.0.2',
+      service: consumer.DemoProvider
+    })
 
-    // test ehco
-    const echo = await demoService.echo()
-    expect(echo.res).toEqual('pong')
-    expect(echo.err).toBeNull()
+    // test hello
+    const hello = await dubbo.service.sayHello(java.String('dubbo'))
+    expect(hello).toEqual('hello dubbo')
+
+    // test echo method
+    const echo = await dubbo.service.echo()
+    expect(echo).toEqual('pong')
 
     // test test method
-    const test = await demoService.test()
-    expect(test.res).toBeNull()
-    expect(test.err).toBeNull()
+    const test = await dubbo.service.test()
+    expect(test).toBeNull()
 
     // test getUserInfo
-    const userInfo = await demoService.getUserInfo(
+    const user = await dubbo.service.getUserInfo(
       new UserRequest({
         id: 1,
         name: 'dubbo-js',
         email: 'hufeng@apache.org'
       })
     )
-    expect(userInfo.res).toEqual({
+    expect(user).toEqual({
       info: { id: '1', name: 'dubbo-js', email: 'hufeng@apache.org' },
       status: 'ok'
     })
+
+    dubbo.close()
   })
 
   afterAll(async () => {
@@ -76,7 +75,6 @@ describe('dubbo invoker directly test suites', () => {
     fs.unlinkSync(
       path.join(process.cwd(), '.dubbojs', String(dubboService.getPort()))
     )
-    dubbo.close()
     await dubboService.close()
   })
 })

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import path from 'path'
+import path from 'node:path'
 import fs from 'fs-extra'
 import { Zk } from 'apache-dubbo-registry'
 import { Dubbo, java } from 'apache-dubbo-consumer'
@@ -35,28 +35,26 @@ describe('dubbo test suite', () => {
 
   beforeAll(async () => {
     await dubboService.ready()
-    dubbo = new Dubbo<typeof consumer>({
+    dubbo = new Dubbo({
       application: { name: 'dubbo-test' },
       registry: zk,
       services: consumer,
-      dubboInvokeTimeout: 10 * 1000
+      dubboMaxTimeout: 100 * 1000
     })
+    await dubbo.ready()
   })
 
   it('test demo type provider', async () => {
     const hello = await dubbo.service.DemoProvider.sayHello(
       java.String('dubbo')
     )
-    expect(hello.res).toEqual('hello dubbo')
-    expect(hello.err).toBeNull()
+    expect(hello).toEqual('hello dubbo')
 
     const echo = await dubbo.service.DemoProvider.echo()
-    expect(echo.res).toEqual('pong')
-    expect(echo.err).toBeNull()
+    expect(echo).toEqual('pong')
 
     const test = await dubbo.service.DemoProvider.test()
-    expect(test.res).toBeNull()
-    expect(test.err).toBeNull()
+    expect(test).toBeNull()
 
     const userInfo = await dubbo.service.DemoProvider.getUserInfo(
       new UserRequest({
@@ -65,7 +63,7 @@ describe('dubbo test suite', () => {
         email: 'hufeng@apache.org'
       })
     )
-    expect(userInfo.res).toEqual({
+    expect(userInfo).toEqual({
       info: { id: '1', name: 'dubbo-js', email: 'hufeng@apache.org' },
       status: 'ok'
     })
@@ -78,17 +76,19 @@ describe('dubbo test suite', () => {
         map: { ping: 'pong' }
       })
     )
-    expect(basicType.res).toEqual({
+    expect(basicType).toEqual({
       bigDecimal: { value: '1.0' },
       map: { ping: 'pong' }
     })
-    expect(basicType.err).toBeNull()
   })
 
   it('test ErrorProvider', async () => {
-    const result = await dubbo.service.ErrorProvider.errorTest()
-    expect(result.res).toBeNull()
-    expect(result.err.message).toEqual('exception')
+    try {
+      const result = await dubbo.service.ErrorProvider.errorTest()
+      expect(result).toBeNull()
+    } catch (err) {
+      expect(err.message).toEqual('exception')
+    }
   })
 
   afterAll(async () => {

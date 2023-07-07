@@ -16,13 +16,20 @@
  */
 
 import debug from 'debug'
-import { go } from 'apache-dubbo-common'
-import Context from './context'
+import Context from './dubbo-context'
 import { STATUS } from './dubbo-status'
-import DubboTcpTransport from './dubbo-tcp-transport'
-import { IDirectlyDubboProps, IHessianType, IInvokeParam } from './types'
+import DubboTcpTransport from './dubbo-transport/dubbo-tcp-transport'
+import {
+  TDubboServiceReturnType,
+  IDirectlyDubboProps,
+  IDubboResponse,
+  IHessianType,
+  IInvokeParam,
+  TRequestId,
+  TServiceThunk
+} from './types'
 
-const log = debug('dubbo-consumer:directly-dubbo ~')
+const log = debug('dubbo-directly-invoker')
 
 /**
  * Directly connect to the dubbo service
@@ -30,33 +37,58 @@ const log = debug('dubbo-consumer:directly-dubbo ~')
  * usually used to test the service connectivity in development
  */
 
-export default class DubboDirectlyInvoker {
+export default class DubboDirectlyInvoker<T extends TServiceThunk = any> {
   private status: STATUS
-  private readonly props: IDirectlyDubboProps
-  private readonly transport: DubboTcpTransport
-  private readonly queue: Map<number, Context>
+  private transport: DubboTcpTransport
+  private queue: Map<TRequestId, Context>
 
-  constructor(props: IDirectlyDubboProps) {
+  private readonly props: IDirectlyDubboProps<T>
+  public readonly service: TDubboServiceReturnType<T>
+
+  /**
+   * static factory method
+   * @param props
+   * @returns
+   */
+  static from<T extends TServiceThunk>(props: IDirectlyDubboProps<T>) {
+    return new DubboDirectlyInvoker(props)
+  }
+
+  /**
+   * constructor
+   */
+  constructor(props: IDirectlyDubboProps<T>) {
     log('bootstrap....%O', this.props)
     this.props = props
     this.queue = new Map()
 
+    this.service = this.props.service(this as any)
+
     this.status = STATUS.PADDING
-    this.transport = DubboTcpTransport.from(this.props.dubboHost).subscribe({
-      onConnect: this.handleTransportConnect,
-      onData: this.handleTransportData,
-      onClose: this.handleTransportClose
-    })
+    this.transport = DubboTcpTransport.from(this.props.dubboHost)
+      .on('connect', this.handleTransportConnect)
+      .on('data', this.handleTransportData)
+      .on('close', this.handleTransportClose)
   }
 
-  static from(props: IDirectlyDubboProps) {
-    return new DubboDirectlyInvoker(props)
-  }
-
+  /**
+   * close transport
+   */
   close() {
     this.transport.close()
+    for (let ctx of this.queue.values()) {
+      ctx.cleanTimeout()
+    }
+    this.queue.clear()
+    this.queue = null
+    this.transport = null
   }
 
+  /**
+   * stub proxy service
+   * @param invokeParam
+   * @returns
+   */
   proxyService<T extends Object>(invokeParam: IInvokeParam): T {
     const {
       dubboInterface,
@@ -68,51 +100,59 @@ export default class DubboDirectlyInvoker {
       attachments = {},
       isSupportedDubbox = false
     } = invokeParam
+
     const proxy = Object.create(null)
 
     for (let methodName of Object.keys(methods)) {
       proxy[methodName] = (...args: Array<IHessianType>) => {
-        return go(
-          new Promise((resolve, reject) => {
-            const ctx = Context.init()
-            ctx.resolve = resolve
-            ctx.reject = reject
+        return new Promise((resolve, reject) => {
+          const ctx = new Context()
+          ctx.resolve = resolve
+          ctx.reject = reject
 
-            ctx.methodName = methodName
-            const method = methods[methodName]
-            ctx.methodArgs = method.call(invokeParam, ...args) || []
+          // set method name
+          ctx.methodName = methodName
+          // set method args
+          const method = methods[methodName]
+          ctx.methodArgs = method.call(invokeParam, ...args) || []
 
-            ctx.dubboVersion = this.props.dubboVersion
-            ctx.dubboInterface = dubboInterface
-            ctx.path = path || dubboInterface
-            ctx.group = group
-            ctx.timeout = timeout
-            ctx.version = version
-            ctx.attachments = attachments
-            ctx.isSupportedDubbox = isSupportedDubbox
+          // set invoke params
+          ctx.dubboVersion = this.props.dubboVersion
+          ctx.dubboInterface = dubboInterface
+          ctx.path = path || dubboInterface
+          ctx.group = group
+          ctx.timeout = timeout
+          ctx.version = version
+          ctx.attachments = attachments
+          ctx.isSupportedDubbox = isSupportedDubbox
 
-            //check param
-            //param should be hessian data type
-            if (!ctx.isRequestMethodArgsHessianType) {
-              log(
-                `${dubboInterface} method: ${methodName} not all arguments are valid hessian type`
-              )
-              log(`arguments->%O`, ctx.request.methodArgs)
-              reject(new Error('not all arguments are valid hessian type'))
-              return
-            }
+          //check param
+          //param should be hessian data type
+          if (!ctx.isRequestMethodArgsHessianType) {
+            log(
+              `${dubboInterface} method: ${methodName} not all arguments are valid hessian type`
+            )
+            log(`arguments->%O`, ctx.request.methodArgs)
+            reject(new Error('not all arguments are valid hessian type'))
+            return
+          }
 
-            //超时检测
-            ctx.timeout = this.props.dubboInvokeTimeout
+          //超时检测
+          ctx.timeout = this.props.dubboInvokeTimeout
 
-            ctx.setMaxTimeout(() => {
-              this.queue.delete(ctx.requestId)
-            })
-
-            //add task to queue
-            this.addQueue(ctx)
+          ctx.setMaxTimeout(() => {
+            log(
+              `invoke service %d method %s timeout`,
+              ctx.dubboInterface,
+              ctx.methodName
+            )
+            console.log(this.queue)
+            this.queue.delete(ctx.requestId)
           })
-        )
+
+          //add task to queue
+          this.handleInvoke(ctx)
+        })
       }
     }
 
@@ -122,23 +162,12 @@ export default class DubboDirectlyInvoker {
   // ~~~~~~~~~~~~~~~~private~~~~~~~~~~~~~~~~~~~~~~~~
 
   /**
-   * Successfully process the task of the queue
-   *
-   * @param requestId
-   * @param err
-   * @param res
+   * consume queue task
    */
-  private consume({
-    requestId,
-    err,
-    res
-  }: {
-    requestId: number
-    err?: Error
-    res?: any
-  }) {
+  private consume({ requestId, err, res }: IDubboResponse) {
     const ctx = this.queue.get(requestId)
     if (!ctx) {
+      log(`could not find context by requestId#%d`, requestId)
       return
     }
 
@@ -148,7 +177,9 @@ export default class DubboDirectlyInvoker {
       ctx.resolve(res)
     }
 
+    // clear timeout
     ctx.cleanTimeout()
+    // clear task
     this.queue.delete(requestId)
   }
 
@@ -157,8 +188,9 @@ export default class DubboDirectlyInvoker {
    *
    * @param ctx
    */
-  private addQueue(ctx: Context) {
+  private handleInvoke(ctx: Context) {
     const { requestId } = ctx
+
     this.queue.set(requestId, ctx)
 
     log(`current dubbo transport => ${this.status}`)
@@ -166,8 +198,10 @@ export default class DubboDirectlyInvoker {
     //根据当前socket的worker的状态，来对任务进行处理
     switch (this.status) {
       case STATUS.PADDING:
+        log(`current status was padding, waiting...`)
         break
       case STATUS.CONNECTED:
+        log(`send request`)
         this.transport.write(ctx)
         break
       case STATUS.CLOSED:
@@ -179,9 +213,10 @@ export default class DubboDirectlyInvoker {
     }
   }
 
-  //===================socket event===================
+  //==================handle transport event===================
   private handleTransportConnect = () => {
     this.status = STATUS.CONNECTED
+
     for (let ctx of this.queue.values()) {
       //如果还没有被处理
       if (!ctx.wasInvoked) {
