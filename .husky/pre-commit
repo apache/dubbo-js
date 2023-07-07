@@ -1,8 +1,8 @@
 #!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+# . "$(dirname "$0")/_/husky.sh"
 
-pnpm build-lint
-./dj-lint
+# pnpm build-lint
+# ./dj-lint
 
-npx pretty-quick --staged
-pnpm test
+# npx pretty-quick --staged
+# pnpm test

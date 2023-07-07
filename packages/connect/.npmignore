@@ -1,0 +1,5 @@
+/src
+/*.json
+/dist/*/**/*.spec.js
+/dist/*/**/*.spec.d.ts
+/buf.gen.yaml
