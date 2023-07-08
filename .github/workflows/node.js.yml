@@ -48,7 +48,7 @@ jobs:
       - name: Install Dependencies
         run: npm install -g pnpm@7.30.0 && pnpm i
 
-      - name: Build 
+      - name: Build Packages
         run: 
           npm run build --workspace=./packages/connect
           npm run build --workspace=./packages/connect-node
