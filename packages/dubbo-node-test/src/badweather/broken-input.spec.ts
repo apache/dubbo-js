@@ -20,7 +20,7 @@ import {
   endStreamFromJson,
   codeFromHttpStatus,
   errorFromJsonBytes,
-} from "apache-dubbo/protocol-connect";
+} from "apache-dubbo/protocol-triple";
 import { http2Request } from "../helpers/http2-request.js";
 
 describe("broken input", () => {

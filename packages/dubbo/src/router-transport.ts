@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createTransport } from "./protocol-connect/transport.js";
+import { createTransport } from "./protocol-triple/transport.js";
 import type { CommonTransportOptions } from "./protocol/transport-options.js";
 import { createUniversalHandlerClient } from "./protocol/universal-handler-client.js";
 import { createConnectRouter } from "./router.js";

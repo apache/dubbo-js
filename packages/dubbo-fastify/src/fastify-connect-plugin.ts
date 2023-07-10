@@ -15,7 +15,7 @@
 import type { JsonValue } from "@bufbuild/protobuf";
 import { Code, ConnectError, createConnectRouter } from "apache-dubbo";
 import type { ConnectRouter, ConnectRouterOptions } from "apache-dubbo";
-import * as protoConnect from "apache-dubbo/protocol-connect";
+import * as protoConnect from "apache-dubbo/protocol-triple";
 import * as protoGrpcWeb from "apache-dubbo/protocol-grpc-web";
 import * as protoGrpc from "apache-dubbo/protocol-grpc";
 import {

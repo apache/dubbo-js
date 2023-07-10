@@ -13,4 +13,5 @@
 // limitations under the License.
 
 // Workaround for bundlers that do not support subpath exports.
-module.exports = require("./dist/cjs/protocol-connect/index.js");
+module.exports = require('./dist/cjs/protocol-triple/index.js')
+

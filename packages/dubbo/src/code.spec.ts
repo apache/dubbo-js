@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Code } from "./code.js";
-import { codeFromString, codeToString } from "./protocol-connect/index.js";
+import { codeFromString, codeToString } from "./protocol-triple/index.js";
 
 describe("codeFromString", function () {
   it("parses as expected", () => {

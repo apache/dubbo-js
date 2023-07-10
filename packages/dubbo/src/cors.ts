@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as connect from "./protocol-connect/headers.js";
+import * as connect from "./protocol-triple/headers.js";
 import * as grpc from "./protocol-grpc/headers.js";
 import * as grpcWeb from "./protocol-grpc-web/headers.js";
 

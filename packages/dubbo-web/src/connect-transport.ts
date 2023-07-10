@@ -49,7 +49,7 @@ import {
   trailerDemux,
   transformConnectPostToGetRequest,
   validateResponse,
-} from "apache-dubbo/protocol-connect";
+} from "apache-dubbo/protocol-triple";
 import { assertFetchApi } from "./assert-fetch-api.js";
 
 /**

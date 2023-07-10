@@ -22,7 +22,7 @@ import {
 import type { MethodImpl, ServiceImpl } from "./implementation.js";
 import { createHandlerFactory as handlerFactoryGrpcWeb } from "./protocol-grpc-web/handler-factory.js";
 import { createHandlerFactory as handlerFactoryGrpc } from "./protocol-grpc/handler-factory.js";
-import { createHandlerFactory as handlerFactoryConnect } from "./protocol-connect/handler-factory.js";
+import { createHandlerFactory as handlerFactoryConnect } from "./protocol-triple/handler-factory.js";
 import {
   type UniversalHandler,
   type UniversalHandlerOptions,

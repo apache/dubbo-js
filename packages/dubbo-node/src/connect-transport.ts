@@ -20,7 +20,7 @@ import type {
 } from "@bufbuild/protobuf";
 import type { Interceptor, Transport } from "apache-dubbo";
 import type { Compression } from "apache-dubbo/protocol";
-import { createTransport } from "apache-dubbo/protocol-connect";
+import { createTransport } from "apache-dubbo/protocol-triple";
 import {
   type DeprecatedNodeTransportOptions,
   type NodeTransportOptions,
