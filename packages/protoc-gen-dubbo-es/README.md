@@ -1,19 +1,19 @@
 # apache-protoc-gen-dubbo-es
 
 The code generator for Dubbo, a simple library to work with servers and clients
-in ECMAScript with the type-safety of TypeScript.  It generates code that is compatible with
+in ECMAScript with the type-safety of TypeScript. It generates code that is compatible with
 browsers and Node.js.
 
 Learn more about Dubbo at [github.com/apache/dubbo-js](https://github.com/apache/dubbo-js).
 
 ## Installation
 
-`protoc-gen-dubbo-es` is a code generator plugin for Protocol Buffer compilers, 
+`protoc-gen-dubbo-es` is a code generator plugin for Protocol Buffer compilers,
 like [buf](https://github.com/bufbuild/buf) and [protoc](https://github.com/protocolbuffers/protobuf/releases).
 It generates clients as well as server definitions from your Protocol Buffer schema, and works in tandem with
 [@bufbuild/protoc-gen-es](https://www.npmjs.com/package/@bufbuild/protoc-gen-es),
-the code generator plugin for all Protocol Buffer base types. The code these two 
-plugins generate requires the runtime libraries [apache-dubbo](https://www.npmjs.com/package/apache-dubbo), 
+the code generator plugin for all Protocol Buffer base types. The code these two
+plugins generate requires the runtime libraries [apache-dubbo](https://www.npmjs.com/package/apache-dubbo),
 and [@bufbuild/protobuf](https://www.npmjs.com/package/@bufbuild/protobuf).
 
 To install `buf`, the plugins and their runtime libraries, run:
@@ -23,8 +23,8 @@ npm install --save-dev @bufbuild/buf @bufbuild/protoc-gen-es apache-protoc-gen-d
 npm install apache-dubbo @bufbuild/protobuf
 ```
 
-If you want to call Dubbo or gRPC-web services from a web browsers, make sure to install 
-[apache-dubbo-web](https://www.npmjs.com/package/apache-dubbo-web). If you want servers too, 
+If you want to call Dubbo or gRPC-web services from a web browsers, make sure to install
+[apache-dubbo-web](https://www.npmjs.com/package/apache-dubbo-web). If you want servers too,
 install [apache-dubbo-node](https://www.npmjs.com/package/apache-dubbo-node),
 [apache-dubbo-fastify](https://www.npmjs.com/package/apache-dubbo-fastify), or
 [apache-dubbo-express](https://www.npmjs.com/package/apache-dubbo-express)
@@ -32,7 +32,6 @@ install [apache-dubbo-node](https://www.npmjs.com/package/apache-dubbo-node),
 We use peer dependencies to ensure that code generator and runtime library are
 compatible with each other. Note that npm installs them automatically, but yarn
 and pnpm do not.
-
 
 ## Generating code
 
@@ -54,7 +53,7 @@ plugins:
     out: src/gen
     opt:
       # Add more plugin options here
-      - target=ts 
+      - target=ts
 ```
 
 To generate code for all protobuf files within your project, simply run:
@@ -63,11 +62,10 @@ To generate code for all protobuf files within your project, simply run:
 npx buf generate
 ```
 
-Note that `buf` can generate from various [inputs](https://docs.buf.build/reference/inputs), 
-not just local protobuf files. For example, `npx buf generate buf.build/bufbuild/eliza` 
+Note that `buf` can generate from various [inputs](https://docs.buf.build/reference/inputs),
+not just local protobuf files. For example, `npx buf generate buf.build/bufbuild/eliza`
 generates code for the module [bufbuild/eliza](https://buf.build/bufbuild/eliza) on the Buf Schema
 Registry.
-
 
 ### With protoc
 
@@ -81,16 +79,15 @@ PATH=$PATH:$(pwd)/node_modules/.bin \
   a.proto b.proto c.proto
 ```
 
-Note that we are adding `node_modules/.bin` to the `$PATH`, so that the protocol 
+Note that we are adding `node_modules/.bin` to the `$PATH`, so that the protocol
 buffer compiler can find them. This happens automatically with npm scripts.
 
-Since yarn v2 and above does not use a `node_modules` directory, you need to 
+Since yarn v2 and above does not use a `node_modules` directory, you need to
 change the variable a bit:
 
 ```bash
-PATH=$(dirname $(yarn bin protoc-gen-es)):$(dirname $(yarn bin protoc-gen-connect-es)):$PATH
+PATH=$(dirname $(yarn bin protoc-gen-es)):$(dirname $(yarn bin protoc-gen-dubbo-es)):$PATH
 ```
-
 
 ## Plugin options
 
@@ -100,6 +97,7 @@ This option controls whether the plugin generates JavaScript, TypeScript,
 or TypeScript declaration files.
 
 Possible values:
+
 - `target=js` - generates a `_connect.js` file for every `.proto` input file.
 - `target=ts` - generates a `_connect.ts` file for every `.proto` input file.
 - `target=dts` - generates a `_connect.d.ts` file for every `.proto` input file.
@@ -108,7 +106,7 @@ Multiple values can be given by separating them with `+`, for example
 `target=js+dts`.
 
 By default, we generate JavaScript and TypeScript declaration files, which
-produces the smallest code size and is the most compatible with various 
+produces the smallest code size and is the most compatible with various
 bundler configurations. If you prefer to generate TypeScript, use `target=ts`.
 
 ### `import_extension=.js`
@@ -118,13 +116,12 @@ By default, [protoc-gen-dubbo-es](https://www.npmjs.com/package/apache-protoc-ge
 uses a `.js` file extensions in import paths, even in TypeScript files.
 
 This is unintuitive, but necessary for [ECMAScript modules in Node.js](https://www.typescriptlang.org/docs/handbook/esm-node.html).
-Unfortunately, not all bundlers and tools have caught up yet, and Deno 
-requires `.ts`. With this plugin option, you can replace `.js` extensions 
+Unfortunately, not all bundlers and tools have caught up yet, and Deno
+requires `.ts`. With this plugin option, you can replace `.js` extensions
 in import paths with the given value. For example, set
 
 - `import_extension=none` to remove the `.js` extension
 - `import_extension=.ts` to replace the `.js` extension with `.ts`
-
 
 ### `keep_empty_files=true`
 
@@ -134,7 +131,6 @@ omit empty files from the plugin output. This option disables pruning of
 empty files, to allow for smooth interoperation with Bazel and similar
 tooling that requires all output files to be declared ahead of time.
 Unless you use Bazel, it is very unlikely that you need this option.
-
 
 ## Example generated code
 
@@ -169,6 +165,7 @@ message SayResponse {
 ```
 
 `eliza_connect.ts`
+
 ```ts
 /**
  * ElizaService provides a way to talk to the ELIZA, which is a port of
@@ -181,7 +178,7 @@ message SayResponse {
  * @generated from service buf.connect.demo.eliza.v1.ElizaService
  */
 export const ElizaService = {
-  typeName: "buf.connect.demo.eliza.v1.ElizaService",
+  typeName: 'buf.connect.demo.eliza.v1.ElizaService',
   methods: {
     /**
      * Say is a unary request demo. This method should allow for a one sentence
@@ -190,11 +187,11 @@ export const ElizaService = {
      * @generated from rpc buf.connect.demo.eliza.v1.ElizaService.Say
      */
     say: {
-      name: "Say",
+      name: 'Say',
       I: SayRequest,
       O: SayResponse,
-      kind: MethodKind.Unary,
-    },
+      kind: MethodKind.Unary
+    }
   }
-} as const;
+} as const
 ```

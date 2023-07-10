@@ -19,7 +19,7 @@ import { generateDts } from "./declaration.js";
 import { version } from "../package.json";
 
 export const protocGenConnectEs = createEcmaScriptPlugin({
-  name: "protoc-gen-connect-es",
+  name: "protoc-gen-dubbo-es",
   version: `v${String(version)}`,
   generateTs,
   generateJs,
