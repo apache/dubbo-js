@@ -51,30 +51,6 @@ importers:
         specifier: ^3.2.41
         version: 3.2.41
 
-  packages/-web-bench:
-    dependencies:
-      '@bufbuild/protobuf':
-        specifier: ^1.2.1
-        version: 1.2.1
-      '@bufbuild/protoc-gen-es':
-        specifier: ^1.2.1
-        version: 1.2.1(@bufbuild/protobuf@1.2.1)
-      apache-dubbo-web:
-        specifier: ^0.0.2
-        version: link:../dubbo-web
-      brotli:
-        specifier: ^1.3.3
-        version: 1.3.3
-      esbuild:
-        specifier: ^0.16.12
-        version: 0.16.12
-      google-protobuf:
-        specifier: ^3.21.0
-        version: 3.21.0
-      grpc-web:
-        specifier: ^1.4.2
-        version: 1.4.2
-
   packages/dubbo:
     dependencies:
       '@bufbuild/protobuf':
@@ -205,6 +181,30 @@ importers:
       apache-dubbo:
         specifier: ^0.0.2
         version: link:../dubbo
+
+  packages/dubbo-web-bench:
+    dependencies:
+      '@bufbuild/protobuf':
+        specifier: ^1.2.1
+        version: 1.2.1
+      '@bufbuild/protoc-gen-es':
+        specifier: ^1.2.1
+        version: 1.2.1(@bufbuild/protobuf@1.2.1)
+      apache-dubbo-web:
+        specifier: ^0.0.2
+        version: link:../dubbo-web
+      brotli:
+        specifier: ^1.3.3
+        version: 1.3.3
+      esbuild:
+        specifier: ^0.16.12
+        version: 0.16.12
+      google-protobuf:
+        specifier: ^3.21.0
+        version: 3.21.0
+      grpc-web:
+        specifier: ^1.4.2
+        version: 1.4.2
 
   packages/dubbo-web-test:
     dependencies:

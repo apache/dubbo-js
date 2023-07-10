@@ -50,14 +50,14 @@ jobs:
 
       - name: Build Packages
         run:
-          npm run build --workspace=./packages/connect
-          # npm run build --workspace=./packages/connect-node
-          # npm run build --workspace=./packages/connect-web
-          # npm run build --workspace=./packages/connect-express
-          # npm run build --workspace=./packages/connect-fastify
-          # npm run build --workspace=./packages/connect-next
-          # npm run build --workspace=./packages/protoc-gen-connect-es
-          # npm run build --workspace=./packages/protoc-gen-connect-web
+          npm run build --workspace=./packages/dubbo
+          # npm run build --workspace=./packages/dubbo-node
+          # npm run build --workspace=./packages/dubbo-web
+          # npm run build --workspace=./packages/dubbo-express
+          # npm run build --workspace=./packages/dubbo-fastify
+          # npm run build --workspace=./packages/dubbo-next
+          # npm run build --workspace=./packages/protoc-gen-dubbo-es
+          # npm run build --workspace=./packages/protoc-gen-dubbo-web
 
       - name: Continuous Integration
         run:
