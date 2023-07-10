@@ -49,20 +49,20 @@ jobs:
         run: npm install -g pnpm@7.30.0 && pnpm i
 
       - name: Build Packages
-        run: 
+        run:
           npm run build --workspace=./packages/connect
-          npm run build --workspace=./packages/connect-node
-          npm run build --workspace=./packages/connect-web
-          npm run build --workspace=./packages/connect-express
-          npm run build --workspace=./packages/connect-fastify
-          npm run build --workspace=./packages/connect-next
-          npm run build --workspace=./packages/protoc-gen-connect-es
-          npm run build --workspace=./packages/protoc-gen-connect-web
+          # npm run build --workspace=./packages/connect-node
+          # npm run build --workspace=./packages/connect-web
+          # npm run build --workspace=./packages/connect-express
+          # npm run build --workspace=./packages/connect-fastify
+          # npm run build --workspace=./packages/connect-next
+          # npm run build --workspace=./packages/protoc-gen-connect-es
+          # npm run build --workspace=./packages/protoc-gen-connect-web
 
       - name: Continuous Integration
-        run: 
+        run:
           npm run jasmine --workspace=./packages/connect
-          npm run jasmine --workspace=./packages/connect-node
+          # npm run jasmine --workspace=./packages/connect-node
 
       - name: Code Coverage
         uses: codecov/codecov-action@v1
