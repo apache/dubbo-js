@@ -61,8 +61,8 @@ jobs:
 
       - name: Continuous Integration
         run:
-          npm run jasmine --workspace=./packages/connect
-          # npm run jasmine --workspace=./packages/connect-node
+          npm run jasmine --workspace=./packages/dubbo
+          # npm run jasmine --workspace=./packages/dubbo-node
 
       - name: Code Coverage
         uses: codecov/codecov-action@v1
