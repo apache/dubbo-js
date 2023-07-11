@@ -5,10 +5,10 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/apache/dubbo-js.git",
-    "directory": "packages/protoc-gen-connect-web"
+    "directory": "packages/protoc-gen-dubbo-web"
   },
   "bin": {
-    "protoc-gen-connect-web": "bin/protoc-gen-connect-web"
+    "protoc-gen-dubbo-web": "bin/protoc-gen-dubbo-web"
   },
   "engines": {
     "node": ">=16.0.0"
