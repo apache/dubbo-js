@@ -264,7 +264,7 @@ importers:
         specifier: ^4.17.15
         version: 4.17.17
       apache-protoc-gen-dubbo-es:
-        specifier: ^0.0.4
+        specifier: ^0.0.5
         version: link:../protoc-gen-dubbo-es
       esbuild:
         specifier: ^0.16.12
