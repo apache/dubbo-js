@@ -20,7 +20,7 @@ import type {
   UnaryRequest,
   UnaryResponse,
 } from "../interceptor.js";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 import {
   createDeadlineSignal,
   createLinkedAbortController,

@@ -25,7 +25,7 @@ import type {
 import type { Transport } from "./transport.js";
 import { makeAnyClient } from "./any-client.js";
 import type { CallOptions } from "./call-options.js";
-import { ConnectError } from "./connect-error.js";
+import { ConnectError } from "./dubbo-error.js";
 import { Code } from "./code.js";
 import { createAsyncIterable } from "./protocol/async-iterable.js";
 

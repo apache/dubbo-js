@@ -15,7 +15,7 @@
 import type { Message } from "@bufbuild/protobuf";
 import type { MethodImplSpec } from "../implementation.js";
 import { createHandlerContext } from "../implementation.js";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import {
   contentTypeJson,

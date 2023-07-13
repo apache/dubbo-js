@@ -14,7 +14,7 @@
 
 import type { JsonObject } from "@bufbuild/protobuf";
 import { endStreamFromJson, endStreamToJson } from "./end-stream.js";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import { node16FetchHeadersPolyfill } from "../node16-polyfill-helper.spec.js";
 import { errorToJson } from "./error-json.js";

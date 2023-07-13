@@ -24,7 +24,7 @@ import {
   ConnectError,
   connectErrorDetails,
   connectErrorFromReason,
-} from "./connect-error.js";
+} from "./dubbo-error.js";
 import { Code } from "./code.js";
 import { node16FetchHeadersPolyfill } from "./node16-polyfill-helper.spec.js";
 

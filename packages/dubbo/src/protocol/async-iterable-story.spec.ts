@@ -15,7 +15,7 @@
 import type { Serialization } from "./serialization.js";
 import type { Compression } from "./compression.js";
 import { encodeEnvelopes } from "./envelope.js";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import {
   createAsyncIterableBytes,

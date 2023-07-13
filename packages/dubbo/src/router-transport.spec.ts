@@ -16,7 +16,7 @@ import { Int32Value, MethodKind, StringValue } from "@bufbuild/protobuf";
 import { createPromiseClient } from "./promise-client.js";
 import { createAsyncIterable } from "./protocol/async-iterable.js";
 import { createRouterTransport } from "./router-transport.js";
-import { ConnectError } from "./connect-error.js";
+import { ConnectError } from "./dubbo-error.js";
 
 describe("createRoutesTransport", function () {
   const testService = {

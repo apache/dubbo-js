@@ -20,7 +20,7 @@ import {
   protoBase64,
 } from "@bufbuild/protobuf";
 import { Code } from "../code.js";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 import type { MethodImplSpec } from "../implementation.js";
 import { createHandlerContext } from "../implementation.js";
 import {

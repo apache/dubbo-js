@@ -14,7 +14,7 @@
 
 import type { BinaryReadOptions, MessageType } from "@bufbuild/protobuf";
 import { Message, protoBase64 } from "@bufbuild/protobuf";
-import { ConnectError } from "./connect-error.js";
+import { ConnectError } from "./dubbo-error.js";
 import { Code } from "./code.js";
 
 /**

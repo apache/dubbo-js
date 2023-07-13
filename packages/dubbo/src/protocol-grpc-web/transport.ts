@@ -24,7 +24,7 @@ import { requestHeaderWithCompression } from "./request-header.js";
 import { validateResponseWithCompression } from "./validate-response.js";
 import { createTrailerSerialization, trailerFlag } from "./trailer.js";
 import { Code } from "../code.js";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 import type {
   UnaryResponse,
   UnaryRequest,

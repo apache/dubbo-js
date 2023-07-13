@@ -27,7 +27,7 @@ import {
   transformSplitEnvelope,
 } from "./async-iterable.js";
 import type { Serialization } from "./serialization.js";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import type { EnvelopedMessage } from "./envelope.js";
 import type { Compression } from "./compression.js";

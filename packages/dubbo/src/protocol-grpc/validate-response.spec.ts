@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { validateResponse } from "./validate-response.js";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 
 describe("gRPC validateResponse()", function () {
   function v(

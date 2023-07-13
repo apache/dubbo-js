@@ -29,7 +29,7 @@ import {
   createAsyncIterable,
   readAllBytes,
 } from "../protocol/async-iterable.js";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 import { createTransport } from "./transport.js";
 import { encodeEnvelope } from "../protocol/envelope.js";
 import { createEndStreamSerialization, endStreamFlag } from "./end-stream.js";

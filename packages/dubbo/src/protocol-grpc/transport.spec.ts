@@ -20,7 +20,7 @@ import type {
   UniversalClientResponse,
 } from "../protocol/index.js";
 import { createAsyncIterable, encodeEnvelope } from "../protocol/index.js";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 
 const TestService = {

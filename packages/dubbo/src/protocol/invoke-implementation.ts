@@ -14,7 +14,7 @@
 
 import { Message, MethodKind } from "@bufbuild/protobuf";
 import type { PartialMessage } from "@bufbuild/protobuf";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import type { HandlerContext, MethodImplSpec } from "../implementation.js";
 import type { AsyncIterableTransform } from "./async-iterable.js";

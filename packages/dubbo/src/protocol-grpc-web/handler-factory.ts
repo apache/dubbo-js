@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import type { Message } from "@bufbuild/protobuf";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import type { MethodImplSpec } from "../implementation.js";
 import { createHandlerContext } from "../implementation.js";

@@ -22,7 +22,7 @@ import type {
   MethodInfo,
   PartialMessage,
 } from "@bufbuild/protobuf";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import { assertReadMaxBytes, assertWriteMaxBytes } from "./limit-io.js";
 

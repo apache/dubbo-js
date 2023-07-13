@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Code } from "../code.js";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 
 /**
  * Parse a gRPC Timeout (Deadline) header.

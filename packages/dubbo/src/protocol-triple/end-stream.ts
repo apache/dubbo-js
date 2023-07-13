@@ -19,7 +19,7 @@ import type {
 } from "@bufbuild/protobuf";
 import { errorFromJson, errorToJson } from "./error-json.js";
 import { appendHeaders } from "../http-headers.js";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import type { Serialization } from "../protocol";
 

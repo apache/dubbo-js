@@ -36,7 +36,7 @@ import type { ContentTypeMatcher } from "./content-type-matcher.js";
 import type { Compression } from "./compression.js";
 import type { ProtocolHandlerFactory } from "./protocol-handler-factory.js";
 import { validateReadWriteMaxBytes } from "./limit-io.js";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 
 /**

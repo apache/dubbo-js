@@ -20,7 +20,7 @@ import {
   getJsonOptions,
   limitSerialization,
 } from "./serialization.js";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 
 describe("createBinarySerialization()", function () {
   const goldenMessage = new StringValue({ value: "abc" });

@@ -14,7 +14,7 @@
 
 import { MethodKind } from "@bufbuild/protobuf";
 import { validateResponse } from "./validate-response.js";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 
 describe("Connect validateResponse()", function () {
   describe("with unary", function () {

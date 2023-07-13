@@ -16,7 +16,7 @@ export {
   ConnectError,
   connectErrorDetails,
   connectErrorFromReason,
-} from "./connect-error.js";
+} from "./dubbo-error.js";
 export { Code } from "./code.js";
 export {
   encodeBinaryHeader,

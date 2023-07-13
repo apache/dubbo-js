@@ -14,7 +14,7 @@
 
 import type { Message, MessageType, PartialMessage } from "@bufbuild/protobuf";
 import { Code } from "../code.js";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 import type { EnvelopedMessage } from "./envelope.js";
 import {
   encodeEnvelope,

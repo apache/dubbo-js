@@ -20,7 +20,7 @@ import type {
   ServiceType,
 } from "@bufbuild/protobuf";
 import { Message, MethodKind } from "@bufbuild/protobuf";
-import { ConnectError } from "./connect-error.js";
+import { ConnectError } from "./dubbo-error.js";
 import type { Transport } from "./transport.js";
 import { Code } from "./code.js";
 import { makeAnyClient } from "./any-client.js";

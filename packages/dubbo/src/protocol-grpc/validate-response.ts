@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { codeFromHttpStatus } from "./http-status.js";
-import { ConnectError } from "../connect-error.js";
+import { ConnectError } from "../dubbo-error.js";
 import { findTrailerError } from "./trailer-status.js";
 import { Code } from "../code.js";
 import { headerEncoding, headerGrpcStatus } from "./headers.js";
