@@ -23,7 +23,7 @@ import {
 
 export function generateTs(schema: Schema) {
   for (const protoFile of schema.files) {
-    const file = schema.generateFile(protoFile.name + "_connect.ts");
+    const file = schema.generateFile(protoFile.name + "_dubbo.ts");
     file.preamble(protoFile);
     for (const service of protoFile.services) {
       generateService(schema, file, service);
