@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export { createConnectTransport } from "./connect-transport.js";
+export { createConnectTransport } from "./dubbo-transport.js";
 export { createGrpcWebTransport } from "./grpc-web-transport.js";
-export type { ConnectTransportOptions } from "./connect-transport.js";
+export type { ConnectTransportOptions } from "./dubbo-transport.js";
 export type { GrpcWebTransportOptions } from "./grpc-web-transport.js";

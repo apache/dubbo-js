@@ -17,7 +17,7 @@ import "./node-headers-polyfill.js";
 
 export { createGrpcWebTransport } from "./grpc-web-transport.js";
 export { createGrpcTransport } from "./grpc-transport.js";
-export { createConnectTransport } from "./connect-transport.js";
+export { createConnectTransport } from "./dubbo-transport.js";
 export { compressionBrotli, compressionGzip } from "./compression.js";
 export { connectNodeAdapter } from "./connect-node-adapter.js";
 
