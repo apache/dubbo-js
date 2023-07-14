@@ -46,12 +46,12 @@ importers:
         version: 1.8.2
       vitepress:
         specifier: ^1.0.0-alpha.21
-        version: 1.0.0-alpha.21(@algolia/client-search@4.18.0)(@types/node@20.4.0)(search-insights@2.6.0)
+        version: 1.0.0-alpha.21(@algolia/client-search@4.18.0)(@types/node@20.4.0)(search-insights@2.7.0)
       vue:
         specifier: ^3.2.41
         version: 3.2.41
 
-  packages/connect:
+  packages/dubbo:
     dependencies:
       '@bufbuild/protobuf':
         specifier: ^1.2.1
@@ -70,7 +70,7 @@ importers:
         specifier: ^5.22.0
         version: 5.22.0
 
-  packages/connect-express:
+  packages/dubbo-express:
     dependencies:
       '@bufbuild/protobuf':
         specifier: ^1.2.1
@@ -79,50 +79,50 @@ importers:
         specifier: ^4.17.17
         version: 4.17.17
       apache-dubbo:
-        specifier: ^0.0.2
-        version: link:../connect
+        specifier: ^0.0.3
+        version: link:../dubbo
       apache-dubbo-node:
-        specifier: ^0.0.2
-        version: link:../connect-node
+        specifier: ^0.0.3
+        version: link:../dubbo-node
 
-  packages/connect-fastify:
+  packages/dubbo-fastify:
     dependencies:
       '@bufbuild/protobuf':
         specifier: ^1.2.1
         version: 1.2.1
       apache-dubbo:
-        specifier: ^0.0.2
-        version: link:../connect
+        specifier: ^0.0.3
+        version: link:../dubbo
       apache-dubbo-node:
-        specifier: ^0.0.2
-        version: link:../connect-node
+        specifier: ^0.0.3
+        version: link:../dubbo-node
       fastify:
         specifier: ^4.17.0
         version: 4.17.0
 
-  packages/connect-next:
+  packages/dubbo-next:
     dependencies:
       '@bufbuild/protobuf':
         specifier: ^1.2.1
         version: 1.2.1
       apache-dubbo:
-        specifier: ^0.0.2
-        version: link:../connect
+        specifier: ^0.0.3
+        version: link:../dubbo
       apache-dubbo-node:
-        specifier: ^0.0.2
-        version: link:../connect-node
+        specifier: ^0.0.3
+        version: link:../dubbo-node
       next:
         specifier: ^13.2.4
         version: 13.2.4(react-dom@18.2.0)(react@18.2.0)
 
-  packages/connect-node:
+  packages/dubbo-node:
     dependencies:
       '@bufbuild/protobuf':
         specifier: ^1.2.1
         version: 1.2.1
       apache-dubbo:
-        specifier: ^0.0.2
-        version: link:../connect
+        specifier: ^0.0.3
+        version: link:../dubbo
       headers-polyfill:
         specifier: ^3.1.2
         version: 3.1.2
@@ -134,7 +134,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
 
-  packages/connect-node-test:
+  packages/dubbo-node-test:
     dependencies:
       '@grpc/grpc-js':
         specifier: ^1.8.14
@@ -146,20 +146,20 @@ importers:
         specifier: ^4.3.0
         version: 4.3.1
       apache-dubbo:
-        specifier: ^0.0.2
-        version: link:../connect
+        specifier: ^0.0.3
+        version: link:../dubbo
       apache-dubbo-express:
-        specifier: ^0.0.2
-        version: link:../connect-express
+        specifier: ^0.0.3
+        version: link:../dubbo-express
       apache-dubbo-fastify:
-        specifier: ^0.0.2
-        version: link:../connect-fastify
+        specifier: ^0.0.3
+        version: link:../dubbo-fastify
       apache-dubbo-node:
-        specifier: ^0.0.2
-        version: link:../connect-node
+        specifier: ^0.0.3
+        version: link:../dubbo-node
       apache-dubbo-web:
-        specifier: ^0.0.2
-        version: link:../connect-web
+        specifier: ^0.0.3
+        version: link:../dubbo-web
       esbuild:
         specifier: ^0.16.12
         version: 0.16.12
@@ -173,16 +173,16 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
 
-  packages/connect-web:
+  packages/dubbo-web:
     dependencies:
       '@bufbuild/protobuf':
         specifier: ^1.2.1
         version: 1.2.1
       apache-dubbo:
-        specifier: ^0.0.2
-        version: link:../connect
+        specifier: ^0.0.3
+        version: link:../dubbo
 
-  packages/connect-web-bench:
+  packages/dubbo-web-bench:
     dependencies:
       '@bufbuild/protobuf':
         specifier: ^1.2.1
@@ -191,8 +191,8 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1(@bufbuild/protobuf@1.2.1)
       apache-dubbo-web:
-        specifier: ^0.0.2
-        version: link:../connect-web
+        specifier: ^0.0.3
+        version: link:../dubbo-web
       brotli:
         specifier: ^1.3.3
         version: 1.3.3
@@ -206,17 +206,17 @@ importers:
         specifier: ^1.4.2
         version: 1.4.2
 
-  packages/connect-web-test:
+  packages/dubbo-web-test:
     dependencies:
       '@types/jasmine':
         specifier: ^4.3.0
         version: 4.3.1
       apache-dubbo:
-        specifier: ^0.0.2
-        version: link:../connect
+        specifier: ^0.0.3
+        version: link:../dubbo
       apache-dubbo-web:
-        specifier: ^0.0.2
-        version: link:../connect-web
+        specifier: ^0.0.3
+        version: link:../dubbo-web
       esbuild:
         specifier: ^0.16.12
         version: 0.16.12
@@ -245,11 +245,11 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1
       apache-dubbo-node:
-        specifier: ^0.0.2
-        version: link:../connect-node
+        specifier: ^0.0.3
+        version: link:../dubbo-node
       apache-dubbo-web:
-        specifier: ^0.0.2
-        version: link:../connect-web
+        specifier: ^0.0.3
+        version: link:../dubbo-web
       tsx:
         specifier: ^3.12.7
         version: 3.12.7
@@ -264,8 +264,8 @@ importers:
         specifier: ^4.17.15
         version: 4.17.17
       apache-protoc-gen-dubbo-es:
-        specifier: ^0.0.3
-        version: link:../protoc-gen-connect-es
+        specifier: ^0.0.4
+        version: link:../protoc-gen-dubbo-es
       esbuild:
         specifier: ^0.16.12
         version: 0.16.12
@@ -273,7 +273,7 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3
 
-  packages/protoc-gen-connect-es:
+  packages/protoc-gen-dubbo-es:
     dependencies:
       '@bufbuild/protobuf':
         specifier: ^1.2.1
@@ -285,10 +285,10 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1
       apache-dubbo:
-        specifier: ^0.0.2
-        version: link:../connect
+        specifier: ^0.0.3
+        version: link:../dubbo
 
-  packages/protoc-gen-connect-web:
+  packages/protoc-gen-dubbo-web:
     dependencies:
       '@bufbuild/protobuf':
         specifier: ^1.2.1
@@ -300,8 +300,8 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1
       apache-dubbo:
-        specifier: ^0.0.2
-        version: link:../connect
+        specifier: ^0.0.3
+        version: link:../dubbo
 
 packages:
 
@@ -310,10 +310,10 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /@algolia/autocomplete-core@1.9.3(@algolia/client-search@4.18.0)(algoliasearch@4.18.0)(search-insights@2.6.0):
+  /@algolia/autocomplete-core@1.9.3(@algolia/client-search@4.18.0)(algoliasearch@4.18.0)(search-insights@2.7.0):
     resolution: {integrity: sha512-009HdfugtGCdC4JdXUbVJClA0q0zh24yyePn+KUGk3rP7j8FEe/m5Yo/z65gn6nP/cM39PxpzqKrL7A6fP6PPw==}
     dependencies:
-      '@algolia/autocomplete-plugin-algolia-insights': 1.9.3(@algolia/client-search@4.18.0)(algoliasearch@4.18.0)(search-insights@2.6.0)
+      '@algolia/autocomplete-plugin-algolia-insights': 1.9.3(@algolia/client-search@4.18.0)(algoliasearch@4.18.0)(search-insights@2.7.0)
       '@algolia/autocomplete-shared': 1.9.3(@algolia/client-search@4.18.0)(algoliasearch@4.18.0)
     transitivePeerDependencies:
       - '@algolia/client-search'
@@ -321,13 +321,13 @@ packages:
       - search-insights
     dev: true
 
-  /@algolia/autocomplete-plugin-algolia-insights@1.9.3(@algolia/client-search@4.18.0)(algoliasearch@4.18.0)(search-insights@2.6.0):
+  /@algolia/autocomplete-plugin-algolia-insights@1.9.3(@algolia/client-search@4.18.0)(algoliasearch@4.18.0)(search-insights@2.7.0):
     resolution: {integrity: sha512-a/yTUkcO/Vyy+JffmAnTWbr4/90cLzw+CC3bRbhnULr/EM0fGNvM13oQQ14f2moLMcVDyAx/leczLlAOovhSZg==}
     peerDependencies:
       search-insights: '>= 1 < 3'
     dependencies:
       '@algolia/autocomplete-shared': 1.9.3(@algolia/client-search@4.18.0)(algoliasearch@4.18.0)
-      search-insights: 2.6.0
+      search-insights: 2.7.0
     transitivePeerDependencies:
       - '@algolia/client-search'
       - algoliasearch
@@ -575,11 +575,11 @@ packages:
     resolution: {integrity: sha512-2Pu9HDg/uP/IT10rbQ+4OrTQuxIWdKVUEdcw9/w7kZJv9NeHS6skJx1xuRiFyoGKwAzcHXnLp7csE99sj+O1YA==}
     dev: true
 
-  /@docsearch/js@3.5.1(@algolia/client-search@4.18.0)(search-insights@2.6.0):
+  /@docsearch/js@3.5.1(@algolia/client-search@4.18.0)(search-insights@2.7.0):
     resolution: {integrity: sha512-EXi8de5njxgP6TV3N9ytnGRLG9zmBNTEZjR4VzwPcpPLbZxxTLG2gaFyJyKiFVQxHW/DPlMrDJA3qoRRGEkgZw==}
     dependencies:
-      '@docsearch/react': 3.5.1(@algolia/client-search@4.18.0)(search-insights@2.6.0)
-      preact: 10.15.1
+      '@docsearch/react': 3.5.1(@algolia/client-search@4.18.0)(search-insights@2.7.0)
+      preact: 10.16.0
     transitivePeerDependencies:
       - '@algolia/client-search'
       - '@types/react'
@@ -588,7 +588,7 @@ packages:
       - search-insights
     dev: true
 
-  /@docsearch/react@3.5.1(@algolia/client-search@4.18.0)(search-insights@2.6.0):
+  /@docsearch/react@3.5.1(@algolia/client-search@4.18.0)(search-insights@2.7.0):
     resolution: {integrity: sha512-t5mEODdLzZq4PTFAm/dvqcvZFdPDMdfPE5rJS5SC8OUq9mPzxEy6b+9THIqNM9P0ocCb4UC5jqBrxKclnuIbzQ==}
     peerDependencies:
       '@types/react': '>= 16.8.0 < 19.0.0'
@@ -602,7 +602,7 @@ packages:
       react-dom:
         optional: true
     dependencies:
-      '@algolia/autocomplete-core': 1.9.3(@algolia/client-search@4.18.0)(algoliasearch@4.18.0)(search-insights@2.6.0)
+      '@algolia/autocomplete-core': 1.9.3(@algolia/client-search@4.18.0)(algoliasearch@4.18.0)(search-insights@2.7.0)
       '@algolia/autocomplete-preset-algolia': 1.9.3(@algolia/client-search@4.18.0)(algoliasearch@4.18.0)
       '@docsearch/css': 3.5.1
       algoliasearch: 4.18.0
@@ -1087,12 +1087,12 @@ packages:
     resolution: {integrity: sha512-w84maJ6CKl5aApCMzFll0hxtFNT6or9WwMslobKaqWUEf1K+zhlL43bSQhFreyYWIWR+Z0xnVFC1KtLm4ZpM/A==}
     engines: {node: ^8.13.0 || >=10.10.0}
     dependencies:
-      '@grpc/proto-loader': 0.7.7
-      '@types/node': 20.4.1
+      '@grpc/proto-loader': 0.7.8
+      '@types/node': 20.4.2
     dev: false
 
-  /@grpc/proto-loader@0.7.7:
-    resolution: {integrity: sha512-1TIeXOi8TuSCQprPItwoMymZXxWT0CPxUhkrkeCUH+D8U7QDwQ6b7SUz2MaLuWM2llT+J/TVFLmQI5KtML3BhQ==}
+  /@grpc/proto-loader@0.7.8:
+    resolution: {integrity: sha512-GU12e2c8dmdXb7XUlOgYWZ2o2i+z9/VeACkxTA/zzAe2IjclC5PnVL0lpgjhrqfpDYHzM8B1TF6pqWegMYAzlA==}
     engines: {node: '>=6'}
     hasBin: true
     dependencies:
@@ -1355,12 +1355,12 @@ packages:
     resolution: {integrity: sha512-ALYone6pm6QmwZoAgeyNksccT9Q4AWZQ6PvfwR37GT6r6FWUPguq6sUmNGSMV2Wr761oQoBxwGGa6DR5o1DC9g==}
     dependencies:
       '@types/connect': 3.4.35
-      '@types/node': 20.4.1
+      '@types/node': 20.4.2
 
   /@types/connect@3.4.35:
     resolution: {integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==}
     dependencies:
-      '@types/node': 20.4.1
+      '@types/node': 20.4.2
 
   /@types/cookie@0.4.1:
     resolution: {integrity: sha512-XW/Aa8APYr6jSVVA1y/DEIZX0/GMKLEVekNG727R8cs56ahETkRAy/3DR7+fJyh7oUgGwNQaRfXCun0+KbWY7Q==}
@@ -1369,13 +1369,13 @@ packages:
   /@types/cors@2.8.13:
     resolution: {integrity: sha512-RG8AStHlUiV5ysZQKq97copd2UmVYw3/pRMLefISZ3S1hK104Cwm7iLQ3fTKx+lsUH2CE8FlLaYeEA2LSeqYUA==}
     dependencies:
-      '@types/node': 20.4.1
+      '@types/node': 20.4.2
     dev: false
 
   /@types/express-serve-static-core@4.17.35:
     resolution: {integrity: sha512-wALWQwrgiB2AWTT91CB62b6Yt0sNHpznUXeZEcnPU3DRdlDIz74x8Qg1UUYKSVFi+va5vKOLYRBI1bRKiLLKIg==}
     dependencies:
-      '@types/node': 20.4.1
+      '@types/node': 20.4.2
       '@types/qs': 6.9.7
       '@types/range-parser': 1.2.4
       '@types/send': 0.17.1
@@ -1416,8 +1416,8 @@ packages:
     resolution: {integrity: sha512-jfT7iTf/4kOQ9S7CHV9BIyRaQqHu67mOjsIQBC3BKZvzvUB6zLxEwJ6sBE3ozcvP8kF6Uk5PXN0Q+c0dfhGX0g==}
     dev: true
 
-  /@types/node@20.4.1:
-    resolution: {integrity: sha512-JIzsAvJeA/5iY6Y/OxZbv1lUcc8dNSE77lb2gnBH+/PJ3lFR1Ccvgwl5JWnHAkNHcRsT0TbpVOsiMKZ1F/yyJg==}
+  /@types/node@20.4.2:
+    resolution: {integrity: sha512-Dd0BYtWgnWJKwO1jkmTrzofjK2QXXcai0dmtzvIBhcA+RsG5h8R3xlyta0kGOZRNfL9GuRtb1knmPEhQrePCEw==}
 
   /@types/qs@6.9.7:
     resolution: {integrity: sha512-FGa1F62FT09qcrueBA6qYTrJPVDzah9a+493+o2PCXsesWHIn27G98TsSMs3WPNbZIEj4+VJf6saSFpvD+3Zsw==}
@@ -1433,14 +1433,14 @@ packages:
     resolution: {integrity: sha512-Cwo8LE/0rnvX7kIIa3QHCkcuF21c05Ayb0ZfxPiv0W8VRiZiNW/WuRupHKpqqGVGf7SUA44QSOUKaEd9lIrd/Q==}
     dependencies:
       '@types/mime': 1.3.2
-      '@types/node': 20.4.1
+      '@types/node': 20.4.2
 
   /@types/serve-static@1.15.2:
     resolution: {integrity: sha512-J2LqtvFYCzaj8pVYKw8klQXrLLk7TBZmQ4ShlcdkELFKGwGMfevMLneMMRkMgZxotOD9wg497LpC7O8PcvAmfw==}
     dependencies:
       '@types/http-errors': 2.0.1
       '@types/mime': 3.0.1
-      '@types/node': 20.4.1
+      '@types/node': 20.4.2
 
   /@types/web-bluetooth@0.0.16:
     resolution: {integrity: sha512-oh8q2Zc32S6gd/j50GowEjKLoOVOwHP/bWVjKJInBwQqdOYMdPrf1oVlelTlyfFK3CKxL1uahMDAr+vy8T7yMQ==}
@@ -1900,7 +1900,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.2.0
-      es-abstract: 1.21.2
+      es-abstract: 1.21.3
       get-intrinsic: 1.2.1
       is-string: 1.0.7
     dev: true
@@ -1916,7 +1916,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.2.0
-      es-abstract: 1.21.2
+      es-abstract: 1.21.3
       es-shim-unscopables: 1.0.0
     dev: true
 
@@ -1926,7 +1926,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.2.0
-      es-abstract: 1.21.2
+      es-abstract: 1.21.3
       es-shim-unscopables: 1.0.0
     dev: true
 
@@ -2107,8 +2107,8 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /caniuse-lite@1.0.30001513:
-    resolution: {integrity: sha512-pnjGJo7SOOjAGytZZ203Em95MRM8Cr6jhCXNF/FAXTpCTRTECnqQWLpiTRqrFtdYcth8hf4WECUpkezuYsMVww==}
+  /caniuse-lite@1.0.30001515:
+    resolution: {integrity: sha512-eEFDwUOZbE24sb+Ecsx3+OvNETqjWIdabMy52oOkIgcUtAsQifjUG9q4U9dgTHJM2mfk4uEPxc0+xuFdJ629QA==}
     dev: false
 
   /chalk@4.1.2:
@@ -2378,7 +2378,7 @@ packages:
     dependencies:
       '@types/cookie': 0.4.1
       '@types/cors': 2.8.13
-      '@types/node': 20.4.1
+      '@types/node': 20.4.2
       accepts: 1.3.8
       base64id: 2.0.0
       cookie: 0.4.2
@@ -2404,8 +2404,8 @@ packages:
     resolution: {integrity: sha512-GHrMyVZQWvTIdDtpiEXdHZnFQKzeO09apj8Cbl4pKWy4i0Oprcq17usfDt5aO63swf0JOeMWjWQE/LzgSRuWpA==}
     dev: false
 
-  /es-abstract@1.21.2:
-    resolution: {integrity: sha512-y/B5POM2iBnIxCiernH1G7rC9qQoM77lLIMQLuob0zhp8C56Po81+2Nj0WFKnd0pNReDTnkYryc+zhOzpEIROg==}
+  /es-abstract@1.21.3:
+    resolution: {integrity: sha512-ZU4miiY1j3sGPFLJ34VJXEqhpmL+HGByCinGHv4HC+Fxl2fI2Z4yR6tl0mORnDr6PA8eihWo4LmSWDbvhALckg==}
     engines: {node: '>= 0.4'}
     dependencies:
       array-buffer-byte-length: 1.0.0
@@ -2439,9 +2439,10 @@ packages:
       string.prototype.trim: 1.2.7
       string.prototype.trimend: 1.0.6
       string.prototype.trimstart: 1.0.6
+      typed-array-byte-offset: 1.0.0
       typed-array-length: 1.0.4
       unbox-primitive: 1.0.2
-      which-typed-array: 1.1.9
+      which-typed-array: 1.1.10
     dev: true
 
   /es-set-tostringtag@2.0.1:
@@ -2861,7 +2862,7 @@ packages:
       minimatch: 3.1.2
       object.values: 1.1.6
       resolve: 1.22.2
-      semver: 6.3.0
+      semver: 6.3.1
       tsconfig-paths: 3.14.2
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
@@ -2881,7 +2882,7 @@ packages:
       ignore: 5.2.4
       minimatch: 3.1.2
       resolve: 1.22.2
-      semver: 6.3.0
+      semver: 6.3.1
     dev: true
 
   /eslint-scope@5.1.1:
@@ -3332,7 +3333,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.2.0
-      es-abstract: 1.21.2
+      es-abstract: 1.21.3
       functions-have-names: 1.2.3
     dev: true
 
@@ -3384,15 +3385,15 @@ packages:
       is-glob: 4.0.3
     dev: true
 
-  /glob@10.3.2:
-    resolution: {integrity: sha512-vsuLzB3c/uyDLLEdBZtT8vGnN0z57rwOxHV2oYZib/7HWmBspUaja/McYIobBjC4qaUTuNpUyFO2IdqM4DZIJA==}
+  /glob@10.3.3:
+    resolution: {integrity: sha512-92vPiMb/iqpmEgsOoIDvTjc50wf9CCCvMzsi6W0JLPeUKE8TWP1a73PgqSrqy7iAZxaSD1YdzU7QZR5LF51MJw==}
     engines: {node: '>=16 || 14 >=14.17'}
     hasBin: true
     dependencies:
       foreground-child: 3.1.1
       jackspeak: 2.2.1
       minimatch: 9.0.3
-      minipass: 7.0.1
+      minipass: 7.0.2
       path-scurry: 1.10.1
 
   /glob@7.2.3:
@@ -3807,7 +3808,7 @@ packages:
     resolution: {integrity: sha512-wrigegsVTke3gt65LmLhIVqDZVcsYZwj9Oyai0pc04NlmgxIhfgbX0Af9CC3+S9lk0KZlttqjr2EBO8j2OCovA==}
     hasBin: true
     dependencies:
-      glob: 10.3.2
+      glob: 10.3.3
       jasmine-core: 5.0.1
 
   /js-sdsl@4.4.1:
@@ -4091,8 +4092,8 @@ packages:
   /minimist@1.2.8:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
 
-  /minipass@7.0.1:
-    resolution: {integrity: sha512-NQ8MCKimInjVlaIqx51RKJJB7mINVkLTJbsZKmto4UAAOC/CWXES8PGaOgoBZyqoUsUA/U3DToGK7GJkkHbjJw==}
+  /minipass@7.0.2:
+    resolution: {integrity: sha512-eL79dXrE1q9dBbDCLg7xfn/vl7MS4F1gvJAgjJrQli/jbQWdUttuVawphqpffoIYfRdq78LHx6GP4bU/EQ2ATA==}
     engines: {node: '>=16 || 14 >=14.17'}
 
   /mkdirp@0.5.6:
@@ -4153,7 +4154,7 @@ packages:
     dependencies:
       '@next/env': 13.2.4
       '@swc/helpers': 0.4.14
-      caniuse-lite: 1.0.30001513
+      caniuse-lite: 1.0.30001515
       postcss: 8.4.14
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -4225,7 +4226,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.2.0
-      es-abstract: 1.21.2
+      es-abstract: 1.21.3
     dev: true
 
   /on-exit-leak-free@2.1.0:
@@ -4340,7 +4341,7 @@ packages:
     engines: {node: '>=16 || 14 >=14.17'}
     dependencies:
       lru-cache: 10.0.0
-      minipass: 7.0.1
+      minipass: 7.0.2
 
   /path-to-regexp@0.1.7:
     resolution: {integrity: sha512-5DFkuoqlv1uYQKxy8omFBeJPQcdoE07Kv2sferDCrAq1ohOU+MSDswDIbnx3YAM60qIOnYa53wBhXW0EbMonrQ==}
@@ -4410,8 +4411,8 @@ packages:
       source-map-js: 1.0.2
     dev: true
 
-  /preact@10.15.1:
-    resolution: {integrity: sha512-qs2ansoQEwzNiV5eAcRT1p1EC/dmEzaATVDJNiB3g2sRDWdA7b7MurXdJjB2+/WQktGWZwxvDrnuRFbWuIr64g==}
+  /preact@10.16.0:
+    resolution: {integrity: sha512-XTSj3dJ4roKIC93pald6rWuB2qQJO9gO2iLLyTe87MrjQN+HklueLsmskbywEWqCHlclgz3/M4YLL2iBr9UmMA==}
     dev: true
 
   /prelude-ls@1.2.1:
@@ -4449,7 +4450,7 @@ packages:
       '@protobufjs/path': 1.1.2
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.0
-      '@types/node': 20.4.1
+      '@types/node': 20.4.2
       long: 5.2.3
     dev: false
 
@@ -4688,8 +4689,8 @@ packages:
       loose-envify: 1.4.0
     dev: false
 
-  /search-insights@2.6.0:
-    resolution: {integrity: sha512-vU2/fJ+h/Mkm/DJOe+EaM5cafJv/1rRTZpGJTuFPf/Q5LjzgMDsqPdSaZsAe+GAWHHsfsu+rQSAn6c8IGtBEVw==}
+  /search-insights@2.7.0:
+    resolution: {integrity: sha512-GLbVaGgzYEKMvuJbHRhLi1qoBFnjXZGZ6l4LxOYPCp4lI2jDRB3jPU9/XNhMwv6kvnA9slTreq6pvK+b3o3aqg==}
     engines: {node: '>=8.16.0'}
     dev: true
 
@@ -4697,8 +4698,8 @@ packages:
     resolution: {integrity: sha512-6aU+Rwsezw7VR8/nyvKTx8QpWH9FrcYiXXlqC4z5d5XQBDRqtbfsRjnwGyqbi3gddNtWHuEk9OANUotL26qKUw==}
     dev: false
 
-  /semver@6.3.0:
-    resolution: {integrity: sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==}
+  /semver@6.3.1:
+    resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
     dev: true
 
@@ -4920,7 +4921,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.2.0
-      es-abstract: 1.21.2
+      es-abstract: 1.21.3
     dev: true
 
   /string.prototype.trimend@1.0.6:
@@ -4928,7 +4929,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.2.0
-      es-abstract: 1.21.2
+      es-abstract: 1.21.3
     dev: true
 
   /string.prototype.trimstart@1.0.6:
@@ -4936,7 +4937,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.2.0
-      es-abstract: 1.21.2
+      es-abstract: 1.21.3
     dev: true
 
   /string_decoder@1.3.0:
@@ -5130,6 +5131,17 @@ packages:
       mime-types: 2.1.35
     dev: false
 
+  /typed-array-byte-offset@1.0.0:
+    resolution: {integrity: sha512-RD97prjEt9EL8YgAgpOkf3O4IF9lhJFr9g0htQkm0rchFp/Vx7LW5Q8fSXXub7BXAODyUQohRMyOc3faCPd0hg==}
+    engines: {node: '>= 0.4'}
+    dependencies:
+      available-typed-arrays: 1.0.5
+      call-bind: 1.0.2
+      for-each: 0.3.3
+      has-proto: 1.0.1
+      is-typed-array: 1.1.10
+    dev: true
+
   /typed-array-length@1.0.4:
     resolution: {integrity: sha512-KjZypGq+I/H7HI5HlOoGHkWUUGq+Q0TPhQurLbyrVrvnKTBgzLhIJ7j6J/XTQOi0d1RjyZ0wdas8bKs2p0x3Ng==}
     dependencies:
@@ -5234,12 +5246,12 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vitepress@1.0.0-alpha.21(@algolia/client-search@4.18.0)(@types/node@20.4.0)(search-insights@2.6.0):
+  /vitepress@1.0.0-alpha.21(@algolia/client-search@4.18.0)(@types/node@20.4.0)(search-insights@2.7.0):
     resolution: {integrity: sha512-D/tkoDW16uUZ9pnWd28Kk1vX26zNiTml3m9oGbfx2pAfYg99PHd1GceZyEm4jZsJU0+n9S++1ctFxoQvsq376A==}
     hasBin: true
     dependencies:
       '@docsearch/css': 3.5.1
-      '@docsearch/js': 3.5.1(@algolia/client-search@4.18.0)(search-insights@2.6.0)
+      '@docsearch/js': 3.5.1(@algolia/client-search@4.18.0)(search-insights@2.7.0)
       '@vitejs/plugin-vue': 3.2.0(vite@3.2.7)(vue@3.2.41)
       '@vue/devtools-api': 6.5.0
       '@vueuse/core': 9.13.0(vue@3.2.41)
@@ -5310,8 +5322,8 @@ packages:
       is-symbol: 1.0.4
     dev: true
 
-  /which-typed-array@1.1.9:
-    resolution: {integrity: sha512-w9c4xkx6mPidwp7180ckYWfMmvxpjlZuIudNtDf4N/tTAUB8VJbX25qZoAsrtGuYNnGw3pa0AXgbGKRB8/EceA==}
+  /which-typed-array@1.1.10:
+    resolution: {integrity: sha512-uxoA5vLUfRPdjCuJ1h5LlYdmTLbYfums398v3WLkM+i/Wltl2/XyZpQWKbN++ck5L64SR/grOHqtXCUKmlZPNA==}
     engines: {node: '>= 0.4'}
     dependencies:
       available-typed-arrays: 1.0.5
