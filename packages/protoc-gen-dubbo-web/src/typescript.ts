@@ -26,7 +26,7 @@ export function generateTs(schema: Schema) {
     if (protoFile.services.length == 0) {
       continue;
     }
-    const file = schema.generateFile(protoFile.name + "_connectweb.ts");
+    const file = schema.generateFile(protoFile.name + "_dubboweb.ts");
     file.preamble(protoFile);
     for (const service of protoFile.services) {
       generateService(schema, file, service);
