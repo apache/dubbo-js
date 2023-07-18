@@ -186,7 +186,7 @@ describe("createHandlerFactory()", function () {
             new ConnectError("failed to parse connect err", Code.Internal)
           );
           expect(err.message).toBe(
-            '[invalid_argument] missing required header: set Connect-Protocol-Version to "1"'
+            '[invalid_argument] missing required header: set TRI-Protocol-Version to "1.0.0"'
           );
         }
       });
@@ -197,7 +197,7 @@ describe("createHandlerFactory()", function () {
           url: "https://example.com",
           header: new Headers({
             "Content-Type": "application/json",
-            "Connect-Protocol-Version": "UNEXPECTED",
+            "TRI-Protocol-Version": "UNEXPECTED",
           }),
           body: 777,
           signal: new AbortController().signal,
@@ -213,7 +213,7 @@ describe("createHandlerFactory()", function () {
             new ConnectError("failed to parse connect err", Code.Internal)
           );
           expect(err.message).toBe(
-            '[invalid_argument] Connect-Protocol-Version must be "1": got "UNEXPECTED"'
+            '[invalid_argument] TRI-Protocol-Version must be "1.0.0": got "UNEXPECTED"'
           );
         }
       });
@@ -244,7 +244,7 @@ describe("createHandlerFactory()", function () {
             (await readAllBytes(res.body, Number.MAX_SAFE_INTEGER)).slice(5)
           );
           expect(end.error?.message).toBe(
-            '[invalid_argument] missing required header: set Connect-Protocol-Version to "1"'
+            '[invalid_argument] missing required header: set TRI-Protocol-Version to "1.0.0"'
           );
         }
       });
@@ -255,7 +255,7 @@ describe("createHandlerFactory()", function () {
           url: "https://example.com",
           header: new Headers({
             "Content-Type": "application/connect+json",
-            "Connect-Protocol-Version": "UNEXPECTED",
+            "TRI-Protocol-Version": "UNEXPECTED",
           }),
           body: createAsyncIterable([new Uint8Array()]),
           signal: new AbortController().signal,
@@ -268,7 +268,7 @@ describe("createHandlerFactory()", function () {
             (await readAllBytes(res.body, Number.MAX_SAFE_INTEGER)).slice(5)
           );
           expect(end.error?.message).toBe(
-            '[invalid_argument] Connect-Protocol-Version must be "1": got "UNEXPECTED"'
+            '[invalid_argument] TRI-Protocol-Version must be "1.0.0": got "UNEXPECTED"'
           );
         }
       });

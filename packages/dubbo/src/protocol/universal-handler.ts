@@ -106,11 +106,11 @@ export interface UniversalHandlerOptions {
 
   /**
    * Require requests using the Connect protocol to include the header
-   * Connect-Protocol-Version. This ensures that HTTP proxies and other
+   * TRI-Protocol-Version. This ensures that HTTP proxies and other
    * code inspecting traffic can easily identify Connect RPC requests,
    * even if they use a common Content-Type like application/json.
    *
-   * If a Connect request does not include the Connect-Protocol-Version
+   * If a Connect request does not include the TRI-Protocol-Version
    * header, an error with code invalid_argument (HTTP 400) is returned.
    * This option has no effect if the client uses the gRPC or the gRPC-web
    * protocol.

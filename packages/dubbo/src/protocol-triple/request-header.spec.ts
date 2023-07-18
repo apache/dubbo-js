@@ -35,17 +35,17 @@ describe("requestHeader", () => {
   it("should create request headers", () => {
     const headers = requestHeader(MethodKind.Unary, true, undefined, undefined);
     expect(listHeaderKeys(headers)).toEqual([
-      "connect-protocol-version",
+      "tri-protocol-version",
       "content-type",
     ]);
     expect(headers.get("Content-Type")).toBe("application/proto");
-    expect(headers.get("Connect-Protocol-Version")).toBe("1");
+    expect(headers.get("TRI-Protocol-Version")).toBe("1.0.0");
   });
 
   it("should create request headers with timeout", () => {
     const headers = requestHeader(MethodKind.Unary, true, 10, undefined);
     expect(listHeaderKeys(headers)).toEqual([
-      "connect-protocol-version",
+      "tri-protocol-version",
       "connect-timeout-ms",
       "content-type",
     ]);
@@ -72,7 +72,7 @@ describe("requestHeaderWithCompression", () => {
     );
     expect(listHeaderKeys(headers)).toEqual([
       "accept-encoding",
-      "connect-protocol-version",
+      "tri-protocol-version",
       "content-encoding",
       "content-type",
     ]);
@@ -92,7 +92,7 @@ describe("requestHeaderWithCompression", () => {
     expect(listHeaderKeys(headers)).toEqual([
       "connect-accept-encoding",
       "connect-content-encoding",
-      "connect-protocol-version",
+      "tri-protocol-version",
       "content-type",
     ]);
     expect(headers.get(headerStreamEncoding)).toBe(compressionMock.name);
