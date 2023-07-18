@@ -46,10 +46,10 @@ describe("requestHeader", () => {
     const headers = requestHeader(MethodKind.Unary, true, 10, undefined);
     expect(listHeaderKeys(headers)).toEqual([
       "tri-protocol-version",
-      "connect-timeout-ms",
+      "tri-service-timeout",
       "content-type",
     ]);
-    expect(headers.get("Connect-Timeout-Ms")).toBe("10");
+    expect(headers.get("tri-service-timeout")).toBe("10");
   });
 });
 
