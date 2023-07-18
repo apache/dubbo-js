@@ -49,7 +49,7 @@ describe("requestHeader", () => {
       "tri-service-timeout",
       "content-type",
     ]);
-    expect(headers.get("tri-service-timeout")).toBe("10");
+    expect(headers.get("TRI-Service-Timeout")).toBe("10");
   });
 });
 
