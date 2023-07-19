@@ -1,0 +1,20 @@
+{
+  "name": "dubbo-node-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@bufbuild/protobuf": "^1.2.1",
+    "@bufbuild/protoc-gen-es": "^1.2.1",
+    "@fastify/cors": "^8.3.0",
+    "apache-dubbo": "^0.0.3",
+    "apache-dubbo-fastify": "^0.0.3",
+    "apache-protoc-gen-dubbo-es": "^0.0.5",
+    "fastify": "^4.19.2"
+  }
+}
