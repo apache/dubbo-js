@@ -12,8 +12,7 @@
     "./packages/dubbo-express",
     "./packages/dubbo-node-test",
     "./packages/dubbo-web-test",
-    "./packages/dubbo-web-bench",
-    "./packages/example"
+    "./packages/dubbo-web-bench"
   ],
   "engines": {
     "node": ">=16",
