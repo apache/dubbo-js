@@ -53,13 +53,13 @@ export interface ConnectRouter {
   service<T extends ServiceType>(
     service: T,
     implementation: Partial<ServiceImpl<T>>,
-    options: Partial<UniversalHandlerOptions> & Required<Pick<UniversalHandlerOptions, 'serviceGroup' | 'serviceVersion'>>
+    options: Partial<UniversalHandlerOptions>
   ): this;
   rpc<M extends MethodInfo>(
     service: ServiceType,
     method: M,
     impl: MethodImpl<M>,
-    options: Partial<UniversalHandlerOptions> & Required<Pick<UniversalHandlerOptions, 'serviceGroup' | 'serviceVersion'>>
+    options: Partial<UniversalHandlerOptions>
   ): this;
 }
 

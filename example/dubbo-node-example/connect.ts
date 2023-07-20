@@ -10,4 +10,4 @@ export default (router: ConnectRouter) =>
         sentence: `You said: ${req.sentence}`,
       };
     },
-  });
+  }, { serviceGroup: 'dubbo', serviceVersion: '1.0.0' });
