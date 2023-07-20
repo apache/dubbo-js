@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package apache.dubbo.demo.example.v1;
+
+message SayRequest {
+  string sentence = 1;
+}
+
+message SayResponse {
+  string sentence = 1;
+}
+
+service ExampleService {
+  rpc Say(SayRequest) returns (SayResponse) {}
+}
