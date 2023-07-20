@@ -23,6 +23,7 @@ import type { MethodImpl, ServiceImpl } from "./implementation.js";
 import { createHandlerFactory as handlerFactoryGrpcWeb } from "./protocol-grpc-web/handler-factory.js";
 import { createHandlerFactory as handlerFactoryGrpc } from "./protocol-grpc/handler-factory.js";
 import { createHandlerFactory as handlerFactoryConnect } from "./protocol-triple/handler-factory.js";
+import type { ExpandHandlerOptions, ExpandHandler } from './protocol-triple/expand-handler.js';
 import {
   type UniversalHandler,
   type UniversalHandlerOptions,
@@ -49,17 +50,17 @@ import type { ProtocolHandlerFactory } from "./protocol/protocol-handler-factory
  * from @bufbuild/connect-node, or from @bufbuild/connect-fastify.
  */
 export interface ConnectRouter {
-  readonly handlers: UniversalHandler[];
+  readonly handlers: Array<UniversalHandler & ExpandHandler>;
   service<T extends ServiceType>(
     service: T,
     implementation: Partial<ServiceImpl<T>>,
-    options: Partial<UniversalHandlerOptions>
+    options: Partial<UniversalHandlerOptions & ExpandHandlerOptions>
   ): this;
   rpc<M extends MethodInfo>(
     service: ServiceType,
     method: M,
     impl: MethodImpl<M>,
-    options: Partial<UniversalHandlerOptions>
+    options: Partial<UniversalHandlerOptions & ExpandHandlerOptions>
   ): this;
 }
 
@@ -116,26 +117,34 @@ export function createConnectRouter(
   routerOptions?: ConnectRouterOptions
 ): ConnectRouter {
   const base = whichProtocols(routerOptions);
-  const handlers: UniversalHandler[] = [];
+  const handlers: Array<UniversalHandler & ExpandHandler> = [];
   return {
     handlers,
     service(service, implementation, options) {
       const { protocols } = whichProtocols(options, base);
       handlers.push(
-        ...createUniversalServiceHandlers(
+        ...(createUniversalServiceHandlers(
           createServiceImplSpec(service, implementation),
           protocols
-        )
+        )).map((item: UniversalHandler): UniversalHandler & ExpandHandler => {
+            return Object.assign(item, {
+              serviceVersion: options.serviceVersion ?? '',
+              serviceGroup: options.serviceGroup ?? ''
+            })
+        })
       );
       return this;
     },
     rpc(service, method, implementation, options) {
       const { protocols } = whichProtocols(options, base);
       handlers.push(
-        createUniversalMethodHandler(
+        Object.assign(createUniversalMethodHandler(
           createMethodImplSpec(service, method, implementation),
           protocols
-        )
+        ), {
+          serviceVersion: options.serviceVersion ?? '',
+          serviceGroup: options.serviceGroup ?? ''
+        })
       );
       return this;
     },
