@@ -54,13 +54,13 @@ export interface ConnectRouter {
   service<T extends ServiceType>(
     service: T,
     implementation: Partial<ServiceImpl<T>>,
-    options: Partial<UniversalHandlerOptions & ExpandHandlerOptions>
+    options?: Partial<UniversalHandlerOptions & ExpandHandlerOptions>
   ): this;
   rpc<M extends MethodInfo>(
     service: ServiceType,
     method: M,
     impl: MethodImpl<M>,
-    options: Partial<UniversalHandlerOptions & ExpandHandlerOptions>
+    options?: Partial<UniversalHandlerOptions & ExpandHandlerOptions>
   ): this;
 }
 
@@ -128,8 +128,8 @@ export function createConnectRouter(
           protocols
         )).map((item: UniversalHandler): UniversalHandler & ExpandHandler => {
             return Object.assign(item, {
-              serviceVersion: options.serviceVersion ?? '',
-              serviceGroup: options.serviceGroup ?? ''
+              serviceVersion: options?.serviceVersion ?? '',
+              serviceGroup: options?.serviceGroup ?? ''
             })
         })
       );
@@ -142,8 +142,8 @@ export function createConnectRouter(
           createMethodImplSpec(service, method, implementation),
           protocols
         ), {
-          serviceVersion: options.serviceVersion ?? '',
-          serviceGroup: options.serviceGroup ?? ''
+          serviceVersion: options?.serviceVersion ?? '',
+          serviceGroup: options?.serviceGroup ?? ''
         })
       );
       return this;
