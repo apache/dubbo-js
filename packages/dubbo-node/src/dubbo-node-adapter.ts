@@ -73,14 +73,14 @@ export function connectNodeAdapter(
   const prefix = options.requestPathPrefix ?? "";
   const paths = new Map<string, UniversalHandler>();
   for (const uHandler of router.handlers) {
-    paths.set(prefix + uHandler.requestPath, uHandler);
+    paths.set(prefix + uHandler.requestPath + uHandler.serviceVersion + uHandler.serviceGroup, uHandler);
   }
   return function nodeRequestHandler(
     req: NodeServerRequest,
     res: NodeServerResponse
   ): void {
     // Strip the query parameter when matching paths.
-    const uHandler = paths.get(req.url?.split("?", 2)[0] ?? "");
+    const uHandler = paths.get(req.url?.split("?", 2)[0] ?? "" + req.headers['tri-service-version'] ?? "" + req.headers['tri-service-group' ?? ""]);
     if (!uHandler) {
       (options.fallback ?? fallback)(req, res);
       return;
