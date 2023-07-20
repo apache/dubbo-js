@@ -170,6 +170,16 @@ export interface UniversalHandler extends UniversalHandlerFn {
    * A matcher for Content-Type header values that this procedure supports.
    */
   supportedContentType: ContentTypeMatcher;
+
+  /**
+   * A matcher for TRI-Service-Version header value
+   */
+  serviceVersion: string;
+
+  /**
+   * A matcher for TRI-Service-Group header value
+   */
+  serviceGroup: string;
 }
 
 /**
