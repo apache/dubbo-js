@@ -69,13 +69,13 @@ export function nextJsApiRouter(options: NextJsApiRouterOptions): ApiRoute {
   const prefix = options.prefix ?? "/api";
   const paths = new Map<string, UniversalHandler>();
   for (const uHandler of router.handlers) {
-    paths.set(prefix + uHandler.requestPath, uHandler);
+    paths.set(prefix + uHandler.requestPath + uHandler.serviceVersion + uHandler.serviceGroup, uHandler);
   }
 
   async function handler(req: NextApiRequest, res: NextApiResponse) {
     // Strip the query parameter when matching paths.
     const requestPath = req.url?.split("?", 2)[0] ?? "";
-    const uHandler = paths.get(requestPath);
+    const uHandler = paths.get(requestPath + req.headers['tri-service-version'] ?? "" + req.headers['tri-service-group'] ?? "");
     if (!uHandler) {
       res.writeHead(404);
       res.end();
