@@ -13,7 +13,7 @@
     "@bufbuild/protoc-gen-es": "^1.2.1",
     "@fastify/cors": "^8.3.0",
     "apache-dubbo": "^0.0.5",
-    "apache-dubbo-fastify": "^0.0.5",
+    "apache-dubbo-fastify": "^0.0.6",
     "apache-protoc-gen-dubbo-es": "^0.0.6",
     "fastify": "^4.19.2"
   }

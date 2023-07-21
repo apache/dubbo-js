@@ -70,7 +70,7 @@ mkdir -p gen
 
 运行以下命令，在 gen 目录下生成代码文件
 
-```
+```Shell
 PATH=$PATH:$(pwd)/node_modules/.bin \
   protoc -I proto \
   --es_out gen \
