@@ -251,8 +251,8 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1
       apache-dubbo:
-        specifier: ^0.0.3
-        version: 0.0.3(@bufbuild/protobuf@1.2.1)
+        specifier: ^0.0.5
+        version: link:../dubbo
 
   packages/protoc-gen-dubbo-web:
     dependencies:
@@ -266,8 +266,8 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1
       apache-dubbo:
-        specifier: ^0.0.3
-        version: 0.0.3(@bufbuild/protobuf@1.2.1)
+        specifier: ^0.0.5
+        version: link:../dubbo
 
 packages:
 
@@ -4959,7 +4959,7 @@ packages:
     dev: true
 
   /undici@5.22.0:
-    resolution: {integrity: sha512-f6pTQ9RF4DQtwoWSaC42P/NKlUjvezVvd9r155ohqkwFNRyBKM3f3pcty3ouusefNRyM25XhIQEbeQ46sZDJfQ==, tarball: https://registry.npmmirror.com/undici/-/undici-5.21.2.tgz}
+    resolution: {integrity: sha512-f6pTQ9RF4DQtwoWSaC42P/NKlUjvezVvd9r155ohqkwFNRyBKM3f3pcty3ouusefNRyM25XhIQEbeQ46sZDJfQ==}
     engines: {node: '>=12.18'}
     deprecated: '[WARNING] Use 5.21.2 instead of 5.22.0, reason: https://github.com/nodejs/undici/pull/2091'
     dependencies:
