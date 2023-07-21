@@ -20,6 +20,7 @@ import type {
   ServiceType,
 } from "@bufbuild/protobuf";
 import type { StreamResponse, UnaryResponse } from "./interceptor.js";
+import type { TripleClientServiceOptions } from './protocol-triple/client-service-options.js';
 
 /**
  * Transport represents the underlying transport for a client.
@@ -37,7 +38,8 @@ export interface Transport {
     signal: AbortSignal | undefined,
     timeoutMs: number | undefined,
     header: HeadersInit | undefined,
-    input: PartialMessage<I>
+    input: PartialMessage<I>,
+    serviceOptions: TripleClientServiceOptions | undefined
   ): Promise<UnaryResponse<I, O>>;
 
   /**

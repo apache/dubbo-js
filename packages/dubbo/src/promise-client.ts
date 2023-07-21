@@ -28,6 +28,7 @@ import type { CallOptions } from "./call-options.js";
 import { ConnectError } from "./dubbo-error.js";
 import { Code } from "./code.js";
 import { createAsyncIterable } from "./protocol/async-iterable.js";
+import type { TripleClientServiceOptions } from './protocol-triple/client-service-options.js';
 
 // prettier-ignore
 /**
@@ -50,12 +51,13 @@ export type PromiseClient<T extends ServiceType> = {
  */
 export function createPromiseClient<T extends ServiceType>(
   service: T,
-  transport: Transport
+  transport: Transport,
+  serviceOptions?: TripleClientServiceOptions
 ) {
   return makeAnyClient(service, (method) => {
     switch (method.kind) {
       case MethodKind.Unary:
-        return createUnaryFn(transport, service, method);
+        return createUnaryFn(transport, service, method, serviceOptions);
       case MethodKind.ServerStreaming:
         return createServerStreamingFn(transport, service, method);
       case MethodKind.ClientStreaming:
@@ -79,7 +81,8 @@ type UnaryFn<I extends Message<I>, O extends Message<O>> = (
 function createUnaryFn<I extends Message<I>, O extends Message<O>>(
   transport: Transport,
   service: ServiceType,
-  method: MethodInfo<I, O>
+  method: MethodInfo<I, O>,
+  serviceOptions?: TripleClientServiceOptions
 ): UnaryFn<I, O> {
   return async function (input, options) {
     const response = await transport.unary(
@@ -88,7 +91,8 @@ function createUnaryFn<I extends Message<I>, O extends Message<O>>(
       options?.signal,
       options?.timeoutMs,
       options?.headers,
-      input
+      input,
+      serviceOptions
     );
     options?.onHeader?.(response.header);
     options?.onTrailer?.(response.trailer);

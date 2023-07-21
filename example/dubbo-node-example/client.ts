@@ -8,7 +8,7 @@ const transport = createConnectTransport({
 });
 
 async function main() {
-  const client = createPromiseClient(ExampleService, transport);
+  const client = createPromiseClient(ExampleService, transport, { serviceVersion: '1.0.0', serviceGroup: 'dubbo' });
   const res = await client.say({ sentence: "Hello World" });
   console.log(res);
 }

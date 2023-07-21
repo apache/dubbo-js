@@ -54,6 +54,7 @@ import { createMethodUrl } from "../protocol/create-method-url.js";
 import { runUnaryCall, runStreamingCall } from "../protocol/run-call.js";
 import { createMethodSerializationLookup } from "../protocol/serialization.js";
 import type { Transport } from "../transport.js";
+import type { TripleClientServiceOptions } from './client-service-options.js';
 
 /**
  * Create a Transport for the Connect protocol.
@@ -69,7 +70,8 @@ export function createTransport(opt: CommonTransportOptions): Transport {
       signal: AbortSignal | undefined,
       timeoutMs: number | undefined,
       header: HeadersInit | undefined,
-      message: PartialMessage<I>
+      message: PartialMessage<I>,
+      serviceOptions: TripleClientServiceOptions | undefined
     ): Promise<UnaryResponse<I, O>> {
       const serialization = createMethodSerializationLookup(
         method,
@@ -93,7 +95,8 @@ export function createTransport(opt: CommonTransportOptions): Transport {
             timeoutMs,
             header,
             opt.acceptCompression,
-            opt.sendCompression
+            opt.sendCompression,
+            serviceOptions
           ),
           message:
             message instanceof method.I ? message : new method.I(message),

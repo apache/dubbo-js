@@ -21,6 +21,8 @@ import {
   headerUnaryEncoding,
   headerTimeout,
   headerProtocolVersion,
+  headerServiceVersion,
+  headerServiceGroup,
 } from "./headers.js";
 import { protocolVersion } from "./version.js";
 import {
@@ -30,6 +32,7 @@ import {
   contentTypeUnaryProto,
 } from "./content-type.js";
 import type { Compression } from "../protocol/compression.js";
+import type { TripleClientServiceOptions } from './client-service-options.js';
 
 /**
  * Creates headers for a Connect request.
@@ -76,7 +79,8 @@ export function requestHeaderWithCompression(
   timeoutMs: number | undefined,
   userProvidedHeaders: HeadersInit | undefined,
   acceptCompression: Compression[],
-  sendCompression: Compression | null
+  sendCompression: Compression | null,
+  serviceOptions: TripleClientServiceOptions | undefined
 ): Headers {
   const result = requestHeader(
     methodKind,
@@ -97,6 +101,12 @@ export function requestHeaderWithCompression(
         ? headerUnaryAcceptEncoding
         : headerStreamAcceptEncoding;
     result.set(name, acceptCompression.map((c) => c.name).join(","));
+  }
+  if(serviceOptions?.serviceGroup !== undefined) {
+    result.set(headerServiceGroup, serviceOptions.serviceGroup);
+  }
+  if(serviceOptions?.serviceVersion !== undefined) {
+    result.set(headerServiceVersion, serviceOptions.serviceVersion);
   }
   return result;
 }
