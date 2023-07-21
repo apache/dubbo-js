@@ -78,7 +78,7 @@ export function fastifyConnectPlugin(
       uHandler.requestPath,
       {},
       async function handleFastifyRequest(req, reply) {
-        if((req.headers['tri-serveice-version'] || '') !== uHandler.serviceVersion || (req.headers['tri-service-group'] || '') !== uHandler.serviceGroup) return;
+        if((req.headers['tri-service-version'] || '') !== uHandler.serviceVersion || (req.headers['tri-service-group'] || '') !== uHandler.serviceGroup) return;
         try {
           const uRes = await uHandler(
             universalRequestFromNodeRequest(
