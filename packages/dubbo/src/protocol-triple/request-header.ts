@@ -43,7 +43,8 @@ export function requestHeader(
   methodKind: MethodKind,
   useBinaryFormat: boolean,
   timeoutMs: number | undefined,
-  userProvidedHeaders: HeadersInit | undefined
+  userProvidedHeaders: HeadersInit | undefined,
+  serviceOptions?: TripleClientServiceOptions
 ): Headers {
   const result = new Headers(userProvidedHeaders ?? {});
   if (timeoutMs !== undefined) {
@@ -60,6 +61,12 @@ export function requestHeader(
       : contentTypeStreamJson
   );
   result.set(headerProtocolVersion, protocolVersion);
+  if(serviceOptions?.serviceGroup !== undefined) {
+    result.set(headerServiceGroup, serviceOptions.serviceGroup);
+  }
+  if(serviceOptions?.serviceVersion !== undefined) {
+    result.set(headerServiceVersion, serviceOptions.serviceVersion);
+  }
   return result;
 }
 
@@ -86,7 +93,8 @@ export function requestHeaderWithCompression(
     methodKind,
     useBinaryFormat,
     timeoutMs,
-    userProvidedHeaders
+    userProvidedHeaders,
+    serviceOptions
   );
   if (sendCompression != null) {
     const name =
@@ -101,12 +109,6 @@ export function requestHeaderWithCompression(
         ? headerUnaryAcceptEncoding
         : headerStreamAcceptEncoding;
     result.set(name, acceptCompression.map((c) => c.name).join(","));
-  }
-  if(serviceOptions?.serviceGroup !== undefined) {
-    result.set(headerServiceGroup, serviceOptions.serviceGroup);
-  }
-  if(serviceOptions?.serviceVersion !== undefined) {
-    result.set(headerServiceVersion, serviceOptions.serviceVersion);
   }
   return result;
 }

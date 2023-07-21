@@ -60,3 +60,4 @@ export { transformConnectPostToGetRequest } from "./get-request.js";
 export { protocolVersion } from "./version.js";
 export { codeFromString } from "./code-string.js";
 export { codeToString } from "./code-string.js";
+export type { TripleClientServiceOptions } from './client-service-options.js';
