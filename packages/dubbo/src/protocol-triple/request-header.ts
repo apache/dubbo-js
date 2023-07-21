@@ -80,7 +80,7 @@ export function requestHeaderWithCompression(
   userProvidedHeaders: HeadersInit | undefined,
   acceptCompression: Compression[],
   sendCompression: Compression | null,
-  serviceOptions: TripleClientServiceOptions | undefined
+  serviceOptions?: TripleClientServiceOptions
 ): Headers {
   const result = requestHeader(
     methodKind,

@@ -71,7 +71,7 @@ export function createTransport(opt: CommonTransportOptions): Transport {
       timeoutMs: number | undefined,
       header: HeadersInit | undefined,
       message: PartialMessage<I>,
-      serviceOptions: TripleClientServiceOptions | undefined
+      serviceOptions?: TripleClientServiceOptions
     ): Promise<UnaryResponse<I, O>> {
       const serialization = createMethodSerializationLookup(
         method,

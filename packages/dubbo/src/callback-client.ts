@@ -26,6 +26,7 @@ import { Code } from "./code.js";
 import { makeAnyClient } from "./any-client.js";
 import type { CallOptions } from "./call-options.js";
 import { createAsyncIterable } from "./protocol/async-iterable.js";
+import type { TripleClientServiceOptions } from './protocol-triple/client-service-options.js';
 
 // prettier-ignore
 /**
@@ -86,7 +87,8 @@ type UnaryFn<I extends Message<I>, O extends Message<O>> = (
 function createUnaryFn<I extends Message<I>, O extends Message<O>>(
   transport: Transport,
   service: ServiceType,
-  method: MethodInfo<I, O>
+  method: MethodInfo<I, O>,
+  serviceOptions?: TripleClientServiceOptions
 ): UnaryFn<I, O> {
   return function (requestMessage, callback, options) {
     const abort = new AbortController();
@@ -98,7 +100,8 @@ function createUnaryFn<I extends Message<I>, O extends Message<O>>(
         abort.signal,
         options.timeoutMs,
         options.headers,
-        requestMessage
+        requestMessage,
+        serviceOptions
       )
       .then(
         (response) => {

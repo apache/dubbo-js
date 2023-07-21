@@ -39,7 +39,7 @@ export interface Transport {
     timeoutMs: number | undefined,
     header: HeadersInit | undefined,
     input: PartialMessage<I>,
-    serviceOptions: TripleClientServiceOptions | undefined
+    serviceOptions?: TripleClientServiceOptions
   ): Promise<UnaryResponse<I, O>>;
 
   /**
