@@ -15,7 +15,7 @@ const transport = createConnectTransport({
 
 // Here we make the client itself, combining the service
 // definition with the transport.
-const client = createPromiseClient(ExampleService, transport);
+const client = createPromiseClient(ExampleService, transport, { serviceVersion: '1.0.0', serviceGroup: 'dubbo' });
 
 function App() {
   const [inputValue, setInputValue] = useState("");
