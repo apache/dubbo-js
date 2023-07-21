@@ -1,7 +1,7 @@
 {
   "name": "dubbo-web-example",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,9 +12,9 @@
   "dependencies": {
     "@bufbuild/protobuf": "^1.2.1",
     "@bufbuild/protoc-gen-es": "^1.2.1",
-    "apache-dubbo": "^0.0.5",
-    "apache-dubbo-web": "^0.0.5",
-    "apache-protoc-gen-dubbo-es": "^0.0.6",
+    "apache-dubbo": "^0.0.8",
+    "apache-dubbo-web": "^0.0.8",
+    "apache-protoc-gen-dubbo-es": "^0.0.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
