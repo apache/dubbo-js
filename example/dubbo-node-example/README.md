@@ -109,7 +109,7 @@ export default (router: ConnectRouter) =>
         sentence: `You said: ${req.sentence}`,
       };
     },
-  });
+  }, { serviceGroup: 'dubbo', serviceVersion: '1.0.0' });
 ```
 
 ## <span id="startServer">启动 Server</span>
@@ -158,6 +158,8 @@ npx tsx server.ts
 ```Shell
 curl \
  --header 'Content-Type: application/json' \
+ --header 'TRI-Service-Version: 1.0.0' \
+ --header 'TRI-Service-group: dubbo' \
  --data '{"sentence": "Hello World"}' \
  http://localhost:8080/apache.dubbo.demo.example.v1.ExampleService/Say
 ```
@@ -177,7 +179,7 @@ const transport = createConnectTransport({
 });
 
 async function main() {
-  const client = createPromiseClient(ExampleService, transport);
+  const client = createPromiseClient(ExampleService, transport, { serviceVersion: '1.0.0', serviceGroup: 'dubbo' });
   const res = await client.say({ sentence: "Hello World" });
   console.log(res);
 }
