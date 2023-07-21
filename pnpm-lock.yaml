@@ -179,8 +179,8 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1
       apache-dubbo:
-        specifier: ^0.0.5
-        version: 0.0.5(@bufbuild/protobuf@1.2.1)
+        specifier: ^0.0.6
+        version: link:../dubbo
 
   packages/dubbo-web-bench:
     dependencies:

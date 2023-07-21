@@ -51,6 +51,7 @@ import {
   validateResponse,
 } from "apache-dubbo/protocol-triple";
 import { assertFetchApi } from "./assert-fetch-api.js";
+import type { TripleClientServiceOptions } from 'apache-dubbo/protocol-triple';
 
 /**
  * Options used to configure the Connect transport.
@@ -135,7 +136,8 @@ export function createConnectTransport(
       signal: AbortSignal | undefined,
       timeoutMs: number | undefined,
       header: HeadersInit | undefined,
-      message: PartialMessage<I>
+      message: PartialMessage<I>,
+      serviceOptions?: TripleClientServiceOptions
     ): Promise<UnaryResponse<I, O>> {
       const { normalize, serialize, parse } = createClientMethodSerializers(
         method,
@@ -162,7 +164,8 @@ export function createConnectTransport(
             method.kind,
             useBinaryFormat,
             timeoutMs,
-            header
+            header,
+            serviceOptions
           ),
           message: normalize(message),
         },
