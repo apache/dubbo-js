@@ -50,6 +50,8 @@ export const cors = {
     connect.headerContentType,
     connect.headerProtocolVersion,
     connect.headerTimeout,
+    connect.headerServiceVersion,
+    connect.headerServiceGroup,
     connect.headerStreamEncoding, // Unused in web browsers, but added for future-proofing
     connect.headerStreamAcceptEncoding, // Unused in web browsers, but added for future-proofing
     connect.headerUnaryEncoding, // Unused in web browsers, but added for future-proofing
