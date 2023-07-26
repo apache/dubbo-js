@@ -16,7 +16,7 @@ import { useNodeServer } from "./use-node-server-helper.spec.js";
 import * as http2 from "http2";
 import * as http from "http";
 import { universalRequestFromNodeRequest } from "./node-universal-handler.js";
-import { ConnectError } from "apache-dubbo";
+import { DubboError } from "apache-dubbo";
 import { getNodeErrorProps } from "./node-error.js";
 import {
   assertByteStreamRequest,
@@ -63,7 +63,7 @@ describe("universalRequestFromNodeRequest()", function () {
         });
       });
     }
-    it("should abort request signal with ConnectError and Code.Canceled for NO_ERROR", async function () {
+    it("should abort request signal with DubboError and Code.Canceled for NO_ERROR", async function () {
       await request(http2.constants.NGHTTP2_NO_ERROR);
       expect(serverRequest?.signal).toBeInstanceOf(AbortSignal);
       expect(serverRequest?.signal.aborted).toBeTrue();
@@ -85,12 +85,12 @@ describe("universalRequestFromNodeRequest()", function () {
         expect(r.done).toBeTrue();
       }
     });
-    it("should abort request signal with ConnectError and Code.Canceled for CANCEL", async function () {
+    it("should abort request signal with DubboError and Code.Canceled for CANCEL", async function () {
       await request(http2.constants.NGHTTP2_CANCEL);
       expect(serverRequest?.signal).toBeInstanceOf(AbortSignal);
       expect(serverRequest?.signal.aborted).toBeTrue();
-      expect(serverRequest?.signal.reason).toBeInstanceOf(ConnectError);
-      const ce = ConnectError.from(serverRequest?.signal.reason);
+      expect(serverRequest?.signal.reason).toBeInstanceOf(DubboError);
+      const ce = DubboError.from(serverRequest?.signal.reason);
       expect(ce.message).toBe(
         "[canceled] http/2 stream closed with error code CANCEL (0x8)"
       );
@@ -105,12 +105,12 @@ describe("universalRequestFromNodeRequest()", function () {
         expect(r.done).toBeTrue();
       }
     });
-    it("should abort request signal with ConnectError and Code.ResourceExhausted for ENHANCE_YOUR_CALM", async function () {
+    it("should abort request signal with DubboError and Code.ResourceExhausted for ENHANCE_YOUR_CALM", async function () {
       await request(http2.constants.NGHTTP2_ENHANCE_YOUR_CALM);
       expect(serverRequest?.signal).toBeInstanceOf(AbortSignal);
       expect(serverRequest?.signal.aborted).toBeTrue();
-      expect(serverRequest?.signal.reason).toBeInstanceOf(ConnectError);
-      const ce = ConnectError.from(serverRequest?.signal.reason);
+      expect(serverRequest?.signal.reason).toBeInstanceOf(DubboError);
+      const ce = DubboError.from(serverRequest?.signal.reason);
       expect(ce.message).toBe(
         "[resource_exhausted] http/2 stream closed with error code ENHANCE_YOUR_CALM (0xb)"
       );
@@ -125,12 +125,12 @@ describe("universalRequestFromNodeRequest()", function () {
         expect(r.done).toBeTrue();
       }
     });
-    it("should abort request signal with ConnectError and Code.Internal for FRAME_SIZE_ERROR", async function () {
+    it("should abort request signal with DubboError and Code.Internal for FRAME_SIZE_ERROR", async function () {
       await request(http2.constants.NGHTTP2_FRAME_SIZE_ERROR);
       expect(serverRequest?.signal).toBeInstanceOf(AbortSignal);
       expect(serverRequest?.signal.aborted).toBeTrue();
-      expect(serverRequest?.signal.reason).toBeInstanceOf(ConnectError);
-      const ce = ConnectError.from(serverRequest?.signal.reason);
+      expect(serverRequest?.signal.reason).toBeInstanceOf(DubboError);
+      const ce = DubboError.from(serverRequest?.signal.reason);
       expect(ce.message).toBe(
         "[internal] http/2 stream closed with error code FRAME_SIZE_ERROR (0x6)"
       );
@@ -199,15 +199,15 @@ describe("universalRequestFromNodeRequest()", function () {
         }, 20);
       });
     }
-    it("should abort request signal with ConnectError and Code.Aborted", async function () {
+    it("should abort request signal with DubboError and Code.Aborted", async function () {
       await request();
       while (serverRequest?.signal.reason === undefined) {
         await new Promise((r) => setTimeout(r, 1));
       }
       expect(serverRequest.signal.reason).toBeInstanceOf(Error);
       if (serverRequest.signal.reason instanceof Error) {
-        expect(serverRequest.signal.reason).toBeInstanceOf(ConnectError);
-        const ce = ConnectError.from(serverRequest.signal.reason);
+        expect(serverRequest.signal.reason).toBeInstanceOf(DubboError);
+        const ce = DubboError.from(serverRequest.signal.reason);
         expect(ce.message).toBe("[aborted] aborted");
       }
     });
@@ -222,7 +222,7 @@ describe("universalRequestFromNodeRequest()", function () {
           fail("expected error");
         } catch (e) {
           expect(e).toBeInstanceOf(Error);
-          expect(e).not.toBeInstanceOf(ConnectError);
+          expect(e).not.toBeInstanceOf(DubboError);
           if (e instanceof Error) {
             expect(e.message).toBe("aborted");
             expect(getNodeErrorProps(e)).toEqual({

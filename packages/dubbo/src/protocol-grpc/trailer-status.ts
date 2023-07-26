@@ -14,7 +14,7 @@
 
 import { Any, Message } from "@bufbuild/protobuf";
 import { Status } from "./gen/status_pb.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { decodeBinaryHeader, encodeBinaryHeader } from "../http-headers.js";
 import { Code } from "../code.js";
 import {
@@ -42,7 +42,7 @@ export const grpcStatusOk = "0";
  */
 export function setTrailerStatus(
   target: Headers,
-  error: ConnectError | undefined
+  error: DubboError | undefined
 ): Headers {
   if (error) {
     target.set(headerGrpcStatus, error.code.toString(10));
@@ -79,7 +79,7 @@ export function setTrailerStatus(
  */
 export function findTrailerError(
   headerOrTrailer: Headers
-): ConnectError | undefined {
+): DubboError | undefined {
   // TODO
   // let code: Code;
   // let message: string = "";
@@ -91,7 +91,7 @@ export function findTrailerError(
     if (status.code == 0) {
       return undefined;
     }
-    const error = new ConnectError(
+    const error = new DubboError(
       status.message,
       status.code,
       headerOrTrailer
@@ -109,13 +109,13 @@ export function findTrailerError(
     }
     const code = parseInt(grpcStatus, 10);
     if (code in Code) {
-      return new ConnectError(
+      return new DubboError(
         decodeURIComponent(headerOrTrailer.get(headerGrpcMessage) ?? ""),
         code,
         headerOrTrailer
       );
     }
-    return new ConnectError(
+    return new DubboError(
       `invalid grpc-status: ${grpcStatus}`,
       Code.Internal,
       headerOrTrailer

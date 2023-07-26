@@ -25,7 +25,7 @@ import type {
 import type { Transport } from "./transport.js";
 import { makeAnyClient } from "./any-client.js";
 import type { CallOptions } from "./call-options.js";
-import { ConnectError } from "./dubbo-error.js";
+import { DubboError } from "./dubbo-error.js";
 import { Code } from "./code.js";
 import { createAsyncIterable } from "./protocol/async-iterable.js";
 import type { TripleClientServiceOptions } from './protocol-triple/client-service-options.js';
@@ -174,7 +174,7 @@ export function createClientStreamingFn<
       singleMessage = message;
     }
     if (!singleMessage) {
-      throw new ConnectError(
+      throw new DubboError(
         "protocol error: missing response message",
         Code.Internal
       );

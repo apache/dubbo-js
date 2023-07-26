@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { parseTimeout } from "./parse-timeout.js";
 
 describe("parseTimeout()", function () {
@@ -50,7 +50,7 @@ describe("parseTimeout()", function () {
     expect(r.timeoutMs).toBeUndefined();
     expect(r.error).toBeUndefined();
   });
-  it("should return a ConnectError for a value exceeding maxTimeoutMs", function () {
+  it("should return a DubboError for a value exceeding maxTimeoutMs", function () {
     expect(parseTimeout("1m", 0).error?.message).toBe(
       "[invalid_argument] timeout 1ms must be <= 0"
     );
@@ -72,11 +72,11 @@ describe("parseTimeout()", function () {
     "1X",
   ];
   for (const invalidValue of invalidValues) {
-    it(`should should return a ConnectError for an incorrect value "${invalidValue}"`, () => {
+    it(`should should return a DubboError for an incorrect value "${invalidValue}"`, () => {
       const r = parseTimeout(invalidValue, Number.MAX_SAFE_INTEGER);
       expect(r.timeoutMs).toBeUndefined();
-      expect(r.error).toBeInstanceOf(ConnectError);
-      if (r instanceof ConnectError) {
+      expect(r.error).toBeInstanceOf(DubboError);
+      if (r instanceof DubboError) {
         expect(r.message).toBe(
           `protocol error: invalid grpc timeout value: ${invalidValue}`
         );

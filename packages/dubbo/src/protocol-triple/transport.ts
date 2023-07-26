@@ -29,7 +29,7 @@ import { createEndStreamSerialization, endStreamFlag } from "./end-stream.js";
 import { transformConnectPostToGetRequest } from "./get-request.js";
 import type { CommonTransportOptions } from "../protocol/transport-options.js";
 import { Code } from "../code.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { appendHeaders } from "../http-headers.js";
 import type {
   UnaryResponse,
@@ -270,7 +270,7 @@ export function createTransport(opt: CommonTransportOptions): Transport {
                 for await (const chunk of iterable) {
                   if (chunk.end) {
                     if (endStreamReceived) {
-                      throw new ConnectError(
+                      throw new DubboError(
                         "protocol error: received extra EndStreamResponse",
                         Code.InvalidArgument
                       );
@@ -285,7 +285,7 @@ export function createTransport(opt: CommonTransportOptions): Transport {
                     continue;
                   }
                   if (endStreamReceived) {
-                    throw new ConnectError(
+                    throw new DubboError(
                       "protocol error: received extra message after EndStreamResponse",
                       Code.InvalidArgument
                     );
@@ -293,7 +293,7 @@ export function createTransport(opt: CommonTransportOptions): Transport {
                   yield chunk.value;
                 }
                 if (!endStreamReceived) {
-                  throw new ConnectError(
+                  throw new DubboError(
                     "protocol error: missing EndStreamResponse",
                     Code.InvalidArgument
                   );

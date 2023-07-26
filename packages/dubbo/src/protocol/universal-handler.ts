@@ -36,7 +36,7 @@ import type { ContentTypeMatcher } from "./content-type-matcher.js";
 import type { Compression } from "./compression.js";
 import type { ProtocolHandlerFactory } from "./protocol-handler-factory.js";
 import { validateReadWriteMaxBytes } from "./limit-io.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 
 /**
@@ -99,7 +99,7 @@ export interface UniversalHandlerOptions {
    * If this signal is aborted, all signals in handler contexts will be aborted
    * as well. This gives implementations a chance to wrap up work before the
    * server process is killed.
-   * Abort this signal with a ConnectError to send a message and code to
+   * Abort this signal with a DubboError to send a message and code to
    * clients.
    */
   shutdownSignal?: AbortSignal;
@@ -238,7 +238,7 @@ export function negotiateProtocol(
   protocolHandlers: UniversalHandler[]
 ): UniversalHandler {
   if (protocolHandlers.length == 0) {
-    throw new ConnectError("at least one protocol is required", Code.Internal);
+    throw new DubboError("at least one protocol is required", Code.Internal);
   }
   const service = protocolHandlers[0].service;
   const method = protocolHandlers[0].method;
@@ -246,13 +246,13 @@ export function negotiateProtocol(
   if (
     protocolHandlers.some((h) => h.service !== service || h.method !== method)
   ) {
-    throw new ConnectError(
+    throw new DubboError(
       "cannot negotiate protocol for different RPCs",
       Code.Internal
     );
   }
   if (protocolHandlers.some((h) => h.requestPath !== requestPath)) {
-    throw new ConnectError(
+    throw new DubboError(
       "cannot negotiate protocol for different requestPaths",
       Code.Internal
     );

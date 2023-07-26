@@ -14,7 +14,7 @@
 
 import {
   Code,
-  ConnectError,
+  DubboError,
   createCallbackClient,
   createPromiseClient,
 } from "apache-dubbo";
@@ -35,8 +35,8 @@ describe("special_status", function () {
       },
     });
     function expectError(err: unknown) {
-      expect(err).toBeInstanceOf(ConnectError);
-      if (err instanceof ConnectError) {
+      expect(err).toBeInstanceOf(DubboError);
+      if (err instanceof DubboError) {
         expect(err.code).toEqual(Code.Unknown);
         expect(err.rawMessage).toEqual(TEST_STATUS_MESSAGE);
       }
@@ -52,7 +52,7 @@ describe("special_status", function () {
     });
     it("with callback client", function (done) {
       const client = createCallbackClient(TestService, transport());
-      client.unaryCall(request, (err: ConnectError | undefined) => {
+      client.unaryCall(request, (err: DubboError | undefined) => {
         expectError(err);
         done();
       });

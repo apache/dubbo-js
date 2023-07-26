@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Code } from "../code.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { createAsyncIterable, pipe } from "./async-iterable.js";
 import type { UniversalHandler } from "./universal-handler.js";
 import type { UniversalClientFn } from "./universal.js";
@@ -34,7 +34,7 @@ export function createUniversalHandlerClient(
     const pathname = new URL(uClientReq.url).pathname;
     const handler = handlerMap.get(pathname);
     if (!handler) {
-      throw new ConnectError(
+      throw new DubboError(
         `RouterHttpClient: no handler registered for ${pathname}`,
         Code.Unimplemented
       );

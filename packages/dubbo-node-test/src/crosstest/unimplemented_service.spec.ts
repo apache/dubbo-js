@@ -14,7 +14,7 @@
 
 import {
   Code,
-  ConnectError,
+  DubboError,
   createCallbackClient,
   createPromiseClient,
 } from "apache-dubbo";
@@ -32,13 +32,13 @@ describe("unimplemented_service", function () {
         await client.unimplementedCall({});
         fail("expected to catch an error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        expect(ConnectError.from(e).code).toBe(Code.Unimplemented);
+        expect(e).toBeInstanceOf(DubboError);
+        expect(DubboError.from(e).code).toBe(Code.Unimplemented);
       }
     });
     it("with callback client", function (done) {
       const client = createCallbackClient(UnimplementedService, transport());
-      client.unimplementedCall({}, (err: ConnectError | undefined) => {
+      client.unimplementedCall({}, (err: DubboError | undefined) => {
         expect(err?.code).toBe(Code.Unimplemented);
         done();
       });

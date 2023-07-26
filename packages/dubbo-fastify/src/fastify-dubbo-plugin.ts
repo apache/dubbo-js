@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import type { JsonValue } from "@bufbuild/protobuf";
-import { Code, ConnectError, createConnectRouter } from "apache-dubbo";
+import { Code, DubboError, createConnectRouter } from "apache-dubbo";
 import type { ConnectRouter, ConnectRouterOptions } from "apache-dubbo";
 import * as protoConnect from "apache-dubbo/protocol-triple";
 import * as protoGrpcWeb from "apache-dubbo/protocol-grpc-web";
@@ -96,7 +96,7 @@ export function fastifyConnectPlugin(
           }
           await universalResponseToNodeResponse(uRes, reply.raw);
         } catch (e) {
-          if (ConnectError.from(e).code == Code.Aborted) {
+          if (DubboError.from(e).code == Code.Aborted) {
             return;
           }
           // eslint-disable-next-line no-console

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code, ConnectError } from "apache-dubbo";
+import { Code, DubboError } from "apache-dubbo";
 import {
   createConnectTransport,
   Http2SessionManager,
@@ -74,7 +74,7 @@ describe("using a session manager to open a connection before starting an applic
       if (state == "error") {
         // For a transient error, we can retry here
         const reason = sm.error();
-        if (ConnectError.from(reason).code !== Code.Unavailable) {
+        if (DubboError.from(reason).code !== Code.Unavailable) {
           throw sm.error();
         }
         await new Promise<void>((resolve) =>

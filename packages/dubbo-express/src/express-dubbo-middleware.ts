@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import type { JsonValue } from "@bufbuild/protobuf";
-import { createConnectRouter, Code, ConnectError } from "apache-dubbo";
+import { createConnectRouter, Code, DubboError } from "apache-dubbo";
 import type { ConnectRouter, ConnectRouterOptions } from "apache-dubbo";
 import type { UniversalHandler } from "apache-dubbo/protocol";
 import {
@@ -80,7 +80,7 @@ export function expressConnectMiddleware(
     uHandler(uReq)
       .then((uRes) => universalResponseToNodeResponse(uRes, res))
       .catch((reason) => {
-        if (ConnectError.from(reason).code == Code.Aborted) {
+        if (DubboError.from(reason).code == Code.Aborted) {
           return;
         }
         // eslint-disable-next-line no-console

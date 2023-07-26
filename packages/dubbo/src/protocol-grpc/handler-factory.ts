@@ -15,7 +15,7 @@
 import type { Message } from "@bufbuild/protobuf";
 import type { MethodImplSpec } from "../implementation.js";
 import { createHandlerContext } from "../implementation.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import {
   contentTypeJson,
@@ -156,12 +156,12 @@ function createHandler<I extends Message<I>, O extends Message<O>>(
       transformJoinEnvelopes(),
       transformCatchFinally<Uint8Array>((e): void => {
         context.abort();
-        if (e instanceof ConnectError) {
+        if (e instanceof DubboError) {
           setTrailerStatus(context.responseTrailer, e);
         } else if (e !== undefined) {
           setTrailerStatus(
             context.responseTrailer,
-            new ConnectError(
+            new DubboError(
               "internal error",
               Code.Internal,
               undefined,

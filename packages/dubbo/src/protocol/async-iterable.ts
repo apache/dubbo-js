@@ -14,7 +14,7 @@
 
 import type { Message, MessageType, PartialMessage } from "@bufbuild/protobuf";
 import { Code } from "../code.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import type { EnvelopedMessage } from "./envelope.js";
 import {
   encodeEnvelope,
@@ -926,7 +926,7 @@ export function transformParseEnvelope<T, E>(
         (flags & endStreamFlag) === endStreamFlag
       ) {
         if (endSerialization === null) {
-          throw new ConnectError("unexpected end flag", Code.InvalidArgument);
+          throw new DubboError("unexpected end flag", Code.InvalidArgument);
         }
         // skips end-of-stream envelope
         continue;
@@ -1070,7 +1070,7 @@ export function transformSplitEnvelope(
           header.length
         } bytes in enveloped message, got ${buffer.byteLength - 5} bytes`;
       }
-      throw new ConnectError(message, Code.InvalidArgument);
+      throw new DubboError(message, Code.InvalidArgument);
     }
   };
 }
@@ -1100,7 +1100,7 @@ export async function readAllBytes(
     let offset = 0;
     for await (const chunk of iterable) {
       if (offset + chunk.byteLength > hint) {
-        throw new ConnectError(
+        throw new DubboError(
           `protocol error: promised ${hint} bytes, received ${
             offset + chunk.byteLength
           }`,
@@ -1111,7 +1111,7 @@ export async function readAllBytes(
       offset += chunk.byteLength;
     }
     if (offset < hint) {
-      throw new ConnectError(
+      throw new DubboError(
         `protocol error: promised ${hint} bytes, received ${offset}`,
         Code.InvalidArgument
       );
@@ -1339,13 +1339,13 @@ export function createWritableIterable<T>(): WritableIterable<T> {
     },
     async write(payload) {
       if (closed) {
-        throw new ConnectError("cannot write, already closed");
+        throw new DubboError("cannot write, already closed");
       }
       return process({ value: payload, done: false });
     },
     async close() {
       if (closed) {
-        throw new ConnectError("cannot close, already closed");
+        throw new DubboError("cannot close, already closed");
       }
       closed = true;
       return process({ value: undefined, done: true });

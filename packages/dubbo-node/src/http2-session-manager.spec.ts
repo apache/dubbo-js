@@ -15,7 +15,7 @@
 import { useNodeServer } from "./use-node-server-helper.spec.js";
 import * as http2 from "http2";
 import { Http2SessionManager } from "./http2-session-manager.js";
-import { ConnectError } from "apache-dubbo";
+import { DubboError } from "apache-dubbo";
 
 describe("Http2SessionManager", function () {
   const serverSessions: http2.ServerHttp2Session[] = [];
@@ -47,9 +47,9 @@ describe("Http2SessionManager", function () {
 
   it("should be error after calling abort() with an error", function () {
     const sm = new Http2SessionManager(server.getUrl());
-    sm.abort(new ConnectError("foo"));
+    sm.abort(new DubboError("foo"));
     expect(sm.state()).toBe("error");
-    expect(String(sm.error())).toBe("ConnectError: [unknown] foo");
+    expect(String(sm.error())).toBe("DubboError: [unknown] foo");
   });
 
   describe("first request", function () {
@@ -99,7 +99,7 @@ describe("Http2SessionManager", function () {
       await new Promise<void>((resolve) => setTimeout(resolve, 0));
       expect(req.destroyed).toBeTrue();
       expect(String(reqError)).toBe(
-        "ConnectError: [canceled] connection aborted"
+        "DubboError: [canceled] connection aborted"
       );
       expect(sm.state()).toBe("closed");
     });
@@ -245,7 +245,7 @@ describe("Http2SessionManager", function () {
       expect(String(sm.error()))
         .withContext("connect error wrapped by us with additional information")
         .toBe(
-          "ConnectError: [resource_exhausted] http/2 connection closed with error code ENHANCE_YOUR_CALM (0xb), too_many_pings, doubled the interval"
+          "DubboError: [resource_exhausted] http/2 connection closed with error code ENHANCE_YOUR_CALM (0xb), too_many_pings, doubled the interval"
         );
 
       // second connection should use double pingIntervalMs
@@ -311,11 +311,11 @@ describe("Http2SessionManager", function () {
         await new Promise<void>((resolve) => setTimeout(resolve, 50));
         expect(reqErrors.length).toBe(1);
         expect(String(reqErrors[0])).toBe(
-          "ConnectError: [unavailable] PING timed out"
+          "DubboError: [unavailable] PING timed out"
         );
         expect(sm.state()).toBe("error");
         expect(String(sm.error())).toBe(
-          "ConnectError: [unavailable] PING timed out"
+          "DubboError: [unavailable] PING timed out"
         );
       });
     });
@@ -364,7 +364,7 @@ describe("Http2SessionManager", function () {
         await new Promise<void>((resolve) => setTimeout(resolve, 50));
         expect(sm.state()).toBe("error");
         expect(String(sm.error())).toBe(
-          "ConnectError: [unavailable] PING timed out"
+          "DubboError: [unavailable] PING timed out"
         );
       });
     });
@@ -426,7 +426,7 @@ describe("Http2SessionManager", function () {
     });
     it("should go from error to idle", async function () {
       const sm = new Http2SessionManager(server.getUrl());
-      sm.abort(new ConnectError("foo"));
+      sm.abort(new DubboError("foo"));
       expect(sm.state()).toBe("error");
       await expectAsync(sm.connect()).toBeResolvedTo("idle");
       sm.abort();

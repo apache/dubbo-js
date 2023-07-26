@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {
-  ConnectError,
+  DubboError,
   createCallbackClient,
   createPromiseClient,
   Code,
@@ -26,8 +26,8 @@ describe("unimplemented_service", function () {
     // We expect this to be DEADLINE_EXCEEDED, however envoy is monitoring the stream timeout
     // and will return an HTTP status code 408 when stream max duration time reached, which
     // cannot be translated to a connect error code.
-    expect(err).toBeInstanceOf(ConnectError);
-    if (err instanceof ConnectError) {
+    expect(err).toBeInstanceOf(DubboError);
+    if (err instanceof DubboError) {
       expect(err.code === Code.DeadlineExceeded);
     }
   }
@@ -44,7 +44,7 @@ describe("unimplemented_service", function () {
     });
     it("with callback client", function (done) {
       const client = createCallbackClient(UnimplementedService, transport());
-      client.unimplementedCall({}, (err: ConnectError | undefined) => {
+      client.unimplementedCall({}, (err: DubboError | undefined) => {
         expectError(err);
         done();
       });

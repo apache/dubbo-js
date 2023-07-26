@@ -16,7 +16,7 @@ import { Int32Value, MethodKind, StringValue } from "@bufbuild/protobuf";
 import { createPromiseClient } from "./promise-client.js";
 import { createAsyncIterable } from "./protocol/async-iterable.js";
 import { createRouterTransport } from "./router-transport.js";
-import { ConnectError } from "./dubbo-error.js";
+import { DubboError } from "./dubbo-error.js";
 
 describe("createRoutesTransport", function () {
   const testService = {
@@ -112,8 +112,8 @@ describe("createRoutesTransport", function () {
       await client.unary({});
       fail("expected error");
     } catch (e) {
-      expect(e).toBeInstanceOf(ConnectError);
-      expect(ConnectError.from(e).message).toBe(
+      expect(e).toBeInstanceOf(DubboError);
+      expect(DubboError.from(e).message).toBe(
         "[unimplemented] RouterHttpClient: no handler registered for /TestService/Unary"
       );
     }

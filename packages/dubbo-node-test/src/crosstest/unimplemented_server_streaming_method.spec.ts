@@ -14,7 +14,7 @@
 
 import {
   Code,
-  ConnectError,
+  DubboError,
   createCallbackClient,
   createPromiseClient,
 } from "apache-dubbo";
@@ -38,14 +38,14 @@ describe("unimplemented_server_streaming_method", function () {
         }
         fail("expected to catch an error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        expect(ConnectError.from(e).code).toBe(Code.Unimplemented);
+        expect(e).toBeInstanceOf(DubboError);
+        expect(DubboError.from(e).code).toBe(Code.Unimplemented);
         if (transportName.includes("against grpc-go")) {
-          expect(ConnectError.from(e).message).toBe(
+          expect(DubboError.from(e).message).toBe(
             "[unimplemented] method UnimplementedStreamingOutputCall not implemented"
           );
         } else {
-          expect(ConnectError.from(e).message).toBe(
+          expect(DubboError.from(e).message).toBe(
             "[unimplemented] grpc.testing.TestService.UnimplementedStreamingOutputCall is not implemented"
           );
         }
@@ -59,7 +59,7 @@ describe("unimplemented_server_streaming_method", function () {
         (response) => {
           fail(`expecting no response, got: ${response.toJsonString()}`);
         },
-        (err: ConnectError | undefined) => {
+        (err: DubboError | undefined) => {
           expect(err?.code).toBe(Code.Unimplemented);
           if (transportName.includes("against grpc-go")) {
             expect(err?.message).toBe(

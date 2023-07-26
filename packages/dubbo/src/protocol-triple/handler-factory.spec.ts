@@ -37,7 +37,7 @@ import {
   sinkAll,
   transformSplitEnvelope,
 } from "../protocol/index.js";
-import { Code, ConnectError } from "../index.js";
+import { Code, DubboError } from "../index.js";
 import { errorFromJsonBytes } from "./error-json.js";
 import { endStreamFromJson } from "./end-stream.js";
 import { createTransport } from "./transport.js";
@@ -183,7 +183,7 @@ describe("createHandlerFactory()", function () {
           const err = errorFromJsonBytes(
             body[0],
             undefined,
-            new ConnectError("failed to parse connect err", Code.Internal)
+            new DubboError("failed to parse connect err", Code.Internal)
           );
           expect(err.message).toBe(
             '[invalid_argument] missing required header: set TRI-Protocol-Version to "1.0.0"'
@@ -210,7 +210,7 @@ describe("createHandlerFactory()", function () {
           const err = errorFromJsonBytes(
             body[0],
             undefined,
-            new ConnectError("failed to parse connect err", Code.Internal)
+            new DubboError("failed to parse connect err", Code.Internal)
           );
           expect(err.message).toBe(
             '[invalid_argument] TRI-Protocol-Version must be "1.0.0": got "UNEXPECTED"'
@@ -302,7 +302,7 @@ describe("createHandlerFactory()", function () {
           const err = errorFromJsonBytes(
             await readAllBytes(res.body, Number.MAX_SAFE_INTEGER),
             undefined,
-            new ConnectError("error parse failed")
+            new DubboError("error parse failed")
           );
           expect(err.code).toBe(Code.DeadlineExceeded);
           expect(err.message).toBe(
@@ -387,8 +387,8 @@ describe("createHandlerFactory()", function () {
           );
           fail("expected error");
         } catch (e) {
-          expect(e).toBeInstanceOf(ConnectError);
-          expect(ConnectError.from(e).message).toBe(
+          expect(e).toBeInstanceOf(DubboError);
+          expect(DubboError.from(e).message).toBe(
             "[invalid_argument] timeout 2000ms must be <= 1000"
           );
         }
@@ -408,7 +408,7 @@ describe("createHandlerFactory()", function () {
           shutdownSignal: shutdown.signal,
         },
         async (_req, ctx) => {
-          shutdown.abort(new ConnectError("shutting down", Code.Unavailable));
+          shutdown.abort(new DubboError("shutting down", Code.Unavailable));
           expect(ctx.signal.aborted).toBeTrue();
           ctx.signal.throwIfAborted();
           return Promise.resolve(new StringValue());
@@ -425,8 +425,8 @@ describe("createHandlerFactory()", function () {
         );
         fail("expected error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        expect(ConnectError.from(e).message).toBe(
+        expect(e).toBeInstanceOf(DubboError);
+        expect(DubboError.from(e).message).toBe(
           "[unavailable] shutting down"
         );
       }
@@ -610,8 +610,8 @@ describe("createHandlerFactory()", function () {
         );
         fail("expected error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        expect(ConnectError.from(e).message).toBe(
+        expect(e).toBeInstanceOf(DubboError);
+        expect(DubboError.from(e).message).toBe(
           '[invalid_argument] cannot decode message TestMessage from JSON: key "b" is unknown'
         );
       }

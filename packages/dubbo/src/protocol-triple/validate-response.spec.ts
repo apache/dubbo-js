@@ -14,7 +14,7 @@
 
 import { MethodKind } from "@bufbuild/protobuf";
 import { validateResponse } from "./validate-response.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 
 describe("Connect validateResponse()", function () {
   describe("with unary", function () {
@@ -51,8 +51,8 @@ describe("Connect validateResponse()", function () {
         validateResponse(methodKind, 400, new Headers());
         fail("expected error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        expect(ConnectError.from(e).message).toBe(
+        expect(e).toBeInstanceOf(DubboError);
+        expect(DubboError.from(e).message).toBe(
           "[invalid_argument] HTTP 400"
         );
       }
@@ -62,8 +62,8 @@ describe("Connect validateResponse()", function () {
         validateResponse(methodKind, 400, new Headers({ Foo: "Bar" }));
         fail("expected error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        expect(ConnectError.from(e).metadata.get("Foo")).toBe("Bar");
+        expect(e).toBeInstanceOf(DubboError);
+        expect(DubboError.from(e).metadata.get("Foo")).toBe("Bar");
       }
     });
   });

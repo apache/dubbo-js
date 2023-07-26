@@ -14,7 +14,7 @@
 
 import {
   Code,
-  ConnectError,
+  DubboError,
   createCallbackClient,
   createPromiseClient,
 } from "apache-dubbo";
@@ -31,8 +31,8 @@ describe("fail_server_streaming", () => {
   beforeAll(async () => await servers.start());
 
   function expectError(err: unknown) {
-    expect(err).toBeInstanceOf(ConnectError);
-    if (err instanceof ConnectError) {
+    expect(err).toBeInstanceOf(DubboError);
+    if (err instanceof DubboError) {
       expect(err.code).toEqual(Code.ResourceExhausted);
       expect(err.rawMessage).toEqual(interop.nonASCIIErrMsg);
       const details = err.findDetails(ErrorDetail);
@@ -62,7 +62,7 @@ describe("fail_server_streaming", () => {
             .withContext("did not expect any response message")
             .toBeUndefined();
         },
-        (err: ConnectError | undefined) => {
+        (err: DubboError | undefined) => {
           expectError(err);
           done();
         }

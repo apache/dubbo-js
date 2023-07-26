@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import type { MethodInfo, ServiceType } from "@bufbuild/protobuf";
-import { ConnectError } from "./dubbo-error.js";
+import { DubboError } from "./dubbo-error.js";
 import { Code } from "./code.js";
 import {
   createMethodImplSpec,
@@ -179,7 +179,7 @@ function whichProtocols(
     protocols.push(handlerFactoryConnect(opt));
   }
   if (protocols.length === 0) {
-    throw new ConnectError(
+    throw new DubboError(
       "cannot create handler, all protocols are disabled",
       Code.InvalidArgument
     );

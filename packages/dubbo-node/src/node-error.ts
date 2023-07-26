@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code, ConnectError } from "apache-dubbo";
+import { Code, DubboError } from "apache-dubbo";
 
 /**
- * Similar to ConnectError.from(), this function turns any value into
- * a ConnectError, but special cases some Node.js specific error codes and
+ * Similar to DubboError.from(), this function turns any value into
+ * a DubboError, but special cases some Node.js specific error codes and
  * sets an appropriate Connect error code.
  */
-export function connectErrorFromNodeReason(reason: unknown): ConnectError {
+export function dubboErrorFromNodeReason(reason: unknown): DubboError {
   let code = Code.Internal;
   const chain = unwrapNodeErrorChain(reason).map(getNodeErrorProps);
   if (chain.some((p) => p.code == "ERR_STREAM_WRITE_AFTER_END")) {
@@ -30,7 +30,7 @@ export function connectErrorFromNodeReason(reason: unknown): ConnectError {
     // buffer on the client, while it is still writing to the request
     // body.
     // To avoid this problem, we wrap ERR_STREAM_WRITE_AFTER_END as a
-    // ConnectError with Code.Aborted. The special meaning of this code
+    // DubboError with Code.Aborted. The special meaning of this code
     // in this situation is documented in StreamingConn.send() and in
     // createServerStreamingFn().
     code = Code.Aborted;
@@ -53,12 +53,12 @@ export function connectErrorFromNodeReason(reason: unknown): ConnectError {
         p.code == "ECONNREFUSED"
     )
   ) {
-    // Calling an unresolvable host should raise a ConnectError with
+    // Calling an unresolvable host should raise a DubboError with
     // Code.Aborted.
     // This behavior is covered by the crosstest "unresolvable_host".
     code = Code.Unavailable;
   }
-  const ce = ConnectError.from(reason, code);
+  const ce = DubboError.from(reason, code);
   if (ce !== reason) {
     ce.cause = reason;
   }
@@ -115,11 +115,11 @@ export function getNodeErrorProps(reason: unknown): {
 }
 
 /**
- * Returns a ConnectError for an HTTP/2 error code.
+ * Returns a DubboError for an HTTP/2 error code.
  */
-export function connectErrorFromH2ResetCode(
+export function dubboErrorFromH2ResetCode(
   rstCode: number
-): ConnectError | undefined {
+): DubboError | undefined {
   switch (rstCode) {
     case H2Code.PROTOCOL_ERROR:
     case H2Code.INTERNAL_ERROR:
@@ -128,42 +128,42 @@ export function connectErrorFromH2ResetCode(
     case H2Code.FRAME_SIZE_ERROR:
     case H2Code.COMPRESSION_ERROR:
     case H2Code.CONNECT_ERROR:
-      return new ConnectError(
+      return new DubboError(
         `http/2 stream closed with error code ${
           H2Code[rstCode]
         } (0x${rstCode.toString(16)})`,
         Code.Internal
       );
     case H2Code.REFUSED_STREAM:
-      return new ConnectError(
+      return new DubboError(
         `http/2 stream closed with error code ${
           H2Code[rstCode]
         } (0x${rstCode.toString(16)})`,
         Code.Unavailable
       );
     case H2Code.CANCEL:
-      return new ConnectError(
+      return new DubboError(
         `http/2 stream closed with error code ${
           H2Code[rstCode]
         } (0x${rstCode.toString(16)})`,
         Code.Canceled
       );
     case H2Code.ENHANCE_YOUR_CALM:
-      return new ConnectError(
+      return new DubboError(
         `http/2 stream closed with error code ${
           H2Code[rstCode]
         } (0x${rstCode.toString(16)})`,
         Code.ResourceExhausted
       );
     case H2Code.INADEQUATE_SECURITY:
-      return new ConnectError(
+      return new DubboError(
         `http/2 stream closed with error code ${
           H2Code[rstCode]
         } (0x${rstCode.toString(16)})`,
         Code.PermissionDenied
       );
     case H2Code.HTTP_1_1_REQUIRED:
-      return new ConnectError(
+      return new DubboError(
         `http/2 stream closed with error code ${
           H2Code[rstCode]
         } (0x${rstCode.toString(16)})`,

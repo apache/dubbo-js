@@ -20,7 +20,7 @@ import type {
   UniversalClientResponse,
 } from "../protocol/index.js";
 import { createAsyncIterable, encodeEnvelope } from "../protocol/index.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 
 const TestService = {
@@ -107,8 +107,8 @@ describe("gRPC transport", function () {
         );
         fail("expected error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        expect(ConnectError.from(e).message).toBe("[resource_exhausted] foo");
+        expect(e).toBeInstanceOf(DubboError);
+        expect(DubboError.from(e).message).toBe("[resource_exhausted] foo");
       }
       expect(httpRequestAborted).toBeTrue();
     });
@@ -129,8 +129,8 @@ describe("gRPC transport", function () {
         }
         fail("expected error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        expect(ConnectError.from(e).message).toBe("[resource_exhausted] foo");
+        expect(e).toBeInstanceOf(DubboError);
+        expect(DubboError.from(e).message).toBe("[resource_exhausted] foo");
       }
       expect(messagesReceived.length).toBe(1);
       expect(httpRequestAborted).toBeTrue();

@@ -15,13 +15,13 @@
 import { MethodKind } from "@bufbuild/protobuf";
 import { Code } from "../code.js";
 import { codeFromHttpStatus } from "./http-status.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { headerStreamEncoding, headerUnaryEncoding } from "./headers.js";
 import type { Compression } from "../protocol/compression.js";
 
 /**
  * Validates response status and header for the Connect protocol.
- * Throws a ConnectError if the header indicates an error, or if
+ * Throws a DubboError if the header indicates an error, or if
  * the content type is unexpected, with the following exception:
  * For unary RPCs with an HTTP error status, this returns an error
  * derived from the HTTP status instead of throwing it, giving an
@@ -35,9 +35,9 @@ export function validateResponse(
   headers: Headers
 ):
   | { isUnaryError: false; unaryError?: undefined }
-  | { isUnaryError: true; unaryError: ConnectError } {
+  | { isUnaryError: true; unaryError: DubboError } {
   if (status !== 200) {
-    const errorFromStatus = new ConnectError(
+    const errorFromStatus = new DubboError(
       `HTTP ${status}`,
       codeFromHttpStatus(status),
       headers
@@ -72,7 +72,7 @@ export function validateResponseWithCompression(
   if (encoding != null && encoding.toLowerCase() !== "identity") {
     compression = acceptCompression.find((c) => c.name === encoding);
     if (!compression) {
-      throw new ConnectError(
+      throw new DubboError(
         `unsupported response encoding "${encoding}"`,
         Code.InvalidArgument,
         headers

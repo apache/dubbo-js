@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import { compressedFlag } from "./compression.js";
 import type { Compression } from "./compression.js";
@@ -86,7 +86,7 @@ export function createEnvelopeReadableStream(
           return;
         }
         controller.error(
-          new ConnectError("premature end of stream", Code.DataLoss)
+          new DubboError("premature end of stream", Code.DataLoss)
         );
         return;
       }
@@ -114,7 +114,7 @@ export async function envelopeCompress(
 ): Promise<EnvelopedMessage> {
   let { flags, data } = envelope;
   if ((flags & compressedFlag) === compressedFlag) {
-    throw new ConnectError(
+    throw new DubboError(
       "invalid envelope, already compressed",
       Code.Internal
     );
@@ -145,7 +145,7 @@ export async function envelopeDecompress(
   let { flags, data } = envelope;
   if ((flags & compressedFlag) === compressedFlag) {
     if (!compression) {
-      throw new ConnectError(
+      throw new DubboError(
         "received compressed envelope, but do not know how to decompress",
         Code.InvalidArgument
       );

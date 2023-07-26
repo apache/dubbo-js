@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import {
   headerEncoding,
@@ -26,7 +26,7 @@ import type { Compression } from "../protocol/compression.js";
 /**
  * Validates response status and header for the gRPC-web protocol.
  *
- * Throws a ConnectError if the header contains an error status,
+ * Throws a DubboError if the header contains an error status,
  * or if the HTTP status indicates an error.
  *
  * Returns an object that indicates whether a gRPC status was found
@@ -48,7 +48,7 @@ export function validateResponse(
     }
     return { foundStatus: headers.has(headerGrpcStatus) };
   }
-  throw new ConnectError(
+  throw new DubboError(
     decodeURIComponent(headers.get(headerGrpcMessage) ?? `HTTP ${status}`),
     codeFromHttpStatus(status),
     headers
@@ -77,7 +77,7 @@ export function validateResponseWithCompression(
   if (encoding !== null && encoding.toLowerCase() !== "identity") {
     compression = acceptCompression.find((c) => c.name === encoding);
     if (!compression) {
-      throw new ConnectError(
+      throw new DubboError(
         `unsupported response encoding "${encoding}"`,
         Code.InvalidArgument,
         headers

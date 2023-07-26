@@ -16,7 +16,7 @@ import { findTrailerError } from "./trailer-status.js";
 
 /**
  * Validates a trailer for the gRPC and the gRPC-web protocol.
- * Throws a ConnectError if the trailer contains an error status.
+ * Throws a DubboError if the trailer contains an error status.
  *
  * @private Internal code, does not follow semantic versioning.
  */

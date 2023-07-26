@@ -14,7 +14,7 @@
 
 import type { BinaryReadOptions, MessageType } from "@bufbuild/protobuf";
 import { Message, protoBase64 } from "@bufbuild/protobuf";
-import { ConnectError } from "./dubbo-error.js";
+import { DubboError } from "./dubbo-error.js";
 import { Code } from "./code.js";
 
 /**
@@ -55,7 +55,7 @@ export function encodeBinaryHeader(
  * split by `,` first.
  *
  * If this function detects invalid base-64 encoding, or invalid
- * binary message data, it throws a ConnectError with code
+ * binary message data, it throws a DubboError with code
  * DataLoss.
  */
 export function decodeBinaryHeader(value: string): Uint8Array;
@@ -76,7 +76,7 @@ export function decodeBinaryHeader<T extends Message<T>>(
     }
     return bytes;
   } catch (e) {
-    throw ConnectError.from(e, Code.DataLoss);
+    throw DubboError.from(e, Code.DataLoss);
   }
 }
 

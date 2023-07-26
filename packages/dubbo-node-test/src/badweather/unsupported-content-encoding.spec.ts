@@ -14,7 +14,7 @@
 
 import { TestService } from "../gen/grpc/testing/test_connect.js";
 import { createTestServers } from "../helpers/testserver.js";
-import { Code, ConnectError } from "apache-dubbo";
+import { Code, DubboError } from "apache-dubbo";
 import { createMethodUrl } from "apache-dubbo/protocol";
 import {
   codeFromHttpStatus,
@@ -52,7 +52,7 @@ describe("unsupported content encoding", () => {
           const err = errorFromJsonBytes(
             res.body,
             undefined,
-            new ConnectError(
+            new DubboError(
               `HTTP ${res.status}`,
               codeFromHttpStatus(res.status)
             )

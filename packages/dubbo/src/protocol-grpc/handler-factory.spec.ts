@@ -27,7 +27,7 @@ import {
 import { createHandlerFactory } from "./handler-factory.js";
 import { createTransport } from "./transport.js";
 import { requestHeader } from "./request-header.js";
-import { Code, ConnectError } from "../index.js";
+import { Code, DubboError } from "../index.js";
 
 describe("createHandlerFactory()", function () {
   const testService = {
@@ -147,8 +147,8 @@ describe("createHandlerFactory()", function () {
       });
       expect(handlerContextSignal).toBeDefined();
       expect(handlerContextSignal?.aborted).toBeTrue();
-      expect(handlerContextSignal?.reason).toBeInstanceOf(ConnectError);
-      expect(ConnectError.from(handlerContextSignal?.reason).message).toBe(
+      expect(handlerContextSignal?.reason).toBeInstanceOf(DubboError);
+      expect(DubboError.from(handlerContextSignal?.reason).message).toBe(
         "[deadline_exceeded] the operation timed out"
       );
     });
@@ -178,8 +178,8 @@ describe("createHandlerFactory()", function () {
           );
           fail("expected error");
         } catch (e) {
-          expect(e).toBeInstanceOf(ConnectError);
-          expect(ConnectError.from(e).message).toBe(
+          expect(e).toBeInstanceOf(DubboError);
+          expect(DubboError.from(e).message).toBe(
             "[invalid_argument] timeout 2000ms must be <= 1000"
           );
         }
@@ -199,7 +199,7 @@ describe("createHandlerFactory()", function () {
           shutdownSignal: shutdown.signal,
         },
         async (_req, ctx) => {
-          shutdown.abort(new ConnectError("shutting down", Code.Unavailable));
+          shutdown.abort(new DubboError("shutting down", Code.Unavailable));
           expect(ctx.signal.aborted).toBeTrue();
           ctx.signal.throwIfAborted();
           return Promise.resolve(new StringValue());
@@ -216,8 +216,8 @@ describe("createHandlerFactory()", function () {
         );
         fail("expected error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        expect(ConnectError.from(e).message).toBe(
+        expect(e).toBeInstanceOf(DubboError);
+        expect(DubboError.from(e).message).toBe(
           "[unavailable] shutting down"
         );
       }

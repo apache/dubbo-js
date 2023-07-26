@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 
 /**
@@ -72,7 +72,7 @@ export function createDeadlineSignal(timeoutMs: number | undefined): {
   const controller = new AbortController();
   const listener = () => {
     controller.abort(
-      new ConnectError("the operation timed out", Code.DeadlineExceeded)
+      new DubboError("the operation timed out", Code.DeadlineExceeded)
     );
   };
   let timeoutId: ReturnType<typeof setTimeout> | undefined;

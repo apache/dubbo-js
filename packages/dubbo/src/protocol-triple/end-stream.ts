@@ -19,7 +19,7 @@ import type {
 } from "@bufbuild/protobuf";
 import { errorFromJson, errorToJson } from "./error-json.js";
 import { appendHeaders } from "../http-headers.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import type { Serialization } from "../protocol";
 
@@ -38,19 +38,19 @@ export const endStreamFlag = 0b00000010;
  */
 export interface EndStreamResponse {
   metadata: Headers;
-  error?: ConnectError;
+  error?: DubboError;
 }
 
 /**
  * Parse an EndStreamResponse of the Connect protocol.
- * Throws a ConnectError on malformed input.
+ * Throws a DubboError on malformed input.
  *
  * @private Internal code, does not follow semantic versioning.
  */
 export function endStreamFromJson(
   data: Uint8Array | string
 ): EndStreamResponse {
-  const parseErr = new ConnectError("invalid end stream", Code.InvalidArgument);
+  const parseErr = new DubboError("invalid end stream", Code.InvalidArgument);
   let jsonValue: JsonValue;
   try {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -108,7 +108,7 @@ export function endStreamFromJson(
  */
 export function endStreamToJson(
   metadata: Headers,
-  error: ConnectError | undefined,
+  error: DubboError | undefined,
   jsonWriteOptions: Partial<JsonWriteOptions> | undefined
 ): JsonObject {
   const es: JsonObject = {};
@@ -146,7 +146,7 @@ export function createEndStreamSerialization(
         return textEncoder.encode(jsonString);
       } catch (e) {
         const m = e instanceof Error ? e.message : String(e);
-        throw new ConnectError(
+        throw new DubboError(
           `failed to serialize EndStreamResponse: ${m}`,
           Code.Internal
         );
@@ -157,7 +157,7 @@ export function createEndStreamSerialization(
         return endStreamFromJson(data);
       } catch (e) {
         const m = e instanceof Error ? e.message : String(e);
-        throw new ConnectError(
+        throw new DubboError(
           `failed to parse EndStreamResponse: ${m}`,
           Code.InvalidArgument
         );

@@ -21,33 +21,33 @@ import {
   Struct,
 } from "@bufbuild/protobuf";
 import {
-  ConnectError,
-  connectErrorDetails,
-  connectErrorFromReason,
+  DubboError,
+  dubboErrorDetails,
+  dubboErrorFromReason,
 } from "./dubbo-error.js";
 import { Code } from "./code.js";
 import { node16FetchHeadersPolyfill } from "./node16-polyfill-helper.spec.js";
 
 node16FetchHeadersPolyfill();
 
-describe("ConnectError", () => {
+describe("DubboError", () => {
   describe("constructor", () => {
     it("should have status unknown by default", () => {
-      const e = new ConnectError("foo");
+      const e = new DubboError("foo");
       expect(e.code).toBe(Code.Unknown);
       expect(e.message).toBe("[unknown] foo");
       expect(e.rawMessage).toBe("foo");
-      expect(String(e)).toBe("ConnectError: [unknown] foo");
+      expect(String(e)).toBe("DubboError: [unknown] foo");
     });
     it("should take other status", () => {
-      const e = new ConnectError("foo", Code.AlreadyExists);
+      const e = new DubboError("foo", Code.AlreadyExists);
       expect(e.code).toBe(Code.AlreadyExists);
       expect(e.message).toBe("[already_exists] foo");
       expect(e.rawMessage).toBe("foo");
-      expect(String(e)).toBe("ConnectError: [already_exists] foo");
+      expect(String(e)).toBe("DubboError: [already_exists] foo");
     });
     it("accepts metadata", () => {
-      const e = new ConnectError("foo", Code.AlreadyExists, { foo: "bar" });
+      const e = new DubboError("foo", Code.AlreadyExists, { foo: "bar" });
       expect(e.metadata.get("foo")).toBe("bar");
     });
   });
@@ -64,7 +64,7 @@ describe("ConnectError", () => {
       ]
     );
     describe("on error without details", () => {
-      const err = new ConnectError("foo");
+      const err = new DubboError("foo");
       it("with empty TypeRegistry produces no details", () => {
         const details = err.findDetails(createRegistry());
         expect(details.length).toBe(0);
@@ -79,7 +79,7 @@ describe("ConnectError", () => {
       });
     });
     describe("on error with Any details", () => {
-      const err = new ConnectError("foo");
+      const err = new DubboError("foo");
       err.details.push(
         new ErrorDetail({
           reason: "soirée 🎉",
@@ -114,33 +114,33 @@ describe("ConnectError", () => {
     });
   });
   describe("from()", () => {
-    it("accepts ConnectError as unknown", () => {
-      const error: unknown = new ConnectError(
+    it("accepts DubboError as unknown", () => {
+      const error: unknown = new DubboError(
         "Not permitted",
         Code.PermissionDenied
       );
-      const got = ConnectError.from(error);
+      const got = DubboError.from(error);
       expect(got as unknown).toBe(error);
       expect(got.code).toBe(Code.PermissionDenied);
       expect(got.rawMessage).toBe("Not permitted");
     });
     it("accepts any Error", () => {
       const error: unknown = new Error("Not permitted");
-      const got = ConnectError.from(error);
+      const got = DubboError.from(error);
       expect(got as unknown).not.toBe(error);
       expect(got.code).toBe(Code.Unknown);
       expect(got.rawMessage).toBe("Not permitted");
     });
     it("accepts string value", () => {
       const error: unknown = "Not permitted";
-      const got = ConnectError.from(error);
+      const got = DubboError.from(error);
       expect(got.code).toBe(Code.Unknown);
       expect(got.rawMessage).toBe("Not permitted");
     });
   });
 });
 
-describe("connectErrorDetails()", () => {
+describe("dubboErrorDetails()", () => {
   type ErrorDetail = Message<ErrorDetail> & {
     reason: string;
     domain: string;
@@ -153,22 +153,22 @@ describe("connectErrorDetails()", () => {
     ]
   );
   describe("on error without details", () => {
-    const err = new ConnectError("foo");
+    const err = new DubboError("foo");
     it("with empty TypeRegistry produces no details", () => {
-      const details = connectErrorDetails(err, createRegistry());
+      const details = dubboErrorDetails(err, createRegistry());
       expect(details.length).toBe(0);
     });
     it("with non-empty TypeRegistry produces no details", () => {
-      const details = connectErrorDetails(err, createRegistry(ErrorDetail));
+      const details = dubboErrorDetails(err, createRegistry(ErrorDetail));
       expect(details.length).toBe(0);
     });
     it("with MessageType produces no details", () => {
-      const details = connectErrorDetails(err, ErrorDetail);
+      const details = dubboErrorDetails(err, ErrorDetail);
       expect(details.length).toBe(0);
     });
   });
   describe("on error with Any details", () => {
-    const err = new ConnectError("foo");
+    const err = new DubboError("foo");
     err.details.push(
       new ErrorDetail({
         reason: "soirée 🎉",
@@ -176,15 +176,15 @@ describe("connectErrorDetails()", () => {
       })
     );
     it("with empty TypeRegistry produces no details", () => {
-      const details = connectErrorDetails(err, createRegistry());
+      const details = dubboErrorDetails(err, createRegistry());
       expect(details.length).toBe(0);
     });
     it("with non-empty TypeRegistry produces detail", () => {
-      const details = connectErrorDetails(err, createRegistry(ErrorDetail));
+      const details = dubboErrorDetails(err, createRegistry(ErrorDetail));
       expect(details.length).toBe(1);
     });
     it("with MessageType produces detail", () => {
-      const details = connectErrorDetails(err, ErrorDetail);
+      const details = dubboErrorDetails(err, ErrorDetail);
       expect(details.length).toBe(1);
       if (details[0] instanceof ErrorDetail) {
         expect(details[0].domain).toBe("example.com");
@@ -194,50 +194,50 @@ describe("connectErrorDetails()", () => {
       }
     });
     it("with multiple MessageTypes produces detail", () => {
-      const details = connectErrorDetails(err, Struct, ErrorDetail, BoolValue);
+      const details = dubboErrorDetails(err, Struct, ErrorDetail, BoolValue);
       expect(details.length).toBe(1);
       expect(details[0]).toBeInstanceOf(ErrorDetail);
     });
   });
 });
 
-describe("connectErrorFromReason()", () => {
-  it("accepts ConnectError as unknown", () => {
-    const error: unknown = new ConnectError(
+describe("dubboErrorFromReason()", () => {
+  it("accepts DubboError as unknown", () => {
+    const error: unknown = new DubboError(
       "Not permitted",
       Code.PermissionDenied
     );
-    const got = connectErrorFromReason(error);
+    const got = dubboErrorFromReason(error);
     expect(got as unknown).toBe(error);
     expect(got.code).toBe(Code.PermissionDenied);
     expect(got.rawMessage).toBe("Not permitted");
   });
   it("accepts any Error", () => {
     const error: unknown = new Error("Not permitted");
-    const got = connectErrorFromReason(error);
+    const got = dubboErrorFromReason(error);
     expect(got as unknown).not.toBe(error);
     expect(got.code).toBe(Code.Unknown);
     expect(got.rawMessage).toBe("Not permitted");
   });
   it("accepts string value", () => {
     const error: unknown = "Not permitted";
-    const got = connectErrorFromReason(error);
+    const got = dubboErrorFromReason(error);
     expect(got.code).toBe(Code.Unknown);
     expect(got.rawMessage).toBe("Not permitted");
   });
 });
 
-describe("assertConnectError() example", () => {
+describe("assertDubboError() example", () => {
   /**
-   * Asserts that the given reason is a ConnectError.
-   * If the reason is not a ConnectError, or does not
+   * Asserts that the given reason is a DubboError.
+   * If the reason is not a DubboError, or does not
    * have the wanted Code, rethrow it.
    */
-  function assertConnectError(
+  function assertDubboError(
     reason: unknown,
     ...codes: Code[]
-  ): asserts reason is ConnectError {
-    if (reason instanceof ConnectError) {
+  ): asserts reason is DubboError {
+    if (reason instanceof DubboError) {
       if (codes.length === 0) {
         return;
       }
@@ -245,26 +245,26 @@ describe("assertConnectError() example", () => {
         return;
       }
     }
-    // reason is not a ConnectError, or does
+    // reason is not a DubboError, or does
     // not have the wanted Code - rethrow it.
     throw reason;
   }
-  it("asserts ConnectError", () => {
-    const err: unknown = new ConnectError("foo");
-    assertConnectError(err);
+  it("asserts DubboError", () => {
+    const err: unknown = new DubboError("foo");
+    assertDubboError(err);
     expect(err.rawMessage).toBe("foo");
   });
-  it("asserts ConnectError with Code", () => {
-    const err: unknown = new ConnectError("foo", Code.PermissionDenied);
-    assertConnectError(err, Code.PermissionDenied);
+  it("asserts DubboError with Code", () => {
+    const err: unknown = new DubboError("foo", Code.PermissionDenied);
+    assertDubboError(err, Code.PermissionDenied);
     expect(err.code).toBe(Code.PermissionDenied);
     expect(err.rawMessage).toBe("foo");
   });
-  it("rethrows non-ConnectErrors", () => {
-    expect(() => assertConnectError(true)).toThrow(true);
+  it("rethrows non-DubboErrors", () => {
+    expect(() => assertDubboError(true)).toThrow(true);
   });
-  it("rethrows ConnectError with unwanted Code", () => {
-    const err: unknown = new ConnectError("foo", Code.PermissionDenied);
-    expect(() => assertConnectError(err, Code.InvalidArgument)).toThrow(err);
+  it("rethrows DubboError with unwanted Code", () => {
+    const err: unknown = new DubboError("foo", Code.PermissionDenied);
+    expect(() => assertDubboError(err, Code.InvalidArgument)).toThrow(err);
   });
 });

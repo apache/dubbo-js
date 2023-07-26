@@ -15,7 +15,7 @@
 import * as zlib from "zlib";
 import { promisify } from "util";
 import type { Compression } from "apache-dubbo/protocol";
-import { Code, ConnectError } from "apache-dubbo";
+import { Code, DubboError } from "apache-dubbo";
 import { getNodeErrorProps } from "./node-error.js";
 
 const gzip = promisify(zlib.gzip);
@@ -74,14 +74,14 @@ function wrapZLibErrors<T>(
     // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     switch (code) {
       case "ERR_BUFFER_TOO_LARGE":
-        e = new ConnectError(
+        e = new DubboError(
           `message is larger than configured readMaxBytes ${readMaxBytes} after decompression`,
           Code.ResourceExhausted
         );
         break;
       case "Z_DATA_ERROR":
       case "ERR_PADDING_2":
-        e = new ConnectError(
+        e = new DubboError(
           "decompression failed",
           Code.InvalidArgument,
           undefined,
@@ -90,7 +90,7 @@ function wrapZLibErrors<T>(
         );
         break;
       default:
-        e = new ConnectError(
+        e = new DubboError(
           "decompression failed",
           Code.Internal,
           undefined,

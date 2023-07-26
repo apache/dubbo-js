@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ConnectError } from "apache-dubbo";
+import { DubboError } from "apache-dubbo";
 import { compressionBrotli, compressionGzip } from "apache-dubbo-node";
 import * as zlib from "zlib";
 
@@ -45,8 +45,8 @@ describe("compression", () => {
           await compression.decompress(payloadCompressed, 2);
           fail("excepted an error");
         } catch (e) {
-          expect(e).toBeInstanceOf(ConnectError);
-          expect(ConnectError.from(e).message).toBe(
+          expect(e).toBeInstanceOf(DubboError);
+          expect(DubboError.from(e).message).toBe(
             "[resource_exhausted] message is larger than configured readMaxBytes 2 after decompression"
           );
         }
@@ -59,8 +59,8 @@ describe("compression", () => {
           );
           fail("excepted an error");
         } catch (e) {
-          expect(e).toBeInstanceOf(ConnectError);
-          expect(ConnectError.from(e).message).toBe(
+          expect(e).toBeInstanceOf(DubboError);
+          expect(DubboError.from(e).message).toBe(
             "[invalid_argument] decompression failed"
           );
         }
@@ -73,8 +73,8 @@ describe("compression", () => {
           );
           fail("excepted an error");
         } catch (e) {
-          expect(e).toBeInstanceOf(ConnectError);
-          expect(ConnectError.from(e).message).toBe(
+          expect(e).toBeInstanceOf(DubboError);
+          expect(DubboError.from(e).message).toBe(
             "[internal] decompression failed"
           );
         }

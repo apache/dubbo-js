@@ -22,7 +22,7 @@ import type {
   PartialMessage,
   ServiceType,
 } from "@bufbuild/protobuf";
-import { ConnectError } from "./dubbo-error.js";
+import { DubboError } from "./dubbo-error.js";
 import { Code } from "./code.js";
 import {
   createDeadlineSignal,
@@ -271,7 +271,7 @@ export function createServiceImplSpec<T extends ServiceType>(
     } else {
       const message = `${service.typeName}.${methodInfo.name} is not implemented`;
       fn = function unimplemented() {
-        throw new ConnectError(message, Code.Unimplemented);
+        throw new DubboError(message, Code.Unimplemented);
       };
     }
     s.methods[localName] = createMethodImplSpec(service, methodInfo, fn);

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 
 /**
@@ -42,7 +42,7 @@ export interface Compression {
   /**
    * Decompress a chunk of data.
    *
-   * Raises a ConnectError with Code.InvalidArgument if the decompressed
+   * Raises a DubboError with Code.InvalidArgument if the decompressed
    * size exceeds readMaxBytes.
    */
   decompress: (bytes: Uint8Array, readMaxBytes: number) => Promise<Uint8Array>;
@@ -65,7 +65,7 @@ export function compressionNegotiate(
 ): {
   request: Compression | null;
   response: Compression | null;
-  error?: ConnectError;
+  error?: DubboError;
 } {
   let request = null;
   let response = null;
@@ -79,7 +79,7 @@ export function compressionNegotiate(
       // and the Connect protocol, we return code "unimplemented" and specify
       // acceptable compression(s).
       const acceptable = available.map((c) => c.name).join(",");
-      error = new ConnectError(
+      error = new DubboError(
         `unknown compression "${requested}": supported encodings are ${acceptable}`,
         Code.Unimplemented,
         {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 
 /**
@@ -46,13 +46,13 @@ export function validateReadWriteMaxBytes(
   readMaxBytes ??= maxReadMaxBytes;
   compressMinBytes ??= defaultCompressMinBytes;
   if (writeMaxBytes < 1 || writeMaxBytes > maxWriteMaxBytes) {
-    throw new ConnectError(
+    throw new DubboError(
       `writeMaxBytes ${writeMaxBytes} must be >= 1 and <= ${maxWriteMaxBytes}`,
       Code.Internal
     );
   }
   if (readMaxBytes < 1 || readMaxBytes > maxReadMaxBytes) {
-    throw new ConnectError(
+    throw new DubboError(
       `readMaxBytes ${readMaxBytes} must be >= 1 and <= ${maxReadMaxBytes}`,
       Code.Internal
     );
@@ -74,7 +74,7 @@ export function assertWriteMaxBytes(
   bytesWritten: number
 ): void {
   if (bytesWritten > writeMaxBytes) {
-    throw new ConnectError(
+    throw new DubboError(
       `message size ${bytesWritten} is larger than configured writeMaxBytes ${writeMaxBytes}`,
       Code.ResourceExhausted
     );
@@ -96,6 +96,6 @@ export function assertReadMaxBytes(
     if (totalSizeKnown) {
       message = `message size ${bytesRead} is larger than configured readMaxBytes ${readMaxBytes}`;
     }
-    throw new ConnectError(message, Code.ResourceExhausted);
+    throw new DubboError(message, Code.ResourceExhausted);
   }
 }

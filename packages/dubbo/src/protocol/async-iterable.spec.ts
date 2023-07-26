@@ -27,7 +27,7 @@ import {
   transformSplitEnvelope,
 } from "./async-iterable.js";
 import type { Serialization } from "./serialization.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import type { EnvelopedMessage } from "./envelope.js";
 import type { Compression } from "./compression.js";
@@ -557,8 +557,8 @@ describe("transforming asynchronous iterables", () => {
             await readAll(it);
             fail("expected error");
           } catch (e) {
-            expect(e).toBeInstanceOf(ConnectError);
-            expect(ConnectError.from(e).message).toBe(
+            expect(e).toBeInstanceOf(DubboError);
+            expect(DubboError.from(e).message).toBe(
               "[invalid_argument] unexpected end flag"
             );
           }
@@ -624,8 +624,8 @@ describe("transforming asynchronous iterables", () => {
           await readAll(it);
           fail("expected error");
         } catch (e) {
-          expect(e).toBeInstanceOf(ConnectError);
-          expect(ConnectError.from(e).message).toBe(
+          expect(e).toBeInstanceOf(DubboError);
+          expect(DubboError.from(e).message).toBe(
             "[resource_exhausted] message size 4 is larger than configured readMaxBytes 3"
           );
         }
@@ -672,7 +672,7 @@ describe("transforming asynchronous iterables", () => {
       decompress(bytes, readMaxBytes) {
         if (bytes.byteLength > readMaxBytes) {
           return Promise.reject(
-            new ConnectError(
+            new DubboError(
               `message is larger than configured readMaxBytes ${readMaxBytes} after decompression`,
               Code.ResourceExhausted
             )
@@ -702,8 +702,8 @@ describe("transforming asynchronous iterables", () => {
           await readAll(it);
           fail("expected error");
         } catch (e) {
-          expect(e).toBeInstanceOf(ConnectError);
-          expect(ConnectError.from(e).message).toBe(
+          expect(e).toBeInstanceOf(DubboError);
+          expect(DubboError.from(e).message).toBe(
             "[internal] invalid envelope, already compressed"
           );
         }
@@ -734,8 +734,8 @@ describe("transforming asynchronous iterables", () => {
             await readAll(it);
             fail("expected error");
           } catch (e) {
-            expect(e).toBeInstanceOf(ConnectError);
-            expect(ConnectError.from(e).message).toBe(
+            expect(e).toBeInstanceOf(DubboError);
+            expect(DubboError.from(e).message).toBe(
               "[internal] invalid envelope, already compressed"
             );
           }
@@ -775,8 +775,8 @@ describe("transforming asynchronous iterables", () => {
           await readAll(it);
           fail("expected error");
         } catch (e) {
-          expect(e).toBeInstanceOf(ConnectError);
-          expect(ConnectError.from(e).message).toBe(
+          expect(e).toBeInstanceOf(DubboError);
+          expect(DubboError.from(e).message).toBe(
             "[resource_exhausted] message is larger than configured readMaxBytes 3 after decompression"
           );
         }
@@ -799,8 +799,8 @@ describe("transforming asynchronous iterables", () => {
             await readAll(it);
             fail("expected error");
           } catch (e) {
-            expect(e).toBeInstanceOf(ConnectError);
-            expect(ConnectError.from(e).message).toBe(
+            expect(e).toBeInstanceOf(DubboError);
+            expect(DubboError.from(e).message).toBe(
               "[invalid_argument] received compressed envelope, but do not know how to decompress"
             );
           }
@@ -814,7 +814,7 @@ describe("transforming asynchronous iterables", () => {
     const serialization: Serialization<string> = {
       serialize(data: string): Uint8Array {
         if (data === "c") {
-          throw new ConnectError("cannot serialize 'c'", Code.Internal);
+          throw new DubboError("cannot serialize 'c'", Code.Internal);
         }
         return new TextEncoder().encode(data);
       },
@@ -832,8 +832,8 @@ describe("transforming asynchronous iterables", () => {
         await readAll(it);
         fail("expected error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        if (e instanceof ConnectError) {
+        expect(e).toBeInstanceOf(DubboError);
+        if (e instanceof DubboError) {
           expect(e.code).toBe(Code.Internal);
           expect(e.rawMessage).toBe("cannot serialize 'c'");
           expect(e.cause).toBeUndefined();
@@ -906,7 +906,7 @@ describe("transforming asynchronous iterables", () => {
       decompress(bytes, readMaxBytes) {
         if (bytes.byteLength > readMaxBytes) {
           return Promise.reject(
-            new ConnectError(
+            new DubboError(
               `message is larger than configured readMaxBytes ${readMaxBytes} after decompression`,
               Code.ResourceExhausted
             )
@@ -961,8 +961,8 @@ describe("transforming asynchronous iterables", () => {
         await readAllBytes(it);
         fail("expected error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        expect(ConnectError.from(e).message).toBe(
+        expect(e).toBeInstanceOf(DubboError);
+        expect(DubboError.from(e).message).toBe(
           "[resource_exhausted] message size is larger than configured readMaxBytes 4"
         );
       }
@@ -991,8 +991,8 @@ describe("transforming asynchronous iterables", () => {
             await readAllBytes(it);
             fail("expected error");
           } catch (e) {
-            expect(e).toBeInstanceOf(ConnectError);
-            expect(ConnectError.from(e).message).toBe(
+            expect(e).toBeInstanceOf(DubboError);
+            expect(DubboError.from(e).message).toBe(
               "[resource_exhausted] message size 5 is larger than configured readMaxBytes 4"
             );
           }
@@ -1041,8 +1041,8 @@ describe("transforming asynchronous iterables", () => {
             await readAllBytes(it);
             fail("expected error");
           } catch (e) {
-            expect(e).toBeInstanceOf(ConnectError);
-            expect(ConnectError.from(e).message).toBe(
+            expect(e).toBeInstanceOf(DubboError);
+            expect(DubboError.from(e).message).toBe(
               "[invalid_argument] protocol error: promised 116 bytes, received 16"
             );
           }
@@ -1061,8 +1061,8 @@ describe("transforming asynchronous iterables", () => {
             await readAllBytes(it);
             fail("expected error");
           } catch (e) {
-            expect(e).toBeInstanceOf(ConnectError);
-            expect(ConnectError.from(e).message).toBe(
+            expect(e).toBeInstanceOf(DubboError);
+            expect(DubboError.from(e).message).toBe(
               "[invalid_argument] protocol error: promised 6 bytes, received 8"
             );
           }

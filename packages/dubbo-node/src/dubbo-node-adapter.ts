@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code, ConnectError, createConnectRouter } from "apache-dubbo";
+import { Code, DubboError, createConnectRouter } from "apache-dubbo";
 import type { ConnectRouter, ConnectRouterOptions } from "apache-dubbo";
 import type { UniversalHandler } from "apache-dubbo/protocol";
 import { uResponseNotFound } from "apache-dubbo/protocol";
@@ -89,7 +89,7 @@ export function connectNodeAdapter(
     uHandler(uReq)
       .then((uRes) => universalResponseToNodeResponse(uRes, res))
       .catch((reason) => {
-        if (ConnectError.from(reason).code == Code.Aborted) {
+        if (DubboError.from(reason).code == Code.Aborted) {
           return;
         }
         // eslint-disable-next-line no-console

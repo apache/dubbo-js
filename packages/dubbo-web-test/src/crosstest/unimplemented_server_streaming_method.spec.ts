@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {
-  ConnectError,
+  DubboError,
   createCallbackClient,
   createPromiseClient,
   Code,
@@ -24,8 +24,8 @@ import { Empty } from "../gen/grpc/testing/empty_pb.js";
 
 describe("unimplemented_server_streaming_method", function () {
   function expectError(err: unknown) {
-    expect(err).toBeInstanceOf(ConnectError);
-    if (err instanceof ConnectError) {
+    expect(err).toBeInstanceOf(DubboError);
+    if (err instanceof DubboError) {
       expect(err.code).toEqual(Code.Unimplemented);
     }
   }
@@ -51,7 +51,7 @@ describe("unimplemented_server_streaming_method", function () {
         (response) => {
           fail(`expecting no response, got: ${response.toJsonString()}`);
         },
-        (err: ConnectError | undefined) => {
+        (err: DubboError | undefined) => {
           expectError(err);
           done();
         }

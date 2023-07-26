@@ -13,9 +13,9 @@
 // limitations under the License.
 
 export {
-  ConnectError,
-  connectErrorDetails,
-  connectErrorFromReason,
+  DubboError,
+  dubboErrorDetails,
+  dubboErrorFromReason,
 } from "./dubbo-error.js";
 export { Code } from "./code.js";
 export {

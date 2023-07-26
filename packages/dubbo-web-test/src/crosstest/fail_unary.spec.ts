@@ -14,7 +14,7 @@
 
 import {
   Code,
-  ConnectError,
+  DubboError,
   createCallbackClient,
   createPromiseClient,
 } from "apache-dubbo";
@@ -25,8 +25,8 @@ import { interop } from "../helpers/interop.js";
 
 describe("fail_unary", () => {
   function expectError(err: unknown) {
-    expect(err).toBeInstanceOf(ConnectError);
-    if (err instanceof ConnectError) {
+    expect(err).toBeInstanceOf(DubboError);
+    if (err instanceof DubboError) {
       expect(err.code).toEqual(Code.ResourceExhausted);
       expect(err.rawMessage).toEqual(interop.nonASCIIErrMsg);
       const details = err.findDetails(ErrorDetail);
@@ -45,7 +45,7 @@ describe("fail_unary", () => {
     });
     it("with callback client", function (done) {
       const client = createCallbackClient(TestService, transport());
-      client.failUnaryCall({}, (err: ConnectError | undefined) => {
+      client.failUnaryCall({}, (err: DubboError | undefined) => {
         expectError(err);
         done();
       });

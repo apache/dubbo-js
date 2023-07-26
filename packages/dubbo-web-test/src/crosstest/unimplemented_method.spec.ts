@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {
-  ConnectError,
+  DubboError,
   createCallbackClient,
   createPromiseClient,
   Code,
@@ -23,8 +23,8 @@ import { describeTransports } from "../helpers/crosstestserver.js";
 
 describe("unimplemented_method", function () {
   function expectError(err: unknown) {
-    expect(err).toBeInstanceOf(ConnectError);
-    if (err instanceof ConnectError) {
+    expect(err).toBeInstanceOf(DubboError);
+    if (err instanceof DubboError) {
       expect(err.code).toEqual(Code.Unimplemented);
     }
   }
@@ -40,7 +40,7 @@ describe("unimplemented_method", function () {
     });
     it("with callback client", function (done) {
       const client = createCallbackClient(TestService, transport());
-      client.unimplementedCall({}, (err: ConnectError | undefined) => {
+      client.unimplementedCall({}, (err: DubboError | undefined) => {
         expectError(err);
         done();
       });

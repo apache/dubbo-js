@@ -14,7 +14,7 @@
 
 import type { JsonObject } from "@bufbuild/protobuf";
 import { endStreamFromJson, endStreamToJson } from "./end-stream.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import { node16FetchHeadersPolyfill } from "../node16-polyfill-helper.spec.js";
 import { errorToJson } from "./error-json.js";
@@ -62,7 +62,7 @@ describe("endStreamToJson()", function () {
     expect(got).toEqual(want);
   });
   it("should serialize the error", function () {
-    const err = new ConnectError("my bad", Code.ResourceExhausted);
+    const err = new DubboError("my bad", Code.ResourceExhausted);
     const got = endStreamToJson(new Headers(), err, undefined);
     const want: JsonObject = {
       error: errorToJson(err, undefined),
@@ -83,7 +83,7 @@ describe("endStreamToJson()", function () {
     expect(got).toEqual(want);
   });
   it("should serialize metadata from the error", function () {
-    const err = new ConnectError("my bad", Code.ResourceExhausted, {
+    const err = new DubboError("my bad", Code.ResourceExhausted, {
       foo: "bar",
     });
     const got = endStreamToJson(new Headers(), err, undefined);
@@ -94,7 +94,7 @@ describe("endStreamToJson()", function () {
     expect(got).toEqual(want);
   });
   it("should append metadata from the error", function () {
-    const err = new ConnectError("my bad", Code.ResourceExhausted, {
+    const err = new DubboError("my bad", Code.ResourceExhausted, {
       foo: "bar",
     });
     const got = endStreamToJson(
