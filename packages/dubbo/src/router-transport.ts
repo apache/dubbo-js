@@ -24,6 +24,8 @@ import type { ConnectRouter, ConnectRouterOptions } from "./router.js";
  *
  * This can be used to test both client logic by using this to stub/mock the backend,
  * and to test server logic by using this to run without needing to spin up a server.
+ * 
+ * Mainly used for testing of dubbo-node-test and dubbo-web-test
  */
 export function createRouterTransport(
   routes: (router: ConnectRouter) => void,
