@@ -15,7 +15,7 @@
 import type { JsonValue } from "@bufbuild/protobuf";
 import { Code, DubboError, createConnectRouter } from "apache-dubbo";
 import type { ConnectRouter, ConnectRouterOptions } from "apache-dubbo";
-import * as protoConnect from "apache-dubbo/protocol-triple";
+import * as protoTriple from "apache-dubbo/protocol-triple";
 import * as protoGrpcWeb from "apache-dubbo/protocol-grpc-web";
 import * as protoGrpc from "apache-dubbo/protocol-grpc";
 import {
@@ -119,8 +119,8 @@ export function fastifyConnectPlugin(
 function addNoopContentTypeParsers(instance: FastifyInstance): void {
   instance.addContentTypeParser(
     [
-      protoConnect.contentTypeUnaryJson,
-      protoConnect.contentTypeStreamJson,
+      protoTriple.contentTypeUnaryJson,
+      protoTriple.contentTypeStreamJson,
       protoGrpcWeb.contentTypeProto,
       protoGrpcWeb.contentTypeJson,
       protoGrpc.contentTypeProto,
@@ -137,7 +137,7 @@ function addNoopContentTypeParsers(instance: FastifyInstance): void {
     noopContentTypeParser
   );
   instance.addContentTypeParser(
-    protoConnect.contentTypeRegExp,
+    protoTriple.contentTypeRegExp,
     noopContentTypeParser
   );
 }
