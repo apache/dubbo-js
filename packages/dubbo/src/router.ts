@@ -39,7 +39,7 @@ import type { ProtocolHandlerFactory } from "./protocol/protocol-handler-factory
  * Create a file `connect.ts` with a default export such as this:
  *
  * ```ts
- * import {ConnectRouter} from "@bufbuild/connect";
+ * import {ConnectRouter} from "apache-dubbo";
  *
  * export default (router: ConnectRouter) => {
  *   router.service(ElizaService, {});
@@ -47,7 +47,7 @@ import type { ProtocolHandlerFactory } from "./protocol/protocol-handler-factory
  * ```
  *
  * The pass this function to adapters and plugins, for example
- * from @bufbuild/connect-node, or from @bufbuild/connect-fastify.
+ * from apache-dubbo-node, or from apache-dubbo-fastify.
  */
 export interface ConnectRouter {
   readonly handlers: Array<UniversalHandler & ExpandHandler>;
