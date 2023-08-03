@@ -8,17 +8,17 @@ TypeScript.
 the fetch API on board:
 
 
-### createConnectTransport()
+### createDubboTransport()
 
 Lets your clients running in the web browser talk to a server with the Connect protocol:
 
 ```diff
 import { createPromiseClient } from "apache-dubbo";
-+ import { createConnectTransport } from "apache-dubbo-web";
++ import { createDubboTransport } from "apache-dubbo-web";
 import { ElizaService } from "./gen/eliza_connect.js";
 
 + // A transport for clients using the Connect protocol with fetch()
-+ const transport = createConnectTransport({
++ const transport = createDubboTransport({
 +   baseUrl: "https://demo.connect.build",
 + });
 

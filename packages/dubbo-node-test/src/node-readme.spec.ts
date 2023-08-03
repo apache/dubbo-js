@@ -20,7 +20,7 @@ import {
   connectNodeAdapter,
   createGrpcTransport,
   createGrpcWebTransport,
-  createConnectTransport,
+  createDubboTransport,
 } from "apache-dubbo-node";
 
 /* eslint-disable @typescript-eslint/require-await */
@@ -69,9 +69,9 @@ describe("node readme", function () {
     httpVersion: "1.1" as const,
   };
 
-  it("createConnectTransport()", async function () {
+  it("createDubboTransport()", async function () {
     // A transport for clients using the gRPC protocol with Node.js `http` module
-    const transport = createConnectTransport({
+    const transport = createDubboTransport({
       baseUrl: "https://demo.connect.build",
       httpVersion: "1.1",
     });

@@ -82,7 +82,7 @@ console.log(sentence) // you said: I feel happy.
 ```
 
 A client for the web browser actually looks identical to this example - it would
-simply use `createConnectTransport` from [apache-dubbo-web](https://www.npmjs.com/package/apache-dubbo-web) 
+simply use `createDubboTransport` from [apache-dubbo-web](https://www.npmjs.com/package/apache-dubbo-web) 
 instead.
 
 

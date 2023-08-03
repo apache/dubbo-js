@@ -30,9 +30,9 @@ import {
 /**
  * Options used to configure the Connect transport.
  *
- * See createConnectTransport().
+ * See createDubboTransport().
  */
-type ConnectTransportOptions = NodeTransportOptions &
+type DubboTransportOptions = NodeTransportOptions &
   DeprecatedNodeTransportOptions & {
     /**
      * Base URI for all HTTP requests.
@@ -128,8 +128,8 @@ type ConnectTransportOptions = NodeTransportOptions &
  * Create a Transport for the Connect protocol using the Node.js `http`, `http2`,
  * or `http2` module.
  */
-export function createConnectTransport(
-  options: ConnectTransportOptions
+export function createDubboTransport(
+  options: DubboTransportOptions
 ): Transport {
   return createTransport(validateNodeTransportOptions(options));
 }

@@ -1,8 +1,8 @@
 import { createPromiseClient } from "apache-dubbo";
 import { ExampleService } from "./gen/example_dubbo";
-import { createConnectTransport } from "apache-dubbo-node";
+import { createDubboTransport } from "apache-dubbo-node";
 
-const transport = createConnectTransport({
+const transport = createDubboTransport({
   baseUrl: "http://localhost:8080",
   httpVersion: "1.1",
 });

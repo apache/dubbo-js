@@ -6,17 +6,17 @@ TypeScript.
 
 `apache-dubbo-node` provides the following adapters for Node.js:
 
-### createConnectTransport()
+### createDubboTransport()
 
 Lets your clients running on Node.js talk to a server with the Connect protocol:
 
 ```diff
 import { createPromiseClient } from "apache-dubbo";
-+ import { createConnectTransport } from "apache-dubbo-node";
++ import { createDubboTransport } from "apache-dubbo-node";
 import { ElizaService } from "./gen/eliza_connect.js";
 
 + // A transport for clients using the Connect protocol with Node.js `http` module
-+ const transport = createConnectTransport({
++ const transport = createDubboTransport({
 +   baseUrl: "https://demo.connect.build",
 +   httpVersion: "1.1"
 + });
@@ -134,7 +134,7 @@ console.log(sentence) // you said: I feel happy.
 ```
 
 A client for the web browser actually looks identical to this example - it would
-simply use `createConnectTransport` from [apache-dubbo-web](https://www.npmjs.com/package/apache-dubbo-web) 
+simply use `createDubboTransport` from [apache-dubbo-web](https://www.npmjs.com/package/apache-dubbo-web) 
 instead.
 
 

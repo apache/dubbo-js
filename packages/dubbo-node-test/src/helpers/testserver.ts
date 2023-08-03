@@ -21,7 +21,7 @@ import { cors, createRouterTransport, type Transport } from "apache-dubbo";
 import {
   compressionGzip,
   connectNodeAdapter,
-  createConnectTransport,
+  createDubboTransport,
   createGrpcTransport,
   createGrpcWebTransport,
 } from "apache-dubbo-node";
@@ -594,7 +594,7 @@ export function createTestServers() {
     // Connect
     "apache-dubbo-node (Connect, binary, http2, gzip) against apache-dubbo-node (h2c)":
       (options?: Record<string, unknown>) =>
-        createConnectTransport({
+        createDubboTransport({
           ...options,
           baseUrl: servers["apache-dubbo-node (h2c)"].getUrl(),
           httpVersion: "2",
@@ -604,7 +604,7 @@ export function createTestServers() {
         }),
     "apache-dubbo-node (Connect, binary, http2, gzip) against connect-go (h1)":
       (options?: Record<string, unknown>) =>
-        createConnectTransport({
+        createDubboTransport({
           ...options,
           baseUrl: servers["connect-go (h1)"].getUrl(),
           httpVersion: "2",
@@ -617,7 +617,7 @@ export function createTestServers() {
         }),
     "apache-dubbo-node (Connect, JSON, http2, gzip) against apache-dubbo-node (h2c)":
       (options?: Record<string, unknown>) =>
-        createConnectTransport({
+        createDubboTransport({
           ...options,
           baseUrl: servers["apache-dubbo-node (h2c)"].getUrl(),
           httpVersion: "2",
@@ -627,7 +627,7 @@ export function createTestServers() {
         }),
     "apache-dubbo-node (Connect, JSON, http2, gzip) against connect-go (h1)":
       (options?: Record<string, unknown>) =>
-        createConnectTransport({
+        createDubboTransport({
           ...options,
           baseUrl: servers["connect-go (h1)"].getUrl(),
           httpVersion: "2",
@@ -640,7 +640,7 @@ export function createTestServers() {
         }),
     "apache-dubbo-node (Connect, JSON, http) against apache-dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
-        createConnectTransport({
+        createDubboTransport({
           ...options,
           baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
@@ -648,7 +648,7 @@ export function createTestServers() {
         }),
     "apache-dubbo-node (Connect, binary, http) against apache-dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
-        createConnectTransport({
+        createDubboTransport({
           ...options,
           baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
@@ -656,7 +656,7 @@ export function createTestServers() {
         }),
     "apache-dubbo-node (Connect, binary, https) against apache-dubbo-node (h1 + tls)":
       (options?: Record<string, unknown>) =>
-        createConnectTransport({
+        createDubboTransport({
           ...options,
           baseUrl: servers["apache-dubbo-node (h1 + tls)"].getUrl(),
           httpVersion: "1.1",
@@ -667,7 +667,7 @@ export function createTestServers() {
         }),
     "apache-dubbo-node (Connect, JSON, https) against apache-dubbo-node (h1 + tls)":
       (options?: Record<string, unknown>) =>
-        createConnectTransport({
+        createDubboTransport({
           ...options,
           baseUrl: servers["apache-dubbo-node (h1 + tls)"].getUrl(),
           httpVersion: "1.1",
@@ -679,7 +679,7 @@ export function createTestServers() {
     "apache-dubbo-node (Connect, binary, http) against connect-go (h1)": (
       options?: Record<string, unknown>
     ) =>
-      createConnectTransport({
+      createDubboTransport({
         ...options,
         baseUrl: servers["connect-go (h1)"].getUrl(),
         httpVersion: "1.1",
@@ -691,7 +691,7 @@ export function createTestServers() {
     "apache-dubbo-node (Connect, JSON, http) against connect-go (h1)": (
       options?: Record<string, unknown>
     ) =>
-      createConnectTransport({
+      createDubboTransport({
         ...options,
         baseUrl: servers["connect-go (h1)"].getUrl(),
         httpVersion: "1.1",
@@ -702,7 +702,7 @@ export function createTestServers() {
       }),
     "apache-dubbo-node (Connect, binary, http, gzip) against connect-go (h1)":
       (options?: Record<string, unknown>) =>
-        createConnectTransport({
+        createDubboTransport({
           ...options,
           baseUrl: servers["connect-go (h1)"].getUrl(),
           httpVersion: "1.1",
@@ -714,7 +714,7 @@ export function createTestServers() {
         }),
     "apache-dubbo-node (Connect, JSON, http, gzip) against connect-go (h1)":
       (options?: Record<string, unknown>) =>
-        createConnectTransport({
+        createDubboTransport({
           ...options,
           baseUrl: servers["connect-go (h1)"].getUrl(),
           httpVersion: "1.1",
@@ -726,7 +726,7 @@ export function createTestServers() {
         }),
     "apache-dubbo-node (Connect, JSON, http, gzip) against apache-dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
-        createConnectTransport({
+        createDubboTransport({
           ...options,
           baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
@@ -738,7 +738,7 @@ export function createTestServers() {
         }),
     "apache-dubbo-node (Connect, binary, http, gzip) against apache-dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
-        createConnectTransport({
+        createDubboTransport({
           ...options,
           baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
@@ -750,7 +750,7 @@ export function createTestServers() {
         }),
     "apache-dubbo-node (Connect, JSON, http, gzip) against apache-dubbo-fastify (h2c)":
       (options?: Record<string, unknown>) =>
-        createConnectTransport({
+        createDubboTransport({
           ...options,
           baseUrl: servers["apache-dubbo-fastify (h2c)"].getUrl(),
           httpVersion: "2",
@@ -760,7 +760,7 @@ export function createTestServers() {
         }),
     "apache-dubbo-node (Connect, binary, http, gzip) against apache-dubbo-fastify (h2c)":
       (options?: Record<string, unknown>) =>
-        createConnectTransport({
+        createDubboTransport({
           ...options,
           baseUrl: servers["apache-dubbo-fastify (h2c)"].getUrl(),
           httpVersion: "2",
@@ -771,7 +771,7 @@ export function createTestServers() {
 
     "apache-dubbo-node (Connect, JSON, http, gzip) against apache-dubbo-express (h1)":
       (options?: Record<string, unknown>) =>
-        createConnectTransport({
+        createDubboTransport({
           ...options,
           baseUrl: servers["apache-dubbo-express (h1)"].getUrl(),
           httpVersion: "1.1",
@@ -780,7 +780,7 @@ export function createTestServers() {
         }),
     "apache-dubbo-node (Connect, binary, http, gzip) against apache-dubbo-express (h1)":
       (options?: Record<string, unknown>) =>
-        createConnectTransport({
+        createDubboTransport({
           ...options,
           baseUrl: servers["apache-dubbo-express (h1)"].getUrl(),
           httpVersion: "1.1",

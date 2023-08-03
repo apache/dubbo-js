@@ -14,7 +14,7 @@
 
 import { type Transport, createRouterTransport } from "apache-dubbo";
 import {
-  createConnectTransport,
+  createDubboTransport,
   createGrpcWebTransport,
 } from "apache-dubbo-web";
 import { testRoutes } from "./test-routes.js";
@@ -69,7 +69,7 @@ const crosstestTransports = {
   "apache-dubbo-web (Connect, binary) against connect-go (h1)": (
     options?: Record<string, unknown>
   ) =>
-    createConnectTransport({
+    createDubboTransport({
       ...options,
       baseUrl: crossTestConnectGoH1BaseUrl,
       useBinaryFormat: true,
@@ -77,14 +77,14 @@ const crosstestTransports = {
   "apache-dubbo-web (Connect, JSON) against connect-go (h1)": (
     options?: Record<string, unknown>
   ) =>
-    createConnectTransport({
+    createDubboTransport({
       ...options,
       baseUrl: crossTestConnectGoH1BaseUrl,
       useBinaryFormat: false,
     }),
   "apache-dubbo-web (Connect, binary) against apache-dubbo-node (h1)":
     (options?: Record<string, unknown>) =>
-      createConnectTransport({
+      createDubboTransport({
         ...options,
         baseUrl: connectNodeH1BaseUrl,
         useBinaryFormat: true,
@@ -92,7 +92,7 @@ const crosstestTransports = {
   "apache-dubbo-web (Connect, JSON) against apache-dubbo-node (h1)": (
     options?: Record<string, unknown>
   ) =>
-    createConnectTransport({
+    createDubboTransport({
       ...options,
       baseUrl: connectNodeH1BaseUrl,
       useBinaryFormat: false,

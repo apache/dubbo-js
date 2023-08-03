@@ -13,12 +13,12 @@
 // limitations under the License.
 
 import { createPromiseClient } from "apache-dubbo";
-import { createConnectTransport } from "apache-dubbo-web";
+import { createDubboTransport } from "apache-dubbo-web";
 import { ElizaService } from "./gen/connectweb/buf/connect/demo/eliza/v1/eliza_connect.js";
 
 const client = createPromiseClient(
   ElizaService,
-  createConnectTransport({
+  createDubboTransport({
     baseUrl: "https://demo.connect.build",
   })
 );

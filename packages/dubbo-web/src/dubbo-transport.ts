@@ -56,9 +56,9 @@ import type { TripleClientServiceOptions } from 'apache-dubbo/protocol-triple';
 /**
  * Options used to configure the Connect transport.
  *
- * See createConnectTransport().
+ * See createDubboTransport().
  */
-export interface ConnectTransportOptions {
+export interface DubboTransportOptions {
   /**
    * Base URI for all HTTP requests.
    *
@@ -120,8 +120,8 @@ export interface ConnectTransportOptions {
  * server-streaming methods available to web browsers. It uses the fetch
  * API to make HTTP requests.
  */
-export function createConnectTransport(
-  options: ConnectTransportOptions
+export function createDubboTransport(
+  options: DubboTransportOptions
 ): Transport {
   assertFetchApi();
   const useBinaryFormat = options.useBinaryFormat ?? false;

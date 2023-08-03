@@ -19,7 +19,7 @@ import {
   createPromiseClient,
 } from "apache-dubbo";
 import {
-  createConnectTransport,
+  createDubboTransport,
   createGrpcTransport,
   createGrpcWebTransport,
 } from "apache-dubbo-node";
@@ -49,11 +49,11 @@ describe("unresolvable_host", function () {
     ],
     [
       "apache-dubbo-node (Connect, http2)",
-      createConnectTransport(optionsHttp2),
+      createDubboTransport(optionsHttp2),
     ],
     [
       "apache-dubbo-node (Connect, http)",
-      createConnectTransport(optionsHttp1),
+      createDubboTransport(optionsHttp1),
     ],
     ["apache-dubbo-node (gRPC, http2)", createGrpcTransport(optionsHttp2)],
     ["apache-dubbo-node (gRPC, http)", createGrpcTransport(optionsHttp1)],
