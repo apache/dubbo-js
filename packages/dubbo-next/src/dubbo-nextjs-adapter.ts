@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createConnectRouter } from "apache-dubbo";
-import type { ConnectRouter, ConnectRouterOptions } from "apache-dubbo";
+import { createDubboRouter } from "apache-dubbo";
+import type { DubboRouter, DubboRouterOptions } from "apache-dubbo";
 import type { UniversalHandler } from "apache-dubbo/protocol";
 import {
   compressionBrotli,
@@ -30,23 +30,23 @@ type NextApiHandler<T = any> = (
   res: NextApiResponse<T>
 ) => unknown | Promise<unknown>;
 
-interface NextJsApiRouterOptions extends ConnectRouterOptions {
+interface NextJsApiRouterOptions extends DubboRouterOptions {
   /**
    * Route definitions. We recommend the following pattern:
    *
    * Create a file `connect.ts` with a default export such as this:
    *
    * ```ts
-   * import {ConnectRouter} from "apache-dubbo";
+   * import {DubboRouter} from "apache-dubbo";
    *
-   * export default (router: ConnectRouter) => {
+   * export default (router: DubboRouter) => {
    *   router.service(ElizaService, {});
    * }
    * ```
    *
    * Then pass this function here.
    */
-  routes: (router: ConnectRouter) => void;
+  routes: (router: DubboRouter) => void;
 
   /**
    * Serve all handlers under this prefix. For example, the prefix "/something"
@@ -64,7 +64,7 @@ export function nextJsApiRouter(options: NextJsApiRouterOptions): ApiRoute {
   if (options.acceptCompression === undefined) {
     options.acceptCompression = [compressionGzip, compressionBrotli];
   }
-  const router = createConnectRouter(options);
+  const router = createDubboRouter(options);
   options.routes(router);
   const prefix = options.prefix ?? "/api";
   const paths = new Map<string, UniversalHandler>();

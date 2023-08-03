@@ -1,7 +1,7 @@
-import { ConnectRouter } from "apache-dubbo";
+import { DubboRouter } from "apache-dubbo";
 import { ExampleService } from "./gen/example_dubbo";
 
-export default (router: ConnectRouter) =>
+export default (router: DubboRouter) =>
   // registers apache.dubbo.demo.example.v1
   router.service(ExampleService, {
     // implements rpc Say

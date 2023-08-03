@@ -98,8 +98,8 @@ const crosstestTransports = {
       useBinaryFormat: false,
     }),
 
-  // ConnectRouter
-  "apache-dubbo-web (ConnectRouter, binary)": (
+  // DubboRouter
+  "apache-dubbo-web (DubboRouter, binary)": (
     options?: Record<string, unknown>
   ) =>
     createRouterTransport(testRoutes, {
@@ -109,7 +109,7 @@ const crosstestTransports = {
       },
     }),
 
-  "apache-dubbo-web (ConnectRouter, JSON)": (
+  "apache-dubbo-web (DubboRouter, JSON)": (
     options?: Record<string, unknown>
   ) =>
     createRouterTransport(testRoutes, {

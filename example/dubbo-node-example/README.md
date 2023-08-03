@@ -92,15 +92,15 @@ PATH=$PATH:$(pwd)/node_modules/.bin \
 
 ## <span id="implementService">实现服务</span>
 
-接下来我们就需要添加业务逻辑了，实现 ExampleService ，并将其注册到 ConnectRouter 中。
+接下来我们就需要添加业务逻辑了，实现 ExampleService ，并将其注册到 DubboRouter 中。
 
 创建 connect.ts 文件
 
 ```typescript
-import { ConnectRouter } from "apache-dubbo";
+import { DubboRouter } from "apache-dubbo";
 import { ExampleService } from "./gen/example_dubbo";
 
-export default (router: ConnectRouter) =>
+export default (router: DubboRouter) =>
   // registers apache.dubbo.demo.example.v1
   router.service(ExampleService, {
     // implements rpc Say

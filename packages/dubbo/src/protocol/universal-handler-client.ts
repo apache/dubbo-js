@@ -20,7 +20,7 @@ import type { UniversalClientFn } from "./universal.js";
 import { getAbortSignalReason } from "./signals.js";
 
 /**
- * An in-memory UniversalClientFn that can be used to route requests to a ConnectRouter
+ * An in-memory UniversalClientFn that can be used to route requests to a DubboRouter
  * bypassing network calls. Useful for testing and calling in-process services.
  */
 export function createUniversalHandlerClient(

@@ -34,14 +34,14 @@ import {
 import type { ProtocolHandlerFactory } from "./protocol/protocol-handler-factory.js";
 
 /**
- * ConnectRouter is your single registration point for RPCs.
+ * DubboRouter is your single registration point for RPCs.
  *
  * Create a file `connect.ts` with a default export such as this:
  *
  * ```ts
- * import {ConnectRouter} from "apache-dubbo";
+ * import {DubboRouter} from "apache-dubbo";
  *
- * export default (router: ConnectRouter) => {
+ * export default (router: DubboRouter) => {
  *   router.service(ElizaService, {});
  * }
  * ```
@@ -49,7 +49,7 @@ import type { ProtocolHandlerFactory } from "./protocol/protocol-handler-factory
  * The pass this function to adapters and plugins, for example
  * from apache-dubbo-node, or from apache-dubbo-fastify.
  */
-export interface ConnectRouter {
+export interface DubboRouter {
   readonly handlers: Array<UniversalHandler & ExpandHandler>;
   service<T extends ServiceType>(
     service: T,
@@ -65,10 +65,10 @@ export interface ConnectRouter {
 }
 
 /**
- * Options for a ConnectRouter. By default, all three protocols gRPC, gRPC-web,
+ * Options for a DubboRouter. By default, all three protocols gRPC, gRPC-web,
  * and Connect are enabled.
  */
-export interface ConnectRouterOptions extends Partial<UniversalHandlerOptions> {
+export interface DubboRouterOptions extends Partial<UniversalHandlerOptions> {
   /**
    * Enable the gRPC protocol and make your API available to all gRPC clients
    * for various platforms and languages. See https://grpc.io/
@@ -111,11 +111,11 @@ export interface ConnectRouterOptions extends Partial<UniversalHandlerOptions> {
 }
 
 /**
- * Create a new ConnectRouter.
+ * Create a new DubboRouter.
  */
-export function createConnectRouter(
-  routerOptions?: ConnectRouterOptions
-): ConnectRouter {
+export function createDubboRouter(
+  routerOptions?: DubboRouterOptions
+): DubboRouter {
   const base = whichProtocols(routerOptions);
   const handlers: Array<UniversalHandler & ExpandHandler> = [];
   return {
@@ -152,13 +152,13 @@ export function createConnectRouter(
 }
 
 function whichProtocols(
-  options: ConnectRouterOptions | undefined,
-  base?: { options: ConnectRouterOptions; protocols: ProtocolHandlerFactory[] }
-): { options: ConnectRouterOptions; protocols: ProtocolHandlerFactory[] } {
+  options: DubboRouterOptions | undefined,
+  base?: { options: DubboRouterOptions; protocols: ProtocolHandlerFactory[] }
+): { options: DubboRouterOptions; protocols: ProtocolHandlerFactory[] } {
   if (base && !options) {
     return base;
   }
-  const opt: ConnectRouterOptions = base
+  const opt: DubboRouterOptions = base
     ? {
         ...validateUniversalHandlerOptions(base.options),
         ...options,

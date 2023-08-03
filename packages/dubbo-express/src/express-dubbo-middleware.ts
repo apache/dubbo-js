@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import type { JsonValue } from "@bufbuild/protobuf";
-import { createConnectRouter, Code, DubboError } from "apache-dubbo";
-import type { ConnectRouter, ConnectRouterOptions } from "apache-dubbo";
+import { createDubboRouter, Code, DubboError } from "apache-dubbo";
+import type { DubboRouter, DubboRouterOptions } from "apache-dubbo";
 import type { UniversalHandler } from "apache-dubbo/protocol";
 import {
   compressionBrotli,
@@ -24,23 +24,23 @@ import {
 } from "apache-dubbo-node";
 import type * as express from "express";
 
-interface ExpressConnectMiddlewareOptions extends ConnectRouterOptions {
+interface ExpressConnectMiddlewareOptions extends DubboRouterOptions {
   /**
    * Route definitions. We recommend the following pattern:
    *
    * Create a file `connect.ts` with a default export such as this:
    *
    * ```ts
-   * import {ConnectRouter} from "apache-dubbo";
+   * import {DubboRouter} from "apache-dubbo";
    *
-   * export default (router: ConnectRouter) => {
+   * export default (router: DubboRouter) => {
    *   router.service(ElizaService, {});
    * }
    * ```
    *
    * Then pass this function here.
    */
-  routes: (router: ConnectRouter) => void;
+  routes: (router: DubboRouter) => void;
 
   /**
    * Serve all handlers under this prefix. For example, the prefix "/something"
@@ -59,7 +59,7 @@ export function expressConnectMiddleware(
   if (options.acceptCompression === undefined) {
     options.acceptCompression = [compressionGzip, compressionBrotli];
   }
-  const router = createConnectRouter(options);
+  const router = createDubboRouter(options);
   options.routes(router);
   const prefix = options.requestPathPrefix ?? "";
   const paths = new Map<string, UniversalHandler>();

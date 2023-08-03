@@ -1020,8 +1020,8 @@ export function createTestServers() {
           sendCompression: compressionGzip,
         }),
 
-    // ConnectRouter
-    "apache-dubbo (ConnectRouter, binary)": (
+    // DubboRouter
+    "apache-dubbo (DubboRouter, binary)": (
       options?: Record<string, unknown>
     ) =>
       createRouterTransport(testRoutes, {
@@ -1030,7 +1030,7 @@ export function createTestServers() {
           useBinaryFormat: true,
         },
       }),
-    "apache-dubbo (ConnectRouter, JSON)": (
+    "apache-dubbo (DubboRouter, JSON)": (
       options?: Record<string, unknown>
     ) =>
       createRouterTransport(testRoutes, {

@@ -25,9 +25,9 @@ add two files to your project:
 
 ```ts
 // connect.ts
-import { ConnectRouter } from "apache-dubbo";
+import { DubboRouter } from "apache-dubbo";
 
-export default function(router: ConnectRouter) {
+export default function(router: DubboRouter) {
   // implement rpc Say(SayRequest) returns (SayResponse)
   router.rpc(ElizaService, ElizaService.methods.say, async (req) => ({
     sentence: `you said: ${req.sentence}`,

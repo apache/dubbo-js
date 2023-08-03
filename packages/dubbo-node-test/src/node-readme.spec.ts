@@ -15,7 +15,7 @@
 import * as http2 from "http2";
 import { Message, MethodKind, proto3 } from "@bufbuild/protobuf";
 import { createPromiseClient, createRouterTransport } from "apache-dubbo";
-import type { ConnectRouter } from "apache-dubbo";
+import type { DubboRouter } from "apache-dubbo";
 import {
   connectNodeAdapter,
   createGrpcTransport,
@@ -118,7 +118,7 @@ describe("node readme", function () {
   it("should work as well", async function () {
     let port = -1;
 
-    function routes(router: ConnectRouter) {
+    function routes(router: DubboRouter) {
       router.rpc(ElizaService, ElizaService.methods.say, async (req) => ({
         sentence: `you said: ${req.sentence}`,
       }));

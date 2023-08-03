@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import type { JsonValue } from "@bufbuild/protobuf";
-import { Code, DubboError, createConnectRouter } from "apache-dubbo";
-import type { ConnectRouter, ConnectRouterOptions } from "apache-dubbo";
+import { Code, DubboError, createDubboRouter } from "apache-dubbo";
+import type { DubboRouter, DubboRouterOptions } from "apache-dubbo";
 import * as protoTriple from "apache-dubbo/protocol-triple";
 import * as protoGrpcWeb from "apache-dubbo/protocol-grpc-web";
 import * as protoGrpc from "apache-dubbo/protocol-grpc";
@@ -26,23 +26,23 @@ import {
 } from "apache-dubbo-node";
 import type { FastifyInstance } from "fastify/types/instance";
 
-interface FastifyConnectPluginOptions extends ConnectRouterOptions {
+interface FastifyConnectPluginOptions extends DubboRouterOptions {
   /**
    * Route definitions. We recommend the following pattern:
    *
    * Create a file `connect.ts` with a default export such as this:
    *
    * ```ts
-   * import {ConnectRouter} from "apache-dubbo";
+   * import {DubboRouter} from "apache-dubbo";
    *
-   * export default (router: ConnectRouter) => {
+   * export default (router: DubboRouter) => {
    *   router.service(ElizaService, {});
    * }
    * ```
    *
    * Then pass this function here.
    */
-  routes?: (router: ConnectRouter) => void;
+  routes?: (router: DubboRouter) => void;
 }
 
 /**
@@ -60,7 +60,7 @@ export function fastifyConnectPlugin(
   if (opts.acceptCompression === undefined) {
     opts.acceptCompression = [compressionGzip, compressionBrotli];
   }
-  const router = createConnectRouter(opts);
+  const router = createDubboRouter(opts);
   opts.routes(router);
 
   const uHandlers = router.handlers;

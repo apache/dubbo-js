@@ -73,9 +73,9 @@ Run your Connect RPCs on the Node.js `http`, `https`, or `http2` modules.
 
 ```ts
 // connect.ts
-import { ConnectRouter } from "apache-dubbo";
+import { DubboRouter } from "apache-dubbo";
 
-export default function(router: ConnectRouter) {
+export default function(router: DubboRouter) {
   // implement rpc Say(SayRequest) returns (SayResponse)
   router.rpc(ElizaService, ElizaService.methods.say, async (req) => ({
     sentence: `you said: ${req.sentence}`,

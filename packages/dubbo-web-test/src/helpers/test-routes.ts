@@ -19,7 +19,7 @@ import {
   decodeBinaryHeader,
   encodeBinaryHeader,
 } from "apache-dubbo";
-import type { ConnectRouter, ServiceImpl } from "apache-dubbo";
+import type { DubboRouter, ServiceImpl } from "apache-dubbo";
 import { TestService } from "../gen/grpc/testing/test_connect.js";
 import type { StreamingOutputCallRequest } from "../gen/grpc/testing/messages_pb.js";
 import {
@@ -28,7 +28,7 @@ import {
 } from "../gen/grpc/testing/messages_pb.js";
 import { interop } from "./interop.js";
 
-export const testRoutes = (router: ConnectRouter) => {
+export const testRoutes = (router: DubboRouter) => {
   router.service(TestService, testService);
 };
 

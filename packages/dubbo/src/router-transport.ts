@@ -15,8 +15,8 @@
 import { createTransport } from "./protocol-triple/transport.js";
 import type { CommonTransportOptions } from "./protocol/transport-options.js";
 import { createUniversalHandlerClient } from "./protocol/universal-handler-client.js";
-import { createConnectRouter } from "./router.js";
-import type { ConnectRouter, ConnectRouterOptions } from "./router.js";
+import { createDubboRouter } from "./router.js";
+import type { DubboRouter, DubboRouterOptions } from "./router.js";
 
 /**
  * Creates a Transport that routes requests to the configured router. Useful for testing
@@ -28,13 +28,13 @@ import type { ConnectRouter, ConnectRouterOptions } from "./router.js";
  * Mainly used for testing of dubbo-node-test and dubbo-web-test
  */
 export function createRouterTransport(
-  routes: (router: ConnectRouter) => void,
+  routes: (router: DubboRouter) => void,
   options?: {
     transport?: Partial<CommonTransportOptions>;
-    router?: ConnectRouterOptions;
+    router?: DubboRouterOptions;
   }
 ) {
-  const router = createConnectRouter({
+  const router = createDubboRouter({
     ...(options?.router ?? {}),
     connect: true,
   });
