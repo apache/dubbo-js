@@ -119,7 +119,7 @@ import { createDubboTransport } from "apache-dubbo-web";
 import { ExampleService } from "./util/gen/example_dubbo";
 
 // The transport defines what type of endpoint we're hitting.
-// In our example we'll be communicating with a Connect endpoint.
+// In our example we'll be communicating with a Dubbo endpoint.
 const transport = createDubboTransport({
   baseUrl: "http://localhost:8080",
 });

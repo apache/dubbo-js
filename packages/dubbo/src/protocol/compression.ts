@@ -18,7 +18,7 @@ import { Code } from "../code.js";
 /**
  * compressedFlag indicates that the data in a EnvelopedMessage is
  * compressed. It has the same meaning in the gRPC-Web, gRPC-HTTP2,
- * and Connect protocols.
+ * and Dubbo protocols.
  *
  * @private Internal code, does not follow semantic versioning.
  */
