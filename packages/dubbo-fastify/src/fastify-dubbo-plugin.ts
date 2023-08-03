@@ -48,7 +48,7 @@ interface FastifyConnectPluginOptions extends DubboRouterOptions {
 /**
  * Plug your Connect routes into a Fastify server.
  */
-export function fastifyConnectPlugin(
+export function fastifyDubboPlugin(
   instance: FastifyInstance,
   opts: FastifyConnectPluginOptions,
   done: (err?: Error) => void

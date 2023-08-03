@@ -126,12 +126,12 @@ npm install fastify apache-dubbo-fastify
 
 ```typescript
 import { fastify } from "fastify";
-import { fastifyConnectPlugin } from "apache-dubbo-fastify";
+import { fastifyDubboPlugin } from "apache-dubbo-fastify";
 import routes from "./connect";
 
 async function main() {
   const server = fastify();
-  await server.register(fastifyConnectPlugin, {
+  await server.register(fastifyDubboPlugin, {
     routes,
   });
   server.get("/", (_, reply) => {

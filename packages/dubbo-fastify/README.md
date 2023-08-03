@@ -7,7 +7,7 @@ TypeScript.
 `apache-dubbo-fastify` provides a plugin for [fastify](https://www.fastify.io/), the fast and 
 low overhead web framework, for Node.js.
 
-### fastifyConnectPlugin()
+### fastifyDubboPlugin()
 
 Plug your Connect RPCs into a fastify server.
 
@@ -27,13 +27,13 @@ export default function(router: DubboRouter) {
 // server.ts
 import { fastify } from "fastify";
 + import routes from "connect";
-+ import { fastifyConnectPlugin } from "apache-dubbo-fastify";
++ import { fastifyDubboPlugin } from "apache-dubbo-fastify";
 
 const server = fastify({
   http2: true,
 });
 
-+ await server.register(fastifyConnectPlugin, { 
++ await server.register(fastifyDubboPlugin, { 
 +  routes 
 + });
 

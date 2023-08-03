@@ -25,7 +25,7 @@ import {
   createGrpcTransport,
   createGrpcWebTransport,
 } from "apache-dubbo-node";
-import { fastifyConnectPlugin } from "apache-dubbo-fastify";
+import { fastifyDubboPlugin } from "apache-dubbo-fastify";
 import { expressConnectMiddleware } from "apache-dubbo-express";
 import type {
   FastifyBaseLogger,
@@ -280,7 +280,7 @@ export function createTestServers() {
           http2: true,
           logger: false,
         });
-        await fastifyH2cServer.register(fastifyConnectPlugin, {
+        await fastifyH2cServer.register(fastifyDubboPlugin, {
           routes: testRoutes,
           requireConnectProtocolHeader: true,
         });
