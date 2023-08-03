@@ -26,7 +26,7 @@ import {
 } from "apache-dubbo-node";
 import type { FastifyInstance } from "fastify/types/instance";
 
-interface FastifyConnectPluginOptions extends DubboRouterOptions {
+interface FastifyDubboPluginOptions extends DubboRouterOptions {
   /**
    * Route definitions. We recommend the following pattern:
    *
@@ -50,7 +50,7 @@ interface FastifyConnectPluginOptions extends DubboRouterOptions {
  */
 export function fastifyDubboPlugin(
   instance: FastifyInstance,
-  opts: FastifyConnectPluginOptions,
+  opts: FastifyDubboPluginOptions,
   done: (err?: Error) => void
 ) {
   if (opts.routes === undefined) {
