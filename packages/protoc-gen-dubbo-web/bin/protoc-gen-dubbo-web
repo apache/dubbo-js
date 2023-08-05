@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
 const {runNodeJs} = require("@bufbuild/protoplugin");
-const {protocGenConnectWeb} = require("../dist/cjs/src/protoc-gen-dubbo-web-plugin.js");
+const {protocGenDubboWeb} = require("../dist/cjs/src/protoc-gen-dubbo-web-plugin.js");
 
-runNodeJs(protocGenConnectWeb);
+runNodeJs(protocGenDubboWeb);

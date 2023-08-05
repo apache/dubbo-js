@@ -2,7 +2,7 @@
 
 const { runNodeJs } = require('@bufbuild/protoplugin')
 const {
-  protocGenConnectEs
+  protocGenDubboEs
 } = require('../dist/cjs/src/protoc-gen-dubbo-es-plugin.js')
 
-runNodeJs(protocGenConnectEs)
+runNodeJs(protocGenDubboEs)
