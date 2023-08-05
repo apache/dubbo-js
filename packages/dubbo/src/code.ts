@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * Connect represents categories of errors as codes, and each code maps to a
+ * Dubbo represents categories of errors as codes, and each code maps to a
  * specific HTTP status code. The codes and their semantics were chosen to
  * match gRPC. Only the codes below are valid — there are no user-defined
  * codes.

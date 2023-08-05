@@ -66,7 +66,7 @@ export interface DubboRouter {
 
 /**
  * Options for a DubboRouter. By default, all three protocols gRPC, gRPC-web,
- * and Connect are enabled.
+ * and Triple are enabled.
  */
 export interface DubboRouterOptions extends Partial<UniversalHandlerOptions> {
   /**
@@ -97,13 +97,13 @@ export interface DubboRouterOptions extends Partial<UniversalHandlerOptions> {
   grpcWeb?: boolean;
 
   /**
-   * Enable the Connect protocol and make your API available to all Connect
-   * clients, but also for a simple call with curl. See https://connect.build/
+   * Enable the Triple protocol and make your API available to all Triple
+   * clients, but also for a simple call with curl.
    *
    * The protocol is enabled by default. Set this option to `false` to disable
    * it, but mind that at least one protocol must be enabled.
    *
-   * Connect works over HTTP 1.1 or HTTP/2 and does not require access to HTTP
+   * Triple works over HTTP 1.1 or HTTP/2 and does not require access to HTTP
    * trailers. Note that bidi streaming requires HTTP/2, and web browsers may
    * not support all streaming types.
    */

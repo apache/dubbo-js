@@ -18,7 +18,7 @@ import { DubboError } from "./dubbo-error.js";
 import { Code } from "./code.js";
 
 /**
- * Encode a single binary header value according to the Connect
+ * Encode a single binary header value according to the Triple
  * and gRPC specifications.
  *
  * This function accepts raw binary data from a buffer, a string
@@ -41,7 +41,7 @@ export function encodeBinaryHeader(
 }
 
 /**
- * Decode a single binary header value according to the Connect
+ * Decode a single binary header value according to the Triple
  * and gRPC specifications.
  *
  * This function returns the raw binary data from a header whose

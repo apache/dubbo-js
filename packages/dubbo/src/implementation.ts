@@ -91,7 +91,7 @@ export interface HandlerContext {
 
   /**
    * HTTP method of incoming request, usually "POST", but "GET" in the case of
-   * Connect Get.
+   * Dubbo Get.
    */
   readonly requestMethod: string;
 
