@@ -119,7 +119,7 @@ export function errorToJson(
   jsonWriteOptions: Partial<JsonWriteOptions> | undefined
 ): JsonObject {
   const o: JsonObject = {
-    code: codeToString(error.code),
+    status: error.code,
   };
   if (error.rawMessage.length > 0) {
     o.message = error.rawMessage;
