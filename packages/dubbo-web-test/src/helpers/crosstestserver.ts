@@ -28,7 +28,7 @@ import { testRoutes } from "./test-routes.js";
 // | grpc-go       | 8083 |
 //
 // Source: // https://github.com/bufbuild/connect-es/pull/87
-const crossTestConnectGoH1BaseUrl = "https://127.0.0.1:8080";
+const crossTestDubboGoH1BaseUrl = "https://127.0.0.1:8080";
 
 // see connect-node-h1-server.mjs
 const connectNodeH1BaseUrl = "http://127.0.0.1:8085";
@@ -40,7 +40,7 @@ const crosstestTransports = {
   ) =>
     createGrpcWebTransport({
       ...options,
-      baseUrl: crossTestConnectGoH1BaseUrl,
+      baseUrl: crossTestDubboGoH1BaseUrl,
       useBinaryFormat: true,
     }),
   "apache-dubbo-web (gRPC-web, JSON) gRPC-web against connect-go (h1)": (
@@ -48,7 +48,7 @@ const crosstestTransports = {
   ) =>
     createGrpcWebTransport({
       ...options,
-      baseUrl: crossTestConnectGoH1BaseUrl,
+      baseUrl: crossTestDubboGoH1BaseUrl,
       useBinaryFormat: false,
     }),
   "apache-dubbo-web (gRPC-web, binary) gRPC-web against apache-dubbo-node (h1)":
@@ -65,31 +65,31 @@ const crosstestTransports = {
         baseUrl: connectNodeH1BaseUrl,
         useBinaryFormat: false,
       }),
-  // Connect
-  "apache-dubbo-web (Connect, binary) against connect-go (h1)": (
+  // Triple
+  "apache-dubbo-web (Triple, binary) against connect-go (h1)": (
     options?: Record<string, unknown>
   ) =>
     createDubboTransport({
       ...options,
-      baseUrl: crossTestConnectGoH1BaseUrl,
+      baseUrl: crossTestDubboGoH1BaseUrl,
       useBinaryFormat: true,
     }),
-  "apache-dubbo-web (Connect, JSON) against connect-go (h1)": (
+  "apache-dubbo-web (Triple, JSON) against connect-go (h1)": (
     options?: Record<string, unknown>
   ) =>
     createDubboTransport({
       ...options,
-      baseUrl: crossTestConnectGoH1BaseUrl,
+      baseUrl: crossTestDubboGoH1BaseUrl,
       useBinaryFormat: false,
     }),
-  "apache-dubbo-web (Connect, binary) against apache-dubbo-node (h1)":
+  "apache-dubbo-web (Triple, binary) against apache-dubbo-node (h1)":
     (options?: Record<string, unknown>) =>
       createDubboTransport({
         ...options,
         baseUrl: connectNodeH1BaseUrl,
         useBinaryFormat: true,
       }),
-  "apache-dubbo-web (Connect, JSON) against apache-dubbo-node (h1)": (
+  "apache-dubbo-web (Triple, JSON) against apache-dubbo-node (h1)": (
     options?: Record<string, unknown>
   ) =>
     createDubboTransport({
