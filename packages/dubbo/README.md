@@ -36,19 +36,18 @@ With Dubbo for ECMAScript, you can spin up a service in Node.js and call it
 from the web, the terminal, or native mobile clients. Under the hood, it uses
 [Protocol Buffers](https://github.com/bufbuild/protobuf-es) for the schema, and
 implements RPC (remote procedure calls) with three protocols: The widely available
-gRPC and gRPC-web, and Dubbo's [own protocol](https://connect.build/docs/protocol/),
+gRPC and gRPC-web, and Dubbo's [own protocol](https://cn.dubbo.apache.org/zh-cn/overview/reference/protocols/triple-spec/),
 optimized for the web. This gives you unparalleled interoperability with
 full-stack type-safety.
 
 
 ## Get started on the web
 
-Follow our [10 minute tutorial](https://connect.build/docs/web/getting-started) where
+Follow our [10 minute tutorial](https://cn.dubbo.apache.org/zh-cn/overview/quickstart/) where
 we use [Vite](https://vitejs.dev/) and [React](https://reactjs.org/) to create a
 web interface for ELIZA.
 
-**React**, **Svelte**, **Vue**, **Next.js** and **Angular** are supported (see [examples](https://github.com/bufbuild/connect-es-integration)),
-and we have an expansion pack for [TanStack Query](https://github.com/bufbuild/connect-query).
+**React**, **Svelte**, **Vue**, **Next.js** and **Angular** are supported (see [examples](https://github.com/apache/dubbo-js/tree/dubbo3/example)).
 We support all modern web browsers that implement the widely available
 [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
 and the [Encoding API](https://developer.mozilla.org/en-US/docs/Web/API/Encoding_API).
@@ -56,7 +55,7 @@ and the [Encoding API](https://developer.mozilla.org/en-US/docs/Web/API/Encoding
 
 ## Get started on Node.js
 
-Follow our [10 minute tutorial](https://connect.build/docs/node/getting-started)
+Follow our [10 minute tutorial](https://cn.dubbo.apache.org/zh-cn/overview/quickstart/)
 to spin up a service in Node.js, and call it from the web, and from a gRPC client
 in your terminal.
 

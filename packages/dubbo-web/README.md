@@ -1,23 +1,22 @@
 # apache-dubbo-web
 
-Connect is a family of libraries for building and consuming APIs on different languages and platforms.
+Dubbo is a family of libraries for building and consuming APIs on different languages and platforms.
 [apache-dubbo](https://www.npmjs.com/package/apache-dubbo) brings type-safe APIs with Protobuf to
 TypeScript.
 
 `apache-dubbo-web` provides the following adapters for web browsers, and any other platform that has
 the fetch API on board:
 
-
 ### createDubboTransport()
 
-Lets your clients running in the web browser talk to a server with the Connect protocol:
+Lets your clients running in the web browser talk to a server with the Dubbo protocol:
 
 ```diff
 import { createPromiseClient } from "apache-dubbo";
 + import { createDubboTransport } from "apache-dubbo-web";
-import { ElizaService } from "./gen/eliza_connect.js";
+import { ElizaService } from "./gen/eliza_dubbo.js";
 
-+ // A transport for clients using the Connect protocol with fetch()
++ // A transport for clients using the Dubbo protocol with fetch()
 + const transport = createDubboTransport({
 +   baseUrl: "https://demo.connect.build",
 + });
@@ -29,14 +28,14 @@ console.log(sentence) // you said: I feel happy.
 
 ### createGrpcWebTransport()
 
-Lets your clients running in the web browser  talk to a server with the gRPC-web protocol:
+Lets your clients running in the web browser talk to a server with the gRPC-web protocol:
 
 ```diff
 import { createPromiseClient } from "apache-dubbo";
 + import { createGrpcWebTransport } from "apache-dubbo-web";
-import { ElizaService } from "./gen/eliza_connect.js";
+import { ElizaService } from "./gen/eliza_dubbo.js";
 
-+ // A transport for clients using the Connect protocol with fetch()
++ // A transport for clients using the Dubbo protocol with fetch()
 + const transport = createGrpcWebTransport({
 +   baseUrl: "https://demo.connect.build",
 + });
@@ -46,12 +45,10 @@ const { sentence } = await client.say({ sentence: "I feel happy." });
 console.log(sentence) // you said: I feel happy.
 ```
 
-
 ## Getting started
 
-To get started with Connect, head over to the [docs](https://connect.build/docs/node/getting-started)
+To get started with Dubbo, head over to the [docs](https://cn.dubbo.apache.org/zh-cn/overview/quickstart/)
 for a tutorial, or take a look at [our example](https://github.com/apache/dubbo-js/tree/dubbo3/example/).
 
-Connect plays nice with Vue, Svelte, Remix, Next.js, Angular and many others. Take a look at 
-[our examples](https://github.com/bufbuild/connect-es-integration) for various frameworks.
-
+Dubbo plays nice with Vue, Svelte, Remix, Next.js, Angular and many others. Take a look at
+[our examples](https://github.com/apache/dubbo-js/tree/dubbo3/example) for various frameworks.

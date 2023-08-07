@@ -1,6 +1,6 @@
 # apache-dubbo-express
 
-Connect is a family of libraries for building and consuming APIs on different languages and platforms, and
+Dubbo is a family of libraries for building and consuming APIs on different languages and platforms, and
 [apache-dubbo](https://www.npmjs.com/package/apache-dubbo) brings type-safe APIs with Protobuf to
 TypeScript.
 
@@ -9,7 +9,7 @@ unopinionated, minimalist web framework for Node.js
 
 ### expressConnectMiddleware()
 
-Adds your Connect RPCs to an Express server.
+Adds your Dubbo RPCs to an Express server.
 
 ```ts
 // connect.ts
@@ -27,7 +27,7 @@ export default function(router: DubboRouter) {
 // server.ts
 import http from "http";
 import express from "express";
-+ import routes from "connect";
++ import routes from "dubbo";
 + import { expressConnectMiddleware } from "apache-dubbo-express";
 
 const app = express();
@@ -39,9 +39,9 @@ const app = express();
 http.createServer(app).listen(8080);
 ```
 
-With that server running, you can make requests with any gRPC-web or Connect client.
+With that server running, you can make requests with any gRPC-web or Dubbo client.
 
-`curl` with the Connect protocol:
+`curl` with the Dubbo protocol:
 
 ```bash
 curl \
@@ -55,7 +55,7 @@ Node.js with the gRPC-web protocol (using a transport from [apache-dubbo-node](h
 ```ts
 import { createPromiseClient } from "apache-dubbo";
 import { createGrpcWebTransport } from "apache-dubbo-node";
-import { ElizaService } from "./gen/eliza_connect.js";
+import { ElizaService } from "./gen/eliza_dubbo.js";
 
 const transport = createGrpcWebTransport({
   baseUrl: "http://localhost:8080",
@@ -77,5 +77,5 @@ and Express does not support the Node.js `http2` module.
 
 ## Getting started
 
-To get started with Connect, head over to the [docs](https://connect.build/docs/node/getting-started)
+To get started with Dubbo, head over to the [docs](https://cn.dubbo.apache.org/zh-cn/overview/quickstart/)
 for a tutorial, or take a look at [our example](https://github.com/apache/dubbo-js/tree/dubbo3/example/). 

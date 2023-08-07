@@ -1,6 +1,6 @@
 # apache-dubbo-node
 
-Connect is a family of libraries for building and consuming APIs on different languages and platforms, and 
+Dubbo is a family of libraries for building and consuming APIs on different languages and platforms, and 
 [apache-dubbo](https://www.npmjs.com/package/apache-dubbo) brings type-safe APIs with Protobuf to 
 TypeScript.
 
@@ -8,14 +8,14 @@ TypeScript.
 
 ### createDubboTransport()
 
-Lets your clients running on Node.js talk to a server with the Connect protocol:
+Lets your clients running on Node.js talk to a server with the Dubbo protocol:
 
 ```diff
 import { createPromiseClient } from "apache-dubbo";
 + import { createDubboTransport } from "apache-dubbo-node";
-import { ElizaService } from "./gen/eliza_connect.js";
+import { ElizaService } from "./gen/eliza_dubbo.js";
 
-+ // A transport for clients using the Connect protocol with Node.js `http` module
++ // A transport for clients using the Dubbo protocol with Node.js `http` module
 + const transport = createDubboTransport({
 +   baseUrl: "https://demo.connect.build",
 +   httpVersion: "1.1"
@@ -33,7 +33,7 @@ Lets your clients running on Node.js talk to a server with the gRPC protocol:
 ```diff
 import { createPromiseClient } from "apache-dubbo";
 + import { createGrpcTransport } from "apache-dubbo-node";
-import { ElizaService } from "./gen/eliza_connect.js";
+import { ElizaService } from "./gen/eliza_dubbo.js";
 
 + // A transport for clients using the gRPC protocol with Node.js `http2` module
 + const transport = createGrpcTransport({
@@ -53,9 +53,9 @@ Lets your clients running on Node.js talk to a server with the gRPC-web protocol
 ```diff
 import { createPromiseClient } from "apache-dubbo";
 + import { createGrpcWebTransport } from "apache-dubbo-node";
-import { ElizaService } from "./gen/eliza_connect.js";
+import { ElizaService } from "./gen/eliza_dubbo.js";
 
-+ // A transport for clients using the Connect protocol with Node.js `http` module
++ // A transport for clients using the Dubbo protocol with Node.js `http` module
 + const transport = createGrpcWebTransport({
 +   baseUrl: "https://demo.connect.build",
 +   httpVersion: "1.1"
@@ -69,7 +69,7 @@ console.log(sentence) // you said: I feel happy.
 
 ### connectNodeAdapter()
 
-Run your Connect RPCs on the Node.js `http`, `https`, or `http2` modules.
+Run your Dubbo RPCs on the Node.js `http`, `https`, or `http2` modules.
 
 ```ts
 // connect.ts
@@ -86,7 +86,7 @@ export default function(router: DubboRouter) {
 ```diff
 // server.ts
 import * as http2 from "http2";
-+ import routes from "connect";
++ import routes from "dubbo";
 + import { connectNodeAdapter } from "apache-dubbo-node";
 
 http2.createServer(
@@ -95,7 +95,7 @@ http2.createServer(
 ```
 
 
-With that server running, you can make requests with any gRPC, gRPC-Web, or Connect client.
+With that server running, you can make requests with any gRPC, gRPC-Web, or Dubbo client.
 
 `buf curl` with the gRPC protocol:
 
@@ -106,7 +106,7 @@ buf curl --schema buf.build/bufbuild/eliza \
   http://localhost:8080/buf.connect.demo.eliza.v1.ElizaService/Say
 ```
 
-`curl` with the Connect protocol:
+`curl` with the Dubbo protocol:
 
 ```bash
 curl \
@@ -121,7 +121,7 @@ Node.js with the gRPC protocol:
 ```ts
 import { createPromiseClient } from "apache-dubbo";
 import { createGrpcTransport } from "apache-dubbo-node";
-import { ElizaService } from "./gen/eliza_connect.js";
+import { ElizaService } from "./gen/eliza_dubbo.js";
 
 const transport = createGrpcTransport({
   baseUrl: "http://localhost:8080",
@@ -140,5 +140,5 @@ instead.
 
 ## Getting started
 
-To get started with Connect, head over to the [docs](https://connect.build/docs/node/getting-started) 
+To get started with Dubbo, head over to the [docs](https://cn.dubbo.apache.org/zh-cn/overview/quickstart/) 
 for a tutorial, or take a look at [our example](https://github.com/apache/dubbo-js/tree/dubbo3/example/). 

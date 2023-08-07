@@ -1,6 +1,6 @@
 # apache-dubbo-next
 
-Connect is a family of libraries for building and consuming APIs on different languages and platforms, and
+Dubbo is a family of libraries for building and consuming APIs on different languages and platforms, and
 [apache-dubbo](https://www.npmjs.com/package/apache-dubbo) brings type-safe APIs with Protobuf to
 TypeScript.
 
@@ -10,7 +10,7 @@ the React Framework for the Web.
 
 ### nextJsApiRouter()
 
-Provide your Connect RPCs via Next.js API routes.  To enable Connect in Next.js, 
+Provide your Dubbo RPCs via Next.js API routes.  To enable Dubbo in Next.js, 
 add two files to your project:
 
 ```diff
@@ -46,10 +46,10 @@ const {handler, config} = nextJsApiRouter({ routes });
 export {handler as default, config};
 ```
 
-With that server running, you can make requests with any Connect or gRPC-Web client.
+With that server running, you can make requests with any Dubbo or gRPC-Web client.
 Note that Next.js serves all your RPCs with the `/api` prefix.
 
-`curl` with the Connect protocol:
+`curl` with the Dubbo protocol:
 
 ```bash
 curl \
@@ -64,7 +64,7 @@ Node.js with the gRPC-web protocol (using a transport from [apache-dubbo-node](h
 ```ts
 import { createPromiseClient } from "apache-dubbo";
 import { createGrpcWebTransport } from "apache-dubbo-node";
-import { ElizaService } from "./gen/eliza_connect.js";
+import { ElizaService } from "./gen/eliza_dubbo.js";
 
 const transport = createGrpcWebTransport({
   baseUrl: "http://localhost:3000/api",
@@ -93,5 +93,5 @@ to Vercel.
 
 ## Getting started
 
-To get started with Connect, head over to the [docs](https://connect.build/docs/node/getting-started)
+To get started with Dubbo, head over to the [docs](https://cn.dubbo.apache.org/zh-cn/overview/quickstart/)
 for a tutorial, or take a look at [our example](https://github.com/apache/dubbo-js/tree/dubbo3/example/). 
