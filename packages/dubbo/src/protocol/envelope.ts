@@ -19,7 +19,7 @@ import type { Compression } from "./compression.js";
 
 /**
  * Represents an Enveloped-Message of the Connect protocol.
- * https://connect.build/docs/protocol#streaming-rpcs
+ * https://cn.dubbo.apache.org/zh-cn/overview/reference/protocols/triple-spec/
  *
  * @private Internal code, does not follow semantic versioning.
  */

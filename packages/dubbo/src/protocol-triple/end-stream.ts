@@ -102,7 +102,7 @@ export function endStreamFromJson(
  * human-readable representation of error details if the detail uses
  * google.protobuf.Any.
  *
- * See https://connect.build/docs/protocol#error-end-stream
+ * See https://cn.dubbo.apache.org/zh-cn/overview/reference/protocols/triple-spec/
  *
  * @private Internal code, does not follow semantic versioning.
  */

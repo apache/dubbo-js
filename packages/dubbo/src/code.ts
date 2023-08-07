@@ -18,7 +18,7 @@
  * match gRPC. Only the codes below are valid — there are no user-defined
  * codes.
  *
- * See the specification at https://connect.build/docs/protocol#error-codes
+ * See the specification at https://cn.dubbo.apache.org/zh-cn/overview/reference/protocols/triple-spec/
  * for details.
  */
 export enum Code {
