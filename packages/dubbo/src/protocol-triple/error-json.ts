@@ -110,7 +110,7 @@ export function errorFromJsonBytes(
  * google.protobuf.Any. If serialization of the "debug" value fails, it
  * is silently disregarded.
  *
- * See https://connect.build/docs/protocol#error-end-stream
+ * See https://cn.dubbo.apache.org/zh-cn/overview/reference/protocols/triple-spec/
  *
  * @private Internal code, does not follow semantic versioning.
  */

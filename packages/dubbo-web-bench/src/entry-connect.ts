@@ -14,7 +14,7 @@
 
 import { createPromiseClient } from "apache-dubbo";
 import { createDubboTransport } from "apache-dubbo-web";
-import { ElizaService } from "./gen/connectweb/buf/connect/demo/eliza/v1/eliza_connect.js";
+import { ElizaService } from "./gen/connectweb/buf/connect/demo/eliza/v1/eliza_dubbo.js";
 
 const client = createPromiseClient(
   ElizaService,

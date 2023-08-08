@@ -33,7 +33,7 @@ plugins:
 And your import paths:
 
 ```diff
-- import { ElizaService } from "gen/eliza_connectweb";
-+ import { ElizaService } from "gen/eliza_connect";
+- import { ElizaService } from "gen/eliza_dubboweb";
++ import { ElizaService } from "gen/eliza_dubbo";
 ```
 

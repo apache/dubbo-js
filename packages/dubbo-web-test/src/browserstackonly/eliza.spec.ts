@@ -14,7 +14,7 @@
 
 import { createPromiseClient } from "apache-dubbo";
 import { createDubboTransport } from "apache-dubbo-web";
-import { ElizaService } from "../gen/buf/connect/demo/eliza/v1/eliza_connect.js";
+import { ElizaService } from "../gen/buf/connect/demo/eliza/v1/eliza_dubbo.js";
 import { IntroduceRequest } from "../gen/buf/connect/demo/eliza/v1/eliza_pb.js";
 
 const timeoutMs = 15000;

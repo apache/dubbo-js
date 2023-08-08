@@ -164,7 +164,7 @@ message SayResponse {
 }
 ```
 
-`eliza_connect.ts`
+`eliza_dubbo.ts`
 
 ```ts
 /**

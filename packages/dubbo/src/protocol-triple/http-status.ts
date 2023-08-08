@@ -15,7 +15,7 @@
 import { Code } from "../code.js";
 
 /**
- * Determine the Connect error code for the given HTTP status code.
+ * Determine the Dubbo error code for the given HTTP status code.
  * See https://cn.dubbo.apache.org/zh-cn/overview/reference/protocols/triple-spec/
  *
  * @private Internal code, does not follow semantic versioning.
