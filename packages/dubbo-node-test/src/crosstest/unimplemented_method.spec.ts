@@ -18,7 +18,7 @@ import {
   createCallbackClient,
   createPromiseClient,
 } from "apache-dubbo";
-import { TestService } from "../gen/grpc/testing/test_connect.js";
+import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import { createTestServers } from "../helpers/testserver.js";
 
 describe("unimplemented_method", function () {

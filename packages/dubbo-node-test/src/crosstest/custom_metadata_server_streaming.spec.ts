@@ -18,7 +18,7 @@ import {
   decodeBinaryHeader,
   encodeBinaryHeader,
 } from "apache-dubbo";
-import { TestService } from "../gen/grpc/testing/test_connect.js";
+import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import {
   StreamingOutputCallRequest,
   StreamingOutputCallResponse,

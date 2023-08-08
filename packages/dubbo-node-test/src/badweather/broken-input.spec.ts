@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { TestService } from "../gen/grpc/testing/test_connect.js";
+import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import { createTestServers } from "../helpers/testserver.js";
 import { Code, DubboError } from "apache-dubbo";
 import { createMethodUrl } from "apache-dubbo/protocol";
