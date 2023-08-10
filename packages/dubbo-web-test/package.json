@@ -17,8 +17,8 @@
     "default": "./dist/esm/index.js"
   },
   "dependencies": {
-    "apache-dubbo-web": "^0.0.8",
-    "apache-dubbo": "^0.0.8",
+    "apache-dubbo-web": "^0.0.9",
+    "apache-dubbo": "^0.0.9",
     "@types/jasmine": "^4.3.0",
     "esbuild": "^0.16.12",
     "jasmine": "^5.0.0",
