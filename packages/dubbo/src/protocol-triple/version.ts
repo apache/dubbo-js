@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { headerProtocolVersion } from "./headers.js";
-import { paramConnectVersion } from "./query-params.js";
+import { paramProtocolVersion } from "./query-params.js";
 import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 
@@ -52,15 +52,15 @@ export function requireProtocolVersionHeader(requestHeader: Headers) {
  * @private Internal code, does not follow semantic versioning.
  */
 export function requireProtocolVersionParam(queryParams: URLSearchParams) {
-  const v = queryParams.get(paramConnectVersion);
+  const v = queryParams.get(paramProtocolVersion);
   if (v === null) {
     throw new DubboError(
-      `missing required parameter: set ${paramConnectVersion} to "v${protocolVersion}"`,
+      `missing required parameter: set ${paramProtocolVersion} to "v${protocolVersion}"`,
       Code.InvalidArgument
     );
   } else if (v !== `v${protocolVersion}`) {
     throw new DubboError(
-      `${paramConnectVersion} must be "v${protocolVersion}": got "${v}"`,
+      `${paramProtocolVersion} must be "v${protocolVersion}": got "${v}"`,
       Code.InvalidArgument
     );
   }
