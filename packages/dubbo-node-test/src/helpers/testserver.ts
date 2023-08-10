@@ -134,7 +134,7 @@ export function createTestServers() {
         });
       },
     },
-    // connect-node
+    // dubbo-node
     "apache-dubbo-node (h2c)": {
       getUrl() {
         const address = nodeH2cServer?.address();
@@ -261,7 +261,7 @@ export function createTestServers() {
         });
       },
     },
-    // connect-fastify
+    // dubbo-fastify
     "apache-dubbo-fastify (h2c)": {
       getUrl() {
         if (!fastifyH2cServer) {
@@ -293,7 +293,7 @@ export function createTestServers() {
         await fastifyH2cServer.close();
       },
     },
-    // connect-express
+    // dubbo-express
     "apache-dubbo-express (h1)": {
       getUrl() {
         const address = expressServer?.address();
