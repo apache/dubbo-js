@@ -79,10 +79,10 @@ importers:
         specifier: ^4.17.17
         version: 4.17.17
       apache-dubbo:
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../dubbo
       apache-dubbo-node:
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../dubbo-node
 
   packages/dubbo-fastify:
@@ -91,10 +91,10 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1
       apache-dubbo:
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../dubbo
       apache-dubbo-node:
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../dubbo-node
       fastify:
         specifier: ^4.17.0
@@ -106,10 +106,10 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1
       apache-dubbo:
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../dubbo
       apache-dubbo-node:
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../dubbo-node
       next:
         specifier: ^13.2.4
@@ -121,7 +121,7 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1
       apache-dubbo:
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../dubbo
       headers-polyfill:
         specifier: ^3.1.2
@@ -146,19 +146,19 @@ importers:
         specifier: ^4.3.0
         version: 4.3.1
       apache-dubbo:
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../dubbo
       apache-dubbo-express:
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../dubbo-express
       apache-dubbo-fastify:
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../dubbo-fastify
       apache-dubbo-node:
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../dubbo-node
       apache-dubbo-web:
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../dubbo-web
       esbuild:
         specifier: ^0.16.12
@@ -179,7 +179,7 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1
       apache-dubbo:
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../dubbo
 
   packages/dubbo-web-bench:
@@ -191,7 +191,7 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1(@bufbuild/protobuf@1.2.1)
       apache-dubbo-web:
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../dubbo-web
       brotli:
         specifier: ^1.3.3
@@ -212,10 +212,10 @@ importers:
         specifier: ^4.3.0
         version: 4.3.1
       apache-dubbo:
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../dubbo
       apache-dubbo-web:
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../dubbo-web
       esbuild:
         specifier: ^0.16.12
@@ -251,7 +251,7 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1
       apache-dubbo:
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../dubbo
 
   packages/protoc-gen-dubbo-web:
@@ -266,7 +266,7 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1
       apache-dubbo:
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../dubbo
 
 packages:

@@ -12,9 +12,9 @@
   "dependencies": {
     "@bufbuild/protobuf": "^1.2.1",
     "@bufbuild/protoc-gen-es": "^1.2.1",
-    "apache-dubbo": "^0.0.9",
-    "apache-dubbo-web": "^0.0.9",
-    "apache-protoc-gen-dubbo-es": "^0.0.9",
+    "apache-dubbo": "^0.0.10",
+    "apache-dubbo-web": "^0.0.10",
+    "apache-protoc-gen-dubbo-es": "^0.0.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
