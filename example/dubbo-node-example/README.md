@@ -1,31 +1,15 @@
-# Node RPC
+# 使用 Node.js 开发后端服务
 
-[前置条件](#precondition)
+基于 Dubbo 定义的 Triple 协议，你可以轻松编写浏览器、gRPC 兼容的 RPC 服务，并让这些服务同时运行在 HTTP/1 和 HTTP/2 上。Dubbo Node.js SDK 支持使用 IDL 或编程语言特有的方式定义服务，并提供一套轻量的 API 来发布或调用这些服务。
 
-[定义服务](#defineService)
-
-[生成代码](#generateCode)
-
-[实现服务](#implementService)
-
-[启动 Server](#startServer)
-
-[访问服务](#accessService)
-
-[更多内容](#moreContent)
-
-[框架侧待改造](#transform)
-
-基于 Dubbo 定义的 Triple 协议，你可以轻松编写浏览器、gRPC 兼容的 RPC 服务，并让这些服务同时运行在 HTTP/1 和 HTTP/2 上。Dubbo TypeScript SDK 支持使用 IDL 或编程语言特有的方式定义服务，并提供一套轻量的 APl 来发布或调用这些服务。
-
-本示例演示了基于 Triple 协议的 RPC 通信模式，示例使用 Protocol Buffer 定义 RPC 服务，并演示了代码生成、服务发布和服务访问等过程。本示例完整代码请请参见 [xxx](https://aliyuque.antfin.com/__workers/ken.lj/qt1o6i/pw02wty1pin10eia/a)
+本示例演示了基于 Triple 协议的 RPC 通信模式，示例使用 Protocol Buffer 定义 RPC 服务，并演示了代码生成、服务发布和服务访问等过程。
 
 ## <span id="precondition">前置条件</span>
 
-因为使用 Protocol Buffer 的原因，我们首先需要安装相关的代码生成工具，这包括 `@bufbuild/protoc-gen-es`、`@bufbuild/protobuf`、`apache-protoc-gen-dubbo-es`、`apache-dubbo`。
+因为使用 Protocol Buffer 的原因，我们首先需要安装相关的代码生成工具，这包括 `@bufbuild/protoc-gen-es`、`@bufbuild/protobuf`、`protoc-gen-apache-dubbo-es`、`apache-dubbo`。
 
 ```Shell
-npm install @bufbuild/protoc-gen-es @bufbuild/protobuf apache-protoc-gen-dubbo-es apache-dubbo
+npm install @bufbuild/protoc-gen-es @bufbuild/protobuf protoc-gen-apache-dubbo-es apache-dubbo
 ```
 
 ## <span id="defineService">定义服务</span>
@@ -192,12 +176,6 @@ void main();
 npx tsx client.ts
 ```
 
-## <span id="moreContent">更多内容</span>
+## 其他
 
-- 使用 Dubbo JS 开发微服务
-- 更多 Dubbo JS 特性
-
-## <span id="transform">框架侧待改造</span>
-
-- 协议细节还需商讨并修改
-- 考虑后续整体生态，增强服务治理能力，添加日志等
+参考[开发运行在浏览器上的 web 应用](../dubbo-web-example/README.md)，了解如何开发能访问 Dubbo 后端服务的浏览器页面。
