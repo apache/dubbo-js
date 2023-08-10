@@ -25,11 +25,14 @@ notifications:
 
 github:
   homepage: https://dubbo.apache.org/
-  description: "The Node.js implementation of Apache Dubbo. An RPC and microservice framework."
+  description: "The Typescript implementation of Apache Dubbo. An RPC and microservice framework for Node.js and Web development."
   labels:
     - rpc
     - nodejs
+    - web
     - javascript
+    - typescript
+    - http
     - http2
     - microservices
     - service-mesh
