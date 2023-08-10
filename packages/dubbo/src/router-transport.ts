@@ -36,7 +36,7 @@ export function createRouterTransport(
 ) {
   const router = createDubboRouter({
     ...(options?.router ?? {}),
-    connect: true,
+    triple: true,
   });
   routes(router);
   return createTransport({

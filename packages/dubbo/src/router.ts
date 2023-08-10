@@ -22,7 +22,7 @@ import {
 import type { MethodImpl, ServiceImpl } from "./implementation.js";
 import { createHandlerFactory as handlerFactoryGrpcWeb } from "./protocol-grpc-web/handler-factory.js";
 import { createHandlerFactory as handlerFactoryGrpc } from "./protocol-grpc/handler-factory.js";
-import { createHandlerFactory as handlerFactoryConnect } from "./protocol-triple/handler-factory.js";
+import { createHandlerFactory as handlerFactoryTriple } from "./protocol-triple/handler-factory.js";
 import type { ExpandHandlerOptions, ExpandHandler } from './protocol-triple/expand-handler.js';
 import {
   type UniversalHandler,
@@ -107,7 +107,7 @@ export interface DubboRouterOptions extends Partial<UniversalHandlerOptions> {
    * trailers. Note that bidi streaming requires HTTP/2, and web browsers may
    * not support all streaming types.
    */
-  connect?: boolean;
+  triple?: boolean;
 }
 
 /**
@@ -175,8 +175,8 @@ function whichProtocols(
   if (options?.grpcWeb !== false) {
     protocols.push(handlerFactoryGrpcWeb(opt));
   }
-  if (options?.connect !== false) {
-    protocols.push(handlerFactoryConnect(opt));
+  if (options?.triple !== false) {
+    protocols.push(handlerFactoryTriple(opt));
   }
   if (protocols.length === 0) {
     throw new DubboError(
