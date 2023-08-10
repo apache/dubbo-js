@@ -20,7 +20,7 @@ import {
   createPromiseClient,
 } from "apache-dubbo";
 import { describeTransports } from "./helpers/crosstestserver.js";
-import { TestService } from "./gen/grpc/testing/test_connect.js";
+import { TestService } from "./gen/grpc/testing/test_dubbo.js";
 
 describe("explicit cancellation with AbortController", function () {
   const abort = new AbortController();

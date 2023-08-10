@@ -19,7 +19,7 @@ import {
   createCallbackClient,
   createPromiseClient,
 } from "apache-dubbo";
-import { TestService } from "../gen/grpc/testing/test_connect.js";
+import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import { describeTransports } from "../helpers/crosstestserver.js";
 import { StreamingOutputCallRequest } from "../gen/grpc/testing/messages_pb.js";
 

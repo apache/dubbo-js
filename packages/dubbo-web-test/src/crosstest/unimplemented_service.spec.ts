@@ -18,7 +18,7 @@ import {
   createPromiseClient,
   Code,
 } from "apache-dubbo";
-import { UnimplementedService } from "../gen/grpc/testing/test_connect.js";
+import { UnimplementedService } from "../gen/grpc/testing/test_dubbo.js";
 import { describeTransports } from "../helpers/crosstestserver.js";
 
 describe("unimplemented_service", function () {
