@@ -5,7 +5,7 @@ import { createPromiseClient } from "apache-dubbo";
 import { createDubboTransport } from "apache-dubbo-web";
 
 // Import service definition that you want to connect to.
-import { ExampleService } from "./util/gen/example_connect";
+import { ExampleService } from "./util/gen/example_dubbo";
 
 // The transport defines what type of endpoint we're hitting.
 // In our example we'll be communicating with a Connect endpoint.
