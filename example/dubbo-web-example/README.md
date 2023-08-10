@@ -1,26 +1,14 @@
-# Web RPC
-
-[前置条件](#precondition)
-
-[定义服务](#defineService)
-
-[生成代码](#generateCode)
-
-[启动 Server](#startServer)
-
-[创建 App](#createApp)
-
-[更多内容](#moreContent)
-
-[框架侧待改造](#transform)
+# 浏览器端的 Web 应用示例
 
 基于 Dubbo 定义的 Triple 协议，你可以轻松编写浏览器、gRPC 兼容的 RPC 服务，并让这些服务同时运行在 HTTP/1 和 HTTP/2 上。Dubbo TypeScript SDK 支持使用 IDL 或编程语言特有的方式定义服务，并提供一套轻量的 APl 来发布或调用这些服务。
 
-本示例演示了基于 Triple 协议的 RPC 通信模式，示例使用 Protocol Buffer 定义 RPC 服务，并演示了代码生成、服务发布和服务访问等过程。本示例完整代码请请参见 [xxx](https://aliyuque.antfin.com/__workers/ken.lj/qt1o6i/pw02wty1pin10eia/a)
+本示例演示了如何使用 dubbo-js 开发运行在浏览器上的 web 应用程序，web 页面将调用 dubbo node.js 开发的后端服务并生成页面内容。本示例演示基于 IDL 和非 IDL 两种编码模式。
 
-## <span id="precondition">前置条件</span>
+## IDL 模式
 
-首先，我们将使用 Vite 配置前端。我们使用 Vite 是为了创建一个快速的开发服务器，它内置了我们稍后需要的所有功能支持
+### <span id="precondition">前置条件</span>
+
+首先，我们将使用 Vite 来生成我们的前端项目模板，它内置了我们稍后需要的所有功能支持。
 
 ```Shell
 npm create vite@latest -- dubbo-web-example --template react-ts
@@ -28,13 +16,13 @@ cd dubbo-web-example
 npm install
 ```
 
-因为使用 Protocol Buffer 的原因，我们首先需要安装相关的代码生成工具，这包括 `@bufbuild/protoc-gen-es`、`@bufbuild/protobuf`、`apache-protoc-gen-dubbo-es`、`apache-dubbo`。
+因为使用 Protocol Buffer 的原因，我们首先需要安装相关的代码生成工具，这包括 `@bufbuild/protoc-gen-es`、`@bufbuild/protobuf`、`protoc-gen-apache-dubbo-es`、`apache-dubbo`。
 
 ```Shell
-npm install @bufbuild/protoc-gen-es @bufbuild/protobuf apache-protoc-gen-dubbo-es apache-dubbo
+npm install @bufbuild/protoc-gen-es @bufbuild/protobuf protoc-gen-apache-dubbo-es apache-dubbo
 ```
 
-## <span id="defineService">定义服务</span>
+### <span id="defineService">使用 Proto 定义服务</span>
 
 现在，使用 Protocol Buffer (IDL) 来定义一个 Dubbo 服务。
 
@@ -68,13 +56,13 @@ service ExampleService {
 
 ## <span id="generateCode">生成代码</span>
 
-创建 gen 目录，做为生成文件放置的目标目录
+创建 gen 目录，作为生成文件放置的目标目录
 
 ```Shell
 mkdir -p src/util/gen
 ```
 
-运行以下命令，在 gen 目录下生成代码文件
+运行以下命令，利用 `protoc-gen-es`、`protoc-gen-apache-dubbo-es` 等插件在 gen 目录下生成代码文件
 
 ```Shell
 PATH=$PATH:$(pwd)/node_modules/.bin \
@@ -187,9 +175,9 @@ npm run dev
 
 ## <span id="startServer">启动 Server</span>
 
-接下来我们需要启动 Server
-这里我们采用 Dubbo 服务嵌入的 Node.js 服务器，可以根据 Node RPC 文档中的步骤，配合 Fastify 启动 Server
-不过需要注意，我们额外需要 @fastify/cors，来解决前端请求的跨域问题
+接下来我们需要启动 Server，这里我们采用 Dubbo 服务嵌入的 Node.js 服务器，具体可参考 [Node.js 开发 Dubbo 后端服务](../dubbo-node-example/README.md)中的操作步骤。
+
+不过需要注意，我们额外需要修改 Node.js 示例：引入 @fastify/cors 来解决前端请求的跨域问题
 
 ```Shell
 npm install @fastify/cors
@@ -221,12 +209,39 @@ void main();
 npx tsx server.ts
 ```
 
-## <span id="moreContent">更多内容</span>
+## 无 IDL 模式
 
-- 使用 Dubbo JS 开发微服务
-- 更多 Dubbo JS 特性
+同样需要先安装 `apache-dubbo`、`apache-dubbo-web`
 
-## <span id="transform">框架侧待改造</span>
+```shell
+npm install apache-dubbo apache-dubbo-web
+```
 
-- 协议细节还需商讨并修改
-- 考虑后续整体生态，增强服务治理能力，添加日志等
+现在就可以一个启动一个客户端，并发起调用了。App.tsx 中的代码与 IDL 模式基本一致，区别点在于以下内容：
+
+```typescript
+// ...
+// set backend server to connect
+const transport = createConnectTransport({
+  baseUrl: "http://localhost:8080",
+});
+// init client
+const client = createPromiseClient(transport);
+
+function App() {
+  // ...
+  // call remote Dubbo service
+  const response = await client.call(
+    "apache.dubbo.demo.example.v1.ExampleService", 
+    "say", 
+    {
+      sentence: inputValue,
+    });
+}
+```
+
+执行以下命令，即可得到样例页面
+
+```Shell
+npm run dev
+```
