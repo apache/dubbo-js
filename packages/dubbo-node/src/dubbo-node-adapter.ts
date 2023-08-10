@@ -80,7 +80,7 @@ export function dubboNodeAdapter(
     res: NodeServerResponse
   ): void {
     // Strip the query parameter when matching paths.
-    const uHandler = paths.get(req.url?.split("?", 2)[0] ?? "" + req.headers['tri-service-version'] ?? "" + req.headers['tri-service-group'] ?? "");
+    const uHandler = paths.get((req.url?.split("?", 2)[0] ?? "") + (req.headers['tri-service-version'] ?? "") + (req.headers['tri-service-group'] ?? ""));
     if (!uHandler) {
       (options.fallback ?? fallback)(req, res);
       return;
