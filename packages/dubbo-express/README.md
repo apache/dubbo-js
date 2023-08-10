@@ -7,7 +7,7 @@ TypeScript.
 `apache-dubbo-express` provides a middleware for [Express](https://expressjs.com/), the fast, 
 unopinionated, minimalist web framework for Node.js
 
-### expressConnectMiddleware()
+### expressDubboMiddleware()
 
 Adds your Dubbo RPCs to an Express server.
 
@@ -28,11 +28,11 @@ export default function(router: DubboRouter) {
 import http from "http";
 import express from "express";
 + import routes from "dubbo";
-+ import { expressConnectMiddleware } from "apache-dubbo-express";
++ import { expressDubboMiddleware } from "apache-dubbo-express";
 
 const app = express();
 
-+ app.use(expressConnectMiddleware({ 
++ app.use(expressDubboMiddleware({ 
 +  routes 
 + }));
 

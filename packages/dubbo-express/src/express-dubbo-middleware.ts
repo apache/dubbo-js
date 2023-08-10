@@ -24,7 +24,7 @@ import {
 } from "apache-dubbo-node";
 import type * as express from "express";
 
-interface ExpressConnectMiddlewareOptions extends DubboRouterOptions {
+interface ExpressDubboMiddlewareOptions extends DubboRouterOptions {
   /**
    * Route definitions. We recommend the following pattern:
    *
@@ -51,10 +51,10 @@ interface ExpressConnectMiddlewareOptions extends DubboRouterOptions {
 }
 
 /**
- * Adds your Connect RPCs to an Express server.
+ * Adds your Dubbo RPCs to an Express server.
  */
-export function expressConnectMiddleware(
-  options: ExpressConnectMiddlewareOptions
+export function expressDubboMiddleware(
+  options: ExpressDubboMiddlewareOptions
 ): express.Handler {
   if (options.acceptCompression === undefined) {
     options.acceptCompression = [compressionGzip, compressionBrotli];
