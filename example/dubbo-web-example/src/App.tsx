@@ -8,14 +8,14 @@ import { createDubboTransport } from "apache-dubbo-web";
 import { ExampleService } from "./util/gen/example_dubbo";
 
 // The transport defines what type of endpoint we're hitting.
-// In our example we'll be communicating with a Connect endpoint.
+// In our example we'll be communicating with a Dubbo endpoint.
 const transport = createDubboTransport({
   baseUrl: "http://localhost:8080",
 });
 
 // Here we make the client itself, combining the service
 // definition with the transport.
-const client = createPromiseClient(ExampleService, transport, { serviceVersion: '1.0.0', serviceGroup: 'dubbo' });
+const client = createPromiseClient(ExampleService, transport, { serviceGroup: 'dubbo', serviceVersion: '1.0.0' });
 
 function App() {
   const [inputValue, setInputValue] = useState("");

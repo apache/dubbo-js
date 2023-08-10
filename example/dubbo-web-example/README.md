@@ -114,7 +114,7 @@ const transport = createDubboTransport({
 
 // Here we make the client itself, combining the service
 // definition with the transport.
-const client = createPromiseClient(ExampleService, transport);
+const client = createPromiseClient(ExampleService, transport, { serviceGroup: 'dubbo', serviceVersion: '1.0.0' });
 
 function App() {
   const [inputValue, setInputValue] = useState("");
@@ -222,7 +222,7 @@ npm install apache-dubbo apache-dubbo-web
 ```typescript
 // ...
 // set backend server to connect
-const transport = createConnectTransport({
+const transport = createDubboTransport({
   baseUrl: "http://localhost:8080",
 });
 // init client
