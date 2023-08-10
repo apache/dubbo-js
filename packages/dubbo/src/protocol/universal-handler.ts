@@ -105,12 +105,12 @@ export interface UniversalHandlerOptions {
   shutdownSignal?: AbortSignal;
 
   /**
-   * Require requests using the Connect protocol to include the header
+   * Require requests using the Dubbo protocol to include the header
    * TRI-Protocol-Version. This ensures that HTTP proxies and other
-   * code inspecting traffic can easily identify Connect RPC requests,
+   * code inspecting traffic can easily identify Dubbo RPC requests,
    * even if they use a common Content-Type like application/json.
    *
-   * If a Connect request does not include the TRI-Protocol-Version
+   * If a Dubbo request does not include the TRI-Protocol-Version
    * header, an error with code invalid_argument (HTTP 400) is returned.
    * This option has no effect if the client uses the gRPC or the gRPC-web
    * protocol.

@@ -114,7 +114,7 @@ export interface HandlerContext {
   readonly responseTrailer: Headers;
 
   /**
-   * Name of the RPC protocol in use; one of "connect", "grpc" or "grpc-web".
+   * Name of the RPC protocol in use; one of "triple", "grpc" or "grpc-web".
    */
   readonly protocolName: string;
 }

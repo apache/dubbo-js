@@ -30,7 +30,7 @@ import { testRoutes } from "./test-routes.js";
 // Source: // https://github.com/bufbuild/connect-es/pull/87
 const crossTestDubboGoH1BaseUrl = "https://127.0.0.1:8080";
 
-// see connect-node-h1-server.mjs
+// see dubbo-node-h1-server.mjs
 const connectNodeH1BaseUrl = "http://127.0.0.1:8085";
 
 const crosstestTransports = {

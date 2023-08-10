@@ -35,7 +35,7 @@ import type { Compression } from "../protocol/compression.js";
 import type { TripleClientServiceOptions } from './client-service-options.js';
 
 /**
- * Creates headers for a Connect request.
+ * Creates headers for a Dubbo request.
  *
  * @private Internal code, does not follow semantic versioning.
  */

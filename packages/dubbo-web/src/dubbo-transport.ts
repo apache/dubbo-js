@@ -54,7 +54,7 @@ import { assertFetchApi } from "./assert-fetch-api.js";
 import type { TripleClientServiceOptions } from 'apache-dubbo/protocol-triple';
 
 /**
- * Options used to configure the Connect transport.
+ * Options used to configure the Dubbo transport.
  *
  * See createDubboTransport().
  */
@@ -75,7 +75,7 @@ export interface DubboTransportOptions {
   baseUrl: string;
 
   /**
-   * By default, connect-web clients use the JSON format.
+   * By default, dubbo-web clients use the JSON format.
    */
   useBinaryFormat?: boolean;
 
@@ -109,14 +109,14 @@ export interface DubboTransportOptions {
   fetch?: typeof globalThis.fetch;
 
   /**
-   * Controls whether or not Connect GET requests should be used when
+   * Controls whether or not Dubbo GET requests should be used when
    * available, on side-effect free methods. Defaults to false.
    */
   useHttpGet?: boolean;
 }
 
 /**
- * Create a Transport for the Connect protocol, which makes unary and
+ * Create a Transport for the Dubbo protocol, which makes unary and
  * server-streaming methods available to web browsers. It uses the fetch
  * API to make HTTP requests.
  */

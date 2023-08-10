@@ -18,7 +18,7 @@ import { Code } from "../code.js";
 /**
  * compressedFlag indicates that the data in a EnvelopedMessage is
  * compressed. It has the same meaning in the gRPC-Web, gRPC-HTTP2,
- * and Dubbo protocols.
+ * and Triple protocols.
  *
  * @private Internal code, does not follow semantic versioning.
  */
@@ -76,7 +76,7 @@ export function compressionNegotiate(
       request = found;
     } else {
       // To comply with https://github.com/grpc/grpc/blob/master/doc/compression.md
-      // and the Connect protocol, we return code "unimplemented" and specify
+      // and the Triple protocol, we return code "unimplemented" and specify
       // acceptable compression(s).
       const acceptable = available.map((c) => c.name).join(",");
       error = new DubboError(

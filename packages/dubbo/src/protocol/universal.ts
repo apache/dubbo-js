@@ -85,7 +85,7 @@ export interface UniversalServerResponse {
  * In practice, only Connect unary handlers will receive a parse
  * JSON object. Other call-sites can use this assertion to narrow
  * the union type. A failure in such a call-sites indicates that
- * the contract between a server framework and the connect-node \
+ * the contract between a server framework and the dubbo-node \
  * handler is broken.
  *
  * @private Internal code, does not follow semantic versioning.

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * In unary RPCs, Connect transports trailing metadata as response header
+ * In unary RPCs, Dubbo transports trailing metadata as response header
  * fields, prefixed with "trailer-".
  *
  * This function demuxes headers and trailers into two separate Headers
@@ -37,7 +37,7 @@ export function trailerDemux(
 }
 
 /**
- * In unary RPCs, Connect transports trailing metadata as response header
+ * In unary RPCs, Dubbo transports trailing metadata as response header
  * fields, prefixed with "trailer-".
  *
  * This function muxes a header and a trailer into a single Headers object.

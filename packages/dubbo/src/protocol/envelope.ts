@@ -18,7 +18,7 @@ import { compressedFlag } from "./compression.js";
 import type { Compression } from "./compression.js";
 
 /**
- * Represents an Enveloped-Message of the Connect protocol.
+ * Represents an Enveloped-Message of the Triple protocol.
  * https://cn.dubbo.apache.org/zh-cn/overview/reference/protocols/triple-spec/
  *
  * @private Internal code, does not follow semantic versioning.

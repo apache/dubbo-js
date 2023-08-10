@@ -24,7 +24,7 @@ import type { TripleClientServiceOptions } from './protocol-triple/client-servic
 
 /**
  * Transport represents the underlying transport for a client.
- * A transport implements a protocol, such as Connect or gRPC-web, and allows
+ * A transport implements a protocol, such as Triple or gRPC-web, and allows
  * for the concrete clients to be independent of the protocol.
  */
 export interface Transport {

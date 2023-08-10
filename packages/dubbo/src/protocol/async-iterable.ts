@@ -777,7 +777,7 @@ export function transformNormalizeMessage<T extends Message<T>>(
  *
  * Note that this function has an override that lets the input stream
  * distinguish between regular messages, and end-of-stream messages, as used
- * by the RPP-web and Connect protocols.
+ * by the gRPC-web and Dubbo protocols.
  *
  * @private Internal code, does not follow semantic versioning.
  */
@@ -843,7 +843,7 @@ export function transformSerializeEnvelope<T, E>(
  *
  * Note that this function has overrides that let the stream distinguish
  * between regular messages, and end-of-stream messages, as used by the
- * gRPP-web and Connect protocols.
+ * gRPC-web and Dubbo protocols.
  *
  * @private Internal code, does not follow semantic versioning.
  */

@@ -23,7 +23,7 @@ import type { MethodInfo, ServiceType } from "@bufbuild/protobuf";
  * the service example.ElizaService results in:
  * https://example.com/example.ElizaService/Say
  *
- * This format is used by the protocols Connect, gRPC and Twirp.
+ * This format is used by the protocols Triple, gRPC and Twirp.
  *
  * Note that this function also accepts a protocol-relative baseUrl.
  * If given an empty string or "/" as a baseUrl, it returns just the

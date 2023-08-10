@@ -98,9 +98,9 @@ or TypeScript declaration files.
 
 Possible values:
 
-- `target=js` - generates a `_connect.js` file for every `.proto` input file.
-- `target=ts` - generates a `_connect.ts` file for every `.proto` input file.
-- `target=dts` - generates a `_connect.d.ts` file for every `.proto` input file.
+- `target=js` - generates a `_dubbo.js` file for every `.proto` input file.
+- `target=ts` - generates a `_dubbo.ts` file for every `.proto` input file.
+- `target=dts` - generates a `_dubbo.d.ts` file for every `.proto` input file.
 
 Multiple values can be given by separating them with `+`, for example
 `target=js+dts`.
