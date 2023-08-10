@@ -27,7 +27,7 @@ import type {
 } from "./node-universal-handler.js";
 import { compressionBrotli, compressionGzip } from "./compression.js";
 
-interface ConnectNodeAdapterOptions extends DubboRouterOptions {
+interface DubboNodeAdapterOptions extends DubboRouterOptions {
   /**
    * Route definitions. We recommend the following pattern:
    *
@@ -62,8 +62,8 @@ interface ConnectNodeAdapterOptions extends DubboRouterOptions {
  *
  * The returned function is compatible with http.RequestListener and its equivalent for http2.
  */
-export function connectNodeAdapter(
-  options: ConnectNodeAdapterOptions
+export function dubboNodeAdapter(
+  options: DubboNodeAdapterOptions
 ): NodeHandlerFn {
   if (options.acceptCompression === undefined) {
     options.acceptCompression = [compressionGzip, compressionBrotli];

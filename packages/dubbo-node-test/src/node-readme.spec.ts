@@ -17,7 +17,7 @@ import { Message, MethodKind, proto3 } from "@bufbuild/protobuf";
 import { createPromiseClient, createRouterTransport } from "apache-dubbo";
 import type { DubboRouter } from "apache-dubbo";
 import {
-  connectNodeAdapter,
+  dubboNodeAdapter,
   createGrpcTransport,
   createGrpcWebTransport,
   createDubboTransport,
@@ -126,7 +126,7 @@ describe("node readme", function () {
 
     function startServer() {
       return new Promise<http2.Http2Server>((resolve) => {
-        const handler = connectNodeAdapter({ routes });
+        const handler = dubboNodeAdapter({ routes });
         const server = http2.createServer(handler).listen(0, () => {
           const a = server.address();
           if (a !== null && typeof a !== "string") {

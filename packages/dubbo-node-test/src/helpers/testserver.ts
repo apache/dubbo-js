@@ -20,7 +20,7 @@ import * as path from "path";
 import { cors, createRouterTransport, type Transport } from "apache-dubbo";
 import {
   compressionGzip,
-  connectNodeAdapter,
+  dubboNodeAdapter,
   createDubboTransport,
   createGrpcTransport,
   createGrpcWebTransport,
@@ -116,7 +116,7 @@ export function createTestServers() {
                 cert: certLocalhost.cert,
                 key: certLocalhost.key,
               },
-              connectNodeAdapter({
+              dubboNodeAdapter({
                 routes: testRoutes,
                 requireConnectProtocolHeader: true,
               })
@@ -148,7 +148,7 @@ export function createTestServers() {
           nodeH2cServer = http2
             .createServer(
               {},
-              connectNodeAdapter({
+              dubboNodeAdapter({
                 routes: testRoutes,
                 requireConnectProtocolHeader: true,
               })
@@ -197,7 +197,7 @@ export function createTestServers() {
             ],
             "Access-Control-Max-Age": 2 * 3600,
           };
-          const serviceHandler = connectNodeAdapter({
+          const serviceHandler = dubboNodeAdapter({
             routes: testRoutes,
             requireConnectProtocolHeader: true,
           });
@@ -242,7 +242,7 @@ export function createTestServers() {
                 cert: certLocalhost.cert,
                 key: certLocalhost.key,
               },
-              connectNodeAdapter({
+              dubboNodeAdapter({
                 routes: testRoutes,
                 requireConnectProtocolHeader: true,
               })

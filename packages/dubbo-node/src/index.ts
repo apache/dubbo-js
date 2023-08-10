@@ -19,7 +19,7 @@ export { createGrpcWebTransport } from "./grpc-web-transport.js";
 export { createGrpcTransport } from "./grpc-transport.js";
 export { createDubboTransport } from "./dubbo-transport.js";
 export { compressionBrotli, compressionGzip } from "./compression.js";
-export { connectNodeAdapter } from "./dubbo-node-adapter.js";
+export { dubboNodeAdapter } from "./dubbo-node-adapter.js";
 
 export {
   universalRequestFromNodeRequest,

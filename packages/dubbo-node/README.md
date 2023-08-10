@@ -67,7 +67,7 @@ console.log(sentence) // you said: I feel happy.
 ```
 
 
-### connectNodeAdapter()
+### dubboNodeAdapter()
 
 Run your Dubbo RPCs on the Node.js `http`, `https`, or `http2` modules.
 
@@ -87,10 +87,10 @@ export default function(router: DubboRouter) {
 // server.ts
 import * as http2 from "http2";
 + import routes from "dubbo";
-+ import { connectNodeAdapter } from "apache-dubbo-node";
++ import { dubboNodeAdapter } from "apache-dubbo-node";
 
 http2.createServer(
-+ connectNodeAdapter({ routes }) // responds with 404 for other requests
++ dubboNodeAdapter({ routes }) // responds with 404 for other requests
 ).listen(8080);
 ```
 
