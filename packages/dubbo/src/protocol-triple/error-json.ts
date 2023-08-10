@@ -20,7 +20,7 @@ import type {
 } from "@bufbuild/protobuf";
 import { Code } from "../code.js";
 import { DubboError } from "../dubbo-error.js";
-import { codeFromString, codeToString } from "./code-string.js";
+import { codeFromString } from "./code-string.js";
 
 /**
  * Parse a Connect error from a JSON value.
