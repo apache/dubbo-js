@@ -26,7 +26,7 @@ import {
   createGrpcWebTransport,
 } from "apache-dubbo-node";
 import { fastifyDubboPlugin } from "apache-dubbo-fastify";
-import { expressConnectMiddleware } from "apache-dubbo-express";
+import { expressDubboMiddleware } from "apache-dubbo-express";
 import type {
   FastifyBaseLogger,
   FastifyInstance,
@@ -306,7 +306,7 @@ export function createTestServers() {
         const express = await importExpress();
         const app = express();
         app.use(
-          expressConnectMiddleware({
+          expressDubboMiddleware({
             routes: testRoutes,
             requireConnectProtocolHeader: true,
           })

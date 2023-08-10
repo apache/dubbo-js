@@ -46,7 +46,7 @@ interface FastifyDubboPluginOptions extends DubboRouterOptions {
 }
 
 /**
- * Plug your Connect routes into a Fastify server.
+ * Plug your Dubbo routes into a Fastify server.
  */
 export function fastifyDubboPlugin(
   instance: FastifyInstance,

@@ -28,7 +28,7 @@ import {
 } from "./node-transport-options.js";
 
 /**
- * Options used to configure the Connect transport.
+ * Options used to configure the Dubbo transport.
  *
  * See createDubboTransport().
  */
@@ -47,7 +47,7 @@ type DubboTransportOptions = NodeTransportOptions &
     baseUrl: string;
 
     /**
-     * By default, connect-node clients use the binary format.
+     * By default, dubbo-node clients use the binary format.
      */
     useBinaryFormat?: boolean;
 
@@ -118,14 +118,14 @@ type DubboTransportOptions = NodeTransportOptions &
     writeMaxBytes?: number;
 
     /**
-     * Controls whether or not Connect GET requests should be used when
+     * Controls whether or not Dubbo GET requests should be used when
      * available, on side-effect free methods. Defaults to false.
      */
     useHttpGet?: boolean;
   };
 
 /**
- * Create a Transport for the Connect protocol using the Node.js `http`, `http2`,
+ * Create a Transport for the Dubbo protocol using the Node.js `http`, `http2`,
  * or `http2` module.
  */
 export function createDubboTransport(

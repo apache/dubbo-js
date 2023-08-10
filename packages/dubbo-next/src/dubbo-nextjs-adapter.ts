@@ -58,7 +58,7 @@ interface NextJsApiRouterOptions extends DubboRouterOptions {
 }
 
 /**
- * Provide your Connect RPCs via Next.js API routes.
+ * Provide your Dubbo RPCs via Next.js API routes.
  */
 export function nextJsApiRouter(options: NextJsApiRouterOptions): ApiRoute {
   if (options.acceptCompression === undefined) {

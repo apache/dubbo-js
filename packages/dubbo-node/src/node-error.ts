@@ -17,7 +17,7 @@ import { Code, DubboError } from "apache-dubbo";
 /**
  * Similar to DubboError.from(), this function turns any value into
  * a DubboError, but special cases some Node.js specific error codes and
- * sets an appropriate Connect error code.
+ * sets an appropriate Dubbo error code.
  */
 export function dubboErrorFromNodeReason(reason: unknown): DubboError {
   let code = Code.Internal;
