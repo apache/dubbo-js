@@ -3,8 +3,8 @@
   "name": "dubbo-js-private-workspace",
   "workspaces": [
     "./packages/dubbo",
-    "./packages/protoc-gen-apache-dubbo-es",
-    "./packages/protoc-gen-apache-dubbo-web",
+    "./packages/protoc-gen-dubbo-es",
+    "./packages/protoc-gen-dubbo-web",
     "./packages/dubbo-web",
     "./packages/dubbo-node",
     "./packages/dubbo-fastify",

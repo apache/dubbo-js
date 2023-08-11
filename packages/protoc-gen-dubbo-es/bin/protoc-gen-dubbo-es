@@ -3,6 +3,6 @@
 const { runNodeJs } = require('@bufbuild/protoplugin')
 const {
   protocGenDubboEs
-} = require('../dist/cjs/src/protoc-gen-apache-dubbo-es-plugin.js')
+} = require('../dist/cjs/src/protoc-gen-dubbo-es-plugin.js')
 
 runNodeJs(protocGenDubboEs)

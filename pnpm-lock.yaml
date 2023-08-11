@@ -239,7 +239,7 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0(karma@6.4.2)
 
-  packages/protoc-gen-apache-dubbo-es:
+  packages/protoc-gen-dubbo-es:
     dependencies:
       '@bufbuild/protobuf':
         specifier: ^1.2.1
@@ -254,7 +254,7 @@ importers:
         specifier: ^0.0.10
         version: link:../dubbo
 
-  packages/protoc-gen-apache-dubbo-web:
+  packages/protoc-gen-dubbo-web:
     dependencies:
       '@bufbuild/protobuf':
         specifier: ^1.2.1
@@ -3690,8 +3690,8 @@ packages:
       js-tokens: 4.0.0
     dev: false
 
-  /lru-cache@10.0.1:
-    resolution: {integrity: sha512-IJ4uwUTi2qCccrioU6g9g/5rvvVl13bsdczUUcqbciD9iLr095yj8DQKdObriEvuNSx325N1rV1O0sJFszx75g==}
+  /lru-cache@10.0.0:
+    resolution: {integrity: sha512-svTf/fzsKHffP42sujkO/Rjs37BCIsQVRCeNYIm9WN8rgT7ffoUnRtZCqU+6BqcSBdv8gwJeTz8knJpgACeQMw==}
     engines: {node: 14 || >=16.14}
 
   /lru-cache@6.0.0:
@@ -4037,7 +4037,7 @@ packages:
     resolution: {integrity: sha512-MkhCqzzBEpPvxxQ71Md0b1Kk51W01lrYvlMzSUaIzNsODdd7mqhiimSZlr+VegAz5Z6Vzt9Xg2ttE//XBhH3EQ==}
     engines: {node: '>=16 || 14 >=14.17'}
     dependencies:
-      lru-cache: 10.0.1
+      lru-cache: 10.0.0
       minipass: 7.0.2
 
   /path-to-regexp@0.1.7:
