@@ -1,15 +1,15 @@
 {
-  "name": "apache-protoc-gen-dubbo-es",
-  "version": "0.0.10",
+  "name": "protoc-gen-apache-dubbo-es",
+  "version": "0.0.2",
   "description": "Code generator for Dubbo",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/apache/dubbo-js.git",
-    "directory": "packages/protoc-gen-dubbo-es"
+    "directory": "packages/protoc-gen-apache-dubbo-es"
   },
   "bin": {
-    "protoc-gen-dubbo-es": "bin/protoc-gen-dubbo-es"
+    "protoc-gen-apache-dubbo-es": "bin/protoc-gen-apache-dubbo-es"
   },
   "engines": {
     "node": ">=16.0.0"

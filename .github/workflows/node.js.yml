@@ -56,8 +56,8 @@ jobs:
           # npm run build --workspace=./packages/dubbo-express
           # npm run build --workspace=./packages/dubbo-fastify
           # npm run build --workspace=./packages/dubbo-next
-          # npm run build --workspace=./packages/protoc-gen-dubbo-es
-          # npm run build --workspace=./packages/protoc-gen-dubbo-web
+          # npm run build --workspace=./packages/protoc-gen-apache-dubbo-es
+          # npm run build --workspace=./packages/protoc-gen-apache-dubbo-web
 
       - name: Continuous Integration
         run:
