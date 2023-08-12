@@ -25,7 +25,7 @@ describe("endStreamFromJson()", function () {
   it("should parse expected", function () {
     const json: JsonObject = {
       error: {
-        code: "resource_exhausted",
+        status: Code.ResourceExhausted,
         message: "my bad",
       },
       metadata: { foo: ["baz", "bar"] },

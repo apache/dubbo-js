@@ -16,7 +16,6 @@ import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import { Message, proto3, protoBase64, ScalarType } from "@bufbuild/protobuf";
 import { errorFromJson, errorToJson } from "./error-json.js";
-import { codeToString } from "./code-string.js";
 
 describe("errorToJson()", () => {
   it("serializes code and message", () => {
@@ -24,7 +23,7 @@ describe("errorToJson()", () => {
       new DubboError("Not permitted", Code.PermissionDenied),
       undefined
     );
-    expect(json.code as unknown).toBe("permission_denied");
+    expect(json.status as unknown).toBe(Code.PermissionDenied);
     expect(json.message as unknown).toBe("Not permitted");
   });
   it("does not serialize empty message", () => {
@@ -32,7 +31,7 @@ describe("errorToJson()", () => {
       new DubboError("", Code.PermissionDenied),
       undefined
     );
-    expect(json.code as unknown).toBe("permission_denied");
+    expect(json.status as unknown).toBe(Code.PermissionDenied);
     expect(json.message as unknown).toBeUndefined();
   });
   it("serializes details", () => {
@@ -53,7 +52,7 @@ describe("errorToJson()", () => {
     );
     const got = errorToJson(err, undefined);
     const want = {
-      code: "permission_denied",
+      status: Code.PermissionDenied,
       message: "Not permitted",
       details: [
         {
@@ -79,7 +78,7 @@ describe("errorFromJson()", () => {
   it("parses code and message", () => {
     const error = errorFromJson(
       {
-        code: "permission_denied",
+        status: Code.PermissionDenied,
         message: "Not permitted",
       },
       undefined,
@@ -92,7 +91,7 @@ describe("errorFromJson()", () => {
   it("does not require message", () => {
     const error = errorFromJson(
       {
-        code: codeToString(Code.PermissionDenied),
+        status: Code.PermissionDenied,
       },
       undefined,
       new DubboError("foo", Code.ResourceExhausted)
@@ -104,7 +103,7 @@ describe("errorFromJson()", () => {
     expect(() =>
       errorFromJson(
         {
-          code: "wrong code",
+          status: -1,
           message: "Not permitted",
         },
         undefined,
@@ -165,7 +164,7 @@ describe("errorFromJson()", () => {
       ]
     );
     const json = {
-      code: "permission_denied",
+      status: Code.PermissionDenied,
       message: "Not permitted",
       details: [
         {
