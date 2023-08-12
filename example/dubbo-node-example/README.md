@@ -59,8 +59,8 @@ PATH=$PATH:$(pwd)/node_modules/.bin \
   protoc -I proto \
   --es_out gen \
   --es_opt target=ts \
-  --dubbo-es_out gen \
-  --dubbo-es_opt target=ts \
+  --apache-dubbo-es_out gen \
+  --apache-dubbo-es_opt target=ts \
   example.proto
 ```
 
