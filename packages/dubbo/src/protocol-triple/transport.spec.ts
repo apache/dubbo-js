@@ -204,7 +204,7 @@ describe("Connect transport", function () {
     const expectGet: UniversalClientFn = async (request) => {
       expect(request.method).toBe("GET");
       expect(request.url).toBe(
-        "http://example.com/TestService/UnaryNoSideEffects?connect=v1&encoding=proto&base64=1&message=CHs"
+        "http://example.com/TestService/UnaryNoSideEffects?triple=v1.0.0&encoding=proto&base64=1&message=CHs"
       );
       // no headers
       const headerFields: string[] = [];
