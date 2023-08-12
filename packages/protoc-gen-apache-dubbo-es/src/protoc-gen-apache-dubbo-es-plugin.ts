@@ -19,7 +19,7 @@ import { generateDts } from "./declaration.js";
 import { version } from "../package.json";
 
 export const protocGenDubboEs = createEcmaScriptPlugin({
-  name: "protoc-gen-dubbo-es",
+  name: "protoc-gen-apache-dubbo-es",
   version: `v${String(version)}`,
   generateTs,
   generateJs,
