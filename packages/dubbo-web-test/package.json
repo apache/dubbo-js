@@ -16,6 +16,9 @@
     "import": "./dist/esm/index.js",
     "default": "./dist/esm/index.js"
   },
+  "peerDependencies": {
+    "@bufbuild/protobuf": "^1.2.1"
+  },
   "dependencies": {
     "apache-dubbo-web": "^0.0.10",
     "apache-dubbo": "^0.0.10",

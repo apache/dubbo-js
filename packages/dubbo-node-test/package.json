@@ -26,5 +26,8 @@
     "express": "^4.18.2",
     "fastify": "^4.17.0",
     "jasmine": "^5.0.0"
+  },
+  "peerDependencies": {
+    "@bufbuild/protobuf": "^1.2.1"
   }
 }
