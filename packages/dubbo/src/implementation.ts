@@ -22,7 +22,7 @@ import type {
   PartialMessage,
   ServiceType,
 } from "@bufbuild/protobuf";
-import { ConnectError } from "./dubbo-error.js";
+import { DubboError } from "./dubbo-error.js";
 import { Code } from "./code.js";
 import {
   createDeadlineSignal,
@@ -91,7 +91,7 @@ export interface HandlerContext {
 
   /**
    * HTTP method of incoming request, usually "POST", but "GET" in the case of
-   * Connect Get.
+   * Dubbo Get.
    */
   readonly requestMethod: string;
 
@@ -114,7 +114,7 @@ export interface HandlerContext {
   readonly responseTrailer: Headers;
 
   /**
-   * Name of the RPC protocol in use; one of "connect", "grpc" or "grpc-web".
+   * Name of the RPC protocol in use; one of "triple", "grpc" or "grpc-web".
    */
   readonly protocolName: string;
 }
@@ -271,7 +271,7 @@ export function createServiceImplSpec<T extends ServiceType>(
     } else {
       const message = `${service.typeName}.${methodInfo.name} is not implemented`;
       fn = function unimplemented() {
-        throw new ConnectError(message, Code.Unimplemented);
+        throw new DubboError(message, Code.Unimplemented);
       };
     }
     s.methods[localName] = createMethodImplSpec(service, methodInfo, fn);

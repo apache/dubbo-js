@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code, ConnectError, createPromiseClient } from "apache-dubbo";
-import { TestService } from "../gen/grpc/testing/test_connect.js";
+import { Code, DubboError, createPromiseClient } from "apache-dubbo";
+import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import { PayloadType } from "../gen/grpc/testing/messages_pb.js";
 import { createTestServers } from "../helpers/testserver.js";
 
@@ -22,8 +22,8 @@ describe("cancel_after_begin", function () {
   beforeAll(async () => await servers.start());
 
   function expectError(err: unknown) {
-    expect(err).toBeInstanceOf(ConnectError);
-    if (err instanceof ConnectError) {
+    expect(err).toBeInstanceOf(DubboError);
+    if (err instanceof DubboError) {
       expect(err.code === Code.Canceled).toBeTrue();
     }
   }

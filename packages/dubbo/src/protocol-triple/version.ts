@@ -13,32 +13,32 @@
 // limitations under the License.
 
 import { headerProtocolVersion } from "./headers.js";
-import { paramConnectVersion } from "./query-params.js";
-import { ConnectError } from "../dubbo-error.js";
+import { paramProtocolVersion } from "./query-params.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 
 /**
- * The only know value for the header Connect-Protocol-Version.
+ * The only know value for the header TRI-Protocol-Version.
  *
  * @private Internal code, does not follow semantic versioning.
  */
-export const protocolVersion = "1";
+export const protocolVersion = "1.0.0";
 
 /**
- * Requires the Connect-Protocol-Version header to be present with the expected
- * value. Raises a ConnectError with Code.InvalidArgument otherwise.
+ * Requires the TRI-Protocol-Version header to be present with the expected
+ * value. Raises a DubboError with Code.InvalidArgument otherwise.
  *
  * @private Internal code, does not follow semantic versioning.
  */
 export function requireProtocolVersionHeader(requestHeader: Headers) {
   const v = requestHeader.get(headerProtocolVersion);
   if (v === null) {
-    throw new ConnectError(
+    throw new DubboError(
       `missing required header: set ${headerProtocolVersion} to "${protocolVersion}"`,
       Code.InvalidArgument
     );
   } else if (v !== protocolVersion) {
-    throw new ConnectError(
+    throw new DubboError(
       `${headerProtocolVersion} must be "${protocolVersion}": got "${v}"`,
       Code.InvalidArgument
     );
@@ -47,20 +47,20 @@ export function requireProtocolVersionHeader(requestHeader: Headers) {
 
 /**
  * Requires the connect query parameter to be present with the expected value.
- * Raises a ConnectError with Code.InvalidArgument otherwise.
+ * Raises a DubboError with Code.InvalidArgument otherwise.
  *
  * @private Internal code, does not follow semantic versioning.
  */
 export function requireProtocolVersionParam(queryParams: URLSearchParams) {
-  const v = queryParams.get(paramConnectVersion);
+  const v = queryParams.get(paramProtocolVersion);
   if (v === null) {
-    throw new ConnectError(
-      `missing required parameter: set ${paramConnectVersion} to "v${protocolVersion}"`,
+    throw new DubboError(
+      `missing required parameter: set ${paramProtocolVersion} to "v${protocolVersion}"`,
       Code.InvalidArgument
     );
   } else if (v !== `v${protocolVersion}`) {
-    throw new ConnectError(
-      `${paramConnectVersion} must be "v${protocolVersion}": got "${v}"`,
+    throw new DubboError(
+      `${paramProtocolVersion} must be "v${protocolVersion}": got "${v}"`,
       Code.InvalidArgument
     );
   }

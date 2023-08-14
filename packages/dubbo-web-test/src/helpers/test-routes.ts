@@ -15,12 +15,12 @@
 // TODO(TCN-1771) keep in sync with `connect-node-test`'s `test-routes` until we share code between test packages
 import {
   Code,
-  ConnectError,
+  DubboError,
   decodeBinaryHeader,
   encodeBinaryHeader,
 } from "apache-dubbo";
-import type { ConnectRouter, ServiceImpl } from "apache-dubbo";
-import { TestService } from "../gen/grpc/testing/test_connect.js";
+import type { DubboRouter, ServiceImpl } from "apache-dubbo";
+import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import type { StreamingOutputCallRequest } from "../gen/grpc/testing/messages_pb.js";
 import {
   EchoStatus,
@@ -28,7 +28,7 @@ import {
 } from "../gen/grpc/testing/messages_pb.js";
 import { interop } from "./interop.js";
 
-export const testRoutes = (router: ConnectRouter) => {
+export const testRoutes = (router: DubboRouter) => {
   router.service(TestService, testService);
 };
 
@@ -54,7 +54,7 @@ const testService: ServiceImpl<typeof TestService> = {
   },
 
   failUnaryCall() {
-    throw new ConnectError(interop.nonASCIIErrMsg, Code.ResourceExhausted, {}, [
+    throw new DubboError(interop.nonASCIIErrMsg, Code.ResourceExhausted, {}, [
       interop.errorDetail,
     ]);
   },
@@ -95,7 +95,7 @@ const testService: ServiceImpl<typeof TestService> = {
         payload: interop.makeServerPayload(request.responseType, param.size),
       };
     }
-    throw new ConnectError(interop.nonASCIIErrMsg, Code.ResourceExhausted, {}, [
+    throw new DubboError(interop.nonASCIIErrMsg, Code.ResourceExhausted, {}, [
       interop.errorDetail,
     ]);
   },
@@ -156,7 +156,7 @@ const testService: ServiceImpl<typeof TestService> = {
   },
 
   unimplementedCall(/*request*/) {
-    throw new ConnectError(
+    throw new DubboError(
       "grpc.testing.TestService.UnimplementedCall is not implemented",
       Code.Unimplemented
     );
@@ -164,7 +164,7 @@ const testService: ServiceImpl<typeof TestService> = {
 
   // eslint-disable-next-line @typescript-eslint/require-await,require-yield
   async *unimplementedStreamingOutputCall(/*requests*/) {
-    throw new ConnectError(
+    throw new DubboError(
       "grpc.testing.TestService.UnimplementedStreamingOutputCall is not implemented",
       Code.Unimplemented
     );
@@ -183,7 +183,7 @@ function maybeRaiseError(status: EchoStatus | undefined): void {
   if (!status || status.code <= 0) {
     return;
   }
-  throw new ConnectError(status.message, status.code);
+  throw new DubboError(status.message, status.code);
 }
 
 function echoMetadata(

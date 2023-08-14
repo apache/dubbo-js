@@ -15,12 +15,12 @@
 import type { CallOptions } from "apache-dubbo";
 import {
   Code,
-  ConnectError,
+  DubboError,
   createCallbackClient,
   createPromiseClient,
 } from "apache-dubbo";
 import { describeTransports } from "./helpers/crosstestserver.js";
-import { TestService } from "./gen/grpc/testing/test_connect.js";
+import { TestService } from "./gen/grpc/testing/test_dubbo.js";
 
 describe("explicit cancellation with AbortController", function () {
   const abort = new AbortController();
@@ -37,8 +37,8 @@ describe("explicit cancellation with AbortController", function () {
           await client.unaryCall({}, options);
         } catch (e) {
           caughtError = true;
-          expect(e).toBeInstanceOf(ConnectError);
-          if (e instanceof ConnectError) {
+          expect(e).toBeInstanceOf(DubboError);
+          if (e instanceof DubboError) {
             expect(e.code).toBe(Code.Canceled);
           }
         }
@@ -53,8 +53,8 @@ describe("explicit cancellation with AbortController", function () {
           }
         } catch (e) {
           caughtError = true;
-          expect(e).toBeInstanceOf(ConnectError);
-          if (e instanceof ConnectError) {
+          expect(e).toBeInstanceOf(DubboError);
+          if (e instanceof DubboError) {
             expect(e.code).toBe(Code.Canceled);
           }
         }

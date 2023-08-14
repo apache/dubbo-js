@@ -1,11 +1,11 @@
 {
   "name": "apache-dubbo-fastify",
-  "version": "0.0.3",
+  "version": "0.0.10",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/apache/dubbo-js.git",
-    "directory": "packages/connect-fastify"
+    "directory": "packages/dubbo-fastify"
   },
   "sideEffects": false,
   "scripts": {
@@ -26,8 +26,8 @@
     "node": ">=16.0.0"
   },
   "dependencies": {
-    "apache-dubbo": "^0.0.3",
-    "apache-dubbo-node": "^0.0.3",
+    "apache-dubbo": "^0.0.10",
+    "apache-dubbo-node": "^0.0.10",
     "fastify": "^4.17.0"
   },
   "peerDependencies": {

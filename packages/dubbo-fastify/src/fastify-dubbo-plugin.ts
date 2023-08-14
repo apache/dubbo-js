@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import type { JsonValue } from "@bufbuild/protobuf";
-import { Code, ConnectError, createConnectRouter } from "apache-dubbo";
-import type { ConnectRouter, ConnectRouterOptions } from "apache-dubbo";
-import * as protoConnect from "apache-dubbo/protocol-triple";
+import { Code, DubboError, createDubboRouter } from "apache-dubbo";
+import type { DubboRouter, DubboRouterOptions } from "apache-dubbo";
+import * as protoTriple from "apache-dubbo/protocol-triple";
 import * as protoGrpcWeb from "apache-dubbo/protocol-grpc-web";
 import * as protoGrpc from "apache-dubbo/protocol-grpc";
 import {
@@ -26,31 +26,31 @@ import {
 } from "apache-dubbo-node";
 import type { FastifyInstance } from "fastify/types/instance";
 
-interface FastifyConnectPluginOptions extends ConnectRouterOptions {
+interface FastifyDubboPluginOptions extends DubboRouterOptions {
   /**
    * Route definitions. We recommend the following pattern:
    *
    * Create a file `connect.ts` with a default export such as this:
    *
    * ```ts
-   * import {ConnectRouter} from "apache-dubbo";
+   * import {DubboRouter} from "apache-dubbo";
    *
-   * export default (router: ConnectRouter) => {
+   * export default (router: DubboRouter) => {
    *   router.service(ElizaService, {});
    * }
    * ```
    *
    * Then pass this function here.
    */
-  routes?: (router: ConnectRouter) => void;
+  routes?: (router: DubboRouter) => void;
 }
 
 /**
- * Plug your Connect routes into a Fastify server.
+ * Plug your Dubbo routes into a Fastify server.
  */
-export function fastifyConnectPlugin(
+export function fastifyDubboPlugin(
   instance: FastifyInstance,
-  opts: FastifyConnectPluginOptions,
+  opts: FastifyDubboPluginOptions,
   done: (err?: Error) => void
 ) {
   if (opts.routes === undefined) {
@@ -60,7 +60,7 @@ export function fastifyConnectPlugin(
   if (opts.acceptCompression === undefined) {
     opts.acceptCompression = [compressionGzip, compressionBrotli];
   }
-  const router = createConnectRouter(opts);
+  const router = createDubboRouter(opts);
   opts.routes(router);
 
   const uHandlers = router.handlers;
@@ -78,6 +78,7 @@ export function fastifyConnectPlugin(
       uHandler.requestPath,
       {},
       async function handleFastifyRequest(req, reply) {
+        if((req.headers['tri-service-version'] || '') !== uHandler.serviceVersion || (req.headers['tri-service-group'] || '') !== uHandler.serviceGroup) return;
         try {
           const uRes = await uHandler(
             universalRequestFromNodeRequest(
@@ -95,7 +96,7 @@ export function fastifyConnectPlugin(
           }
           await universalResponseToNodeResponse(uRes, reply.raw);
         } catch (e) {
-          if (ConnectError.from(e).code == Code.Aborted) {
+          if (DubboError.from(e).code == Code.Aborted) {
             return;
           }
           // eslint-disable-next-line no-console
@@ -118,8 +119,8 @@ export function fastifyConnectPlugin(
 function addNoopContentTypeParsers(instance: FastifyInstance): void {
   instance.addContentTypeParser(
     [
-      protoConnect.contentTypeUnaryJson,
-      protoConnect.contentTypeStreamJson,
+      protoTriple.contentTypeUnaryJson,
+      protoTriple.contentTypeStreamJson,
       protoGrpcWeb.contentTypeProto,
       protoGrpcWeb.contentTypeJson,
       protoGrpc.contentTypeProto,
@@ -136,7 +137,7 @@ function addNoopContentTypeParsers(instance: FastifyInstance): void {
     noopContentTypeParser
   );
   instance.addContentTypeParser(
-    protoConnect.contentTypeRegExp,
+    protoTriple.contentTypeRegExp,
     noopContentTypeParser
   );
 }

@@ -24,7 +24,7 @@ import { requestHeaderWithCompression } from "./request-header.js";
 import { validateResponseWithCompression } from "./validate-response.js";
 import { createTrailerSerialization, trailerFlag } from "./trailer.js";
 import { Code } from "../code.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import type {
   UnaryResponse,
   UnaryRequest,
@@ -132,7 +132,7 @@ export function createTransport(opt: CommonTransportOptions): Transport {
               for await (const env of iterable) {
                 if (env.end) {
                   if (trailer !== undefined) {
-                    throw new ConnectError(
+                    throw new DubboError(
                       "protocol error: received extra trailer",
                       Code.InvalidArgument
                     );
@@ -140,7 +140,7 @@ export function createTransport(opt: CommonTransportOptions): Transport {
                   trailer = env.value;
                 } else {
                   if (message !== undefined) {
-                    throw new ConnectError(
+                    throw new DubboError(
                       "protocol error: received extra output message for unary method",
                       Code.InvalidArgument
                     );
@@ -155,14 +155,14 @@ export function createTransport(opt: CommonTransportOptions): Transport {
             }
           );
           if (trailer === undefined) {
-            throw new ConnectError(
+            throw new DubboError(
               "protocol error: missing trailer",
               Code.InvalidArgument
             );
           }
           validateTrailer(trailer);
           if (message === undefined) {
-            throw new ConnectError(
+            throw new DubboError(
               "protocol error: missing output message for unary method",
               Code.InvalidArgument
             );
@@ -273,7 +273,7 @@ export function createTransport(opt: CommonTransportOptions): Transport {
                   // See https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
                   const r = await iterable[Symbol.asyncIterator]().next();
                   if (r.done !== true) {
-                    throw new ConnectError(
+                    throw new DubboError(
                       "protocol error: extra data for trailers-only",
                       Code.InvalidArgument
                     );
@@ -284,7 +284,7 @@ export function createTransport(opt: CommonTransportOptions): Transport {
                 for await (const chunk of iterable) {
                   if (chunk.end) {
                     if (trailerReceived) {
-                      throw new ConnectError(
+                      throw new DubboError(
                         "protocol error: received extra trailer",
                         Code.InvalidArgument
                       );
@@ -297,7 +297,7 @@ export function createTransport(opt: CommonTransportOptions): Transport {
                     continue;
                   }
                   if (trailerReceived) {
-                    throw new ConnectError(
+                    throw new DubboError(
                       "protocol error: received extra message after trailer",
                       Code.InvalidArgument
                     );
@@ -305,7 +305,7 @@ export function createTransport(opt: CommonTransportOptions): Transport {
                   yield chunk.value;
                 }
                 if (!trailerReceived) {
-                  throw new ConnectError(
+                  throw new DubboError(
                     "protocol error: missing trailer",
                     Code.InvalidArgument
                   );

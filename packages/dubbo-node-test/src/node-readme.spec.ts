@@ -15,12 +15,12 @@
 import * as http2 from "http2";
 import { Message, MethodKind, proto3 } from "@bufbuild/protobuf";
 import { createPromiseClient, createRouterTransport } from "apache-dubbo";
-import type { ConnectRouter } from "apache-dubbo";
+import type { DubboRouter } from "apache-dubbo";
 import {
-  connectNodeAdapter,
+  dubboNodeAdapter,
   createGrpcTransport,
   createGrpcWebTransport,
-  createConnectTransport,
+  createDubboTransport,
 } from "apache-dubbo-node";
 
 /* eslint-disable @typescript-eslint/require-await */
@@ -69,9 +69,9 @@ describe("node readme", function () {
     httpVersion: "1.1" as const,
   };
 
-  it("createConnectTransport()", async function () {
+  it("createDubboTransport()", async function () {
     // A transport for clients using the gRPC protocol with Node.js `http` module
-    const transport = createConnectTransport({
+    const transport = createDubboTransport({
       baseUrl: "https://demo.connect.build",
       httpVersion: "1.1",
     });
@@ -118,7 +118,7 @@ describe("node readme", function () {
   it("should work as well", async function () {
     let port = -1;
 
-    function routes(router: ConnectRouter) {
+    function routes(router: DubboRouter) {
       router.rpc(ElizaService, ElizaService.methods.say, async (req) => ({
         sentence: `you said: ${req.sentence}`,
       }));
@@ -126,7 +126,7 @@ describe("node readme", function () {
 
     function startServer() {
       return new Promise<http2.Http2Server>((resolve) => {
-        const handler = connectNodeAdapter({ routes });
+        const handler = dubboNodeAdapter({ routes });
         const server = http2.createServer(handler).listen(0, () => {
           const a = server.address();
           if (a !== null && typeof a !== "string") {

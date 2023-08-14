@@ -1,21 +1,21 @@
 # apache-dubbo-fastify
 
-Connect is a family of libraries for building and consuming APIs on different languages and platforms, and
+Dubbo is a family of libraries for building and consuming APIs on different languages and platforms, and
 [apache-dubbo](https://www.npmjs.com/package/apache-dubbo) brings type-safe APIs with Protobuf to
 TypeScript.
 
 `apache-dubbo-fastify` provides a plugin for [fastify](https://www.fastify.io/), the fast and 
 low overhead web framework, for Node.js.
 
-### fastifyConnectPlugin()
+### fastifyDubboPlugin()
 
-Plug your Connect RPCs into a fastify server.
+Plug your Dubbo RPCs into a fastify server.
 
 ```ts
 // connect.ts
-import { ConnectRouter } from "apache-dubbo";
+import { DubboRouter } from "apache-dubbo";
 
-export default function(router: ConnectRouter) {
+export default function(router: DubboRouter) {
   // implement rpc Say(SayRequest) returns (SayResponse)
   router.rpc(ElizaService, ElizaService.methods.say, async (req) => ({
     sentence: `you said: ${req.sentence}`,
@@ -26,14 +26,14 @@ export default function(router: ConnectRouter) {
 ```diff
 // server.ts
 import { fastify } from "fastify";
-+ import routes from "connect";
-+ import { fastifyConnectPlugin } from "apache-dubbo-fastify";
++ import routes from "dubbo";
++ import { fastifyDubboPlugin } from "apache-dubbo-fastify";
 
 const server = fastify({
   http2: true,
 });
 
-+ await server.register(fastifyConnectPlugin, { 
++ await server.register(fastifyDubboPlugin, { 
 +  routes 
 + });
 
@@ -43,7 +43,7 @@ await server.listen({
 });
 ```
 
-With that server running, you can make requests with any gRPC, gRPC-Web, or Connect client.
+With that server running, you can make requests with any gRPC, gRPC-Web, or Dubbo client.
 
 `buf curl` with the gRPC protocol:
 
@@ -54,7 +54,7 @@ buf curl --schema buf.build/bufbuild/eliza \
   http://localhost:8080/buf.connect.demo.eliza.v1.ElizaService/Say
 ```
 
-`curl` with the Connect protocol:
+`curl` with the Dubbo protocol:
 
 ```bash
 curl \
@@ -69,7 +69,7 @@ Node.js with the gRPC protocol (using a transport from [apache-dubbo-node](https
 ```ts
 import { createPromiseClient } from "apache-dubbo";
 import { createGrpcTransport } from "apache-dubbo-node";
-import { ElizaService } from "./gen/eliza_connect.js";
+import { ElizaService } from "./gen/eliza_dubbo.js";
 
 const transport = createGrpcTransport({
   baseUrl: "http://localhost:8080",
@@ -82,11 +82,11 @@ console.log(sentence) // you said: I feel happy.
 ```
 
 A client for the web browser actually looks identical to this example - it would
-simply use `createConnectTransport` from [apache-dubbo-web](https://www.npmjs.com/package/apache-dubbo-web) 
+simply use `createDubboTransport` from [apache-dubbo-web](https://www.npmjs.com/package/apache-dubbo-web) 
 instead.
 
 
 ## Getting started
 
-To get started with Connect, head over to the [docs](https://connect.build/docs/node/getting-started)
+To get started with Dubbo, head over to the [docs](https://cn.dubbo.apache.org/zh-cn/overview/quickstart/)
 for a tutorial, or take a look at [our example](https://github.com/apache/dubbo-js/tree/dubbo3/example/). 

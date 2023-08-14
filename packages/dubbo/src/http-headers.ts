@@ -14,11 +14,11 @@
 
 import type { BinaryReadOptions, MessageType } from "@bufbuild/protobuf";
 import { Message, protoBase64 } from "@bufbuild/protobuf";
-import { ConnectError } from "./dubbo-error.js";
+import { DubboError } from "./dubbo-error.js";
 import { Code } from "./code.js";
 
 /**
- * Encode a single binary header value according to the Connect
+ * Encode a single binary header value according to the Triple
  * and gRPC specifications.
  *
  * This function accepts raw binary data from a buffer, a string
@@ -41,7 +41,7 @@ export function encodeBinaryHeader(
 }
 
 /**
- * Decode a single binary header value according to the Connect
+ * Decode a single binary header value according to the Triple
  * and gRPC specifications.
  *
  * This function returns the raw binary data from a header whose
@@ -55,7 +55,7 @@ export function encodeBinaryHeader(
  * split by `,` first.
  *
  * If this function detects invalid base-64 encoding, or invalid
- * binary message data, it throws a ConnectError with code
+ * binary message data, it throws a DubboError with code
  * DataLoss.
  */
 export function decodeBinaryHeader(value: string): Uint8Array;
@@ -76,7 +76,7 @@ export function decodeBinaryHeader<T extends Message<T>>(
     }
     return bytes;
   } catch (e) {
-    throw ConnectError.from(e, Code.DataLoss);
+    throw DubboError.from(e, Code.DataLoss);
   }
 }
 

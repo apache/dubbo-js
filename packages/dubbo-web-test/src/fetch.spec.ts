@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { TestService } from "./gen/grpc/testing/test_connect.js";
+import { TestService } from "./gen/grpc/testing/test_dubbo.js";
 import {
   SimpleRequest,
   SimpleResponse,
 } from "./gen/grpc/testing/messages_pb.js";
-import { createConnectTransport } from "apache-dubbo-web";
+import { createDubboTransport } from "apache-dubbo-web";
 
 describe("custom fetch", function () {
   describe("with Connect transport", () => {
@@ -32,7 +32,7 @@ describe("custom fetch", function () {
       );
       spyOn(response, "arrayBuffer").and.callThrough();
       spyOn(response, "json").and.callThrough();
-      const transport = createConnectTransport({
+      const transport = createDubboTransport({
         baseUrl: "https://example.com",
         fetch: () => Promise.resolve(response),
       });
@@ -58,7 +58,7 @@ describe("custom fetch", function () {
       );
       spyOn(response, "arrayBuffer").and.callThrough();
       spyOn(response, "json").and.callThrough();
-      const transport = createConnectTransport({
+      const transport = createDubboTransport({
         fetch: () => Promise.resolve(response),
         baseUrl: "https://example.com",
         useBinaryFormat: true,
@@ -89,7 +89,7 @@ describe("custom fetch", function () {
       );
       spyOn(response, "arrayBuffer").and.callThrough();
       spyOn(response, "json").and.callThrough();
-      const transport = createConnectTransport({
+      const transport = createDubboTransport({
         fetch: () => Promise.resolve(response),
         baseUrl: "https://example.com",
         useBinaryFormat: true,

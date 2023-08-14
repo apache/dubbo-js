@@ -13,14 +13,14 @@
 // limitations under the License.
 
 import { createPromiseClient } from "apache-dubbo";
-import { createConnectTransport } from "apache-dubbo-web";
-import { ElizaService } from "../gen/buf/connect/demo/eliza/v1/eliza_connect.js";
+import { createDubboTransport } from "apache-dubbo-web";
+import { ElizaService } from "../gen/buf/connect/demo/eliza/v1/eliza_dubbo.js";
 import { IntroduceRequest } from "../gen/buf/connect/demo/eliza/v1/eliza_pb.js";
 
 const timeoutMs = 15000;
 
 describe("eliza", () => {
-  const transport = createConnectTransport({
+  const transport = createDubboTransport({
     baseUrl: "https://demo.connect.build",
   });
   it(

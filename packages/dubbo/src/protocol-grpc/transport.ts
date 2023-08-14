@@ -23,7 +23,7 @@ import { requestHeaderWithCompression } from "./request-header.js";
 import { validateResponseWithCompression } from "./validate-response.js";
 import { validateTrailer } from "./validate-trailer.js";
 import { Code } from "../code.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import type {
   UnaryResponse,
   UnaryRequest,
@@ -124,7 +124,7 @@ export function createTransport(opt: CommonTransportOptions): Transport {
               let message: O | undefined;
               for await (const chunk of iterable) {
                 if (message !== undefined) {
-                  throw new ConnectError(
+                  throw new DubboError(
                     "protocol error: received extra output message for unary method",
                     Code.InvalidArgument
                   );
@@ -137,7 +137,7 @@ export function createTransport(opt: CommonTransportOptions): Transport {
           );
           validateTrailer(uRes.trailer);
           if (message === undefined) {
-            throw new ConnectError(
+            throw new DubboError(
               "protocol error: missing output message for unary method",
               Code.InvalidArgument
             );

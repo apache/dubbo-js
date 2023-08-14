@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createEcmaScriptPlugin } from "@bufbuild/protoplugin";
-import { generateTs } from "./typescript.js";
-import { generateJs } from "./javascript.js";
-import { generateDts } from "./declaration.js";
-import { version } from "../package.json";
+import { createPromiseClient } from "apache-dubbo";
+import { createDubboTransport } from "apache-dubbo-web";
+import { ElizaService } from "./gen/connectweb/buf/connect/demo/eliza/v1/eliza_dubbo.js";
 
-export const protocGenConnectWeb = createEcmaScriptPlugin({
-  name: "protoc-gen-dubbo-web",
-  version: `v${String(version)}`,
-  generateTs,
-  generateJs,
-  generateDts,
-});
+const client = createPromiseClient(
+  ElizaService,
+  createDubboTransport({
+    baseUrl: "https://demo.connect.build",
+  })
+);
+
+// eslint-disable-next-line no-console -- log statement makes sure the variable is in use
+console.log(client);

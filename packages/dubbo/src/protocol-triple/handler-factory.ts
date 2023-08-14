@@ -20,7 +20,7 @@ import {
   protoBase64,
 } from "@bufbuild/protobuf";
 import { Code } from "../code.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import type { MethodImplSpec } from "../implementation.js";
 import { createHandlerContext } from "../implementation.js";
 import {
@@ -245,11 +245,11 @@ function createUnaryHandler<I extends Message<I>, O extends Message<O>>(
       const output = await invokeUnaryImplementation(spec, context, input);
       body = serialization.getO(type.binary).serialize(output);
     } catch (e) {
-      let error: ConnectError | undefined;
-      if (e instanceof ConnectError) {
+      let error: DubboError | undefined;
+      if (e instanceof DubboError) {
         error = e;
       } else {
-        error = new ConnectError(
+        error = new DubboError(
           "internal error",
           Code.Internal,
           undefined,
@@ -335,7 +335,7 @@ function parseUnaryMessage<I extends Message<I>, O extends Message<O>>(
     return serialization.getI(useBinaryFormat).parse(input);
   }
   if (useBinaryFormat) {
-    throw new ConnectError(
+    throw new DubboError(
       "received parsed JSON request body, but content-type indicates binary format",
       Code.Internal
     );
@@ -343,7 +343,7 @@ function parseUnaryMessage<I extends Message<I>, O extends Message<O>>(
   try {
     return method.I.fromJson(input);
   } catch (e) {
-    throw ConnectError.from(e, Code.InvalidArgument);
+    throw DubboError.from(e, Code.InvalidArgument);
   }
 }
 
@@ -421,10 +421,10 @@ function createStreamHandler<I extends Message<I>, O extends Message<O>>(
         const end: EndStreamResponse = {
           metadata: context.responseTrailer,
         };
-        if (e instanceof ConnectError) {
+        if (e instanceof DubboError) {
           end.error = e;
         } else if (e !== undefined) {
-          end.error = new ConnectError(
+          end.error = new DubboError(
             "internal error",
             Code.Internal,
             undefined,

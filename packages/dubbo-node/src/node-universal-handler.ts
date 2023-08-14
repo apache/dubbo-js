@@ -16,7 +16,7 @@ import type * as http from "http";
 import type * as http2 from "http2";
 import type * as stream from "stream";
 import type { JsonValue } from "@bufbuild/protobuf";
-import { Code, ConnectError } from "apache-dubbo";
+import { Code, DubboError } from "apache-dubbo";
 import type {
   UniversalServerRequest,
   UniversalServerResponse,
@@ -26,8 +26,8 @@ import {
   webHeaderToNodeHeaders,
 } from "./node-universal-header.js";
 import {
-  connectErrorFromH2ResetCode,
-  connectErrorFromNodeReason,
+  dubboErrorFromH2ResetCode,
+  dubboErrorFromNodeReason,
 } from "./node-error.js";
 
 /**
@@ -83,7 +83,7 @@ export function universalRequestFromNodeRequest(
       : nodeRequest.headers.host;
   const pathname = nodeRequest.url ?? "";
   if (authority === undefined) {
-    throw new ConnectError(
+    throw new DubboError(
       "unable to determine request authority from Node.js server request",
       Code.Internal
     );
@@ -96,7 +96,7 @@ export function universalRequestFromNodeRequest(
   if ("stream" in nodeRequest) {
     // HTTP/2 has error codes we want to honor
     nodeRequest.once("close", () => {
-      const err = connectErrorFromH2ResetCode(nodeRequest.stream.rstCode);
+      const err = dubboErrorFromH2ResetCode(nodeRequest.stream.rstCode);
       if (err !== undefined) {
         abortController.abort(err);
       } else {
@@ -108,7 +108,7 @@ export function universalRequestFromNodeRequest(
     const onH1Error = (e: Error) => {
       nodeRequest.off("error", onH1Error);
       nodeRequest.off("close", onH1Close);
-      abortController.abort(connectErrorFromNodeReason(e));
+      abortController.abort(dubboErrorFromNodeReason(e));
     };
     const onH1Close = () => {
       nodeRequest.off("error", onH1Error);
@@ -186,7 +186,7 @@ export async function universalResponseToNodeResponse(
       nodeResponse.end();
     });
   } catch (e) {
-    throw connectErrorFromNodeReason(e);
+    throw dubboErrorFromNodeReason(e);
   }
 }
 

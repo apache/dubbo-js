@@ -13,12 +13,12 @@
 // limitations under the License.
 
 import {
-  ConnectError,
+  DubboError,
   createCallbackClient,
   createPromiseClient,
   Code,
 } from "apache-dubbo";
-import { TestService } from "../gen/grpc/testing/test_connect.js";
+import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import { describeTransports } from "../helpers/crosstestserver.js";
 import { SimpleRequest } from "../gen/grpc/testing/messages_pb.js";
 
@@ -32,8 +32,8 @@ describe("status_code_and_message", function () {
       },
     });
     function expectError(err: unknown) {
-      expect(err).toBeInstanceOf(ConnectError);
-      if (err instanceof ConnectError) {
+      expect(err).toBeInstanceOf(DubboError);
+      if (err instanceof DubboError) {
         expect(err.code).toEqual(Code.Unknown);
         expect(err.rawMessage).toEqual(TEST_STATUS_MESSAGE);
       }
@@ -49,7 +49,7 @@ describe("status_code_and_message", function () {
     });
     it("with callback client", function (done) {
       const client = createCallbackClient(TestService, transport());
-      client.unaryCall(request, (err: ConnectError | undefined) => {
+      client.unaryCall(request, (err: DubboError | undefined) => {
         expectError(err);
         done();
       });

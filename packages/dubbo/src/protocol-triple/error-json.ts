@@ -19,20 +19,20 @@ import type {
   JsonWriteOptions,
 } from "@bufbuild/protobuf";
 import { Code } from "../code.js";
-import { ConnectError } from "../dubbo-error.js";
-import { codeFromString, codeToString } from "./code-string.js";
+import { DubboError } from "../dubbo-error.js";
+import { codeFromString } from "./code-string.js";
 
 /**
  * Parse a Connect error from a JSON value.
- * Will return a ConnectError, and throw the provided fallback if parsing failed.
+ * Will return a DubboError, and throw the provided fallback if parsing failed.
  *
  * @private Internal code, does not follow semantic versioning.
  */
 export function errorFromJson(
   jsonValue: JsonValue,
   metadata: HeadersInit | undefined,
-  fallback: ConnectError
-): ConnectError {
+  fallback: DubboError
+): DubboError {
   if (metadata) {
     new Headers(metadata).forEach((value, key) =>
       fallback.metadata.append(key, value)
@@ -55,7 +55,7 @@ export function errorFromJson(
   if (message != null && typeof message !== "string") {
     throw fallback;
   }
-  const error = new ConnectError(message ?? "", code, metadata);
+  const error = new DubboError(message ?? "", code, metadata);
   if ("details" in jsonValue && Array.isArray(jsonValue.details)) {
     for (const detail of jsonValue.details) {
       if (
@@ -84,15 +84,15 @@ export function errorFromJson(
 
 /**
  * Parse a Connect error from a serialized JSON value.
- * Will return a ConnectError, and throw the provided fallback if parsing failed.
+ * Will return a DubboError, and throw the provided fallback if parsing failed.
  *
  * @private Internal code, does not follow semantic versioning.
  */
 export function errorFromJsonBytes(
   bytes: Uint8Array,
   metadata: HeadersInit | undefined,
-  fallback: ConnectError
-): ConnectError {
+  fallback: DubboError
+): DubboError {
   let jsonValue: JsonValue;
   try {
     jsonValue = JSON.parse(new TextDecoder().decode(bytes)) as JsonValue;
@@ -110,16 +110,16 @@ export function errorFromJsonBytes(
  * google.protobuf.Any. If serialization of the "debug" value fails, it
  * is silently disregarded.
  *
- * See https://connect.build/docs/protocol#error-end-stream
+ * See https://cn.dubbo.apache.org/zh-cn/overview/reference/protocols/triple-spec/
  *
  * @private Internal code, does not follow semantic versioning.
  */
 export function errorToJson(
-  error: ConnectError,
+  error: DubboError,
   jsonWriteOptions: Partial<JsonWriteOptions> | undefined
 ): JsonObject {
   const o: JsonObject = {
-    code: codeToString(error.code),
+    status: error.code,
   };
   if (error.rawMessage.length > 0) {
     o.message = error.rawMessage;
@@ -164,7 +164,7 @@ export function errorToJson(
  * @private Internal code, does not follow semantic versioning.
  */
 export function errorToJsonBytes(
-  error: ConnectError,
+  error: DubboError,
   jsonWriteOptions: Partial<JsonWriteOptions> | undefined
 ): Uint8Array {
   const textEncoder = new TextEncoder();
@@ -174,7 +174,7 @@ export function errorToJsonBytes(
     return textEncoder.encode(jsonString);
   } catch (e) {
     const m = e instanceof Error ? e.message : String(e);
-    throw new ConnectError(
+    throw new DubboError(
       `failed to serialize Connect Error: ${m}`,
       Code.Internal
     );

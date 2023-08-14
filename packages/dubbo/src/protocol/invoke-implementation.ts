@@ -14,7 +14,7 @@
 
 import { Message, MethodKind } from "@bufbuild/protobuf";
 import type { PartialMessage } from "@bufbuild/protobuf";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import type { HandlerContext, MethodImplSpec } from "../implementation.js";
 import type { AsyncIterableTransform } from "./async-iterable.js";
@@ -57,7 +57,7 @@ export function transformInvokeImplementation<
         const inputIt = input[Symbol.asyncIterator]();
         const input1 = await inputIt.next();
         if (input1.done === true) {
-          throw new ConnectError(
+          throw new DubboError(
             "protocol error: missing input message for unary method",
             Code.InvalidArgument
           );
@@ -65,7 +65,7 @@ export function transformInvokeImplementation<
         yield normalizeOutput(spec, await spec.impl(input1.value, context));
         const input2 = await inputIt.next();
         if (input2.done !== true) {
-          throw new ConnectError(
+          throw new DubboError(
             "protocol error: received extra input message for unary method",
             Code.InvalidArgument
           );
@@ -76,7 +76,7 @@ export function transformInvokeImplementation<
         const inputIt = input[Symbol.asyncIterator]();
         const input1 = await inputIt.next();
         if (input1.done === true) {
-          throw new ConnectError(
+          throw new DubboError(
             "protocol error: missing input message for server-streaming method",
             Code.InvalidArgument
           );
@@ -86,7 +86,7 @@ export function transformInvokeImplementation<
         }
         const input2 = await inputIt.next();
         if (input2.done !== true) {
-          throw new ConnectError(
+          throw new DubboError(
             "protocol error: received extra input message for server-streaming method",
             Code.InvalidArgument
           );
@@ -117,7 +117,7 @@ function normalizeOutput<I extends Message<I>, O extends Message<O>>(
   try {
     return new spec.method.O(message);
   } catch (e) {
-    throw new ConnectError(
+    throw new DubboError(
       `failed to normalize message ${spec.method.O.typeName}`,
       Code.Internal,
       undefined,

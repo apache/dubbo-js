@@ -14,11 +14,11 @@
 
 import {
   Code,
-  ConnectError,
+  DubboError,
   createCallbackClient,
   createPromiseClient,
 } from "apache-dubbo";
-import { TestService } from "../gen/grpc/testing/test_connect.js";
+import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import { ErrorDetail } from "../gen/grpc/testing/messages_pb.js";
 import { createTestServers } from "../helpers/testserver.js";
 import { interop } from "../helpers/interop.js";
@@ -28,8 +28,8 @@ describe("fail_unary", () => {
   beforeAll(async () => await servers.start());
 
   function expectError(err: unknown) {
-    expect(err).toBeInstanceOf(ConnectError);
-    if (err instanceof ConnectError) {
+    expect(err).toBeInstanceOf(DubboError);
+    if (err instanceof DubboError) {
       expect(err.code).toEqual(Code.ResourceExhausted);
       expect(err.rawMessage).toEqual(interop.nonASCIIErrMsg);
       const details = err.findDetails(ErrorDetail);
@@ -48,7 +48,7 @@ describe("fail_unary", () => {
     });
     it("with callback client", function (done) {
       const client = createCallbackClient(TestService, transport());
-      client.failUnaryCall({}, (err: ConnectError | undefined) => {
+      client.failUnaryCall({}, (err: DubboError | undefined) => {
         expectError(err);
         done();
       });

@@ -20,7 +20,7 @@ import {
   envelopeDecompress,
 } from "./envelope.js";
 import type { Compression } from "./compression.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import { node16WhatwgStreamPolyfill } from "../node16-polyfill-helper.spec.js";
 
@@ -158,7 +158,7 @@ describe("envelope compression", function () {
     decompress(bytes, readMaxBytes) {
       if (bytes.byteLength > readMaxBytes) {
         return Promise.reject(
-          new ConnectError(
+          new DubboError(
             `message is larger than configured readMaxBytes ${readMaxBytes} after decompression`,
             Code.ResourceExhausted
           )
@@ -199,8 +199,8 @@ describe("envelope compression", function () {
         await envelopeDecompress(compressedEnvelope, compressionReverse, 3);
         fail("expected error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        expect(ConnectError.from(e).message).toBe(
+        expect(e).toBeInstanceOf(DubboError);
+        expect(DubboError.from(e).message).toBe(
           "[resource_exhausted] message is larger than configured readMaxBytes 3 after decompression"
         );
       }
@@ -231,8 +231,8 @@ describe("envelope compression", function () {
           );
           fail("expected error");
         } catch (e) {
-          expect(e).toBeInstanceOf(ConnectError);
-          expect(ConnectError.from(e).message).toBe(
+          expect(e).toBeInstanceOf(DubboError);
+          expect(DubboError.from(e).message).toBe(
             "[invalid_argument] received compressed envelope, but do not know how to decompress"
           );
         }
@@ -266,8 +266,8 @@ describe("envelope compression", function () {
         await envelopeCompress(compressedEnvelope, compressionReverse, 0);
         fail("expected error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        expect(ConnectError.from(e).message).toBe(
+        expect(e).toBeInstanceOf(DubboError);
+        expect(DubboError.from(e).message).toBe(
           "[internal] invalid envelope, already compressed"
         );
       }

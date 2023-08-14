@@ -14,16 +14,16 @@
 
 import {
   Code,
-  ConnectError,
+  DubboError,
   createCallbackClient,
   createPromiseClient,
 } from "apache-dubbo";
 import {
-  createConnectTransport,
+  createDubboTransport,
   createGrpcTransport,
   createGrpcWebTransport,
 } from "apache-dubbo-node";
-import { TestService } from "../gen/grpc/testing/test_connect.js";
+import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import { PayloadType } from "../gen/grpc/testing/messages_pb.js";
 
 describe("unresolvable_host", function () {
@@ -49,11 +49,11 @@ describe("unresolvable_host", function () {
     ],
     [
       "apache-dubbo-node (Connect, http2)",
-      createConnectTransport(optionsHttp2),
+      createDubboTransport(optionsHttp2),
     ],
     [
       "apache-dubbo-node (Connect, http)",
-      createConnectTransport(optionsHttp1),
+      createDubboTransport(optionsHttp1),
     ],
     ["apache-dubbo-node (gRPC, http2)", createGrpcTransport(optionsHttp2)],
     ["apache-dubbo-node (gRPC, http)", createGrpcTransport(optionsHttp1)],
@@ -68,10 +68,10 @@ describe("unresolvable_host", function () {
               await client.unaryCall({});
               fail("expected an error");
             } catch (e) {
-              expect(ConnectError.from(e).message).toBe(
+              expect(DubboError.from(e).message).toBe(
                 "[unavailable] getaddrinfo ENOTFOUND unresolvable-host.some.domain"
               );
-              expect(e).toBeInstanceOf(ConnectError);
+              expect(e).toBeInstanceOf(DubboError);
             }
           });
         });
@@ -84,10 +84,10 @@ describe("unresolvable_host", function () {
               }
               fail("expected to catch an error");
             } catch (e) {
-              expect(ConnectError.from(e).message).toBe(
+              expect(DubboError.from(e).message).toBe(
                 "[unavailable] getaddrinfo ENOTFOUND unresolvable-host.some.domain"
               );
-              expect(e).toBeInstanceOf(ConnectError);
+              expect(e).toBeInstanceOf(DubboError);
             }
           });
         });
@@ -119,8 +119,8 @@ describe("unresolvable_host", function () {
               await client.streamingInputCall(input());
               fail("expected error");
             } catch (e) {
-              expect(e).toBeInstanceOf(ConnectError);
-              const err = ConnectError.from(e);
+              expect(e).toBeInstanceOf(DubboError);
+              const err = DubboError.from(e);
               expect(err.code).toBe(Code.Unavailable);
             }
           });
@@ -159,8 +159,8 @@ describe("unresolvable_host", function () {
               }
               fail("expected to catch an error");
             } catch (e) {
-              expect(e).toBeInstanceOf(ConnectError);
-              const err = ConnectError.from(e);
+              expect(e).toBeInstanceOf(DubboError);
+              const err = DubboError.from(e);
               expect(err.code).toBe(Code.Unavailable);
             }
           });

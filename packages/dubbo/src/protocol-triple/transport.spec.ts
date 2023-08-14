@@ -29,7 +29,7 @@ import {
   createAsyncIterable,
   readAllBytes,
 } from "../protocol/async-iterable.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { createTransport } from "./transport.js";
 import { encodeEnvelope } from "../protocol/envelope.js";
 import { createEndStreamSerialization, endStreamFlag } from "./end-stream.js";
@@ -109,7 +109,7 @@ describe("Connect transport", function () {
             }),
             body: createAsyncIterable([
               errorToJsonBytes(
-                new ConnectError("foo", Code.ResourceExhausted),
+                new DubboError("foo", Code.ResourceExhausted),
                 {}
               ),
             ]),
@@ -130,8 +130,8 @@ describe("Connect transport", function () {
           );
           fail("expected error");
         } catch (e) {
-          expect(e).toBeInstanceOf(ConnectError);
-          expect(ConnectError.from(e).message).toBe("[resource_exhausted] foo");
+          expect(e).toBeInstanceOf(DubboError);
+          expect(DubboError.from(e).message).toBe("[resource_exhausted] foo");
         }
         expect(httpRequestAborted).toBeTrue();
       });
@@ -157,7 +157,7 @@ describe("Connect transport", function () {
                 endStreamFlag,
                 createEndStreamSerialization({}).serialize({
                   metadata: new Headers(),
-                  error: new ConnectError("foo", Code.ResourceExhausted),
+                  error: new DubboError("foo", Code.ResourceExhausted),
                 })
               ),
             ]),
@@ -182,8 +182,8 @@ describe("Connect transport", function () {
           }
           fail("expected error");
         } catch (e) {
-          expect(e).toBeInstanceOf(ConnectError);
-          expect(ConnectError.from(e).message).toBe("[resource_exhausted] foo");
+          expect(e).toBeInstanceOf(DubboError);
+          expect(DubboError.from(e).message).toBe("[resource_exhausted] foo");
         }
         expect(messagesReceived.length).toBe(1);
         expect(httpRequestAborted).toBeTrue();
@@ -351,8 +351,8 @@ describe("Connect transport", function () {
         );
         fail("expected error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        expect(ConnectError.from(e).message).toBe(
+        expect(e).toBeInstanceOf(DubboError);
+        expect(DubboError.from(e).message).toBe(
           '[invalid_argument] cannot decode message TestMessage from JSON: key "b" is unknown'
         );
       }

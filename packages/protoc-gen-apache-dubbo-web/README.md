@@ -1,21 +1,21 @@
-# apache-protoc-gen-dubbo-web
+# protoc-gen-apache-dubbo-web
 
 This package is deprecated.
 
-The code generator `protoc-gen-dubbo-web` can now be used for Dubbo on the 
+The code generator `protoc-gen-apache-dubbo-web` can now be used for Dubbo on the 
 Web, and for Dubbo on Node.js.  
-For a better fit, we have renamed it to `protoc-gen-dubbo-web` in 
+For a better fit, we have renamed it to `protoc-gen-apache-dubbo-web` in 
 [dubbo-js](https://github.com/apache/dubbo-js). 
 
 The generated code is actually exactly the same, so it is not necessary to 
 update right away, but we are not going to maintain this package anymore.
 
-Switching to [apache-protoc-gen-dubbo-web](https://www.npmjs.com/package/apache-protoc-gen-dubbo-web) 
+Switching to [protoc-gen-apache-dubbo-web](https://www.npmjs.com/package/protoc-gen-apache-dubbo-web) 
 is straight-forward:
 
 ```bash
-npm remove apache-protoc-gen-dubbo-es
-npm install apache-protoc-gen-dubbo-web
+npm remove protoc-gen-apache-dubbo-es
+npm install protoc-gen-apache-dubbo-web
 ```
 
 Update your `buf.gen.yaml`:
@@ -33,7 +33,7 @@ plugins:
 And your import paths:
 
 ```diff
-- import { ElizaService } from "gen/eliza_connectweb";
-+ import { ElizaService } from "gen/eliza_connect";
+- import { ElizaService } from "gen/eliza_dubboweb";
++ import { ElizaService } from "gen/eliza_dubbo";
 ```
 

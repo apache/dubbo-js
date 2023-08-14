@@ -22,7 +22,7 @@ import type {
   MethodInfo,
   PartialMessage,
 } from "@bufbuild/protobuf";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import { assertReadMaxBytes, assertWriteMaxBytes } from "./limit-io.js";
 
@@ -34,21 +34,21 @@ import { assertReadMaxBytes, assertWriteMaxBytes } from "./limit-io.js";
  */
 export interface Serialization<T> {
   /**
-   * Serialize T. Raises a ConnectError with Code.Internal if an error occurs.
+   * Serialize T. Raises a DubboError with Code.Internal if an error occurs.
    */
   serialize: (data: T) => Uint8Array;
 
   /**
-   * Parse T. Raises a ConnectError with Code.InvalidArgument if an error occurs.
+   * Parse T. Raises a DubboError with Code.InvalidArgument if an error occurs.
    */
   parse: (data: Uint8Array) => T;
 }
 
 /**
- * Sets default JSON serialization options for connect-es.
+ * Sets default JSON serialization options for Dubbo.
  *
  * With standard protobuf JSON serialization, unknown JSON fields are
- * rejected by default. In connect-es, unknown JSON fields are ignored
+ * rejected by default. In Dubbo, unknown JSON fields are ignored
  * by default.
  */
 export function getJsonOptions(
@@ -196,7 +196,7 @@ export function createBinarySerialization<T extends Message<T>>(
         return messageType.fromBinary(data, options);
       } catch (e) {
         const m = e instanceof Error ? e.message : String(e);
-        throw new ConnectError(`parse binary: ${m}`, Code.InvalidArgument);
+        throw new DubboError(`parse binary: ${m}`, Code.InvalidArgument);
       }
     },
     serialize(data: T): Uint8Array {
@@ -204,7 +204,7 @@ export function createBinarySerialization<T extends Message<T>>(
         return data.toBinary(options);
       } catch (e) {
         const m = e instanceof Error ? e.message : String(e);
-        throw new ConnectError(`serialize binary: ${m}`, Code.Internal);
+        throw new DubboError(`serialize binary: ${m}`, Code.Internal);
       }
     },
   };
@@ -237,7 +237,7 @@ export function createJsonSerialization<T extends Message<T>>(
         const json = textDecoder.decode(data);
         return messageType.fromJsonString(json, o);
       } catch (e) {
-        throw ConnectError.from(e, Code.InvalidArgument);
+        throw DubboError.from(e, Code.InvalidArgument);
       }
     },
     serialize(data: T): Uint8Array {
@@ -245,7 +245,7 @@ export function createJsonSerialization<T extends Message<T>>(
         const json = data.toJsonString(o);
         return textEncoder.encode(json);
       } catch (e) {
-        throw ConnectError.from(e, Code.Internal);
+        throw DubboError.from(e, Code.Internal);
       }
     },
   };

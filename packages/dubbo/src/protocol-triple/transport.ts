@@ -29,7 +29,7 @@ import { createEndStreamSerialization, endStreamFlag } from "./end-stream.js";
 import { transformConnectPostToGetRequest } from "./get-request.js";
 import type { CommonTransportOptions } from "../protocol/transport-options.js";
 import { Code } from "../code.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { appendHeaders } from "../http-headers.js";
 import type {
   UnaryResponse,
@@ -54,6 +54,7 @@ import { createMethodUrl } from "../protocol/create-method-url.js";
 import { runUnaryCall, runStreamingCall } from "../protocol/run-call.js";
 import { createMethodSerializationLookup } from "../protocol/serialization.js";
 import type { Transport } from "../transport.js";
+import type { TripleClientServiceOptions } from './client-service-options.js';
 
 /**
  * Create a Transport for the Connect protocol.
@@ -69,7 +70,8 @@ export function createTransport(opt: CommonTransportOptions): Transport {
       signal: AbortSignal | undefined,
       timeoutMs: number | undefined,
       header: HeadersInit | undefined,
-      message: PartialMessage<I>
+      message: PartialMessage<I>,
+      serviceOptions?: TripleClientServiceOptions
     ): Promise<UnaryResponse<I, O>> {
       const serialization = createMethodSerializationLookup(
         method,
@@ -93,7 +95,8 @@ export function createTransport(opt: CommonTransportOptions): Transport {
             timeoutMs,
             header,
             opt.acceptCompression,
-            opt.sendCompression
+            opt.sendCompression,
+            serviceOptions
           ),
           message:
             message instanceof method.I ? message : new method.I(message),
@@ -267,7 +270,7 @@ export function createTransport(opt: CommonTransportOptions): Transport {
                 for await (const chunk of iterable) {
                   if (chunk.end) {
                     if (endStreamReceived) {
-                      throw new ConnectError(
+                      throw new DubboError(
                         "protocol error: received extra EndStreamResponse",
                         Code.InvalidArgument
                       );
@@ -282,7 +285,7 @@ export function createTransport(opt: CommonTransportOptions): Transport {
                     continue;
                   }
                   if (endStreamReceived) {
-                    throw new ConnectError(
+                    throw new DubboError(
                       "protocol error: received extra message after EndStreamResponse",
                       Code.InvalidArgument
                     );
@@ -290,7 +293,7 @@ export function createTransport(opt: CommonTransportOptions): Transport {
                   yield chunk.value;
                 }
                 if (!endStreamReceived) {
-                  throw new ConnectError(
+                  throw new DubboError(
                     "protocol error: missing EndStreamResponse",
                     Code.InvalidArgument
                   );

@@ -44,7 +44,7 @@ export function requestHeader(
   // Note that we do not comply with recommended structure for the
   // user-agent string.
   // https://github.com/grpc/grpc/blob/c462bb8d485fc1434ecfae438823ca8d14cf3154/doc/PROTOCOL-HTTP2.md#user-agents
-  result.set(headerXUserAgent, "@bufbuild/connect-web");
+  result.set(headerXUserAgent, "apache-dubbo-web");
   if (timeoutMs !== undefined) {
     result.set(headerTimeout, `${timeoutMs}m`);
   }

@@ -15,11 +15,11 @@
 import type { CallOptions } from "apache-dubbo";
 import {
   Code,
-  ConnectError,
+  DubboError,
   createCallbackClient,
   createPromiseClient,
 } from "apache-dubbo";
-import { TestService } from "../gen/grpc/testing/test_connect.js";
+import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import { StreamingOutputCallRequest } from "../gen/grpc/testing/messages_pb.js";
 import { createTestServers } from "../helpers/testserver.js";
 
@@ -55,8 +55,8 @@ describe("timeout_on_sleeping_server", function () {
         }
         fail("expected to catch an error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        expect(ConnectError.from(e).code).toBe(Code.DeadlineExceeded);
+        expect(e).toBeInstanceOf(DubboError);
+        expect(DubboError.from(e).code).toBe(Code.DeadlineExceeded);
       }
     });
     it("with callback client", function (done) {
@@ -68,7 +68,7 @@ describe("timeout_on_sleeping_server", function () {
             `expecting no response from sleeping server, got: ${response.toJsonString()}`
           );
         },
-        (err: ConnectError | undefined) => {
+        (err: DubboError | undefined) => {
           expect(err?.code).toBe(Code.DeadlineExceeded);
           done();
         },

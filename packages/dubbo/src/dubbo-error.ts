@@ -23,7 +23,7 @@ import { createRegistry, Message } from "@bufbuild/protobuf";
 import { codeToString } from "./protocol-triple/code-string.js";
 
 /**
- * ConnectError captures four pieces of information: a Code, an error
+ * DubboError captures four pieces of information: a Code, an error
  * message, an optional cause of the error, and an optional collection of
  * arbitrary Protobuf messages called  "details".
  *
@@ -35,7 +35,7 @@ import { codeToString } from "./protocol-triple/code-string.js";
  * a server or middleware can attach arbitrary data to an error. Use the
  * method findDetails() to retrieve the details.
  */
-export class ConnectError extends Error {
+export class DubboError extends Error {
   /**
    * The Code for this error.
    */
@@ -58,12 +58,12 @@ export class ConnectError extends Error {
   /**
    * The error message, but without a status code in front.
    *
-   * For example, a new `ConnectError("hello", Code.NotFound)` will have
+   * For example, a new `DubboError("hello", Code.NotFound)` will have
    * the message `[not found] hello`, and the rawMessage `hello`.
    */
   readonly rawMessage: string;
 
-  override name = "ConnectError";
+  override name = "DubboError";
 
   /**
    * The underlying cause of this error.  In cases where the actual cause is
@@ -73,7 +73,7 @@ export class ConnectError extends Error {
   cause: unknown | undefined;
 
   /**
-   * Create a new ConnectError.
+   * Create a new DubboError.
    * If no code is provided, code "unknown" is used.
    * Outgoing details are only relevant for the server side - a service may
    * raise an error with details, and it is up to the protocol implementation
@@ -97,17 +97,17 @@ export class ConnectError extends Error {
   }
 
   /**
-   * Convert any value - typically a caught error into a ConnectError,
+   * Convert any value - typically a caught error into a DubboError,
    * following these rules:
-   * - If the value is already a ConnectError, return it as is.
+   * - If the value is already a DubboError, return it as is.
    * - If the value is an AbortError from the fetch API, return the message
    *   of the AbortError with code Canceled.
    * - For other Errors, return the error message with code Unknown by default.
    * - For other values, return the values String representation as a message,
    *   with the code Unknown by default.
    */
-  static from(reason: unknown, code = Code.Unknown): ConnectError {
-    if (reason instanceof ConnectError) {
+  static from(reason: unknown, code = Code.Unknown): DubboError {
+    if (reason instanceof DubboError) {
       return reason;
     }
     if (reason instanceof Error) {
@@ -115,18 +115,18 @@ export class ConnectError extends Error {
         // Fetch requests can only be canceled with an AbortController.
         // We detect that condition by looking at the name of the raised
         // error object, and translate to the appropriate status code.
-        return new ConnectError(reason.message, Code.Canceled);
+        return new DubboError(reason.message, Code.Canceled);
       }
-      return new ConnectError(reason.message, code);
+      return new DubboError(reason.message, code);
     }
-    return new ConnectError(String(reason), code);
+    return new DubboError(String(reason), code);
   }
 
   /**
-   * Retrieve error details from a ConnectError. On the wire, error details are
+   * Retrieve error details from a DubboError. On the wire, error details are
    * wrapped with google.protobuf.Any, so that a server or middleware can attach
    * arbitrary data to an error. This function decodes the array of error details
-   * from the ConnectError object, and returns an array with the decoded
+   * from the DubboError object, and returns an array with the decoded
    * messages. Any decoding errors are ignored, and the detail will simply be
    * omitted from the list.
    */
@@ -175,39 +175,39 @@ export class ConnectError extends Error {
 type IncomingDetail = { type: string; value: Uint8Array; debug?: JsonValue };
 
 /**
- * Retrieve error details from a ConnectError. On the wire, error details are
+ * Retrieve error details from a DubboError. On the wire, error details are
  * wrapped with google.protobuf.Any, so that a server or middleware can attach
  * arbitrary data to an error. This function decodes the array of error details
- * from the ConnectError object, and returns an array with the decoded
+ * from the DubboError object, and returns an array with the decoded
  * messages. Any decoding errors are ignored, and the detail will simply be
  * omitted from the list.
  *
- * @deprecated use ConnectError.findDetails() instead
+ * @deprecated use DubboError.findDetails() instead
  */
-export function connectErrorDetails<T extends Message<T>>(
-  error: ConnectError,
+export function dubboErrorDetails<T extends Message<T>>(
+  error: DubboError,
   type: MessageType<T>
 ): T[];
 /**
- * @deprecated use ConnectError.findDetails() instead
+ * @deprecated use DubboError.findDetails() instead
  */
-export function connectErrorDetails(
-  error: ConnectError,
+export function dubboErrorDetails(
+  error: DubboError,
   type: MessageType,
   ...moreTypes: MessageType[]
 ): AnyMessage[];
 /**
- * @deprecated use ConnectError.findDetails() instead
+ * @deprecated use DubboError.findDetails() instead
  */
-export function connectErrorDetails(
-  error: ConnectError,
+export function dubboErrorDetails(
+  error: DubboError,
   registry: IMessageTypeRegistry
 ): AnyMessage[];
 /**
- * @deprecated use ConnectError.findDetails() instead
+ * @deprecated use DubboError.findDetails() instead
  */
-export function connectErrorDetails(
-  error: ConnectError,
+export function dubboErrorDetails(
+  error: DubboError,
   typeOrRegistry: MessageType | IMessageTypeRegistry,
   ...moreTypes: MessageType[]
 ): AnyMessage[] {
@@ -249,22 +249,22 @@ function createMessage(message: string, code: Code) {
 }
 
 /**
- * Convert any value - typically a caught error into a ConnectError,
+ * Convert any value - typically a caught error into a DubboError,
  * following these rules:
- * - If the value is already a ConnectError, return it as is.
+ * - If the value is already a DubboError, return it as is.
  * - If the value is an AbortError from the fetch API, return the message
  *   of the AbortError with code Canceled.
  * - For other Errors, return the error message with code Unknown by default.
  * - For other values, return the values String representation as a message,
  *   with the code Unknown by default.
  *
- * @deprecated use ConnectError.from() instead
+ * @deprecated use DubboError.from() instead
  */
-export function connectErrorFromReason(
+export function dubboErrorFromReason(
   reason: unknown,
   code = Code.Unknown
-): ConnectError {
-  if (reason instanceof ConnectError) {
+): DubboError {
+  if (reason instanceof DubboError) {
     return reason;
   }
   if (reason instanceof Error) {
@@ -272,9 +272,9 @@ export function connectErrorFromReason(
       // Fetch requests can only be canceled with an AbortController.
       // We detect that condition by looking at the name of the raised
       // error object, and translate to the appropriate status code.
-      return new ConnectError(reason.message, Code.Canceled);
+      return new DubboError(reason.message, Code.Canceled);
     }
-    return new ConnectError(reason.message, code);
+    return new DubboError(reason.message, code);
   }
-  return new ConnectError(String(reason), code);
+  return new DubboError(String(reason), code);
 }

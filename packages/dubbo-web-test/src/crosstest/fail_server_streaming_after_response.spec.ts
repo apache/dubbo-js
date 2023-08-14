@@ -14,11 +14,11 @@
 
 import {
   Code,
-  ConnectError,
+  DubboError,
   createCallbackClient,
   createPromiseClient,
 } from "apache-dubbo";
-import { TestService } from "../gen/grpc/testing/test_connect.js";
+import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import { describeTransports } from "../helpers/crosstestserver.js";
 import {
   ErrorDetail,
@@ -29,8 +29,8 @@ import { interop } from "../helpers/interop.js";
 
 describe("fail_server_streaming_after_response", () => {
   function expectError(err: unknown) {
-    expect(err).toBeInstanceOf(ConnectError);
-    if (err instanceof ConnectError) {
+    expect(err).toBeInstanceOf(DubboError);
+    if (err instanceof DubboError) {
       expect(err.code).toEqual(Code.ResourceExhausted);
       expect(err.rawMessage).toEqual(interop.nonASCIIErrMsg);
       const details = err.findDetails(ErrorDetail);
@@ -68,7 +68,7 @@ describe("fail_server_streaming_after_response", () => {
         (response) => {
           receivedResponses.push(response);
         },
-        (err: ConnectError | undefined) => {
+        (err: DubboError | undefined) => {
           expectError(err);
           expect(receivedResponses.length).toBe(
             request.responseParameters.length

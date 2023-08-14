@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as connect from "./protocol-triple/headers.js";
+import * as triple from "./protocol-triple/headers.js";
 import * as grpc from "./protocol-grpc/headers.js";
 import * as grpcWeb from "./protocol-grpc-web/headers.js";
 
@@ -21,16 +21,18 @@ import * as grpcWeb from "./protocol-grpc-web/headers.js";
  * to other web servers.
  *
  * This object provides helpful constants to configure CORS middleware for
- * cross-domain requests with the protocols supported by Connect.
+ * cross-domain requests with the protocols supported by Triple.
  *
  * Make sure to add application-specific headers that your application
  * uses as well.
+ * 
+ * Mainly used for testing of dubbo-node-test
  */
 export const cors = {
   /**
    * Request methods that scripts running in the browser are permitted to use.
    *
-   * To support cross-domain requests with the protocols supported by Connect,
+   * To support cross-domain requests with the protocols supported by Triple,
    * these headers fields must be included in the preflight response header
    * Access-Control-Allow-Methods.
    */
@@ -39,7 +41,7 @@ export const cors = {
   /**
    * Header fields that scripts running in the browser are permitted to send.
    *
-   * To support cross-domain requests with the protocols supported by Connect,
+   * To support cross-domain requests with the protocols supported by Triple,
    * these field names must be included in the preflight response header
    * Access-Control-Allow-Headers.
    *
@@ -47,13 +49,15 @@ export const cors = {
    * may send.
    */
   allowedHeaders: [
-    connect.headerContentType,
-    connect.headerProtocolVersion,
-    connect.headerTimeout,
-    connect.headerStreamEncoding, // Unused in web browsers, but added for future-proofing
-    connect.headerStreamAcceptEncoding, // Unused in web browsers, but added for future-proofing
-    connect.headerUnaryEncoding, // Unused in web browsers, but added for future-proofing
-    connect.headerUnaryAcceptEncoding, // Unused in web browsers, but added for future-proofing
+    triple.headerContentType,
+    triple.headerProtocolVersion,
+    triple.headerTimeout,
+    triple.headerServiceVersion,
+    triple.headerServiceGroup,
+    triple.headerStreamEncoding, // Unused in web browsers, but added for future-proofing
+    triple.headerStreamAcceptEncoding, // Unused in web browsers, but added for future-proofing
+    triple.headerUnaryEncoding, // Unused in web browsers, but added for future-proofing
+    triple.headerUnaryAcceptEncoding, // Unused in web browsers, but added for future-proofing
     grpc.headerMessageType, // Unused in web browsers, but added for future-proofing
     grpcWeb.headerXGrpcWeb,
     grpcWeb.headerXUserAgent,
@@ -63,13 +67,13 @@ export const cors = {
   /**
    * Header fields that scripts running the browser are permitted to see.
    *
-   * To support cross-domain requests with the protocols supported by Connect,
+   * To support cross-domain requests with the protocols supported by Triple,
    * these field names must be included in header Access-Control-Expose-Headers
    * of the actual response.
    *
    * Make sure to include any application-specific headers your browser client
    * should see. If your application uses trailers, they will be sent as header
-   * fields with a `Trailer-` prefix for Connect unary RPCs - make sure to
+   * fields with a `Trailer-` prefix for Triple unary RPCs - make sure to
    * expose them as well if you want them to be visible in all supported
    * protocols.
    */
@@ -77,7 +81,7 @@ export const cors = {
     grpcWeb.headerGrpcStatus, // Crucial for gRPC-web
     grpcWeb.headerGrpcMessage, // Crucial for gRPC-web
     grpcWeb.headerStatusDetailsBin, // Error details in gRPC, gRPC-web
-    connect.headerUnaryEncoding, // Unused in web browsers, but added for future-proofing
-    connect.headerStreamEncoding, // Unused in web browsers, but added for future-proofing
+    triple.headerUnaryEncoding, // Unused in web browsers, but added for future-proofing
+    triple.headerStreamEncoding, // Unused in web browsers, but added for future-proofing
   ] as ReadonlyArray<string>,
 };

@@ -1,15 +1,15 @@
 import { buildSync } from 'esbuild'
 import { compress } from 'brotli'
 
-const connect = gather('src/entry-connect.ts')
+const connect = gather('src/entry-dubbo.ts')
 const grpcweb = gather('src/entry-grpcweb.ts')
 
 process.stdout.write(`# Code size comparison
 
-This is a simple code size comparison between Connect-Web and gRPC-web.
+This is a simple code size comparison between Dubbo-Web and gRPC-web.
 
 We are generating code for the module [buf.build/bufbuild/eliza](https://buf.build/bufbuild/eliza)
-once with \`protoc-gen-grpc-web\`, once with \`protoc-gen-dubbo-es\`. 
+once with \`protoc-gen-grpc-web\`, once with \`protoc-gen-apache-dubbo-es\`. 
 Then we bundle a client for the service \`buf.connect.demo.eliza.v1.ElizaService\` 
 with [esbuild](https://esbuild.github.io/), minify the bundle, and compress 
 it like a web server would usually do.

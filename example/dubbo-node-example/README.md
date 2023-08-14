@@ -54,13 +54,13 @@ mkdir -p gen
 
 运行以下命令，在 gen 目录下生成代码文件
 
-```
+```Shell
 PATH=$PATH:$(pwd)/node_modules/.bin \
   protoc -I proto \
   --es_out gen \
   --es_opt target=ts \
-  --dubbo-es_out gen \
-  --dubbo-es_opt target=ts \
+  --apache-dubbo-es_out gen \
+  --apache-dubbo-es_opt target=ts \
   example.proto
 ```
 
@@ -76,15 +76,15 @@ PATH=$PATH:$(pwd)/node_modules/.bin \
 
 ## <span id="implementService">实现服务</span>
 
-接下来我们就需要添加业务逻辑了，实现 ExampleService ，并将其注册到 ConnectRouter 中。
+接下来我们就需要添加业务逻辑了，实现 ExampleService ，并将其注册到 DubboRouter 中。
 
 创建 connect.ts 文件
 
 ```typescript
-import { ConnectRouter } from "apache-dubbo";
+import { DubboRouter } from "apache-dubbo";
 import { ExampleService } from "./gen/example_dubbo";
 
-export default (router: ConnectRouter) =>
+export default (router: DubboRouter) =>
   // registers apache.dubbo.demo.example.v1
   router.service(ExampleService, {
     // implements rpc Say
@@ -93,7 +93,7 @@ export default (router: ConnectRouter) =>
         sentence: `You said: ${req.sentence}`,
       };
     },
-  });
+  }, { serviceGroup: 'dubbo', serviceVersion: '1.0.0' });
 ```
 
 ## <span id="startServer">启动 Server</span>
@@ -110,12 +110,12 @@ npm install fastify apache-dubbo-fastify
 
 ```typescript
 import { fastify } from "fastify";
-import { fastifyConnectPlugin } from "apache-dubbo-fastify";
+import { fastifyDubboPlugin } from "apache-dubbo-fastify";
 import routes from "./connect";
 
 async function main() {
   const server = fastify();
-  await server.register(fastifyConnectPlugin, {
+  await server.register(fastifyDubboPlugin, {
     routes,
   });
   server.get("/", (_, reply) => {
@@ -142,6 +142,8 @@ npx tsx server.ts
 ```Shell
 curl \
  --header 'Content-Type: application/json' \
+ --header 'TRI-Service-Version: 1.0.0' \
+ --header 'TRI-Service-group: dubbo' \
  --data '{"sentence": "Hello World"}' \
  http://localhost:8080/apache.dubbo.demo.example.v1.ExampleService/Say
 ```
@@ -153,15 +155,15 @@ curl \
 ```typescript
 import { createPromiseClient } from "apache-dubbo";
 import { ExampleService } from "./gen/example_dubbo";
-import { createConnectTransport } from "apache-dubbo-node";
+import { createDubboTransport } from "apache-dubbo-node";
 
-const transport = createConnectTransport({
+const transport = createDubboTransport({
   baseUrl: "http://localhost:8080",
   httpVersion: "1.1",
 });
 
 async function main() {
-  const client = createPromiseClient(ExampleService, transport);
+  const client = createPromiseClient(ExampleService, transport, { serviceVersion: '1.0.0', serviceGroup: 'dubbo' });
   const res = await client.say({ sentence: "Hello World" });
   console.log(res);
 }

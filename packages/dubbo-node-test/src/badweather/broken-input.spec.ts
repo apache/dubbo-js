@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { TestService } from "../gen/grpc/testing/test_connect.js";
+import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import { createTestServers } from "../helpers/testserver.js";
-import { Code, ConnectError } from "apache-dubbo";
+import { Code, DubboError } from "apache-dubbo";
 import { createMethodUrl } from "apache-dubbo/protocol";
 import {
   endStreamFromJson,
@@ -45,14 +45,14 @@ describe("broken input", () => {
               ),
               method: "POST",
               ctype: "application/json",
-              headers: { "Connect-Protocol-Version": "1" },
+              headers: { "TRI-Protocol-Version": "1.0.0" },
             }).then((res) => {
               return {
                 status: res.status,
                 error: errorFromJsonBytes(
                   res.body,
                   undefined,
-                  new ConnectError(
+                  new DubboError(
                     `HTTP ${res.status}`,
                     codeFromHttpStatus(res.status)
                   )
@@ -85,7 +85,7 @@ describe("broken input", () => {
               url: createMethodUrl(server.getUrl(), TestService, method),
               method: "POST",
               ctype: "application/connect+json",
-              headers: { "Connect-Protocol-Version": "1" },
+              headers: { "TRI-Protocol-Version": "1.0.0" },
             }).then((res) => ({
               status: res.status,
               endStream: endStreamFromJson(res.body.subarray(5)),

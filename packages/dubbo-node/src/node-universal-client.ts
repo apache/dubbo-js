@@ -16,14 +16,14 @@ import * as http2 from "http2";
 import * as http from "http";
 import * as https from "https";
 import type * as net from "net";
-import { Code, ConnectError } from "apache-dubbo";
+import { Code, DubboError } from "apache-dubbo";
 import {
   nodeHeaderToWebHeader,
   webHeaderToNodeHeaders,
 } from "./node-universal-header.js";
 import {
-  connectErrorFromH2ResetCode,
-  connectErrorFromNodeReason,
+  dubboErrorFromH2ResetCode,
+  dubboErrorFromNodeReason,
   getNodeErrorProps,
   H2Code,
   unwrapNodeErrorChain,
@@ -145,7 +145,7 @@ function createNodeHttp1Client(
           request.on("response", (response) => {
             response.on("error", sentinel.reject);
             sentinel.catch((reason) =>
-              response.destroy(connectErrorFromNodeReason(reason))
+              response.destroy(dubboErrorFromNodeReason(reason))
             );
             const trailer = new Headers();
             resolve({
@@ -219,7 +219,7 @@ function h1Request(
     request = http.request(url, options);
   }
   sentinel.catch((reason) =>
-    request.destroy(connectErrorFromNodeReason(reason))
+    request.destroy(dubboErrorFromNodeReason(reason))
   );
   // Node.js will only send headers with the first request body byte by default.
   // We force it to send headers right away for consistent behavior between
@@ -284,7 +284,7 @@ function h2Request(
   const requestUrl = new URL(url, sm.authority);
   if (requestUrl.origin !== sm.authority) {
     const message = `cannot make a request to ${requestUrl.origin}: the http2 session is connected to ${sm.authority}`;
-    sentinel.reject(new ConnectError(message, Code.Internal));
+    sentinel.reject(new DubboError(message, Code.Internal));
     return;
   }
   sm.request(method, requestUrl.pathname + requestUrl.search, headers, {}).then(
@@ -303,7 +303,7 @@ function h2Request(
           // See https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md#errors
           // See https://www.rfc-editor.org/rfc/rfc7540#section-7
           const rstCode =
-            reason instanceof ConnectError && reason.code == Code.Canceled
+            reason instanceof DubboError && reason.code == Code.Canceled
               ? H2Code.CANCEL
               : H2Code.INTERNAL_ERROR;
           return new Promise<void>((resolve) => stream.close(rstCode, resolve));
@@ -329,7 +329,7 @@ function h2Request(
       });
 
       stream.on("close", function h2StreamClose() {
-        const err = connectErrorFromH2ResetCode(stream.rstCode);
+        const err = dubboErrorFromH2ResetCode(stream.rstCode);
         if (err) {
           sentinel.reject(err);
         }
@@ -418,7 +418,7 @@ async function sinkRequest(
                 // body, we get an ERR_STREAM_WRITE_AFTER_END error code from Node.js here.
                 // We do want to notify the iterable of the error condition, but we do not want to reject our sentinel,
                 // because that would also affect the reading side.
-                it.throw(new ConnectError("stream closed", Code.Aborted)).catch(
+                it.throw(new DubboError("stream closed", Code.Aborted)).catch(
                   () => {
                     //
                   }
@@ -448,10 +448,10 @@ type Sentinel = Promise<void> & {
   isResolved(): boolean;
 
   /**
-   * Reject the sentinel. All errors are converted to ConnectError via
-   * ConnectError.from().
+   * Reject the sentinel. All errors are converted to DubboError via
+   * DubboError.from().
    */
-  reject: (reason: ConnectError | unknown) => void;
+  reject: (reason: DubboError | unknown) => void;
 
   isRejected(): boolean;
 
@@ -469,7 +469,7 @@ type Sentinel = Promise<void> & {
 
 function createSentinel(signal?: AbortSignal): Sentinel {
   let res: (() => void) | undefined;
-  let rej: ((reason: ConnectError | unknown) => void) | undefined;
+  let rej: ((reason: DubboError | unknown) => void) | undefined;
   let resolved = false;
   let rejected = false;
   const p = new Promise<void>((resolve, reject) => {
@@ -492,7 +492,7 @@ function createSentinel(signal?: AbortSignal): Sentinel {
     reject(reason): void {
       if (!resolved && !rejected) {
         rejected = true;
-        rej?.(connectErrorFromNodeReason(reason));
+        rej?.(dubboErrorFromNodeReason(reason));
       }
     },
     isRejected() {
@@ -501,7 +501,7 @@ function createSentinel(signal?: AbortSignal): Sentinel {
     async race<T>(promise: PromiseLike<T>): Promise<Awaited<T>> {
       const r = await Promise.race([promise, p]);
       if (r === undefined && resolved) {
-        throw new ConnectError("sentinel completed early", Code.Internal);
+        throw new DubboError("sentinel completed early", Code.Internal);
       }
       return r as Awaited<T>;
     },

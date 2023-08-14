@@ -69,8 +69,8 @@ PATH=$PATH:$(pwd)/node_modules/.bin \
   protoc -I src/util/proto \
   --es_out src/util/gen \
   --es_opt target=ts \
-  --dubbo-es_out src/util/gen \
-  --dubbo-es_opt target=ts \
+  --apache-dubbo-es_out src/util/gen \
+  --apache-dubbo-es_opt target=ts \
   example.proto
 ```
 
@@ -101,20 +101,20 @@ import { useState } from "react";
 import "./App.css";
 
 import { createPromiseClient } from "apache-dubbo";
-import { createConnectTransport } from "apache-dubbo-web";
+import { createDubboTransport } from "apache-dubbo-web";
 
 // Import service definition that you want to connect to.
 import { ExampleService } from "./util/gen/example_dubbo";
 
 // The transport defines what type of endpoint we're hitting.
-// In our example we'll be communicating with a Connect endpoint.
-const transport = createConnectTransport({
+// In our example we'll be communicating with a Dubbo endpoint.
+const transport = createDubboTransport({
   baseUrl: "http://localhost:8080",
 });
 
 // Here we make the client itself, combining the service
 // definition with the transport.
-const client = createPromiseClient(ExampleService, transport);
+const client = createPromiseClient(ExampleService, transport, { serviceGroup: 'dubbo', serviceVersion: '1.0.0' });
 
 function App() {
   const [inputValue, setInputValue] = useState("");
@@ -222,7 +222,7 @@ npm install apache-dubbo apache-dubbo-web
 ```typescript
 // ...
 // set backend server to connect
-const transport = createConnectTransport({
+const transport = createDubboTransport({
   baseUrl: "http://localhost:8080",
 });
 // init client

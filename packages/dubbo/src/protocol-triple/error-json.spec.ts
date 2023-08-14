@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import { Message, proto3, protoBase64, ScalarType } from "@bufbuild/protobuf";
 import { errorFromJson, errorToJson } from "./error-json.js";
@@ -21,7 +21,7 @@ import { codeToString } from "./code-string.js";
 describe("errorToJson()", () => {
   it("serializes code and message", () => {
     const json = errorToJson(
-      new ConnectError("Not permitted", Code.PermissionDenied),
+      new DubboError("Not permitted", Code.PermissionDenied),
       undefined
     );
     expect(json.code as unknown).toBe("permission_denied");
@@ -29,7 +29,7 @@ describe("errorToJson()", () => {
   });
   it("does not serialize empty message", () => {
     const json = errorToJson(
-      new ConnectError("", Code.PermissionDenied),
+      new DubboError("", Code.PermissionDenied),
       undefined
     );
     expect(json.code as unknown).toBe("permission_denied");
@@ -47,7 +47,7 @@ describe("errorToJson()", () => {
         { no: 2, name: "domain", kind: "scalar", T: ScalarType.STRING },
       ]
     );
-    const err = new ConnectError("Not permitted", Code.PermissionDenied);
+    const err = new DubboError("Not permitted", Code.PermissionDenied);
     err.details.push(
       new ErrorDetail({ reason: "soirée 🎉", domain: "example.com" })
     );
@@ -83,7 +83,7 @@ describe("errorFromJson()", () => {
         message: "Not permitted",
       },
       undefined,
-      new ConnectError("foo", Code.ResourceExhausted)
+      new DubboError("foo", Code.ResourceExhausted)
     );
     expect(error.code).toBe(Code.PermissionDenied);
     expect(error.rawMessage).toBe("Not permitted");
@@ -95,7 +95,7 @@ describe("errorFromJson()", () => {
         code: codeToString(Code.PermissionDenied),
       },
       undefined,
-      new ConnectError("foo", Code.ResourceExhausted)
+      new DubboError("foo", Code.ResourceExhausted)
     );
     expect(error.message).toBe("[permission_denied]");
     expect(error.rawMessage).toBe("");
@@ -108,7 +108,7 @@ describe("errorFromJson()", () => {
           message: "Not permitted",
         },
         undefined,
-        new ConnectError("foo", Code.ResourceExhausted)
+        new DubboError("foo", Code.ResourceExhausted)
       )
     ).toThrowError("[resource_exhausted] foo");
   });
@@ -120,13 +120,13 @@ describe("errorFromJson()", () => {
           message: "Not permitted",
         },
         new Headers({ foo: "bar" }),
-        new ConnectError("foo", Code.ResourceExhausted)
+        new DubboError("foo", Code.ResourceExhausted)
       );
       fail("expected error");
     } catch (e) {
-      expect(e).toBeInstanceOf(ConnectError);
-      expect(ConnectError.from(e).message).toBe("[resource_exhausted] foo");
-      expect(ConnectError.from(e).metadata.get("foo")).toBe("bar");
+      expect(e).toBeInstanceOf(DubboError);
+      expect(DubboError.from(e).message).toBe("[resource_exhausted] foo");
+      expect(DubboError.from(e).metadata.get("foo")).toBe("bar");
     }
   });
   it("with code Ok throws fallback", () => {
@@ -137,7 +137,7 @@ describe("errorFromJson()", () => {
           message: "Not permitted",
         },
         undefined,
-        new ConnectError("foo", Code.ResourceExhausted)
+        new DubboError("foo", Code.ResourceExhausted)
       )
     ).toThrowError("[resource_exhausted] foo");
   });
@@ -148,7 +148,7 @@ describe("errorFromJson()", () => {
           message: "Not permitted",
         },
         undefined,
-        new ConnectError("foo", Code.ResourceExhausted)
+        new DubboError("foo", Code.ResourceExhausted)
       )
     ).toThrowError("[resource_exhausted] foo");
   });
@@ -183,7 +183,7 @@ describe("errorFromJson()", () => {
       const error = errorFromJson(
         json,
         undefined,
-        new ConnectError("foo", Code.ResourceExhausted)
+        new DubboError("foo", Code.ResourceExhausted)
       );
       expect(error.details.length).toBe(1);
     });
@@ -191,7 +191,7 @@ describe("errorFromJson()", () => {
       const error = errorFromJson(
         json,
         undefined,
-        new ConnectError("foo", Code.ResourceExhausted)
+        new DubboError("foo", Code.ResourceExhausted)
       );
       const details = error.findDetails(ErrorDetail);
       expect(details.length).toBe(1);

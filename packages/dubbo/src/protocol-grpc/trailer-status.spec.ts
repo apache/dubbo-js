@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { findTrailerError, setTrailerStatus } from "./trailer-status.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import { Int32Value } from "@bufbuild/protobuf";
 
@@ -39,7 +39,7 @@ describe("setTrailerStatus()", function () {
   });
   it("should set only grpc-status and grpc-message when called with an error", function () {
     const t = new Headers();
-    setTrailerStatus(t, new ConnectError("soirée 🎉", Code.ResourceExhausted));
+    setTrailerStatus(t, new DubboError("soirée 🎉", Code.ResourceExhausted));
     let count = 0;
     t.forEach(() => count++);
     expect(count).toBe(2);
@@ -50,7 +50,7 @@ describe("setTrailerStatus()", function () {
     const t = new Headers();
     setTrailerStatus(
       t,
-      new ConnectError("soirée 🎉", Code.ResourceExhausted, {}, [
+      new DubboError("soirée 🎉", Code.ResourceExhausted, {}, [
         new Int32Value({ value: 123 }),
       ])
     );

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import type { MethodInfo, ServiceType } from "@bufbuild/protobuf";
-import { ConnectError } from "./dubbo-error.js";
+import { DubboError } from "./dubbo-error.js";
 import { Code } from "./code.js";
 import {
   createMethodImplSpec,
@@ -22,7 +22,8 @@ import {
 import type { MethodImpl, ServiceImpl } from "./implementation.js";
 import { createHandlerFactory as handlerFactoryGrpcWeb } from "./protocol-grpc-web/handler-factory.js";
 import { createHandlerFactory as handlerFactoryGrpc } from "./protocol-grpc/handler-factory.js";
-import { createHandlerFactory as handlerFactoryConnect } from "./protocol-triple/handler-factory.js";
+import { createHandlerFactory as handlerFactoryTriple } from "./protocol-triple/handler-factory.js";
+import type { ExpandHandlerOptions, ExpandHandler } from './protocol-triple/expand-handler.js';
 import {
   type UniversalHandler,
   type UniversalHandlerOptions,
@@ -33,41 +34,41 @@ import {
 import type { ProtocolHandlerFactory } from "./protocol/protocol-handler-factory.js";
 
 /**
- * ConnectRouter is your single registration point for RPCs.
+ * DubboRouter is your single registration point for RPCs.
  *
  * Create a file `connect.ts` with a default export such as this:
  *
  * ```ts
- * import {ConnectRouter} from "@bufbuild/connect";
+ * import {DubboRouter} from "apache-dubbo";
  *
- * export default (router: ConnectRouter) => {
+ * export default (router: DubboRouter) => {
  *   router.service(ElizaService, {});
  * }
  * ```
  *
  * The pass this function to adapters and plugins, for example
- * from @bufbuild/connect-node, or from @bufbuild/connect-fastify.
+ * from apache-dubbo-node, or from apache-dubbo-fastify.
  */
-export interface ConnectRouter {
-  readonly handlers: UniversalHandler[];
+export interface DubboRouter {
+  readonly handlers: Array<UniversalHandler & ExpandHandler>;
   service<T extends ServiceType>(
     service: T,
     implementation: Partial<ServiceImpl<T>>,
-    options?: Partial<UniversalHandlerOptions>
+    options?: Partial<UniversalHandlerOptions & ExpandHandlerOptions>
   ): this;
   rpc<M extends MethodInfo>(
     service: ServiceType,
     method: M,
     impl: MethodImpl<M>,
-    options?: Partial<UniversalHandlerOptions>
+    options?: Partial<UniversalHandlerOptions & ExpandHandlerOptions>
   ): this;
 }
 
 /**
- * Options for a ConnectRouter. By default, all three protocols gRPC, gRPC-web,
- * and Connect are enabled.
+ * Options for a DubboRouter. By default, all three protocols gRPC, gRPC-web,
+ * and Triple are enabled.
  */
-export interface ConnectRouterOptions extends Partial<UniversalHandlerOptions> {
+export interface DubboRouterOptions extends Partial<UniversalHandlerOptions> {
   /**
    * Enable the gRPC protocol and make your API available to all gRPC clients
    * for various platforms and languages. See https://grpc.io/
@@ -96,46 +97,54 @@ export interface ConnectRouterOptions extends Partial<UniversalHandlerOptions> {
   grpcWeb?: boolean;
 
   /**
-   * Enable the Connect protocol and make your API available to all Connect
-   * clients, but also for a simple call with curl. See https://connect.build/
+   * Enable the Triple protocol and make your API available to all Triple
+   * clients, but also for a simple call with curl.
    *
    * The protocol is enabled by default. Set this option to `false` to disable
    * it, but mind that at least one protocol must be enabled.
    *
-   * Connect works over HTTP 1.1 or HTTP/2 and does not require access to HTTP
+   * Triple works over HTTP 1.1 or HTTP/2 and does not require access to HTTP
    * trailers. Note that bidi streaming requires HTTP/2, and web browsers may
    * not support all streaming types.
    */
-  connect?: boolean;
+  triple?: boolean;
 }
 
 /**
- * Create a new ConnectRouter.
+ * Create a new DubboRouter.
  */
-export function createConnectRouter(
-  routerOptions?: ConnectRouterOptions
-): ConnectRouter {
+export function createDubboRouter(
+  routerOptions?: DubboRouterOptions
+): DubboRouter {
   const base = whichProtocols(routerOptions);
-  const handlers: UniversalHandler[] = [];
+  const handlers: Array<UniversalHandler & ExpandHandler> = [];
   return {
     handlers,
     service(service, implementation, options) {
       const { protocols } = whichProtocols(options, base);
       handlers.push(
-        ...createUniversalServiceHandlers(
+        ...(createUniversalServiceHandlers(
           createServiceImplSpec(service, implementation),
           protocols
-        )
+        )).map((item: UniversalHandler): UniversalHandler & ExpandHandler => {
+            return Object.assign(item, {
+              serviceVersion: options?.serviceVersion ?? '',
+              serviceGroup: options?.serviceGroup ?? ''
+            })
+        })
       );
       return this;
     },
     rpc(service, method, implementation, options) {
       const { protocols } = whichProtocols(options, base);
       handlers.push(
-        createUniversalMethodHandler(
+        Object.assign(createUniversalMethodHandler(
           createMethodImplSpec(service, method, implementation),
           protocols
-        )
+        ), {
+          serviceVersion: options?.serviceVersion ?? '',
+          serviceGroup: options?.serviceGroup ?? ''
+        })
       );
       return this;
     },
@@ -143,13 +152,13 @@ export function createConnectRouter(
 }
 
 function whichProtocols(
-  options: ConnectRouterOptions | undefined,
-  base?: { options: ConnectRouterOptions; protocols: ProtocolHandlerFactory[] }
-): { options: ConnectRouterOptions; protocols: ProtocolHandlerFactory[] } {
+  options: DubboRouterOptions | undefined,
+  base?: { options: DubboRouterOptions; protocols: ProtocolHandlerFactory[] }
+): { options: DubboRouterOptions; protocols: ProtocolHandlerFactory[] } {
   if (base && !options) {
     return base;
   }
-  const opt: ConnectRouterOptions = base
+  const opt: DubboRouterOptions = base
     ? {
         ...validateUniversalHandlerOptions(base.options),
         ...options,
@@ -166,11 +175,11 @@ function whichProtocols(
   if (options?.grpcWeb !== false) {
     protocols.push(handlerFactoryGrpcWeb(opt));
   }
-  if (options?.connect !== false) {
-    protocols.push(handlerFactoryConnect(opt));
+  if (options?.triple !== false) {
+    protocols.push(handlerFactoryTriple(opt));
   }
   if (protocols.length === 0) {
-    throw new ConnectError(
+    throw new DubboError(
       "cannot create handler, all protocols are disabled",
       Code.InvalidArgument
     );

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import type { Message } from "@bufbuild/protobuf";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import type { MethodImplSpec } from "../implementation.js";
 import { createHandlerContext } from "../implementation.js";
@@ -170,12 +170,12 @@ function createHandler<I extends Message<I>, O extends Message<O>>(
       transformSerializeEnvelope(serialization.getO(type.binary)),
       transformCatchFinally<EnvelopedMessage>((e) => {
         context.abort();
-        if (e instanceof ConnectError) {
+        if (e instanceof DubboError) {
           setTrailerStatus(context.responseTrailer, e);
         } else if (e !== undefined) {
           setTrailerStatus(
             context.responseTrailer,
-            new ConnectError(
+            new DubboError(
               "internal error",
               Code.Internal,
               undefined,

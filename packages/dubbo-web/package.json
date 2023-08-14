@@ -1,11 +1,11 @@
 {
   "name": "apache-dubbo-web",
-  "version": "0.0.3",
+  "version": "0.0.10",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/apache/dubbo-js.git",
-    "directory": "packages/connect-web"
+    "directory": "packages/dubbo-web"
   },
   "sideEffects": false,
   "scripts": {
@@ -23,7 +23,7 @@
     "require": "./dist/cjs/index.js"
   },
   "dependencies": {
-    "apache-dubbo": "^0.0.3"
+    "apache-dubbo": "^0.0.10"
   },
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.2.1"

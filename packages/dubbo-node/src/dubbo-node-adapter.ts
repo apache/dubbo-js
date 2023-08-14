@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code, ConnectError, createConnectRouter } from "apache-dubbo";
-import type { ConnectRouter, ConnectRouterOptions } from "apache-dubbo";
+import { Code, DubboError, createDubboRouter } from "apache-dubbo";
+import type { DubboRouter, DubboRouterOptions } from "apache-dubbo";
 import type { UniversalHandler } from "apache-dubbo/protocol";
 import { uResponseNotFound } from "apache-dubbo/protocol";
 import {
@@ -27,23 +27,23 @@ import type {
 } from "./node-universal-handler.js";
 import { compressionBrotli, compressionGzip } from "./compression.js";
 
-interface ConnectNodeAdapterOptions extends ConnectRouterOptions {
+interface DubboNodeAdapterOptions extends DubboRouterOptions {
   /**
    * Route definitions. We recommend the following pattern:
    *
    * Create a file `connect.ts` with a default export such as this:
    *
    * ```ts
-   * import {ConnectRouter} from "apache-dubbo";
+   * import {DubboRouter} from "apache-dubbo";
    *
-   * export default (router: ConnectRouter) => {
+   * export default (router: DubboRouter) => {
    *   router.service(ElizaService, {});
    * }
    * ```
    *
    * Then pass this function here.
    */
-  routes: (router: ConnectRouter) => void;
+  routes: (router: DubboRouter) => void;
   /**
    * If none of the handler request paths match, a 404 is served. This option
    * can provide a custom fallback for this case.
@@ -58,29 +58,29 @@ interface ConnectNodeAdapterOptions extends ConnectRouterOptions {
 }
 
 /**
- * Create a Node.js request handler from a ConnectRouter.
+ * Create a Node.js request handler from a DubboRouter.
  *
  * The returned function is compatible with http.RequestListener and its equivalent for http2.
  */
-export function connectNodeAdapter(
-  options: ConnectNodeAdapterOptions
+export function dubboNodeAdapter(
+  options: DubboNodeAdapterOptions
 ): NodeHandlerFn {
   if (options.acceptCompression === undefined) {
     options.acceptCompression = [compressionGzip, compressionBrotli];
   }
-  const router = createConnectRouter(options);
+  const router = createDubboRouter(options);
   options.routes(router);
   const prefix = options.requestPathPrefix ?? "";
   const paths = new Map<string, UniversalHandler>();
   for (const uHandler of router.handlers) {
-    paths.set(prefix + uHandler.requestPath, uHandler);
+    paths.set(prefix + uHandler.requestPath + uHandler.serviceVersion + uHandler.serviceGroup, uHandler);
   }
   return function nodeRequestHandler(
     req: NodeServerRequest,
     res: NodeServerResponse
   ): void {
     // Strip the query parameter when matching paths.
-    const uHandler = paths.get(req.url?.split("?", 2)[0] ?? "");
+    const uHandler = paths.get((req.url?.split("?", 2)[0] ?? "") + (req.headers['tri-service-version'] ?? "") + (req.headers['tri-service-group'] ?? ""));
     if (!uHandler) {
       (options.fallback ?? fallback)(req, res);
       return;
@@ -89,7 +89,7 @@ export function connectNodeAdapter(
     uHandler(uReq)
       .then((uRes) => universalResponseToNodeResponse(uRes, res))
       .catch((reason) => {
-        if (ConnectError.from(reason).code == Code.Aborted) {
+        if (DubboError.from(reason).code == Code.Aborted) {
           return;
         }
         // eslint-disable-next-line no-console

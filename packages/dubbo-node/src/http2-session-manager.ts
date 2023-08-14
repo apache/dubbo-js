@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import * as http2 from "http2";
-import { Code, ConnectError } from "apache-dubbo";
-import { connectErrorFromNodeReason } from "./node-error.js";
+import { Code, DubboError } from "apache-dubbo";
+import { dubboErrorFromNodeReason } from "./node-error.js";
 
 export interface Http2SessionOptions {
   /**
@@ -228,7 +228,7 @@ export class Http2SessionManager {
    * If there is an open connection, close it. This also closes any open streams.
    */
   abort(reason?: Error): void {
-    const err = reason ?? new ConnectError("connection aborted", Code.Canceled);
+    const err = reason ?? new DubboError("connection aborted", Code.Canceled);
     this.s.abort?.(err);
     this.setState(closedOrError(err));
   }
@@ -355,8 +355,8 @@ function error(reason: unknown): StateError {
 
 function closedOrError(reason: unknown) {
   const isCancel =
-    reason instanceof ConnectError &&
-    ConnectError.from(reason).code == Code.Canceled;
+    reason instanceof DubboError &&
+    DubboError.from(reason).code == Code.Canceled;
   return isCancel ? closed() : error(reason);
 }
 
@@ -396,7 +396,7 @@ function connect(
   }
 
   function onError(err: unknown) {
-    reject?.(connectErrorFromNodeReason(err));
+    reject?.(dubboErrorFromNodeReason(err));
     cleanup();
   }
 
@@ -613,7 +613,7 @@ function ready(
     clearTimeout(pingTimeoutId);
     pingTimeoutId = safeSetTimeout(() => {
       conn.destroy(
-        new ConnectError("PING timed out", Code.Unavailable),
+        new DubboError("PING timed out", Code.Unavailable),
         http2.constants.NGHTTP2_CANCEL
       );
     }, options.pingTimeoutMs);
@@ -630,7 +630,7 @@ function ready(
         // setTimeout is not precise, and HTTP/2 pings take less than 1ms in
         // tests.
         conn.destroy(
-          new ConnectError("PING timed out", Code.Unavailable),
+          new DubboError("PING timed out", Code.Unavailable),
           http2.constants.NGHTTP2_CANCEL
         );
         return;
@@ -683,7 +683,7 @@ function ready(
       // We cannot prevent node from destroying session and streams with its own
       // error that does not carry debug data, but at least we can wrap the error
       // we surface on the manager.
-      const ce = new ConnectError(
+      const ce = new DubboError(
         `http/2 connection closed with error code ENHANCE_YOUR_CALM (0x${http2.constants.NGHTTP2_ENHANCE_YOUR_CALM.toString(
           16
         )}), too_many_pings, doubled the interval`,
@@ -691,7 +691,7 @@ function ready(
       );
       state.onError?.(ce);
     } else {
-      state.onError?.(connectErrorFromNodeReason(err));
+      state.onError?.(dubboErrorFromNodeReason(err));
     }
   }
 

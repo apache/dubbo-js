@@ -15,7 +15,7 @@
 import type { Serialization } from "./serialization.js";
 import type { Compression } from "./compression.js";
 import { encodeEnvelopes } from "./envelope.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { Code } from "../code.js";
 import {
   createAsyncIterableBytes,
@@ -55,7 +55,7 @@ describe("full story", function () {
     parse(data: Uint8Array): "end" {
       const t = new TextDecoder().decode(data).slice(0, -1);
       if (t !== "end") {
-        throw new ConnectError(
+        throw new DubboError(
           "serialize end: cannot parse",
           Code.InvalidArgument
         );
@@ -74,7 +74,7 @@ describe("full story", function () {
     decompress(bytes, readMaxBytes) {
       if (bytes.byteLength > readMaxBytes) {
         return Promise.reject(
-          new ConnectError(
+          new DubboError(
             `message is larger than configured readMaxBytes ${readMaxBytes} after decompression`,
             Code.ResourceExhausted
           )
@@ -200,7 +200,7 @@ describe("full story", function () {
       writer
         .close()
         .catch((e) =>
-          expect(e).toEqual(new ConnectError("cannot close, already closed"))
+          expect(e).toEqual(new DubboError("cannot close, already closed"))
         );
     });
     it("should throw if write is called on a writer that is closed", function () {
@@ -209,7 +209,7 @@ describe("full story", function () {
       writer
         .write({ value: "alpha", end: false })
         .catch((e) =>
-          expect(e).toEqual(new ConnectError("cannot write, already closed"))
+          expect(e).toEqual(new DubboError("cannot write, already closed"))
         );
     });
     it("should correctly behave when consumer fails and throw is invoked", async function () {

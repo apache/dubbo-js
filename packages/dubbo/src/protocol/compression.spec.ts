@@ -14,7 +14,7 @@
 
 import { compressionNegotiate } from "./compression.js";
 import type { Compression } from "./compression.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 import { node16FetchHeadersPolyfill } from "../node16-polyfill-helper.spec.js";
 
 node16FetchHeadersPolyfill();
@@ -97,8 +97,8 @@ describe("compressionNegotiate()", function () {
       "accept-encoding"
     );
     it("should return error", function () {
-      expect(r.error).toBeInstanceOf(ConnectError);
-      if (r.error instanceof ConnectError) {
+      expect(r.error).toBeInstanceOf(DubboError);
+      if (r.error instanceof DubboError) {
         expect(r.error.message).toBe(
           '[unimplemented] unknown compression "z": supported encodings are a,b'
         );

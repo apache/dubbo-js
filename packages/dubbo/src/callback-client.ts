@@ -20,12 +20,13 @@ import type {
   ServiceType,
 } from "@bufbuild/protobuf";
 import { Message, MethodKind } from "@bufbuild/protobuf";
-import { ConnectError } from "./dubbo-error.js";
+import { DubboError } from "./dubbo-error.js";
 import type { Transport } from "./transport.js";
 import { Code } from "./code.js";
 import { makeAnyClient } from "./any-client.js";
 import type { CallOptions } from "./call-options.js";
 import { createAsyncIterable } from "./protocol/async-iterable.js";
+import type { TripleClientServiceOptions } from './protocol-triple/client-service-options.js';
 
 // prettier-ignore
 /**
@@ -38,7 +39,7 @@ import { createAsyncIterable } from "./protocol/async-iterable.js";
  * its AbortSignal as an option to the method.
  *
  * If a call is cancelled by an AbortController or by the returned
- * cancel-function, ConnectErrors with the code Canceled are
+ * cancel-function, DubboErrors with the code Canceled are
  * silently discarded.
  *
  * CallbackClient is most convenient for use in React effects, where
@@ -47,8 +48,8 @@ import { createAsyncIterable } from "./protocol/async-iterable.js";
  */
 export type CallbackClient<T extends ServiceType> = {
   [P in keyof T["methods"]]:
-    T["methods"][P] extends MethodInfoUnary<infer I, infer O>           ? (request: PartialMessage<I>, callback: (error: ConnectError | undefined, response: O) => void, options?: CallOptions) => CancelFn
-  : T["methods"][P] extends MethodInfoServerStreaming<infer I, infer O> ? (request: PartialMessage<I>, messageCallback: (response: O) => void, closeCallback: (error: ConnectError | undefined) => void, options?: CallOptions) => CancelFn
+    T["methods"][P] extends MethodInfoUnary<infer I, infer O>           ? (request: PartialMessage<I>, callback: (error: DubboError | undefined, response: O) => void, options?: CallOptions) => CancelFn
+  : T["methods"][P] extends MethodInfoServerStreaming<infer I, infer O> ? (request: PartialMessage<I>, messageCallback: (response: O) => void, closeCallback: (error: DubboError | undefined) => void, options?: CallOptions) => CancelFn
   : never;
 };
 
@@ -79,14 +80,15 @@ export function createCallbackClient<T extends ServiceType>(
  */
 type UnaryFn<I extends Message<I>, O extends Message<O>> = (
   request: PartialMessage<I>,
-  callback: (error: ConnectError | undefined, response: O) => void,
+  callback: (error: DubboError | undefined, response: O) => void,
   options?: CallOptions
 ) => CancelFn;
 
 function createUnaryFn<I extends Message<I>, O extends Message<O>>(
   transport: Transport,
   service: ServiceType,
-  method: MethodInfo<I, O>
+  method: MethodInfo<I, O>,
+  serviceOptions?: TripleClientServiceOptions
 ): UnaryFn<I, O> {
   return function (requestMessage, callback, options) {
     const abort = new AbortController();
@@ -98,7 +100,8 @@ function createUnaryFn<I extends Message<I>, O extends Message<O>>(
         abort.signal,
         options.timeoutMs,
         options.headers,
-        requestMessage
+        requestMessage,
+        serviceOptions
       )
       .then(
         (response) => {
@@ -107,7 +110,7 @@ function createUnaryFn<I extends Message<I>, O extends Message<O>>(
           callback(undefined, response.message);
         },
         (reason) => {
-          const err = ConnectError.from(reason, Code.Internal);
+          const err = DubboError.from(reason, Code.Internal);
           if (err.code === Code.Canceled && abort.signal.aborted) {
             // As documented, discard Canceled errors if canceled by the user.
             return;
@@ -126,7 +129,7 @@ function createUnaryFn<I extends Message<I>, O extends Message<O>>(
 type ServerStreamingFn<I extends Message<I>, O extends Message<O>> = (
   request: PartialMessage<I>,
   onResponse: (response: O) => void,
-  onClose: (error: ConnectError | undefined) => void,
+  onClose: (error: DubboError | undefined) => void,
   options?: CallOptions
 ) => CancelFn;
 
@@ -157,7 +160,7 @@ function createServerStreamingFn<I extends Message<I>, O extends Message<O>>(
       onClose(undefined);
     }
     run().catch((reason) => {
-      const err = ConnectError.from(reason, Code.Internal);
+      const err = DubboError.from(reason, Code.Internal);
       if (err.code === Code.Canceled && abort.signal.aborted) {
         // As documented, discard Canceled errors if canceled by the user,
         // but do invoke the close-callback.

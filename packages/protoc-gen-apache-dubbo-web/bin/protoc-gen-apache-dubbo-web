@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+
+const {runNodeJs} = require("@bufbuild/protoplugin");
+const {protocGenDubboWeb} = require("../dist/cjs/src/protoc-gen-apache-dubbo-web-plugin.js");
+
+runNodeJs(protocGenDubboWeb);

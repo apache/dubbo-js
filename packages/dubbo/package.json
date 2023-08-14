@@ -1,12 +1,12 @@
 {
   "name": "apache-dubbo",
-  "version": "0.0.3",
+  "version": "0.0.10",
   "description": "Type-safe APIs with Protobuf and TypeScript.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/apache/dubbo-js.git",
-    "directory": "packages/connect"
+    "directory": "packages/dubbo"
   },
   "sideEffects": false,
   "scripts": {

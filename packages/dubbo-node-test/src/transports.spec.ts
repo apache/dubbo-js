@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code, ConnectError } from "apache-dubbo";
+import { Code, DubboError } from "apache-dubbo";
 import {
-  createConnectTransport,
+  createDubboTransport,
   Http2SessionManager,
 } from "apache-dubbo-node";
 
-describe("createConnectTransport()", function () {
+describe("createDubboTransport()", function () {
   it("should take just httpVersion and baseUrl", function () {
-    const t = createConnectTransport({
+    const t = createDubboTransport({
       httpVersion: "2",
       baseUrl: "https://example.com",
     });
     expect(t).toBeDefined();
   });
   it("should take session options", function () {
-    const t = createConnectTransport({
+    const t = createDubboTransport({
       httpVersion: "2",
       baseUrl: "https://example.com",
       pingIntervalMs: 1000 * 30,
@@ -38,7 +38,7 @@ describe("createConnectTransport()", function () {
     expect(t).toBeDefined();
   });
   it("should take node options", function () {
-    const t = createConnectTransport({
+    const t = createDubboTransport({
       httpVersion: "2",
       baseUrl: "https://example.com",
       nodeOptions: {
@@ -57,7 +57,7 @@ describe("createConnectTransport()", function () {
         maxSessionMemory: 1024 * 1024 * 4,
       }
     );
-    const t = createConnectTransport({
+    const t = createDubboTransport({
       httpVersion: "2",
       baseUrl: "https://example.com",
       sessionManager: sm,
@@ -74,7 +74,7 @@ describe("using a session manager to open a connection before starting an applic
       if (state == "error") {
         // For a transient error, we can retry here
         const reason = sm.error();
-        if (ConnectError.from(reason).code !== Code.Unavailable) {
+        if (DubboError.from(reason).code !== Code.Unavailable) {
           throw sm.error();
         }
         await new Promise<void>((resolve) =>
@@ -95,7 +95,7 @@ describe("using a session manager to explicitly close all connections", function
     const sessionManager = new Http2SessionManager(
       "https://demo.connect.build"
     );
-    createConnectTransport({
+    createDubboTransport({
       httpVersion: "2",
       baseUrl: "https://demo.connect.build",
       sessionManager,

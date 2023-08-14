@@ -14,11 +14,11 @@
 
 import {
   Code,
-  ConnectError,
+  DubboError,
   createCallbackClient,
   createPromiseClient,
 } from "apache-dubbo";
-import { UnimplementedService } from "../gen/grpc/testing/test_connect.js";
+import { UnimplementedService } from "../gen/grpc/testing/test_dubbo.js";
 import { Empty } from "../gen/grpc/testing/empty_pb.js";
 import { createTestServers } from "../helpers/testserver.js";
 
@@ -38,8 +38,8 @@ describe("unimplemented_server_streaming_service", function () {
         }
         fail("expected to catch an error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        expect(ConnectError.from(e).code).toBe(Code.Unimplemented);
+        expect(e).toBeInstanceOf(DubboError);
+        expect(DubboError.from(e).code).toBe(Code.Unimplemented);
       }
     });
     it("with callback client", function (done) {
@@ -50,7 +50,7 @@ describe("unimplemented_server_streaming_service", function () {
         (response) => {
           fail(`expecting no response, got: ${response.toJsonString()}`);
         },
-        (err: ConnectError | undefined) => {
+        (err: DubboError | undefined) => {
           expect(err?.code).toBe(Code.Unimplemented);
           done();
         }

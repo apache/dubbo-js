@@ -14,11 +14,11 @@
 
 import {
   Code,
-  ConnectError,
+  DubboError,
   createCallbackClient,
   createPromiseClient,
 } from "apache-dubbo";
-import { TestService } from "../gen/grpc/testing/test_connect.js";
+import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import { createTestServers } from "../helpers/testserver.js";
 
 describe("unimplemented_method", function () {
@@ -32,13 +32,13 @@ describe("unimplemented_method", function () {
         await client.unimplementedCall({});
         fail("expected to catch an error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        expect(ConnectError.from(e).code).toBe(Code.Unimplemented);
+        expect(e).toBeInstanceOf(DubboError);
+        expect(DubboError.from(e).code).toBe(Code.Unimplemented);
       }
     });
     it("with callback client", function (done) {
       const client = createCallbackClient(TestService, transport());
-      client.unimplementedCall({}, (err: ConnectError | undefined) => {
+      client.unimplementedCall({}, (err: DubboError | undefined) => {
         expect(err?.code).toBe(Code.Unimplemented);
         done();
       });

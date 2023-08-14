@@ -33,8 +33,8 @@ const args = process.argv.slice(2);
 const command = args[0];
 const nodePath = process.argv[0];
 const selfPath = process.argv[1];
-const lockFile = join(dirname(selfPath), ".connect-node-h1-server.lock");
-const outFile = join(dirname(selfPath), ".connect-node-h1-server.out");
+const lockFile = join(dirname(selfPath), ".dubbo-node-h1-server.lock");
+const outFile = join(dirname(selfPath), ".dubbo-node-h1-server.out");
 
 if (
   args.length !== 1 ||

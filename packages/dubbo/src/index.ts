@@ -13,9 +13,9 @@
 // limitations under the License.
 
 export {
-  ConnectError,
-  connectErrorDetails,
-  connectErrorFromReason,
+  DubboError,
+  dubboErrorDetails,
+  dubboErrorFromReason,
 } from "./dubbo-error.js";
 export { Code } from "./code.js";
 export {
@@ -42,8 +42,8 @@ export type {
   MethodImpl,
   HandlerContext,
 } from "./implementation.js";
-export { createConnectRouter } from "./router.js";
-export type { ConnectRouter, ConnectRouterOptions } from "./router.js";
+export { createDubboRouter } from "./router.js";
+export type { DubboRouter, DubboRouterOptions } from "./router.js";
 export { createHandlerContext } from "./implementation.js";
 export { cors } from "./cors.js";
 

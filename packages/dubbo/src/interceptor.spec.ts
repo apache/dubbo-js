@@ -59,7 +59,7 @@ function makeLoggingInterceptor(name: string, log: string[]): Interceptor {
    */
   function listHeaderKeys(header: Headers): string {
     const fieldsToIgnore = [
-      "connect-protocol-version",
+      "tri-protocol-version",
       "content-type",
       "content-length",
     ];

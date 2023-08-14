@@ -20,7 +20,7 @@ import {
   getJsonOptions,
   limitSerialization,
 } from "./serialization.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 
 describe("createBinarySerialization()", function () {
   const goldenMessage = new StringValue({ value: "abc" });
@@ -43,8 +43,8 @@ describe("createBinarySerialization()", function () {
         ser.parse(new Uint8Array([0xde]));
         fail("expected error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        const c = ConnectError.from(e);
+        expect(e).toBeInstanceOf(DubboError);
+        const c = DubboError.from(e);
         expect(c.message).toBe(
           "[invalid_argument] parse binary: premature EOF"
         );
@@ -62,8 +62,8 @@ describe("createBinarySerialization()", function () {
         ser.serialize(f);
         fail("expected error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        const c = ConnectError.from(e);
+        expect(e).toBeInstanceOf(DubboError);
+        const c = DubboError.from(e);
         expect(c.message).toBe("[internal] serialize binary: x");
       }
     });
@@ -91,8 +91,8 @@ describe("createJsonSerialization()", function () {
         ser.parse(new Uint8Array([0xde]));
         fail("expected error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        const c = ConnectError.from(e);
+        expect(e).toBeInstanceOf(DubboError);
+        const c = DubboError.from(e);
         expect(c.message).toMatch(
           /^\[invalid_argument] cannot decode google.protobuf.StringValue from JSON: Unexpected token/
         );
@@ -110,8 +110,8 @@ describe("createJsonSerialization()", function () {
         ser.serialize(f);
         fail("expected error");
       } catch (e) {
-        expect(e).toBeInstanceOf(ConnectError);
-        const c = ConnectError.from(e);
+        expect(e).toBeInstanceOf(DubboError);
+        const c = DubboError.from(e);
         expect(c.message).toBe("[internal] x");
       }
     });
@@ -133,7 +133,7 @@ describe("limitSerialization()", function () {
       writeMaxBytes: 3,
     });
     expect(() => limitedSer.serialize("abcdef")).toThrowError(
-      ConnectError,
+      DubboError,
       "[resource_exhausted] message size 6 is larger than configured writeMaxBytes 3"
     );
     expect(() =>
@@ -149,7 +149,7 @@ describe("limitSerialization()", function () {
     expect(() =>
       limitedSer.parse(new TextEncoder().encode("abcdef"))
     ).toThrowError(
-      ConnectError,
+      DubboError,
       "[resource_exhausted] message size 6 is larger than configured readMaxBytes 3"
     );
   });

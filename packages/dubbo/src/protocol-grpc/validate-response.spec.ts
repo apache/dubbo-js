@@ -13,18 +13,18 @@
 // limitations under the License.
 
 import { validateResponse } from "./validate-response.js";
-import { ConnectError } from "../dubbo-error.js";
+import { DubboError } from "../dubbo-error.js";
 
 describe("gRPC validateResponse()", function () {
   function v(
     httpStatus: number,
     headers: Record<string, string>
-  ): ConnectError | undefined {
+  ): DubboError | undefined {
     try {
       validateResponse(httpStatus, new Headers(headers));
       return undefined;
     } catch (e) {
-      if (e instanceof ConnectError) {
+      if (e instanceof DubboError) {
         return e;
       }
       throw e;
