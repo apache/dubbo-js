@@ -1,6 +1,6 @@
 import { fastify } from "fastify";
 import { fastifyDubboPlugin } from "apache-dubbo-fastify";
-import routes from "./connect";
+import routes from "./dubbo";
 import cors from "@fastify/cors";
 
 async function main() {
