@@ -26,7 +26,7 @@ plugins:
   - plugin: es
     out: src/gen
 -  - plugin: connect-web
-+  - plugin: connect-es
++  - plugin: apache-dubbo-es
     out: src/gen
 ```
 

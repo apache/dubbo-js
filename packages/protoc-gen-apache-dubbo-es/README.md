@@ -49,7 +49,7 @@ plugins:
     out: src/gen
     opt: target=ts
   # This will invoke protoc-gen-apache-dubbo-es
-  - plugin: connect-es
+  - plugin: apache-dubbo-es
     out: src/gen
     opt:
       # Add more plugin options here
