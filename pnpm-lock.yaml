@@ -136,6 +136,12 @@ importers:
 
   packages/dubbo-node-test:
     dependencies:
+      '@bufbuild/protobuf':
+        specifier: ^1.2.1
+        version: 1.2.1
+      '@bufbuild/protoc-gen-es':
+        specifier: ^1.2.1
+        version: 1.2.1(@bufbuild/protobuf@1.2.1)
       '@grpc/grpc-js':
         specifier: ^1.8.14
         version: 1.8.14
@@ -172,6 +178,9 @@ importers:
       jasmine:
         specifier: ^5.0.0
         version: 5.0.0
+      protoc-gen-apache-dubbo-es:
+        specifier: ^0.0.2
+        version: link:../protoc-gen-apache-dubbo-es
 
   packages/dubbo-web:
     dependencies:
@@ -208,6 +217,12 @@ importers:
 
   packages/dubbo-web-test:
     dependencies:
+      '@bufbuild/protobuf':
+        specifier: ^1.2.1
+        version: 1.2.1
+      '@bufbuild/protoc-gen-es':
+        specifier: ^1.2.1
+        version: 1.2.1(@bufbuild/protobuf@1.2.1)
       '@types/jasmine':
         specifier: ^4.3.0
         version: 4.3.1
@@ -238,6 +253,9 @@ importers:
       karma-jasmine:
         specifier: ^5.1.0
         version: 5.1.0(karma@6.4.2)
+      protoc-gen-apache-dubbo-es:
+        specifier: ^0.0.2
+        version: link:../protoc-gen-apache-dubbo-es
 
   packages/protoc-gen-apache-dubbo-es:
     dependencies:
@@ -4884,7 +4902,7 @@ packages:
     dev: true
 
   /undici@5.22.0:
-    resolution: {integrity: sha512-f6pTQ9RF4DQtwoWSaC42P/NKlUjvezVvd9r155ohqkwFNRyBKM3f3pcty3ouusefNRyM25XhIQEbeQ46sZDJfQ==, tarball: https://registry.npmmirror.com/undici/-/undici-5.21.2.tgz}
+    resolution: {integrity: sha512-f6pTQ9RF4DQtwoWSaC42P/NKlUjvezVvd9r155ohqkwFNRyBKM3f3pcty3ouusefNRyM25XhIQEbeQ46sZDJfQ==, tarball: https://registry.npmmirror.com/undici/-/undici-5.22.0.tgz}
     engines: {node: '>=12.18'}
     deprecated: '[WARNING] Use 5.21.2 instead of 5.22.0, reason: https://github.com/nodejs/undici/pull/2091'
     dependencies:

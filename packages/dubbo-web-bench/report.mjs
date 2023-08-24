@@ -1,7 +1,7 @@
 import { buildSync } from 'esbuild'
 import { compress } from 'brotli'
 
-const connect = gather('src/entry-dubbo.ts')
+const dubbo = gather('src/entry-dubbo.ts')
 const grpcweb = gather('src/entry-grpcweb.ts')
 
 process.stdout.write(`# Code size comparison
@@ -16,8 +16,8 @@ it like a web server would usually do.
 
 | code generator | bundle size        | minified               | compressed           |
 |----------------|-------------------:|-----------------------:|---------------------:|
-| connect        | ${connect.size} | ${connect.minified} | ${connect.compressed} |
-| grpc-web       | ${grpcweb.size}    | ${grpcweb.minified}    | ${grpcweb.compressed} |
+| dubbo          | ${dubbo.size}      | ${dubbo.minified}      | ${dubbo.compressed}  |
+| grpc-web       | ${grpcweb.size}    | ${grpcweb.minified}    | ${grpcweb.compressed}|
 `)
 
 function gather(entryPoint) {

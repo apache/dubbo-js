@@ -16,12 +16,17 @@
     "import": "./dist/esm/index.js",
     "default": "./dist/esm/index.js"
   },
+  "peerDependencies": {
+    "@bufbuild/protobuf": "^1.2.1"
+  },
   "dependencies": {
     "apache-dubbo-web": "^0.0.10",
     "apache-dubbo": "^0.0.10",
     "@types/jasmine": "^4.3.0",
     "esbuild": "^0.16.12",
     "jasmine": "^5.0.0",
+    "@bufbuild/protoc-gen-es": "^1.2.1",
+    "protoc-gen-apache-dubbo-es": "^0.0.2",
     "karma": "^6.4.2",
     "karma-browserstack-launcher": "^1.6.0",
     "karma-chrome-launcher": "^3.2.0",

@@ -51,7 +51,7 @@ export function transformConnectPostToGetRequest<
   message: Uint8Array,
   useBase64: boolean
 ): UnaryRequest<I, O> {
-  let query = `?connect=v${protocolVersion}`;
+  let query = `?triple=v${protocolVersion}`;
   const contentType = request.header.get(headerContentType);
   if (contentType?.indexOf(contentTypePrefix) === 0) {
     query +=

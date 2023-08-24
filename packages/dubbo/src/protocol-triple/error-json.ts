@@ -20,7 +20,6 @@ import type {
 } from "@bufbuild/protobuf";
 import { Code } from "../code.js";
 import { DubboError } from "../dubbo-error.js";
-import { codeFromString } from "./code-string.js";
 
 /**
  * Parse a Connect error from a JSON value.
@@ -42,13 +41,13 @@ export function errorFromJson(
     typeof jsonValue !== "object" ||
     jsonValue == null ||
     Array.isArray(jsonValue) ||
-    !("code" in jsonValue) ||
-    typeof jsonValue.code !== "string"
+    !("status" in jsonValue) ||
+    typeof jsonValue.status !== "number"
   ) {
     throw fallback;
   }
-  const code = codeFromString(jsonValue.code);
-  if (code === undefined) {
+  const code = jsonValue.status;
+  if (code === undefined || !(code in Code)) {
     throw fallback;
   }
   const message = jsonValue.message;

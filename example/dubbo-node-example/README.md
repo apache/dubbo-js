@@ -78,7 +78,7 @@ PATH=$PATH:$(pwd)/node_modules/.bin \
 
 接下来我们就需要添加业务逻辑了，实现 ExampleService ，并将其注册到 DubboRouter 中。
 
-创建 connect.ts 文件
+创建 dubbo.ts 文件
 
 ```typescript
 import { DubboRouter } from "apache-dubbo";
@@ -111,7 +111,7 @@ npm install fastify apache-dubbo-fastify
 ```typescript
 import { fastify } from "fastify";
 import { fastifyDubboPlugin } from "apache-dubbo-fastify";
-import routes from "./connect";
+import routes from "./dubbo";
 
 async function main() {
   const server = fastify();
