@@ -139,6 +139,9 @@ importers:
       '@bufbuild/protobuf':
         specifier: ^1.2.1
         version: 1.2.1
+      '@bufbuild/protoc-gen-es':
+        specifier: ^1.2.1
+        version: 1.2.1(@bufbuild/protobuf@1.2.1)
       '@grpc/grpc-js':
         specifier: ^1.8.14
         version: 1.8.14
@@ -175,6 +178,9 @@ importers:
       jasmine:
         specifier: ^5.0.0
         version: 5.0.0
+      protoc-gen-apache-dubbo-es:
+        specifier: ^0.0.2
+        version: link:../protoc-gen-apache-dubbo-es
 
   packages/dubbo-web:
     dependencies:
@@ -214,6 +220,9 @@ importers:
       '@bufbuild/protobuf':
         specifier: ^1.2.1
         version: 1.2.1
+      '@bufbuild/protoc-gen-es':
+        specifier: ^1.2.1
+        version: 1.2.1(@bufbuild/protobuf@1.2.1)
       '@types/jasmine':
         specifier: ^4.3.0
         version: 4.3.1
@@ -244,6 +253,9 @@ importers:
       karma-jasmine:
         specifier: ^5.1.0
         version: 5.1.0(karma@6.4.2)
+      protoc-gen-apache-dubbo-es:
+        specifier: ^0.0.2
+        version: link:../protoc-gen-apache-dubbo-es
 
   packages/protoc-gen-apache-dubbo-es:
     dependencies:
