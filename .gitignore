@@ -19,6 +19,7 @@ dist
 lib
 /tmp
 /out-tsc
+.tmp/*
 
 # dependencies
 node_modules
