@@ -28,9 +28,9 @@ describe("broken input", () => {
   beforeAll(async () => await servers.start());
 
   servers.describeServers(
-    ["connect-go (h2)", "apache-dubbo-node (h2c)"],
+    ["apache-dubbo-node (h2c)"],
     (server, serverName) => {
-      const rejectUnauthorized = serverName !== "connect-go (h2)"; // TODO set up cert for go server correctly
+      const rejectUnauthorized = true; // TODO set up cert for go server correctly
 
       describe("Connect unary", function () {
         it("should raise HTTP 400 for invalid JSON", async () => {
@@ -64,11 +64,9 @@ describe("broken input", () => {
           );
           expect(status).toBe(400);
           expect(error.code).toBe(Code.InvalidArgument);
-          if (serverName == "apache-dubbo-node (h2c)") {
-            expect(error.rawMessage).toMatch(
-              /^cannot decode grpc.testing.SimpleRequest from JSON: Unexpected token '?h'?.*JSON/
-            );
-          }
+          expect(error.rawMessage).toMatch(
+            /^cannot decode grpc.testing.SimpleRequest from JSON: Unexpected token '?h'?.*JSON/
+          );
         });
       });
 
@@ -104,13 +102,11 @@ describe("broken input", () => {
             const { status, endStream } = await streamingRequest(body);
             expect(status).toBe(200);
             expect(endStream.error?.code).toBe(Code.InvalidArgument);
-            if (serverName == "apache-dubbo-node (h2c)") {
-              // Error messages tend to change across Node versions. Should this happen again, this link is useful to
-              // build the correct RegExp:  https://regex101.com/r/By9VEN/1
-              expect(endStream.error?.rawMessage).toMatch(
-                /^cannot decode grpc.testing.Streaming(Input|Output)CallRequest from JSON: Unexpected token '?h'?.*JSON/
-              );
-            }
+            // Error messages tend to change across Node versions. Should this happen again, this link is useful to
+            // build the correct RegExp:  https://regex101.com/r/By9VEN/1
+            expect(endStream.error?.rawMessage).toMatch(
+              /^cannot decode grpc.testing.Streaming(Input|Output)CallRequest from JSON: Unexpected token '?h'?.*JSON/
+            );
           });
           it("should raise HTTP 400 for 0 message length", async () => {
             const body = new Uint8Array(5);

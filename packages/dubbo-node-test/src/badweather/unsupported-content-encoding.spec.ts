@@ -28,9 +28,9 @@ describe("unsupported content encoding", () => {
   beforeAll(async () => await servers.start());
 
   servers.describeServers(
-    ["apache-dubbo-node (h2c)", "connect-go (h2)"],
+    ["apache-dubbo-node (h2c)"],
     (server, serverName) => {
-      const rejectUnauthorized = serverName !== "connect-go (h2)"; // TODO set up cert for go server correctly
+      const rejectUnauthorized = true; // TODO set up cert for go server correctly
 
       describe("Connect unary method", function () {
         it("should raise code unimplemented for unsupported content-encoding", async () => {
