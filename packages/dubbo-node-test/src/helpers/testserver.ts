@@ -58,36 +58,11 @@ export function createTestServers() {
   // The following servers are available through crosstests:
   //
   // | server        | port |
-  // | ------------- | --- |
-  // | connect-go h1 | 8080 |
-  // | connect-go h2 | 8081 |
+  // | ------------- | ---- |
   // | grpc-go       | 8083 |
   //
   // Source: https://github.com/bufbuild/connect-es/pull/87
   const servers = {
-    // connect-go
-    "connect-go (h1)": {
-      getUrl() {
-        return `https://localhost:8080`;
-      },
-      start() {
-        return Promise.resolve();
-      },
-      stop() {
-        return Promise.resolve();
-      },
-    },
-    "connect-go (h2)": {
-      getUrl() {
-        return `https://localhost:8081`;
-      },
-      start() {
-        return Promise.resolve();
-      },
-      stop() {
-        return Promise.resolve();
-      },
-    },
     "grpc-go (h2)": {
       getUrl() {
         return `https://localhost:8083`;
@@ -381,58 +356,6 @@ export function createTestServers() {
           useBinaryFormat: false,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (gRPC, binary, http2) against connect-go (h1)": (
-      options?: Record<string, unknown>
-    ) =>
-      createGrpcTransport({
-        ...options,
-        baseUrl: servers["connect-go (h1)"].getUrl(),
-        httpVersion: "2",
-        idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
-        nodeOptions: {
-          rejectUnauthorized: false, // TODO set up cert for go server correctly
-        },
-        useBinaryFormat: true,
-      }),
-    "apache-dubbo-node (gRPC, binary, http2, gzip) against connect-go (h1)":
-      (options?: Record<string, unknown>) =>
-        createGrpcTransport({
-          ...options,
-          baseUrl: servers["connect-go (h1)"].getUrl(),
-          httpVersion: "2",
-          idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
-          nodeOptions: {
-            rejectUnauthorized: false, // TODO set up cert for go server correctly
-          },
-          useBinaryFormat: true,
-          sendCompression: compressionGzip,
-        }),
-    "apache-dubbo-node (gRPC, JSON, http2, gzip) against connect-go (h1)":
-      (options?: Record<string, unknown>) =>
-        createGrpcTransport({
-          ...options,
-          baseUrl: servers["connect-go (h1)"].getUrl(),
-          httpVersion: "2",
-          idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
-          nodeOptions: {
-            rejectUnauthorized: false, // TODO set up cert for go server correctly
-          },
-          useBinaryFormat: false,
-          sendCompression: compressionGzip,
-        }),
-    "apache-dubbo-node (gRPC, JSON, http2) against connect-go (h1)": (
-      options?: Record<string, unknown>
-    ) =>
-      createGrpcTransport({
-        ...options,
-        baseUrl: servers["connect-go (h1)"].getUrl(),
-        httpVersion: "2",
-        idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
-        nodeOptions: {
-          rejectUnauthorized: false, // TODO set up cert for go server correctly
-        },
-        useBinaryFormat: false,
-      }),
     "apache-dubbo-node (gRPC, binary, http2) against grpc-go (h2)": (
       options?: Record<string, unknown>
     ) =>
@@ -484,55 +407,6 @@ export function createTestServers() {
           },
           useBinaryFormat: true,
         }),
-    "apache-dubbo-node (gRPC, binary, https) against connect-go (h1)": (
-      options?: Record<string, unknown>
-    ) =>
-      createGrpcTransport({
-        ...options,
-        baseUrl: servers["connect-go (h1)"].getUrl(),
-        httpVersion: "1.1",
-        nodeOptions: {
-          rejectUnauthorized: false,
-        },
-        useBinaryFormat: true,
-      }),
-    "apache-dubbo-node (gRPC, JSON, https) against connect-go (h1)": (
-      options?: Record<string, unknown>
-    ) =>
-      createGrpcTransport({
-        ...options,
-        baseUrl: servers["connect-go (h1)"].getUrl(),
-        httpVersion: "1.1",
-        nodeOptions: {
-          rejectUnauthorized: false,
-        },
-        useBinaryFormat: false,
-      }),
-    "apache-dubbo-node (gRPC, binary, http, gzip) against connect-go (h1)":
-      (options?: Record<string, unknown>) =>
-        createGrpcTransport({
-          ...options,
-          baseUrl: servers["connect-go (h1)"].getUrl(),
-          httpVersion: "1.1",
-          nodeOptions: {
-            rejectUnauthorized: false,
-          },
-          useBinaryFormat: true,
-          sendCompression: compressionGzip,
-        }),
-    "apache-dubbo-node (gRPC, JSON, http, gzip) against connect-go (h1)": (
-      options?: Record<string, unknown>
-    ) =>
-      createGrpcTransport({
-        ...options,
-        baseUrl: servers["connect-go (h1)"].getUrl(),
-        useBinaryFormat: false,
-        sendCompression: compressionGzip,
-        httpVersion: "1.1",
-        nodeOptions: {
-          rejectUnauthorized: false,
-        },
-      }),
     "apache-dubbo-node (gRPC, binary, http, gzip) against apache-dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
         createGrpcTransport({
@@ -602,19 +476,6 @@ export function createTestServers() {
           useBinaryFormat: true,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (Connect, binary, http2, gzip) against connect-go (h1)":
-      (options?: Record<string, unknown>) =>
-        createDubboTransport({
-          ...options,
-          baseUrl: servers["connect-go (h1)"].getUrl(),
-          httpVersion: "2",
-          idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
-          nodeOptions: {
-            rejectUnauthorized: false, // TODO set up cert for go server correctly
-          },
-          useBinaryFormat: true,
-          sendCompression: compressionGzip,
-        }),
     "apache-dubbo-node (Connect, JSON, http2, gzip) against apache-dubbo-node (h2c)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
@@ -622,19 +483,6 @@ export function createTestServers() {
           baseUrl: servers["apache-dubbo-node (h2c)"].getUrl(),
           httpVersion: "2",
           idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
-          useBinaryFormat: false,
-          sendCompression: compressionGzip,
-        }),
-    "apache-dubbo-node (Connect, JSON, http2, gzip) against connect-go (h1)":
-      (options?: Record<string, unknown>) =>
-        createDubboTransport({
-          ...options,
-          baseUrl: servers["connect-go (h1)"].getUrl(),
-          httpVersion: "2",
-          idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
-          nodeOptions: {
-            rejectUnauthorized: false, // TODO set up cert for go server correctly
-          },
           useBinaryFormat: false,
           sendCompression: compressionGzip,
         }),
@@ -675,54 +523,6 @@ export function createTestServers() {
             rejectUnauthorized: false,
           },
           useBinaryFormat: false,
-        }),
-    "apache-dubbo-node (Connect, binary, http) against connect-go (h1)": (
-      options?: Record<string, unknown>
-    ) =>
-      createDubboTransport({
-        ...options,
-        baseUrl: servers["connect-go (h1)"].getUrl(),
-        httpVersion: "1.1",
-        nodeOptions: {
-          rejectUnauthorized: false, // TODO set up cert for go server correctly
-        },
-        useBinaryFormat: true,
-      }),
-    "apache-dubbo-node (Connect, JSON, http) against connect-go (h1)": (
-      options?: Record<string, unknown>
-    ) =>
-      createDubboTransport({
-        ...options,
-        baseUrl: servers["connect-go (h1)"].getUrl(),
-        httpVersion: "1.1",
-        nodeOptions: {
-          rejectUnauthorized: false, // TODO set up cert for go server correctly
-        },
-        useBinaryFormat: false,
-      }),
-    "apache-dubbo-node (Connect, binary, http, gzip) against connect-go (h1)":
-      (options?: Record<string, unknown>) =>
-        createDubboTransport({
-          ...options,
-          baseUrl: servers["connect-go (h1)"].getUrl(),
-          httpVersion: "1.1",
-          nodeOptions: {
-            rejectUnauthorized: false, // TODO set up cert for go server correctly
-          },
-          useBinaryFormat: true,
-          sendCompression: compressionGzip,
-        }),
-    "apache-dubbo-node (Connect, JSON, http, gzip) against connect-go (h1)":
-      (options?: Record<string, unknown>) =>
-        createDubboTransport({
-          ...options,
-          baseUrl: servers["connect-go (h1)"].getUrl(),
-          httpVersion: "1.1",
-          nodeOptions: {
-            rejectUnauthorized: false, // TODO set up cert for go server correctly
-          },
-          useBinaryFormat: false,
-          sendCompression: compressionGzip,
         }),
     "apache-dubbo-node (Connect, JSON, http, gzip) against apache-dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
@@ -807,44 +607,6 @@ export function createTestServers() {
           idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
           useBinaryFormat: false,
         }),
-    "apache-dubbo-node (gRPC-web, binary, http2) against connect-go (h1)":
-      (options?: Record<string, unknown>) =>
-        createGrpcWebTransport({
-          ...options,
-          baseUrl: servers["connect-go (h1)"].getUrl(),
-          httpVersion: "2",
-          idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
-          nodeOptions: {
-            rejectUnauthorized: false, // TODO set up cert for go server correctly
-          },
-          useBinaryFormat: true,
-        }),
-    "apache-dubbo-node (gRPC-web, binary, http2, gzip) against connect-go (h1)":
-      (options?: Record<string, unknown>) =>
-        createGrpcWebTransport({
-          ...options,
-          baseUrl: servers["connect-go (h1)"].getUrl(),
-          httpVersion: "2",
-          idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
-          nodeOptions: {
-            rejectUnauthorized: false, // TODO set up cert for go server correctly
-          },
-          useBinaryFormat: true,
-          sendCompression: compressionGzip,
-        }),
-    "apache-dubbo-node (gRPC-web, JSON, http2, gzip) against connect-go (h1)":
-      (options?: Record<string, unknown>) =>
-        createGrpcWebTransport({
-          ...options,
-          baseUrl: servers["connect-go (h1)"].getUrl(),
-          httpVersion: "2",
-          idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
-          nodeOptions: {
-            rejectUnauthorized: false, // TODO set up cert for go server correctly
-          },
-          useBinaryFormat: false,
-          sendCompression: compressionGzip,
-        }),
     "apache-dubbo-node (gRPC-web, binary, http2, gzip) against apache-dubbo-node (h2c)":
       (options?: Record<string, unknown>) =>
         createGrpcWebTransport({
@@ -871,19 +633,6 @@ export function createTestServers() {
           useBinaryFormat: false,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (gRPC-web, JSON, http2) against connect-go (h1)": (
-      options?: Record<string, unknown>
-    ) =>
-      createGrpcWebTransport({
-        ...options,
-        baseUrl: servers["connect-go (h1)"].getUrl(),
-        httpVersion: "2",
-        idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
-        nodeOptions: {
-          rejectUnauthorized: false, // TODO set up cert for go server correctly
-        },
-        useBinaryFormat: false,
-      }),
     "apache-dubbo-node (gRPC-web, binary, http) against apache-dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
         createGrpcWebTransport({
@@ -918,41 +667,6 @@ export function createTestServers() {
           baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: true,
-          nodeOptions: {
-            rejectUnauthorized: false,
-          },
-        }),
-    "apache-dubbo-node (gRPC-web, binary, https) against connect-go (h1)":
-      (options?: Record<string, unknown>) =>
-        createGrpcWebTransport({
-          ...options,
-          baseUrl: servers["connect-go (h1)"].getUrl(),
-          httpVersion: "1.1",
-          useBinaryFormat: true,
-          nodeOptions: {
-            rejectUnauthorized: false,
-          },
-        }),
-    "apache-dubbo-node (gRPC-web, JSON, https) against connect-go (h1)": (
-      options?: Record<string, unknown>
-    ) =>
-      createGrpcWebTransport({
-        ...options,
-        baseUrl: servers["connect-go (h1)"].getUrl(),
-        httpVersion: "1.1",
-        useBinaryFormat: false,
-        nodeOptions: {
-          rejectUnauthorized: false,
-        },
-      }),
-    "apache-dubbo-node (gRPC-web, JSON, http, gzip) against connect-go (h1)":
-      (options?: Record<string, unknown>) =>
-        createGrpcWebTransport({
-          ...options,
-          baseUrl: servers["connect-go (h1)"].getUrl(),
-          httpVersion: "1.1",
-          useBinaryFormat: false,
-          sendCompression: compressionGzip,
           nodeOptions: {
             rejectUnauthorized: false,
           },
