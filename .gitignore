@@ -20,6 +20,7 @@ lib
 /tmp
 /out-tsc
 .tmp/*
+.*.out
 
 # dependencies
 node_modules
