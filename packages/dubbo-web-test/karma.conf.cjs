@@ -14,6 +14,11 @@
 
 module.exports = function (config) {
   config.set({
+    plugins: [
+      require("karma-esbuild"),
+      require("karma-jasmine"),
+      require("karma-chrome-launcher")
+    ],
     frameworks: ["jasmine"],
     files: [
       "src/**/*.ts",
