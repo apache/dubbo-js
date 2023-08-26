@@ -30,6 +30,7 @@ import { testRoutes } from "./test-routes.js";
 const connectNodeH1BaseUrl = "http://127.0.0.1:8085";
 
 const crosstestTransports = {
+  // gRPC-web
   "apache-dubbo-web (gRPC-web, binary) gRPC-web against apache-dubbo-node (h1)":
     (options?: Record<string, unknown>) =>
       createGrpcWebTransport({
