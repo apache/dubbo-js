@@ -22,35 +22,15 @@ import { testRoutes } from "./test-routes.js";
 // The following servers are available through crosstests:
 //
 // | server        | port |
-// | ------------- | --- |
-// | connect-go h1 | 8080 |
-// | connect-go h2 | 8081 |
+// | ------------- | ---- |
 // | grpc-go       | 8083 |
 //
-// Source: // https://github.com/bufbuild/connect-es/pull/87
-const crossTestDubboGoH1BaseUrl = "https://127.0.0.1:8080";
 
 // see dubbo-node-h1-server.mjs
 const connectNodeH1BaseUrl = "http://127.0.0.1:8085";
 
 const crosstestTransports = {
   // gRPC-web
-  "apache-dubbo-web (gRPC-web, binary) gRPC-web against connect-go (h1)": (
-    options?: Record<string, unknown>
-  ) =>
-    createGrpcWebTransport({
-      ...options,
-      baseUrl: crossTestDubboGoH1BaseUrl,
-      useBinaryFormat: true,
-    }),
-  "apache-dubbo-web (gRPC-web, JSON) gRPC-web against connect-go (h1)": (
-    options?: Record<string, unknown>
-  ) =>
-    createGrpcWebTransport({
-      ...options,
-      baseUrl: crossTestDubboGoH1BaseUrl,
-      useBinaryFormat: false,
-    }),
   "apache-dubbo-web (gRPC-web, binary) gRPC-web against apache-dubbo-node (h1)":
     (options?: Record<string, unknown>) =>
       createGrpcWebTransport({
@@ -66,22 +46,6 @@ const crosstestTransports = {
         useBinaryFormat: false,
       }),
   // Triple
-  "apache-dubbo-web (Triple, binary) against connect-go (h1)": (
-    options?: Record<string, unknown>
-  ) =>
-    createDubboTransport({
-      ...options,
-      baseUrl: crossTestDubboGoH1BaseUrl,
-      useBinaryFormat: true,
-    }),
-  "apache-dubbo-web (Triple, JSON) against connect-go (h1)": (
-    options?: Record<string, unknown>
-  ) =>
-    createDubboTransport({
-      ...options,
-      baseUrl: crossTestDubboGoH1BaseUrl,
-      useBinaryFormat: false,
-    }),
   "apache-dubbo-web (Triple, binary) against apache-dubbo-node (h1)":
     (options?: Record<string, unknown>) =>
       createDubboTransport({

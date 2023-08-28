@@ -18,6 +18,7 @@ import {
   SimpleResponse,
 } from "./gen/grpc/testing/messages_pb.js";
 import { createDubboTransport } from "apache-dubbo-web";
+import { Code } from "apache-dubbo";
 
 describe("custom fetch", function () {
   describe("with Connect transport", () => {
@@ -77,7 +78,7 @@ describe("custom fetch", function () {
     it("should call Response#json with the binary format for an error response", async function () {
       const response = new Response(
         JSON.stringify({
-          code: "permission_denied",
+          status: Code.PermissionDenied,
           message: "foobar",
         }),
         {

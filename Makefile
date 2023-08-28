@@ -258,13 +258,10 @@ release: all ## Release npm packages
 
 .PHONY: crosstestserverstop
 crosstestserverstop:
-	-docker container stop serverdubbo servergrpc
+	-docker container stop servergrpc
 
 .PHONY: crosstestserverrun
 crosstestserverrun: crosstestserverstop
-	docker run --rm --name serverdubbo -p 8080:8080 -p 8081:8081 -d \
-		bufbuild/connect-crosstest:$(CROSSTEST_VERSION) \
-		/usr/local/bin/serverconnect --h1port "8080" --h2port "8081" --cert "cert/localhost.crt" --key "cert/localhost.key"
 	docker run --rm --name servergrpc -p 8083:8083 -d \
 		bufbuild/connect-crosstest:$(CROSSTEST_VERSION) \
 		/usr/local/bin/servergrpc --port "8083" --cert "cert/localhost.crt" --key "cert/localhost.key"
