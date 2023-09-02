@@ -32,6 +32,10 @@ export const testRoutes = (router: DubboRouter) => {
   router.service(TestService, testService);
 };
 
+export const testRoutesWithIsolation = (router: DubboRouter) => {
+  router.service(TestService, testService, {serviceGroup: 'dubbo', serviceVersion: '1.0.0'});
+};
+
 const testService: ServiceImpl<typeof TestService> = {
   emptyCall() {
     return {};
