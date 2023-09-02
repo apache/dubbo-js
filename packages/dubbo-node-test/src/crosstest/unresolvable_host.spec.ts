@@ -48,11 +48,11 @@ describe("unresolvable_host", function () {
       createGrpcTransport(optionsHttp1),
     ],
     [
-      "apache-dubbo-node (Connect, http2)",
+      "apache-dubbo-node (Triple, http2)",
       createDubboTransport(optionsHttp2),
     ],
     [
-      "apache-dubbo-node (Connect, http)",
+      "apache-dubbo-node (Triple, http)",
       createDubboTransport(optionsHttp1),
     ],
     ["apache-dubbo-node (gRPC, http2)", createGrpcTransport(optionsHttp2)],

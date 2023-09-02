@@ -78,7 +78,7 @@ describe("protocolName", function () {
 
   servers.describeTransportsOnly(
     [
-      "apache-dubbo-node (Connect, binary, http2, gzip) against apache-dubbo-node (h2c)",
+      "apache-dubbo-node (Triple, binary, http2, gzip) against apache-dubbo-node (h2c)",
     ],
     testForProtocol("connect")
   );

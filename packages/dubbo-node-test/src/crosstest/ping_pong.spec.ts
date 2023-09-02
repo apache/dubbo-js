@@ -26,14 +26,14 @@ describe("ping_pong", () => {
   servers.describeTransportsExcluding(
     // All following Transports run over HTTP/1, which cannot support full-duplex.
     [
-      "apache-dubbo-node (Connect, JSON, http) against apache-dubbo-node (h1)",
-      "apache-dubbo-node (Connect, binary, http) against apache-dubbo-node (h1)",
-      "apache-dubbo-node (Connect, binary, https) against apache-dubbo-node (h1 + tls)",
-      "apache-dubbo-node (Connect, JSON, https) against apache-dubbo-node (h1 + tls)",
-      "apache-dubbo-node (Connect, JSON, http, gzip) against apache-dubbo-node (h1)",
-      "apache-dubbo-node (Connect, binary, http, gzip) against apache-dubbo-node (h1)",
-      "apache-dubbo-node (Connect, JSON, http, gzip) against apache-dubbo-express (h1)",
-      "apache-dubbo-node (Connect, binary, http, gzip) against apache-dubbo-express (h1)",
+      "apache-dubbo-node (Triple, JSON, http) against apache-dubbo-node (h1)",
+      "apache-dubbo-node (Triple, binary, http) against apache-dubbo-node (h1)",
+      "apache-dubbo-node (Triple, binary, https) against apache-dubbo-node (h1 + tls)",
+      "apache-dubbo-node (Triple, JSON, https) against apache-dubbo-node (h1 + tls)",
+      "apache-dubbo-node (Triple, JSON, http, gzip) against apache-dubbo-node (h1)",
+      "apache-dubbo-node (Triple, binary, http, gzip) against apache-dubbo-node (h1)",
+      "apache-dubbo-node (Triple, JSON, http, gzip) against apache-dubbo-express (h1)",
+      "apache-dubbo-node (Triple, binary, http, gzip) against apache-dubbo-express (h1)",
       "apache-dubbo-node (gRPC, binary, http) against apache-dubbo-node (h1)",
       "apache-dubbo-node (gRPC, JSON, http) against apache-dubbo-node (h1)",
       "apache-dubbo-node (gRPC, JSON, https) against apache-dubbo-node (h1 + tls)",
