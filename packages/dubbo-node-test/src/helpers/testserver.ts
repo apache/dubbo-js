@@ -34,7 +34,7 @@ import type {
 } from "fastify";
 import { fastify } from "fastify";
 import { importExpress } from "./import-express.js";
-import { testRoutes } from "./test-routes.js";
+import { testRoutes, testRoutesWithIsolation } from "./test-routes.js";
 
 export function createTestServers() {
   // TODO http2 server with TLS and allow http1
@@ -42,6 +42,15 @@ export function createTestServers() {
   let nodeH2cServer: http2.Http2Server | undefined;
   let nodeHttpServer: http.Server | undefined;
   let nodeHttpsServer: http.Server | undefined;
+  let fastifyHttpServer: 
+    | FastifyInstance<
+        http.Server,
+        http.IncomingMessage,
+        http.ServerResponse,
+        FastifyBaseLogger,
+        FastifyTypeProviderDefault
+      >
+    | undefined;
   let fastifyH2cServer:
     | FastifyInstance<
         http2.Http2Server,
@@ -63,6 +72,7 @@ export function createTestServers() {
   //
   // Source: https://github.com/bufbuild/connect-es/pull/87
   const servers = {
+    // grpc-go
     "grpc-go (h2)": {
       getUrl() {
         return `https://localhost:8083`;
@@ -74,6 +84,7 @@ export function createTestServers() {
         return Promise.resolve();
       },
     },
+    // dubbo-node
     "apache-dubbo-node (h2)": {
       getUrl() {
         const address = nodeH2SecureServer?.address();
@@ -109,7 +120,6 @@ export function createTestServers() {
         });
       },
     },
-    // dubbo-node
     "apache-dubbo-node (h2c)": {
       getUrl() {
         const address = nodeH2cServer?.address();
@@ -236,6 +246,66 @@ export function createTestServers() {
         });
       },
     },
+    "apache-dubbo-node (h1 + Service Isolation)": {
+      getUrl() {
+        const address = nodeHttpServer?.address();
+        if (address == null || typeof address == "string") {
+          throw new Error("cannot get server port");
+        }
+        return `http://127.0.0.1:${address.port}`;
+      },
+      start(port = 0) {
+        return new Promise<void>((resolve) => {
+          const corsHeaders = {
+            "Access-Control-Allow-Origin": "*", // caution with this
+            "Access-Control-Allow-Methods": cors.allowedMethods.join(","),
+            "Access-Control-Allow-Headers": [
+              ...cors.allowedHeaders,
+              // used in tests
+              "X-Grpc-Test-Echo-Initial",
+              "X-Grpc-Test-Echo-Trailing-Bin",
+              "Request-Protocol",
+              "Get-Request",
+            ].join(", "),
+            "Access-Control-Expose-Headers": [
+              ...cors.exposedHeaders,
+              "X-Grpc-Test-Echo-Initial",
+              "X-Grpc-Test-Echo-Trailing-Bin",
+              "Trailer-X-Grpc-Test-Echo-Trailing-Bin", // unary trailer in Connect
+              "Request-Protocol",
+              "Get-Request",
+            ],
+            "Access-Control-Max-Age": 2 * 3600,
+          };
+          const serviceHandler = dubboNodeAdapter({
+            routes: testRoutesWithIsolation,
+            requireConnectProtocolHeader: true,
+          });
+          nodeHttpServer = http
+            .createServer({}, (req, res) => {
+              if (req.method === "OPTIONS") {
+                res.writeHead(204, corsHeaders);
+                res.end();
+                return;
+              }
+              for (const [k, v] of Object.entries(corsHeaders)) {
+                res.setHeader(k, v);
+              }
+              serviceHandler(req, res);
+            })
+            .listen(port, resolve);
+        });
+      },
+      stop() {
+        return new Promise<void>((resolve, reject) => {
+          if (!nodeHttpServer) {
+            reject(new Error("httpServer not started"));
+            return;
+          }
+          nodeHttpServer.close((err) => (err ? reject(err) : resolve()));
+        });
+      },
+    },
     // dubbo-fastify
     "apache-dubbo-fastify (h2c)": {
       getUrl() {
@@ -260,6 +330,36 @@ export function createTestServers() {
           requireConnectProtocolHeader: true,
         });
         await fastifyH2cServer.listen();
+      },
+      async stop() {
+        if (!fastifyH2cServer) {
+          throw new Error("fastifyH2cServer not started");
+        }
+        await fastifyH2cServer.close();
+      },
+    },
+    "apache-dubbo-fastify (h1 + Service Isolation)": {
+      getUrl() {
+        if (!fastifyHttpServer) {
+          throw new Error("fastifyH2cServer not started");
+        }
+        const port = fastifyHttpServer.addresses().map((a) => a.port)[0] as
+          | number
+          | undefined;
+        if (port === undefined) {
+          throw new Error("fastifyH2cServer not started");
+        }
+        return `http://localhost:${port}`;
+      },
+      async start() {
+        fastifyHttpServer = fastify({
+          logger: false,
+        });
+        await fastifyHttpServer.register(fastifyDubboPlugin, {
+          routes: testRoutes,
+          requireConnectProtocolHeader: true,
+        });
+        await fastifyHttpServer.listen();
       },
       async stop() {
         if (!fastifyH2cServer) {
@@ -302,6 +402,39 @@ export function createTestServers() {
         });
       },
     },
+    "apache-dubbo-express (h1 + Service Isolation)": {
+      getUrl() {
+        const address = expressServer?.address();
+        if (address == null || typeof address == "string") {
+          throw new Error("cannot get server port");
+        }
+        return `http://127.0.0.1:${address.port}`;
+      },
+      async start(port = 0) {
+        const express = await importExpress();
+        const app = express();
+        app.use(
+          expressDubboMiddleware({
+            routes: testRoutesWithIsolation,
+            requireConnectProtocolHeader: true,
+          })
+        );
+        expressServer = http.createServer(app);
+        return new Promise<void>((resolve) => {
+          expressServer?.listen(port, resolve);
+        });
+      },
+      stop() {
+        return new Promise<void>((resolve, reject) => {
+          if (!expressServer) {
+            reject(new Error("expressServer not started"));
+            return;
+          }
+          expressServer.close((err) => (err ? reject(err) : resolve()));
+          resolve(); // the server.close() callback above slows down our tests
+        });
+      },
+    }
   };
 
   const transports = {
@@ -465,8 +598,8 @@ export function createTestServers() {
           sendCompression: compressionGzip,
         }),
 
-    // Connect
-    "apache-dubbo-node (Connect, binary, http2, gzip) against apache-dubbo-node (h2c)":
+    // Triple
+    "apache-dubbo-node (Triple, binary, http2, gzip) against apache-dubbo-node (h2c)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
@@ -476,7 +609,7 @@ export function createTestServers() {
           useBinaryFormat: true,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (Connect, JSON, http2, gzip) against apache-dubbo-node (h2c)":
+    "apache-dubbo-node (Triple, JSON, http2, gzip) against apache-dubbo-node (h2c)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
@@ -486,7 +619,7 @@ export function createTestServers() {
           useBinaryFormat: false,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (Connect, JSON, http) against apache-dubbo-node (h1)":
+    "apache-dubbo-node (Triple, JSON, http) against apache-dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
@@ -494,7 +627,7 @@ export function createTestServers() {
           httpVersion: "1.1",
           useBinaryFormat: false,
         }),
-    "apache-dubbo-node (Connect, binary, http) against apache-dubbo-node (h1)":
+    "apache-dubbo-node (Triple, binary, http) against apache-dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
@@ -502,7 +635,7 @@ export function createTestServers() {
           httpVersion: "1.1",
           useBinaryFormat: true,
         }),
-    "apache-dubbo-node (Connect, binary, https) against apache-dubbo-node (h1 + tls)":
+    "apache-dubbo-node (Triple, binary, https) against apache-dubbo-node (h1 + tls)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
@@ -513,7 +646,7 @@ export function createTestServers() {
           },
           useBinaryFormat: true,
         }),
-    "apache-dubbo-node (Connect, JSON, https) against apache-dubbo-node (h1 + tls)":
+    "apache-dubbo-node (Triple, JSON, https) against apache-dubbo-node (h1 + tls)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
@@ -524,7 +657,7 @@ export function createTestServers() {
           },
           useBinaryFormat: false,
         }),
-    "apache-dubbo-node (Connect, JSON, http, gzip) against apache-dubbo-node (h1)":
+    "apache-dubbo-node (Triple, JSON, http, gzip) against apache-dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
@@ -536,7 +669,7 @@ export function createTestServers() {
           useBinaryFormat: false,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (Connect, binary, http, gzip) against apache-dubbo-node (h1)":
+    "apache-dubbo-node (Triple, binary, http, gzip) against apache-dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
@@ -548,7 +681,7 @@ export function createTestServers() {
           useBinaryFormat: true,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (Connect, JSON, http, gzip) against apache-dubbo-fastify (h2c)":
+    "apache-dubbo-node (Triple, JSON, http, gzip) against apache-dubbo-fastify (h2c)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
@@ -558,7 +691,7 @@ export function createTestServers() {
           useBinaryFormat: false,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (Connect, binary, http, gzip) against apache-dubbo-fastify (h2c)":
+    "apache-dubbo-node (Triple, binary, http, gzip) against apache-dubbo-fastify (h2c)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
@@ -569,7 +702,7 @@ export function createTestServers() {
           sendCompression: compressionGzip,
         }),
 
-    "apache-dubbo-node (Connect, JSON, http, gzip) against apache-dubbo-express (h1)":
+    "apache-dubbo-node (Triple, JSON, http, gzip) against apache-dubbo-express (h1)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
@@ -578,7 +711,7 @@ export function createTestServers() {
           useBinaryFormat: false,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (Connect, binary, http, gzip) against apache-dubbo-express (h1)":
+    "apache-dubbo-node (Triple, binary, http, gzip) against apache-dubbo-express (h1)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
