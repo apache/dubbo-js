@@ -41,16 +41,8 @@ export function createTestServers() {
   let nodeH2SecureServer: http2.Http2SecureServer | undefined;
   let nodeH2cServer: http2.Http2Server | undefined;
   let nodeHttpServer: http.Server | undefined;
+  let nodeHttpServerWithIsolation: http.Server | undefined;
   let nodeHttpsServer: http.Server | undefined;
-  let fastifyHttpServer: 
-    | FastifyInstance<
-        http.Server,
-        http.IncomingMessage,
-        http.ServerResponse,
-        FastifyBaseLogger,
-        FastifyTypeProviderDefault
-      >
-    | undefined;
   let fastifyH2cServer:
     | FastifyInstance<
         http2.Http2Server,
@@ -60,7 +52,17 @@ export function createTestServers() {
         FastifyTypeProviderDefault
       >
     | undefined;
+  let fastifyHttpServerWithIsolation: 
+    | FastifyInstance<
+        http.Server,
+        http.IncomingMessage,
+        http.ServerResponse,
+        FastifyBaseLogger,
+        FastifyTypeProviderDefault
+      >
+    | undefined;
   let expressServer: http.Server | undefined;
+  let expressServerWithIsolation: http.Server | undefined;
 
   const certLocalhost = getCertLocalhost();
 
@@ -248,7 +250,7 @@ export function createTestServers() {
     },
     "apache-dubbo-node (h1 + Service Isolation)": {
       getUrl() {
-        const address = nodeHttpServer?.address();
+        const address = nodeHttpServerWithIsolation?.address();
         if (address == null || typeof address == "string") {
           throw new Error("cannot get server port");
         }
@@ -281,7 +283,7 @@ export function createTestServers() {
             routes: testRoutesWithIsolation,
             requireConnectProtocolHeader: true,
           });
-          nodeHttpServer = http
+          nodeHttpServerWithIsolation = http
             .createServer({}, (req, res) => {
               if (req.method === "OPTIONS") {
                 res.writeHead(204, corsHeaders);
@@ -298,11 +300,11 @@ export function createTestServers() {
       },
       stop() {
         return new Promise<void>((resolve, reject) => {
-          if (!nodeHttpServer) {
-            reject(new Error("httpServer not started"));
+          if (!nodeHttpServerWithIsolation) {
+            reject(new Error("nodeHttpServerWithIsolation not started"));
             return;
           }
-          nodeHttpServer.close((err) => (err ? reject(err) : resolve()));
+          nodeHttpServerWithIsolation.close((err) => (err ? reject(err) : resolve()));
         });
       },
     },
@@ -340,30 +342,30 @@ export function createTestServers() {
     },
     "apache-dubbo-fastify (h1 + Service Isolation)": {
       getUrl() {
-        if (!fastifyHttpServer) {
-          throw new Error("fastifyH2cServer not started");
+        if (!fastifyHttpServerWithIsolation) {
+          throw new Error("fastifyHttpServerWithIsolation not started");
         }
-        const port = fastifyHttpServer.addresses().map((a) => a.port)[0] as
+        const port = fastifyHttpServerWithIsolation.addresses().map((a) => a.port)[0] as
           | number
           | undefined;
         if (port === undefined) {
-          throw new Error("fastifyH2cServer not started");
+          throw new Error("fastifyHttpServerWithIsolation not started");
         }
         return `http://localhost:${port}`;
       },
       async start() {
-        fastifyHttpServer = fastify({
+        fastifyHttpServerWithIsolation = fastify({
           logger: false,
         });
-        await fastifyHttpServer.register(fastifyDubboPlugin, {
+        await fastifyHttpServerWithIsolation.register(fastifyDubboPlugin, {
           routes: testRoutes,
           requireConnectProtocolHeader: true,
         });
-        await fastifyHttpServer.listen();
+        await fastifyHttpServerWithIsolation.listen();
       },
       async stop() {
         if (!fastifyH2cServer) {
-          throw new Error("fastifyH2cServer not started");
+          throw new Error("fastifyHttpServerWithIsolation not started");
         }
         await fastifyH2cServer.close();
       },
@@ -404,7 +406,7 @@ export function createTestServers() {
     },
     "apache-dubbo-express (h1 + Service Isolation)": {
       getUrl() {
-        const address = expressServer?.address();
+        const address = expressServerWithIsolation?.address();
         if (address == null || typeof address == "string") {
           throw new Error("cannot get server port");
         }
@@ -419,18 +421,18 @@ export function createTestServers() {
             requireConnectProtocolHeader: true,
           })
         );
-        expressServer = http.createServer(app);
+        expressServerWithIsolation = http.createServer(app);
         return new Promise<void>((resolve) => {
-          expressServer?.listen(port, resolve);
+          expressServerWithIsolation?.listen(port, resolve);
         });
       },
       stop() {
         return new Promise<void>((resolve, reject) => {
-          if (!expressServer) {
-            reject(new Error("expressServer not started"));
+          if (!expressServerWithIsolation) {
+            reject(new Error("expressServerWithIsolation not started"));
             return;
           }
-          expressServer.close((err) => (err ? reject(err) : resolve()));
+          expressServerWithIsolation.close((err) => (err ? reject(err) : resolve()));
           resolve(); // the server.close() callback above slows down our tests
         });
       },
@@ -720,32 +722,6 @@ export function createTestServers() {
           sendCompression: compressionGzip,
         }),
 
-    // Triple + Service Isolation
-    "apache-dubbo-node (Triple, JSON, http) against apache-dubbo-node (h1 + Service Isolation)":
-      (options?: Record<string, unknown>) =>
-        createDubboTransport({
-          ...options,
-          baseUrl: servers["apache-dubbo-node (h1 + Service Isolation)"].getUrl(),
-          httpVersion: "1.1",
-          useBinaryFormat: false,
-        }),
-    "apache-dubbo-node (Triple, JSON, http) against apache-dubbo-express (h1 + Service Isolation)":
-      (options?: Record<string, unknown>) =>
-        createDubboTransport({
-          ...options,
-          baseUrl: servers["apache-dubbo-express (h1 + Service Isolation)"].getUrl(),
-          httpVersion: "1.1",
-          useBinaryFormat: false,
-        }),
-    "apache-dubbo-node (Triple, JSON, http) against apache-dubbo-fastify (h1 + Service Isolation)":
-      (options?: Record<string, unknown>) =>
-        createDubboTransport({
-          ...options,
-          baseUrl: servers["apache-dubbo-fastify (h1 + Service Isolation)"].getUrl(),
-          httpVersion: "1.1",
-          useBinaryFormat: false,
-        }),
-
     // gRPC-web
     "apache-dubbo-node (gRPC-web, binary, http2) against apache-dubbo-node (h2c)":
       (options?: Record<string, unknown>) =>
@@ -911,9 +887,37 @@ export function createTestServers() {
         }),
   };
 
+  const transportsWithIsolation = {
+    "apache-dubbo-node (Triple, JSON, http) against apache-dubbo-node (h1 + Service Isolation)":
+      (options?: Record<string, unknown>) =>
+        createDubboTransport({
+          ...options,
+          baseUrl: servers["apache-dubbo-node (h1 + Service Isolation)"].getUrl(),
+          httpVersion: "1.1",
+          useBinaryFormat: false,
+        }),
+    "apache-dubbo-node (Triple, JSON, http) against apache-dubbo-express (h1 + Service Isolation)":
+      (options?: Record<string, unknown>) =>
+        createDubboTransport({
+          ...options,
+          baseUrl: servers["apache-dubbo-express (h1 + Service Isolation)"].getUrl(),
+          httpVersion: "1.1",
+          useBinaryFormat: false,
+        }),
+    "apache-dubbo-node (Triple, JSON, http) against apache-dubbo-fastify (h1 + Service Isolation)":
+      (options?: Record<string, unknown>) =>
+        createDubboTransport({
+          ...options,
+          baseUrl: servers["apache-dubbo-fastify (h1 + Service Isolation)"].getUrl(),
+          httpVersion: "1.1",
+          useBinaryFormat: false,
+        }),
+  }
+
   return {
     servers,
     transports,
+    transportsWithIsolation,
     start(): Promise<void> {
       return Promise.all(Object.values(servers).map((s) => s.start())).then();
     },
@@ -932,19 +936,31 @@ export function createTestServers() {
         });
       }
     },
-    describeTransportsExcluding(
-      exclude: Array<keyof typeof transports>,
+    describeTransportsWithIsolation(
       specDefinitions: (
         transport: (options?: Record<string, unknown>) => Transport,
-        transportName: keyof typeof transports
+        transportName: keyof typeof transportsWithIsolation
+      ) => void
+    ) {
+      for (const [name, transportFactory] of Object.entries(transportsWithIsolation)) {
+        describe(name, () => {
+          specDefinitions(transportFactory, name as keyof typeof transportsWithIsolation);
+        });
+      }
+    },
+    describeTransportsExcluding(
+      exclude: Array<keyof typeof transports | keyof typeof transportsWithIsolation>,
+      specDefinitions: (
+        transport: (options?: Record<string, unknown>) => Transport,
+        transportName: keyof typeof transports | keyof typeof transportsWithIsolation
       ) => void
     ) {
       for (const [name, transportFactory] of Object.entries(transports)) {
-        if (exclude.includes(name as keyof typeof transports)) {
+        if (exclude.includes(name as keyof typeof transports | keyof typeof transportsWithIsolation)) {
           continue;
         }
         describe(name, () => {
-          specDefinitions(transportFactory, name as keyof typeof transports);
+          specDefinitions(transportFactory, name as keyof typeof transports | keyof typeof transportsWithIsolation);
         });
       }
     },
