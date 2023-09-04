@@ -18,6 +18,8 @@ import type { DubboRouter, DubboRouterOptions } from "apache-dubbo";
 import * as protoTriple from "apache-dubbo/protocol-triple";
 import * as protoGrpcWeb from "apache-dubbo/protocol-grpc-web";
 import * as protoGrpc from "apache-dubbo/protocol-grpc";
+import type { UniversalHandler } from "apache-dubbo/protocol";
+import type { ExpandHandler } from "apache-dubbo/protocol-triple";
 import {
   compressionBrotli,
   compressionGzip,
@@ -73,12 +75,24 @@ export function fastifyDubboPlugin(
   // this plugin without affecting outer scope
   addNoopContentTypeParsers(instance);
 
-  for (const uHandler of uHandlers) {
+  const paths = new Map<string, Map<string, UniversalHandler & ExpandHandler>>();
+
+  for (const uHandler of router.handlers) {
+    let handlersMap = paths.get(uHandler.requestPath);
+    if (!handlersMap) {
+      handlersMap = new Map();
+      paths.set(uHandler.requestPath, handlersMap);
+    }
+    handlersMap.set(uHandler.serviceVersion + uHandler.serviceGroup, uHandler);
+  }
+
+  for (const [requestPath, handlersMap] of paths) {
     instance.all(
-      uHandler.requestPath,
+      requestPath,
       {},
       async function handleFastifyRequest(req, reply) {
-        if((req.headers['tri-service-version'] || '') !== uHandler.serviceVersion || (req.headers['tri-service-group'] || '') !== uHandler.serviceGroup) return;
+        const uHandler = handlersMap.get((req.headers['tri-service-version'] ?? "") as string + (req.headers['tri-service-group'] ?? "") as string);
+        if(!uHandler) return;
         try {
           const uRes = await uHandler(
             universalRequestFromNodeRequest(
