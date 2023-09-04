@@ -1,6 +1,6 @@
 {
   "name": "protoc-gen-apache-dubbo-es",
-  "version": "0.0.2",
+  "version": "0.0.4-alpha",
   "description": "Code generator for Dubbo",
   "license": "Apache-2.0",
   "repository": {
@@ -24,7 +24,7 @@
     "@bufbuild/protoplugin": "^1.2.1"
   },
   "peerDependencies": {
-    "apache-dubbo": "^0.0.10",
+    "apache-dubbo": "0.0.4-alpha",
     "@bufbuild/protoc-gen-es": "^1.2.1"
   },
   "peerDependenciesMeta": {

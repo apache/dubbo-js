@@ -1,6 +1,6 @@
 {
   "name": "apache-dubbo-web",
-  "version": "0.0.10",
+  "version": "0.0.4-alpha",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -23,7 +23,7 @@
     "require": "./dist/cjs/index.js"
   },
   "dependencies": {
-    "apache-dubbo": "^0.0.10"
+    "apache-dubbo": "0.0.4-alpha"
   },
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.2.1"
