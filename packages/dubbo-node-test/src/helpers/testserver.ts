@@ -358,16 +358,16 @@ export function createTestServers() {
           logger: false,
         });
         await fastifyHttpServerWithIsolation.register(fastifyDubboPlugin, {
-          routes: testRoutes,
+          routes: testRoutesWithIsolation,
           requireConnectProtocolHeader: true,
         });
         await fastifyHttpServerWithIsolation.listen();
       },
       async stop() {
-        if (!fastifyH2cServer) {
+        if (!fastifyHttpServerWithIsolation) {
           throw new Error("fastifyHttpServerWithIsolation not started");
         }
-        await fastifyH2cServer.close();
+        await fastifyHttpServerWithIsolation.close();
       },
     },
     // dubbo-express
