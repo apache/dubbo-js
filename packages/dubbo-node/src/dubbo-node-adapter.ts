@@ -15,6 +15,7 @@
 import { Code, DubboError, createDubboRouter } from "apache-dubbo";
 import type { DubboRouter, DubboRouterOptions } from "apache-dubbo";
 import type { UniversalHandler } from "apache-dubbo/protocol";
+import type { ExpandHandler } from "apache-dubbo/protocol-triple";
 import { uResponseNotFound } from "apache-dubbo/protocol";
 import {
   universalRequestFromNodeRequest,
@@ -71,7 +72,7 @@ export function dubboNodeAdapter(
   const router = createDubboRouter(options);
   options.routes(router);
   const prefix = options.requestPathPrefix ?? "";
-  const paths = new Map<string, UniversalHandler>();
+  const paths = new Map<string, UniversalHandler & ExpandHandler>();
   for (const uHandler of router.handlers) {
     paths.set(prefix + uHandler.requestPath + uHandler.serviceVersion + uHandler.serviceGroup, uHandler);
   }

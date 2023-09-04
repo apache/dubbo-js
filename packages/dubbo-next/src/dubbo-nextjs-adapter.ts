@@ -15,6 +15,7 @@
 import { createDubboRouter } from "apache-dubbo";
 import type { DubboRouter, DubboRouterOptions } from "apache-dubbo";
 import type { UniversalHandler } from "apache-dubbo/protocol";
+import type { ExpandHandler } from "apache-dubbo/protocol-triple";
 import {
   compressionBrotli,
   compressionGzip,
@@ -67,7 +68,7 @@ export function nextJsApiRouter(options: NextJsApiRouterOptions): ApiRoute {
   const router = createDubboRouter(options);
   options.routes(router);
   const prefix = options.prefix ?? "/api";
-  const paths = new Map<string, UniversalHandler>();
+  const paths = new Map<string, UniversalHandler & ExpandHandler>();
   for (const uHandler of router.handlers) {
     paths.set(prefix + uHandler.requestPath + uHandler.serviceVersion + uHandler.serviceGroup, uHandler);
   }
