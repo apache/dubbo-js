@@ -61,3 +61,4 @@ export { protocolVersion } from "./version.js";
 export { codeFromString } from "./code-string.js";
 export { codeToString } from "./code-string.js";
 export type { TripleClientServiceOptions } from './client-service-options.js';
+export type { ExpandHandlerOptions, ExpandHandler } from './expand-handler.js';
