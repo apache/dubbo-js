@@ -92,7 +92,10 @@ export function fastifyDubboPlugin(
       {},
       async function handleFastifyRequest(req, reply) {
         const uHandler = handlersMap.get((req.headers['tri-service-version'] ?? "") as string + (req.headers['tri-service-group'] ?? "") as string);
-        if(!uHandler) return;
+        if(!uHandler) {
+          reply.status(404).send({ status: Code.Unimplemented, message: 'HTTP 404' });
+          return;
+        }
         try {
           const uRes = await uHandler(
             universalRequestFromNodeRequest(
