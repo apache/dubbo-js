@@ -200,8 +200,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-For the package apache-dubbo, apache-dubbo-node, apache-dubbo-node-test, apache-dubbo-web, apache-dubbo-web-test, apache-dubbo-web-bench
- apache-dubbo-express, apache-dubbo-fastify, apache-dubbo-next, apache-protoc-gen-connect-es, apache-protoc-gen-connect-web:
+For the package @apachedubbo/dubbo, @apachedubbo/dubbo-node, @apachedubbo/dubbo-node-test, @apachedubbo/dubbo-web, @apachedubbo/dubbo-web-test, @apachedubbo/dubbo-web-bench
+ @apachedubbo/dubbo-express, @apachedubbo/dubbo-fastify, @apachedubbo/dubbo-next, @apachedubbo/protoc-gen-connect-es, @apachedubbo/protoc-gen-connect-web:
 
 This product contains a modified portion of 'connect-es', a family of libraries for building browser and gRPC-compatible HTTP APIs also
  under a "Apache License 2.0" license, see https://github.com/bufbuild/connect-es/blob/main/LICENSE:
