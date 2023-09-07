@@ -51,18 +51,12 @@ jobs:
       - name: Build Packages
         run:
           npm run build --workspace=./packages/dubbo
-          # npm run build --workspace=./packages/dubbo-node
-          # npm run build --workspace=./packages/dubbo-web
-          # npm run build --workspace=./packages/dubbo-express
-          # npm run build --workspace=./packages/dubbo-fastify
-          # npm run build --workspace=./packages/dubbo-next
-          # npm run build --workspace=./packages/protoc-gen-apache-dubbo-es
-          # npm run build --workspace=./packages/protoc-gen-apache-dubbo-web
+          npm run build --workspace=./packages/dubbo-node
 
       - name: Continuous Integration
         run:
           npm run jasmine --workspace=./packages/dubbo
-          # npm run jasmine --workspace=./packages/dubbo-node
+          npm run jasmine --workspace=./packages/dubbo-node
 
       - name: Code Coverage
         uses: codecov/codecov-action@v1
