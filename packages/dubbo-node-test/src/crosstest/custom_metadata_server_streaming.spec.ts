@@ -17,7 +17,7 @@ import {
   createPromiseClient,
   decodeBinaryHeader,
   encodeBinaryHeader,
-} from "apache-dubbo";
+} from "@apachedubbo/dubbo";
 import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import {
   StreamingOutputCallRequest,

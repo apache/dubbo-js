@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code, DubboError, createPromiseClient } from "apache-dubbo";
-import type { TripleClientServiceOptions } from 'apache-dubbo/protocol-triple';
+import { Code, DubboError, createPromiseClient } from "@apachedubbo/dubbo";
+import type { TripleClientServiceOptions } from '@apachedubbo/dubbo/protocol-triple';
 import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import { Empty } from "../gen/grpc/testing/empty_pb.js";
 import { createTestServers } from "../helpers/testserver.js";

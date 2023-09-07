@@ -1,6 +1,6 @@
 {
-  "name": "apache-dubbo-node",
-  "version": "0.0.4-alpha",
+  "name": "@apachedubbo/dubbo-node",
+  "version": "3.0.0-alpha",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "node": ">=16.0.0"
   },
   "dependencies": {
-    "apache-dubbo": "0.0.4-alpha",
+    "@apachedubbo/dubbo": "3.0.0-alpha",
     "headers-polyfill": "^3.1.2"
   },
   "peerDependencies": {

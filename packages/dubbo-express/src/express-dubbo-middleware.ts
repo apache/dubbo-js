@@ -13,16 +13,16 @@
 // limitations under the License.
 
 import type { JsonValue } from "@bufbuild/protobuf";
-import { createDubboRouter, Code, DubboError } from "apache-dubbo";
-import type { DubboRouter, DubboRouterOptions } from "apache-dubbo";
-import type { UniversalHandler } from "apache-dubbo/protocol";
-import type { ExpandHandler } from "apache-dubbo/protocol-triple";
+import { createDubboRouter, Code, DubboError } from "@apachedubbo/dubbo";
+import type { DubboRouter, DubboRouterOptions } from "@apachedubbo/dubbo";
+import type { UniversalHandler } from "@apachedubbo/dubbo/protocol";
+import type { ExpandHandler } from "@apachedubbo/dubbo/protocol-triple";
 import {
   compressionBrotli,
   compressionGzip,
   universalRequestFromNodeRequest,
   universalResponseToNodeResponse,
-} from "apache-dubbo-node";
+} from "@apachedubbo/dubbo-node";
 import type * as express from "express";
 
 interface ExpressDubboMiddlewareOptions extends DubboRouterOptions {
@@ -32,7 +32,7 @@ interface ExpressDubboMiddlewareOptions extends DubboRouterOptions {
    * Create a file `connect.ts` with a default export such as this:
    *
    * ```ts
-   * import {DubboRouter} from "apache-dubbo";
+   * import {DubboRouter} from "@apachedubbo/dubbo";
    *
    * export default (router: DubboRouter) => {
    *   router.service(ElizaService, {});

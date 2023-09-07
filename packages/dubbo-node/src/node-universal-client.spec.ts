@@ -14,8 +14,8 @@
 
 import * as http2 from "http2";
 import * as http from "http";
-import { DubboError } from "apache-dubbo";
-import { createAsyncIterable } from "apache-dubbo/protocol";
+import { DubboError } from "@apachedubbo/dubbo";
+import { createAsyncIterable } from "@apachedubbo/dubbo/protocol";
 import { createNodeHttpClient } from "./node-universal-client.js";
 import { useNodeServer } from "./use-node-server-helper.spec.js";
 

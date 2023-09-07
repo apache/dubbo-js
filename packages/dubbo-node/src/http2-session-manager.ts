@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import * as http2 from "http2";
-import { Code, DubboError } from "apache-dubbo";
+import { Code, DubboError } from "@apachedubbo/dubbo";
 import { dubboErrorFromNodeReason } from "./node-error.js";
 
 export interface Http2SessionOptions {

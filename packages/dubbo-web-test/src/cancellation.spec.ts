@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { CallOptions } from "apache-dubbo";
+import type { CallOptions } from "@apachedubbo/dubbo";
 import {
   Code,
   DubboError,
   createCallbackClient,
   createPromiseClient,
-} from "apache-dubbo";
+} from "@apachedubbo/dubbo";
 import { describeTransports } from "./helpers/crosstestserver.js";
 import { TestService } from "./gen/grpc/testing/test_dubbo.js";
 

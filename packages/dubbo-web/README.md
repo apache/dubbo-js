@@ -1,10 +1,10 @@
-# apache-dubbo-web
+# @apachedubbo/dubbo-web
 
 Dubbo is a family of libraries for building and consuming APIs on different languages and platforms.
-[apache-dubbo](https://www.npmjs.com/package/apache-dubbo) brings type-safe APIs with Protobuf to
+[@apachedubbo/dubbo](https://www.npmjs.com/package/@apachedubbo/dubbo) brings type-safe APIs with Protobuf to
 TypeScript.
 
-`apache-dubbo-web` provides the following adapters for web browsers, and any other platform that has
+`@apachedubbo/dubbo-web` provides the following adapters for web browsers, and any other platform that has
 the fetch API on board:
 
 ### createDubboTransport()
@@ -12,8 +12,8 @@ the fetch API on board:
 Lets your clients running in the web browser talk to a server with the Dubbo protocol:
 
 ```diff
-import { createPromiseClient } from "apache-dubbo";
-+ import { createDubboTransport } from "apache-dubbo-web";
+import { createPromiseClient } from "@apachedubbo/dubbo";
++ import { createDubboTransport } from "@apachedubbo/dubbo-web";
 import { ElizaService } from "./gen/eliza_dubbo.js";
 
 + // A transport for clients using the Dubbo protocol with fetch()
@@ -31,8 +31,8 @@ console.log(sentence) // you said: I feel happy.
 Lets your clients running in the web browser talk to a server with the gRPC-web protocol:
 
 ```diff
-import { createPromiseClient } from "apache-dubbo";
-+ import { createGrpcWebTransport } from "apache-dubbo-web";
+import { createPromiseClient } from "@apachedubbo/dubbo";
++ import { createGrpcWebTransport } from "@apachedubbo/dubbo-web";
 import { ElizaService } from "./gen/eliza_dubbo.js";
 
 + // A transport for clients using the Dubbo protocol with fetch()

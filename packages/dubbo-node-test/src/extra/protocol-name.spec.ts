@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createCallbackClient, createPromiseClient } from "apache-dubbo";
-import type { Transport } from "apache-dubbo";
+import { createCallbackClient, createPromiseClient } from "@apachedubbo/dubbo";
+import type { Transport } from "@apachedubbo/dubbo";
 import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import { SimpleRequest } from "../gen/grpc/testing/messages_pb.js";
 import { createTestServers } from "../helpers/testserver.js";
@@ -64,21 +64,21 @@ describe("protocolName", function () {
 
   servers.describeTransportsOnly(
     [
-      "apache-dubbo-node (gRPC, binary, http2) against apache-dubbo-node (h2)",
+      "@apachedubbo/dubbo-node (gRPC, binary, http2) against @apachedubbo/dubbo-node (h2)",
     ],
     testForProtocol("grpc")
   );
 
   servers.describeTransportsOnly(
     [
-      "apache-dubbo-node (gRPC-web, binary, http2) against apache-dubbo-node (h2c)",
+      "@apachedubbo/dubbo-node (gRPC-web, binary, http2) against @apachedubbo/dubbo-node (h2c)",
     ],
     testForProtocol("grpc-web")
   );
 
   servers.describeTransportsOnly(
     [
-      "apache-dubbo-node (Triple, binary, http2, gzip) against apache-dubbo-node (h2c)",
+      "@apachedubbo/dubbo-node (Triple, binary, http2, gzip) against @apachedubbo/dubbo-node (h2c)",
     ],
     testForProtocol("connect")
   );

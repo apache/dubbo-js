@@ -1,5 +1,5 @@
 {
-  "name": "apache-dubbo-node-test",
+  "name": "@apachedubbo/dubbo-node-test",
   "private": true,
   "scripts": {
     "clean": "rm -rf ./dist/esm/*",
@@ -18,16 +18,16 @@
     "@grpc/grpc-js": "^1.8.14",
     "@types/express": "^4.17.17",
     "@types/jasmine": "^4.3.0",
-    "apache-dubbo": "0.0.4-alpha",
-    "apache-dubbo-express": "0.0.4-alpha",
-    "apache-dubbo-fastify": "0.0.4-alpha",
-    "apache-dubbo-node": "0.0.4-alpha",
-    "apache-dubbo-web": "0.0.4-alpha",
+    "@apachedubbo/dubbo": "3.0.0-alpha",
+    "@apachedubbo/dubbo-express": "3.0.0-alpha",
+    "@apachedubbo/dubbo-fastify": "3.0.0-alpha",
+    "@apachedubbo/dubbo-node": "3.0.0-alpha",
+    "@apachedubbo/dubbo-web": "3.0.0-alpha",
     "esbuild": "^0.16.12",
     "express": "^4.18.2",
     "fastify": "^4.17.0",
     "jasmine": "^5.0.0",
-    "protoc-gen-apache-dubbo-es": "0.0.4-alpha"
+    "@apachedubbo/protoc-gen-apache-dubbo-es": "3.0.0-alpha"
   },
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.2.1"

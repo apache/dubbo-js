@@ -39,7 +39,7 @@ import type { ProtocolHandlerFactory } from "./protocol/protocol-handler-factory
  * Create a file `connect.ts` with a default export such as this:
  *
  * ```ts
- * import {DubboRouter} from "apache-dubbo";
+ * import {DubboRouter} from "@apachedubbo/dubbo";
  *
  * export default (router: DubboRouter) => {
  *   router.service(ElizaService, {});
@@ -47,7 +47,7 @@ import type { ProtocolHandlerFactory } from "./protocol/protocol-handler-factory
  * ```
  *
  * The pass this function to adapters and plugins, for example
- * from apache-dubbo-node, or from apache-dubbo-fastify.
+ * from @apachedubbo/dubbo-node, or from @apachedubbo/dubbo-fastify.
  */
 export interface DubboRouter {
   readonly handlers: Array<UniversalHandler & ExpandHandler>;

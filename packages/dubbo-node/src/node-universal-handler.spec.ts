@@ -16,13 +16,13 @@ import { useNodeServer } from "./use-node-server-helper.spec.js";
 import * as http2 from "http2";
 import * as http from "http";
 import { universalRequestFromNodeRequest } from "./node-universal-handler.js";
-import { DubboError } from "apache-dubbo";
+import { DubboError } from "@apachedubbo/dubbo";
 import { getNodeErrorProps } from "./node-error.js";
 import {
   assertByteStreamRequest,
   readAllBytes,
   type UniversalServerRequest,
-} from "apache-dubbo/protocol";
+} from "@apachedubbo/dubbo/protocol";
 
 // Polyfill the Headers API for Node versions < 18
 import "./node-headers-polyfill.js";

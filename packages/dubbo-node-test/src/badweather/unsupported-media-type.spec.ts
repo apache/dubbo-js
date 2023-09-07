@@ -14,7 +14,7 @@
 
 import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import { createTestServers } from "../helpers/testserver.js";
-import { createMethodUrl } from "apache-dubbo/protocol";
+import { createMethodUrl } from "@apachedubbo/dubbo/protocol";
 import { http2Request } from "../helpers/http2-request.js";
 
 describe("unsupported media type", () => {
@@ -22,7 +22,7 @@ describe("unsupported media type", () => {
   beforeAll(async () => await servers.start());
 
   servers.describeServers(
-    ["apache-dubbo-node (h2c)"],
+    ["@apachedubbo/dubbo-node (h2c)"],
     (server, serverName) => {
       const rejectUnauthorized = true; // TODO set up cert for go server correctly
 

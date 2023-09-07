@@ -13,19 +13,19 @@
 // limitations under the License.
 
 import type { JsonValue } from "@bufbuild/protobuf";
-import { Code, DubboError, createDubboRouter } from "apache-dubbo";
-import type { DubboRouter, DubboRouterOptions } from "apache-dubbo";
-import * as protoTriple from "apache-dubbo/protocol-triple";
-import * as protoGrpcWeb from "apache-dubbo/protocol-grpc-web";
-import * as protoGrpc from "apache-dubbo/protocol-grpc";
-import type { UniversalHandler } from "apache-dubbo/protocol";
-import type { ExpandHandler } from "apache-dubbo/protocol-triple";
+import { Code, DubboError, createDubboRouter } from "@apachedubbo/dubbo";
+import type { DubboRouter, DubboRouterOptions } from "@apachedubbo/dubbo";
+import * as protoTriple from "@apachedubbo/dubbo/protocol-triple";
+import * as protoGrpcWeb from "@apachedubbo/dubbo/protocol-grpc-web";
+import * as protoGrpc from "@apachedubbo/dubbo/protocol-grpc";
+import type { UniversalHandler } from "@apachedubbo/dubbo/protocol";
+import type { ExpandHandler } from "@apachedubbo/dubbo/protocol-triple";
 import {
   compressionBrotli,
   compressionGzip,
   universalRequestFromNodeRequest,
   universalResponseToNodeResponse,
-} from "apache-dubbo-node";
+} from "@apachedubbo/dubbo-node";
 import type { FastifyInstance } from "fastify/types/instance";
 
 interface FastifyDubboPluginOptions extends DubboRouterOptions {
@@ -35,7 +35,7 @@ interface FastifyDubboPluginOptions extends DubboRouterOptions {
    * Create a file `connect.ts` with a default export such as this:
    *
    * ```ts
-   * import {DubboRouter} from "apache-dubbo";
+   * import {DubboRouter} from "@apachedubbo/dubbo";
    *
    * export default (router: DubboRouter) => {
    *   router.service(ElizaService, {});

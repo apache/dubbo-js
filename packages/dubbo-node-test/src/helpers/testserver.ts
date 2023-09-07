@@ -17,16 +17,16 @@ import * as http from "http";
 import * as https from "https";
 import * as fs from "fs";
 import * as path from "path";
-import { cors, createRouterTransport, type Transport } from "apache-dubbo";
+import { cors, createRouterTransport, type Transport } from "@apachedubbo/dubbo";
 import {
   compressionGzip,
   dubboNodeAdapter,
   createDubboTransport,
   createGrpcTransport,
   createGrpcWebTransport,
-} from "apache-dubbo-node";
-import { fastifyDubboPlugin } from "apache-dubbo-fastify";
-import { expressDubboMiddleware } from "apache-dubbo-express";
+} from "@apachedubbo/dubbo-node";
+import { fastifyDubboPlugin } from "@apachedubbo/dubbo-fastify";
+import { expressDubboMiddleware } from "@apachedubbo/dubbo-express";
 import type {
   FastifyBaseLogger,
   FastifyInstance,
@@ -87,7 +87,7 @@ export function createTestServers() {
       },
     },
     // dubbo-node
-    "apache-dubbo-node (h2)": {
+    "@apachedubbo/dubbo-node (h2)": {
       getUrl() {
         const address = nodeH2SecureServer?.address();
         if (address == null || typeof address == "string") {
@@ -122,7 +122,7 @@ export function createTestServers() {
         });
       },
     },
-    "apache-dubbo-node (h2c)": {
+    "@apachedubbo/dubbo-node (h2c)": {
       getUrl() {
         const address = nodeH2cServer?.address();
         if (address == null || typeof address == "string") {
@@ -153,7 +153,7 @@ export function createTestServers() {
         });
       },
     },
-    "apache-dubbo-node (h1)": {
+    "@apachedubbo/dubbo-node (h1)": {
       getUrl() {
         const address = nodeHttpServer?.address();
         if (address == null || typeof address == "string") {
@@ -213,7 +213,7 @@ export function createTestServers() {
         });
       },
     },
-    "apache-dubbo-node (h1 + tls)": {
+    "@apachedubbo/dubbo-node (h1 + tls)": {
       getUrl() {
         const address = nodeHttpsServer?.address();
         if (address == null || typeof address == "string") {
@@ -248,7 +248,7 @@ export function createTestServers() {
         });
       },
     },
-    "apache-dubbo-node (h1 + Service Isolation)": {
+    "@apachedubbo/dubbo-node (h1 + Service Isolation)": {
       getUrl() {
         const address = nodeHttpServerWithIsolation?.address();
         if (address == null || typeof address == "string") {
@@ -309,7 +309,7 @@ export function createTestServers() {
       },
     },
     // dubbo-fastify
-    "apache-dubbo-fastify (h2c)": {
+    "@apachedubbo/dubbo-fastify (h2c)": {
       getUrl() {
         if (!fastifyH2cServer) {
           throw new Error("fastifyH2cServer not started");
@@ -340,7 +340,7 @@ export function createTestServers() {
         await fastifyH2cServer.close();
       },
     },
-    "apache-dubbo-fastify (h1 + Service Isolation)": {
+    "@apachedubbo/dubbo-fastify (h1 + Service Isolation)": {
       getUrl() {
         if (!fastifyHttpServerWithIsolation) {
           throw new Error("fastifyHttpServerWithIsolation not started");
@@ -371,7 +371,7 @@ export function createTestServers() {
       },
     },
     // dubbo-express
-    "apache-dubbo-express (h1)": {
+    "@apachedubbo/dubbo-express (h1)": {
       getUrl() {
         const address = expressServer?.address();
         if (address == null || typeof address == "string") {
@@ -404,7 +404,7 @@ export function createTestServers() {
         });
       },
     },
-    "apache-dubbo-express (h1 + Service Isolation)": {
+    "@apachedubbo/dubbo-express (h1 + Service Isolation)": {
       getUrl() {
         const address = expressServerWithIsolation?.address();
         if (address == null || typeof address == "string") {
@@ -441,11 +441,11 @@ export function createTestServers() {
 
   const transports = {
     // gRPC
-    "apache-dubbo-node (gRPC, binary, http2) against apache-dubbo-node (h2)":
+    "@apachedubbo/dubbo-node (gRPC, binary, http2) against @apachedubbo/dubbo-node (h2)":
       (options?: Record<string, unknown>) =>
         createGrpcTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h2)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h2)"].getUrl(),
           httpVersion: "2",
           idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
           nodeOptions: {
@@ -453,45 +453,45 @@ export function createTestServers() {
           },
           useBinaryFormat: true,
         }),
-    "apache-dubbo-node (gRPC, binary, http2) against apache-dubbo-node (h2c)":
+    "@apachedubbo/dubbo-node (gRPC, binary, http2) against @apachedubbo/dubbo-node (h2c)":
       (options?: Record<string, unknown>) =>
         createGrpcTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h2c)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h2c)"].getUrl(),
           httpVersion: "2",
           idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
           useBinaryFormat: true,
         }),
-    "apache-dubbo-node (gRPC, JSON, http2) against apache-dubbo-node (h2c)":
+    "@apachedubbo/dubbo-node (gRPC, JSON, http2) against @apachedubbo/dubbo-node (h2c)":
       (options?: Record<string, unknown>) =>
         createGrpcTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h2c)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h2c)"].getUrl(),
           httpVersion: "2",
           idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
           useBinaryFormat: false,
         }),
-    "apache-dubbo-node (gRPC, binary, http2, gzip) against apache-dubbo-node (h2c)":
+    "@apachedubbo/dubbo-node (gRPC, binary, http2, gzip) against @apachedubbo/dubbo-node (h2c)":
       (options?: Record<string, unknown>) =>
         createGrpcTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h2c)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h2c)"].getUrl(),
           httpVersion: "2",
           idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
           useBinaryFormat: true,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (gRPC, JSON, http2, gzip) against apache-dubbo-node (h2c)":
+    "@apachedubbo/dubbo-node (gRPC, JSON, http2, gzip) against @apachedubbo/dubbo-node (h2c)":
       (options?: Record<string, unknown>) =>
         createGrpcTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h2c)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h2c)"].getUrl(),
           httpVersion: "2",
           idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
           useBinaryFormat: false,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (gRPC, binary, http2) against grpc-go (h2)": 
+    "@apachedubbo/dubbo-node (gRPC, binary, http2) against grpc-go (h2)": 
       (options?: Record<string, unknown>) =>
         createGrpcTransport({
           ...options,
@@ -503,166 +503,166 @@ export function createTestServers() {
           },
           useBinaryFormat: true,
         }),
-    "apache-dubbo-node (gRPC, binary, http) against apache-dubbo-node (h1)":
+    "@apachedubbo/dubbo-node (gRPC, binary, http) against @apachedubbo/dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
         createGrpcTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: true,
         }),
-    "apache-dubbo-node (gRPC, JSON, http) against apache-dubbo-node (h1)":
+    "@apachedubbo/dubbo-node (gRPC, JSON, http) against @apachedubbo/dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
         createGrpcTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: false,
         }),
-    "apache-dubbo-node (gRPC, JSON, https) against apache-dubbo-node (h1 + tls)":
+    "@apachedubbo/dubbo-node (gRPC, JSON, https) against @apachedubbo/dubbo-node (h1 + tls)":
       (options?: Record<string, unknown>) =>
         createGrpcTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1 + tls)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1 + tls)"].getUrl(),
           httpVersion: "1.1",
           nodeOptions: {
             rejectUnauthorized: false,
           },
           useBinaryFormat: false,
         }),
-    "apache-dubbo-node (gRPC, binary, https) against apache-dubbo-node (h1 + tls)":
+    "@apachedubbo/dubbo-node (gRPC, binary, https) against @apachedubbo/dubbo-node (h1 + tls)":
       (options?: Record<string, unknown>) =>
         createGrpcTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1 + tls)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1 + tls)"].getUrl(),
           httpVersion: "1.1",
           nodeOptions: {
             rejectUnauthorized: false,
           },
           useBinaryFormat: true,
         }),
-    "apache-dubbo-node (gRPC, binary, http, gzip) against apache-dubbo-node (h1)":
+    "@apachedubbo/dubbo-node (gRPC, binary, http, gzip) against @apachedubbo/dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
         createGrpcTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: true,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (gRPC, JSON, http, gzip) against apache-dubbo-node (h1)":
+    "@apachedubbo/dubbo-node (gRPC, JSON, http, gzip) against @apachedubbo/dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
         createGrpcTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: false,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (gRPC, binary, http, gzip) against apache-dubbo-fastify (h2c)":
+    "@apachedubbo/dubbo-node (gRPC, binary, http, gzip) against @apachedubbo/dubbo-fastify (h2c)":
       (options?: Record<string, unknown>) =>
         createGrpcTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-fastify (h2c)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-fastify (h2c)"].getUrl(),
           httpVersion: "2",
           idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
           useBinaryFormat: true,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (gRPC, JSON, http, gzip) against apache-dubbo-fastify (h2c)":
+    "@apachedubbo/dubbo-node (gRPC, JSON, http, gzip) against @apachedubbo/dubbo-fastify (h2c)":
       (options?: Record<string, unknown>) =>
         createGrpcTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-fastify (h2c)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-fastify (h2c)"].getUrl(),
           httpVersion: "2",
           idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
           useBinaryFormat: false,
           sendCompression: compressionGzip,
         }),
 
-    "apache-dubbo-node (gRPC, binary, http, gzip) against apache-dubbo-express (h1)":
+    "@apachedubbo/dubbo-node (gRPC, binary, http, gzip) against @apachedubbo/dubbo-express (h1)":
       (options?: Record<string, unknown>) =>
         createGrpcTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-express (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-express (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: true,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (gRPC, JSON, http, gzip) against apache-dubbo-express (h1)":
+    "@apachedubbo/dubbo-node (gRPC, JSON, http, gzip) against @apachedubbo/dubbo-express (h1)":
       (options?: Record<string, unknown>) =>
         createGrpcTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-express (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-express (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: false,
           sendCompression: compressionGzip,
         }),
 
     // Triple
-    "apache-dubbo-node (Triple, binary, http2, gzip) against apache-dubbo-node (h2c)":
+    "@apachedubbo/dubbo-node (Triple, binary, http2, gzip) against @apachedubbo/dubbo-node (h2c)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h2c)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h2c)"].getUrl(),
           httpVersion: "2",
           idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
           useBinaryFormat: true,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (Triple, JSON, http2, gzip) against apache-dubbo-node (h2c)":
+    "@apachedubbo/dubbo-node (Triple, JSON, http2, gzip) against @apachedubbo/dubbo-node (h2c)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h2c)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h2c)"].getUrl(),
           httpVersion: "2",
           idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
           useBinaryFormat: false,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (Triple, JSON, http) against apache-dubbo-node (h1)":
+    "@apachedubbo/dubbo-node (Triple, JSON, http) against @apachedubbo/dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: false,
         }),
-    "apache-dubbo-node (Triple, binary, http) against apache-dubbo-node (h1)":
+    "@apachedubbo/dubbo-node (Triple, binary, http) against @apachedubbo/dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: true,
         }),
-    "apache-dubbo-node (Triple, binary, https) against apache-dubbo-node (h1 + tls)":
+    "@apachedubbo/dubbo-node (Triple, binary, https) against @apachedubbo/dubbo-node (h1 + tls)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1 + tls)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1 + tls)"].getUrl(),
           httpVersion: "1.1",
           nodeOptions: {
             rejectUnauthorized: false, // TODO set up cert for go server correctly
           },
           useBinaryFormat: true,
         }),
-    "apache-dubbo-node (Triple, JSON, https) against apache-dubbo-node (h1 + tls)":
+    "@apachedubbo/dubbo-node (Triple, JSON, https) against @apachedubbo/dubbo-node (h1 + tls)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1 + tls)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1 + tls)"].getUrl(),
           httpVersion: "1.1",
           nodeOptions: {
             rejectUnauthorized: false,
           },
           useBinaryFormat: false,
         }),
-    "apache-dubbo-node (Triple, JSON, http, gzip) against apache-dubbo-node (h1)":
+    "@apachedubbo/dubbo-node (Triple, JSON, http, gzip) against @apachedubbo/dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
           nodeOptions: {
             rejectUnauthorized: false,
@@ -670,11 +670,11 @@ export function createTestServers() {
           useBinaryFormat: false,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (Triple, binary, http, gzip) against apache-dubbo-node (h1)":
+    "@apachedubbo/dubbo-node (Triple, binary, http, gzip) against @apachedubbo/dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
           nodeOptions: {
             rejectUnauthorized: false, // TODO set up cert for go server correctly
@@ -682,134 +682,134 @@ export function createTestServers() {
           useBinaryFormat: true,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (Triple, JSON, http, gzip) against apache-dubbo-fastify (h2c)":
+    "@apachedubbo/dubbo-node (Triple, JSON, http, gzip) against @apachedubbo/dubbo-fastify (h2c)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-fastify (h2c)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-fastify (h2c)"].getUrl(),
           httpVersion: "2",
           idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
           useBinaryFormat: false,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (Triple, binary, http, gzip) against apache-dubbo-fastify (h2c)":
+    "@apachedubbo/dubbo-node (Triple, binary, http, gzip) against @apachedubbo/dubbo-fastify (h2c)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-fastify (h2c)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-fastify (h2c)"].getUrl(),
           httpVersion: "2",
           idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
           useBinaryFormat: true,
           sendCompression: compressionGzip,
         }),
 
-    "apache-dubbo-node (Triple, JSON, http, gzip) against apache-dubbo-express (h1)":
+    "@apachedubbo/dubbo-node (Triple, JSON, http, gzip) against @apachedubbo/dubbo-express (h1)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-express (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-express (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: false,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (Triple, binary, http, gzip) against apache-dubbo-express (h1)":
+    "@apachedubbo/dubbo-node (Triple, binary, http, gzip) against @apachedubbo/dubbo-express (h1)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-express (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-express (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: true,
           sendCompression: compressionGzip,
         }),
 
     // gRPC-web
-    "apache-dubbo-node (gRPC-web, binary, http2) against apache-dubbo-node (h2c)":
+    "@apachedubbo/dubbo-node (gRPC-web, binary, http2) against @apachedubbo/dubbo-node (h2c)":
       (options?: Record<string, unknown>) =>
         createGrpcWebTransport({
           ...options,
           httpVersion: "2",
           idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
-          baseUrl: servers["apache-dubbo-node (h2c)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h2c)"].getUrl(),
           useBinaryFormat: true,
         }),
-    "apache-dubbo-node (gRPC-web, JSON, http2) against apache-dubbo-node (h2c)":
+    "@apachedubbo/dubbo-node (gRPC-web, JSON, http2) against @apachedubbo/dubbo-node (h2c)":
       (options?: Record<string, unknown>) =>
         createGrpcWebTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h2c)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h2c)"].getUrl(),
           httpVersion: "2",
           idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
           useBinaryFormat: false,
         }),
-    "apache-dubbo-node (gRPC-web, binary, http2, gzip) against apache-dubbo-node (h2c)":
+    "@apachedubbo/dubbo-node (gRPC-web, binary, http2, gzip) against @apachedubbo/dubbo-node (h2c)":
       (options?: Record<string, unknown>) =>
         createGrpcWebTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h2c)"].getUrl(),
-          httpVersion: "2",
-          idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
-          nodeOptions: {
-            rejectUnauthorized: false, // TODO set up cert for go server correctly
-          },
-          useBinaryFormat: true,
-          sendCompression: compressionGzip,
-        }),
-    "apache-dubbo-node (gRPC-web, JSON, http2, gzip) against apache-dubbo-node (h2c)":
-      (options?: Record<string, unknown>) =>
-        createGrpcWebTransport({
-          ...options,
-          baseUrl: servers["apache-dubbo-node (h2c)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h2c)"].getUrl(),
           httpVersion: "2",
           idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
           nodeOptions: {
             rejectUnauthorized: false, // TODO set up cert for go server correctly
           },
+          useBinaryFormat: true,
+          sendCompression: compressionGzip,
+        }),
+    "@apachedubbo/dubbo-node (gRPC-web, JSON, http2, gzip) against @apachedubbo/dubbo-node (h2c)":
+      (options?: Record<string, unknown>) =>
+        createGrpcWebTransport({
+          ...options,
+          baseUrl: servers["@apachedubbo/dubbo-node (h2c)"].getUrl(),
+          httpVersion: "2",
+          idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
+          nodeOptions: {
+            rejectUnauthorized: false, // TODO set up cert for go server correctly
+          },
           useBinaryFormat: false,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (gRPC-web, binary, http) against apache-dubbo-node (h1)":
+    "@apachedubbo/dubbo-node (gRPC-web, binary, http) against @apachedubbo/dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
         createGrpcWebTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: true,
         }),
-    "apache-dubbo-node (gRPC-web, JSON, http) against apache-dubbo-node (h1)":
+    "@apachedubbo/dubbo-node (gRPC-web, JSON, http) against @apachedubbo/dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
         createGrpcWebTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: false,
         }),
-    "apache-dubbo-node (gRPC-web, JSON, https) against apache-dubbo-node (h1 + tls)":
+    "@apachedubbo/dubbo-node (gRPC-web, JSON, https) against @apachedubbo/dubbo-node (h1 + tls)":
       (options?: Record<string, unknown>) =>
         createGrpcWebTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: false,
           nodeOptions: {
             rejectUnauthorized: false,
           },
         }),
-    "apache-dubbo-node (gRPC-web, binary, https) against apache-dubbo-node (h1 + tls)":
+    "@apachedubbo/dubbo-node (gRPC-web, binary, https) against @apachedubbo/dubbo-node (h1 + tls)":
       (options?: Record<string, unknown>) =>
         createGrpcWebTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: true,
           nodeOptions: {
             rejectUnauthorized: false,
           },
         }),
-    "apache-dubbo-node (gRPC-web, binary, http, gzip) against apache-dubbo-node (h1)":
+    "@apachedubbo/dubbo-node (gRPC-web, binary, http, gzip) against @apachedubbo/dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
         createGrpcWebTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: true,
           sendCompression: compressionGzip,
@@ -817,11 +817,11 @@ export function createTestServers() {
             rejectUnauthorized: false,
           },
         }),
-    "apache-dubbo-node (gRPC-web, JSON, http, gzip) against apache-dubbo-node (h1)":
+    "@apachedubbo/dubbo-node (gRPC-web, JSON, http, gzip) against @apachedubbo/dubbo-node (h1)":
       (options?: Record<string, unknown>) =>
         createGrpcWebTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: false,
           sendCompression: compressionGzip,
@@ -829,47 +829,47 @@ export function createTestServers() {
             rejectUnauthorized: false,
           },
         }),
-    "apache-dubbo-node (gRPC-web, binary, http, gzip against apache-dubbo-fastify (h2c)":
+    "@apachedubbo/dubbo-node (gRPC-web, binary, http, gzip against @apachedubbo/dubbo-fastify (h2c)":
       (options?: Record<string, unknown>) =>
         createGrpcWebTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-fastify (h2c)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-fastify (h2c)"].getUrl(),
           httpVersion: "2",
           idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
           useBinaryFormat: true,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (gRPC-web, JSON, http, gzip) against apache-dubbo-fastify (h2c)":
+    "@apachedubbo/dubbo-node (gRPC-web, JSON, http, gzip) against @apachedubbo/dubbo-fastify (h2c)":
       (options?: Record<string, unknown>) =>
         createGrpcWebTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-fastify (h2c)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-fastify (h2c)"].getUrl(),
           httpVersion: "2",
           idleConnectionTimeoutMs: 25, // automatically close connection without streams so the server shuts down quickly after tests
           useBinaryFormat: false,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (gRPC-web, JSON, http, gzip) against apache-dubbo-express (h1)":
+    "@apachedubbo/dubbo-node (gRPC-web, JSON, http, gzip) against @apachedubbo/dubbo-express (h1)":
       (options?: Record<string, unknown>) =>
         createGrpcWebTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-express (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-express (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: false,
           sendCompression: compressionGzip,
         }),
-    "apache-dubbo-node (gRPC-web, binary, http, gzip) against apache-dubbo-express (h1)":
+    "@apachedubbo/dubbo-node (gRPC-web, binary, http, gzip) against @apachedubbo/dubbo-express (h1)":
       (options?: Record<string, unknown>) =>
         createGrpcWebTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-express (h1)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-express (h1)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: true,
           sendCompression: compressionGzip,
         }),
 
     // DubboRouter
-    "apache-dubbo (DubboRouter, binary)":
+    "@apachedubbo/dubbo (DubboRouter, binary)":
       (options?: Record<string, unknown>) =>
         createRouterTransport(testRoutes, {
           transport: {
@@ -877,7 +877,7 @@ export function createTestServers() {
             useBinaryFormat: true,
           },
         }),
-    "apache-dubbo (DubboRouter, JSON)":
+    "@apachedubbo/dubbo (DubboRouter, JSON)":
       (options?: Record<string, unknown>) =>
         createRouterTransport(testRoutes, {
           transport: {
@@ -888,27 +888,27 @@ export function createTestServers() {
   };
 
   const transportsWithIsolation = {
-    "apache-dubbo-node (Triple, JSON, http) against apache-dubbo-node (h1 + Service Isolation)":
+    "@apachedubbo/dubbo-node (Triple, JSON, http) against @apachedubbo/dubbo-node (h1 + Service Isolation)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-node (h1 + Service Isolation)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-node (h1 + Service Isolation)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: false,
         }),
-    "apache-dubbo-node (Triple, JSON, http) against apache-dubbo-express (h1 + Service Isolation)":
+    "@apachedubbo/dubbo-node (Triple, JSON, http) against @apachedubbo/dubbo-express (h1 + Service Isolation)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-express (h1 + Service Isolation)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-express (h1 + Service Isolation)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: false,
         }),
-    "apache-dubbo-node (Triple, JSON, http) against apache-dubbo-fastify (h1 + Service Isolation)":
+    "@apachedubbo/dubbo-node (Triple, JSON, http) against @apachedubbo/dubbo-fastify (h1 + Service Isolation)":
       (options?: Record<string, unknown>) =>
         createDubboTransport({
           ...options,
-          baseUrl: servers["apache-dubbo-fastify (h1 + Service Isolation)"].getUrl(),
+          baseUrl: servers["@apachedubbo/dubbo-fastify (h1 + Service Isolation)"].getUrl(),
           httpVersion: "1.1",
           useBinaryFormat: false,
         }),

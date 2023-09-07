@@ -37,7 +37,7 @@ describe("requestHeader", () => {
       "x-user-agent",
     ]);
     expect(headers.get("Content-Type")).toBe("application/grpc-web+proto");
-    expect(headers.get("X-User-Agent")).toBe("apache-dubbo-web");
+    expect(headers.get("X-User-Agent")).toBe("@apachedubbo/dubbo-web");
     expect(headers.get("X-Grpc-Web")).toBe("1");
   });
 

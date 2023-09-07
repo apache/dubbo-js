@@ -30,8 +30,8 @@ import type {
   Transport,
   UnaryRequest,
   UnaryResponse,
-} from "apache-dubbo";
-import { appendHeaders } from "apache-dubbo";
+} from "@apachedubbo/dubbo";
+import { appendHeaders } from "@apachedubbo/dubbo";
 import {
   createClientMethodSerializers,
   createEnvelopeReadableStream,
@@ -40,7 +40,7 @@ import {
   encodeEnvelope,
   runStreamingCall,
   runUnaryCall,
-} from "apache-dubbo/protocol";
+} from "@apachedubbo/dubbo/protocol";
 import {
   endStreamFlag,
   endStreamFromJson,
@@ -49,9 +49,9 @@ import {
   trailerDemux,
   transformConnectPostToGetRequest,
   validateResponse,
-} from "apache-dubbo/protocol-triple";
+} from "@apachedubbo/dubbo/protocol-triple";
 import { assertFetchApi } from "./assert-fetch-api.js";
-import type { TripleClientServiceOptions } from 'apache-dubbo/protocol-triple';
+import type { TripleClientServiceOptions } from '@apachedubbo/dubbo/protocol-triple';
 
 /**
  * Options used to configure the Dubbo transport.

@@ -16,7 +16,7 @@ import * as http2 from "http2";
 import * as http from "http";
 import * as https from "https";
 import type * as net from "net";
-import { Code, DubboError } from "apache-dubbo";
+import { Code, DubboError } from "@apachedubbo/dubbo";
 import {
   nodeHeaderToWebHeader,
   webHeaderToNodeHeaders,
@@ -32,8 +32,8 @@ import type {
   UniversalClientFn,
   UniversalClientRequest,
   UniversalClientResponse,
-} from "apache-dubbo/protocol";
-import { getAbortSignalReason } from "apache-dubbo/protocol";
+} from "@apachedubbo/dubbo/protocol";
+import { getAbortSignalReason } from "@apachedubbo/dubbo/protocol";
 import { Http2SessionManager } from "./http2-session-manager.js";
 
 /**

@@ -34,7 +34,7 @@ describe("requestHeader", () => {
       "user-agent",
     ]);
     expect(headers.get("Content-Type")).toBe("application/grpc+proto");
-    expect(headers.get("User-Agent")).toBe("apache-dubbo-web");
+    expect(headers.get("User-Agent")).toBe("@apachedubbo/dubbo-web");
   });
 
   it("should create request headers with timeout", () => {

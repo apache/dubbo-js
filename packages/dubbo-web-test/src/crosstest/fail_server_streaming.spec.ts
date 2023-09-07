@@ -17,7 +17,7 @@ import {
   DubboError,
   createCallbackClient,
   createPromiseClient,
-} from "apache-dubbo";
+} from "@apachedubbo/dubbo";
 import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import { describeTransports } from "../helpers/crosstestserver.js";
 import {
