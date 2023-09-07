@@ -1,8 +1,8 @@
 import { useState } from "react";
 import "./App.css";
 
-import { createPromiseClient } from "apache-dubbo";
-import { createDubboTransport } from "apache-dubbo-web";
+import { createPromiseClient } from "@apachedubbo/dubbo";
+import { createDubboTransport } from "@apachedubbo/dubbo-web";
 
 // Import service definition that you want to connect to.
 import { ExampleService } from "./util/gen/example_dubbo";

@@ -16,10 +16,10 @@ cd dubbo-web-example
 npm install
 ```
 
-因为使用 Protocol Buffer 的原因，我们首先需要安装相关的代码生成工具，这包括 `@bufbuild/protoc-gen-es`、`@bufbuild/protobuf`、`protoc-gen-apache-dubbo-es`、`apache-dubbo`。
+因为使用 Protocol Buffer 的原因，我们首先需要安装相关的代码生成工具，这包括 `@bufbuild/protoc-gen-es`、`@bufbuild/protobuf`、`@apachedubbo/protoc-gen-apache-dubbo-es`、`@apachedubbo/dubbo`。
 
 ```Shell
-npm install @bufbuild/protoc-gen-es @bufbuild/protobuf protoc-gen-apache-dubbo-es apache-dubbo
+npm install @bufbuild/protoc-gen-es @bufbuild/protobuf @apachedubbo/protoc-gen-apache-dubbo-es @apachedubbo/dubbo
 ```
 
 ### <span id="defineService">使用 Proto 定义服务</span>
@@ -88,10 +88,10 @@ PATH=$PATH:$(pwd)/node_modules/.bin \
 
 ## <span id="createApp">创建 App</span>
 
-需要先下载 `apache-dubbo-web`
+需要先下载 `@apachedubbo/dubbo-web`
 
 ```shell
-npm install apache-dubbo-web
+npm install @apachedubbo/dubbo-web
 ```
 
 现在我们可以从包中导入服务并设置一个客户端。在 App.tsx 中添加以下内容：
@@ -100,8 +100,8 @@ npm install apache-dubbo-web
 import { useState } from "react";
 import "./App.css";
 
-import { createPromiseClient } from "apache-dubbo";
-import { createDubboTransport } from "apache-dubbo-web";
+import { createPromiseClient } from "@apachedubbo/dubbo";
+import { createDubboTransport } from "@apachedubbo/dubbo-web";
 
 // Import service definition that you want to connect to.
 import { ExampleService } from "./util/gen/example_dubbo";
@@ -211,10 +211,10 @@ npx tsx server.ts
 
 ## 无 IDL 模式
 
-同样需要先安装 `apache-dubbo`、`apache-dubbo-web`
+同样需要先安装 `@apachedubbo/dubbo`、`@apachedubbo/dubbo-web`
 
 ```shell
-npm install apache-dubbo apache-dubbo-web
+npm install @apachedubbo/dubbo @apachedubbo/dubbo-web
 ```
 
 现在就可以一个启动一个客户端，并发起调用了。App.tsx 中的代码与 IDL 模式基本一致，区别点在于以下内容：
