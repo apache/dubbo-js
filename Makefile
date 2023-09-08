@@ -22,7 +22,7 @@ NODE_OS = $(subst Linux,linux,$(subst Darwin,darwin,$(shell uname -s)))
 NODE_ARCH = $(subst x86_64,x64,$(subst aarch64,arm64,$(shell uname -m)))
 
 node_modules: pnpm-lock.yaml
-	npm ci
+	pnpm install --frozen-lockfile
 
 node_modules/.bin/protoc-gen-es: node_modules
 
@@ -126,14 +126,14 @@ $(GEN)/dubbo: node_modules/.bin/protoc-gen-es packages/dubbo/buf.gen.yaml $(shel
 
 $(GEN)/dubbo-web-test: node_modules/.bin/protoc-gen-es $(BUILD)/protoc-gen-apache-dubbo-es packages/dubbo-web-test/buf.gen.yaml Makefile
 	rm -rf packages/dubbo-web-test/src/gen/*
-	npm run -w packages/dubbo-web-test generate https://github.com/bufbuild/connect-crosstest.git#ref=$(CROSSTEST_VERSION),subdir=internal/proto
+	npm run -w packages/dubbo-web-test generate ../../internal/proto
 	npm run -w packages/dubbo-web-test generate buf.build/bufbuild/eliza
 	@mkdir -p $(@D)
 	@touch $(@)
 
 $(GEN)/dubbo-node-test: node_modules/.bin/protoc-gen-es $(BUILD)/protoc-gen-apache-dubbo-es packages/dubbo-node-test/buf.gen.yaml Makefile
 	rm -rf packages/dubbo-node-test/src/gen/*
-	npm run -w packages/dubbo-node-test generate https://github.com/bufbuild/connect-crosstest.git#ref=$(CROSSTEST_VERSION),subdir=internal/proto
+	npm run -w packages/dubbo-node-test generate ../../internal/proto
 	@mkdir -p $(@D)
 	@touch $(@)
 

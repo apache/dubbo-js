@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createPromiseClient } from "apache-dubbo";
+import { createPromiseClient } from "@apachedubbo/dubbo";
 import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import { PayloadType } from "../gen/grpc/testing/messages_pb.js";
 import { createTestServers } from "../helpers/testserver.js";
@@ -26,30 +26,30 @@ describe("ping_pong", () => {
   servers.describeTransportsExcluding(
     // All following Transports run over HTTP/1, which cannot support full-duplex.
     [
-      "apache-dubbo-node (Connect, JSON, http) against apache-dubbo-node (h1)",
-      "apache-dubbo-node (Connect, binary, http) against apache-dubbo-node (h1)",
-      "apache-dubbo-node (Connect, binary, https) against apache-dubbo-node (h1 + tls)",
-      "apache-dubbo-node (Connect, JSON, https) against apache-dubbo-node (h1 + tls)",
-      "apache-dubbo-node (Connect, JSON, http, gzip) against apache-dubbo-node (h1)",
-      "apache-dubbo-node (Connect, binary, http, gzip) against apache-dubbo-node (h1)",
-      "apache-dubbo-node (Connect, JSON, http, gzip) against apache-dubbo-express (h1)",
-      "apache-dubbo-node (Connect, binary, http, gzip) against apache-dubbo-express (h1)",
-      "apache-dubbo-node (gRPC, binary, http) against apache-dubbo-node (h1)",
-      "apache-dubbo-node (gRPC, JSON, http) against apache-dubbo-node (h1)",
-      "apache-dubbo-node (gRPC, JSON, https) against apache-dubbo-node (h1 + tls)",
-      "apache-dubbo-node (gRPC, binary, https) against apache-dubbo-node (h1 + tls)",
-      "apache-dubbo-node (gRPC, JSON, http, gzip) against apache-dubbo-node (h1)",
-      "apache-dubbo-node (gRPC, binary, http, gzip) against apache-dubbo-node (h1)",
-      "apache-dubbo-node (gRPC, JSON, http, gzip) against apache-dubbo-express (h1)",
-      "apache-dubbo-node (gRPC, binary, http, gzip) against apache-dubbo-express (h1)",
-      "apache-dubbo-node (gRPC-web, binary, http) against apache-dubbo-node (h1)",
-      "apache-dubbo-node (gRPC-web, JSON, http) against apache-dubbo-node (h1)",
-      "apache-dubbo-node (gRPC-web, JSON, https) against apache-dubbo-node (h1 + tls)",
-      "apache-dubbo-node (gRPC-web, binary, https) against apache-dubbo-node (h1 + tls)",
-      "apache-dubbo-node (gRPC-web, JSON, http, gzip) against apache-dubbo-node (h1)",
-      "apache-dubbo-node (gRPC-web, binary, http, gzip) against apache-dubbo-node (h1)",
-      "apache-dubbo-node (gRPC-web, JSON, http, gzip) against apache-dubbo-express (h1)",
-      "apache-dubbo-node (gRPC-web, binary, http, gzip) against apache-dubbo-express (h1)",
+      "@apachedubbo/dubbo-node (Triple, JSON, http) against @apachedubbo/dubbo-node (h1)",
+      "@apachedubbo/dubbo-node (Triple, binary, http) against @apachedubbo/dubbo-node (h1)",
+      "@apachedubbo/dubbo-node (Triple, binary, https) against @apachedubbo/dubbo-node (h1 + tls)",
+      "@apachedubbo/dubbo-node (Triple, JSON, https) against @apachedubbo/dubbo-node (h1 + tls)",
+      "@apachedubbo/dubbo-node (Triple, JSON, http, gzip) against @apachedubbo/dubbo-node (h1)",
+      "@apachedubbo/dubbo-node (Triple, binary, http, gzip) against @apachedubbo/dubbo-node (h1)",
+      "@apachedubbo/dubbo-node (Triple, JSON, http, gzip) against @apachedubbo/dubbo-express (h1)",
+      "@apachedubbo/dubbo-node (Triple, binary, http, gzip) against @apachedubbo/dubbo-express (h1)",
+      "@apachedubbo/dubbo-node (gRPC, binary, http) against @apachedubbo/dubbo-node (h1)",
+      "@apachedubbo/dubbo-node (gRPC, JSON, http) against @apachedubbo/dubbo-node (h1)",
+      "@apachedubbo/dubbo-node (gRPC, JSON, https) against @apachedubbo/dubbo-node (h1 + tls)",
+      "@apachedubbo/dubbo-node (gRPC, binary, https) against @apachedubbo/dubbo-node (h1 + tls)",
+      "@apachedubbo/dubbo-node (gRPC, JSON, http, gzip) against @apachedubbo/dubbo-node (h1)",
+      "@apachedubbo/dubbo-node (gRPC, binary, http, gzip) against @apachedubbo/dubbo-node (h1)",
+      "@apachedubbo/dubbo-node (gRPC, JSON, http, gzip) against @apachedubbo/dubbo-express (h1)",
+      "@apachedubbo/dubbo-node (gRPC, binary, http, gzip) against @apachedubbo/dubbo-express (h1)",
+      "@apachedubbo/dubbo-node (gRPC-web, binary, http) against @apachedubbo/dubbo-node (h1)",
+      "@apachedubbo/dubbo-node (gRPC-web, JSON, http) against @apachedubbo/dubbo-node (h1)",
+      "@apachedubbo/dubbo-node (gRPC-web, JSON, https) against @apachedubbo/dubbo-node (h1 + tls)",
+      "@apachedubbo/dubbo-node (gRPC-web, binary, https) against @apachedubbo/dubbo-node (h1 + tls)",
+      "@apachedubbo/dubbo-node (gRPC-web, JSON, http, gzip) against @apachedubbo/dubbo-node (h1)",
+      "@apachedubbo/dubbo-node (gRPC-web, binary, http, gzip) against @apachedubbo/dubbo-node (h1)",
+      "@apachedubbo/dubbo-node (gRPC-web, JSON, http, gzip) against @apachedubbo/dubbo-express (h1)",
+      "@apachedubbo/dubbo-node (gRPC-web, binary, http, gzip) against @apachedubbo/dubbo-express (h1)",
     ],
     (transport) => {
       it("with promise client", async function () {

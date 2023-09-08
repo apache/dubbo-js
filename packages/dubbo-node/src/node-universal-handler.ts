@@ -16,11 +16,11 @@ import type * as http from "http";
 import type * as http2 from "http2";
 import type * as stream from "stream";
 import type { JsonValue } from "@bufbuild/protobuf";
-import { Code, DubboError } from "apache-dubbo";
+import { Code, DubboError } from "@apachedubbo/dubbo";
 import type {
   UniversalServerRequest,
   UniversalServerResponse,
-} from "apache-dubbo/protocol";
+} from "@apachedubbo/dubbo/protocol";
 import {
   nodeHeaderToWebHeader,
   webHeaderToNodeHeaders,

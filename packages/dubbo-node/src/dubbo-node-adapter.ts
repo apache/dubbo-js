@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code, DubboError, createDubboRouter } from "apache-dubbo";
-import type { DubboRouter, DubboRouterOptions } from "apache-dubbo";
-import type { UniversalHandler } from "apache-dubbo/protocol";
-import { uResponseNotFound } from "apache-dubbo/protocol";
+import { Code, DubboError, createDubboRouter } from "@apachedubbo/dubbo";
+import type { DubboRouter, DubboRouterOptions } from "@apachedubbo/dubbo";
+import type { UniversalHandler } from "@apachedubbo/dubbo/protocol";
+import type { ExpandHandler } from "@apachedubbo/dubbo/protocol-triple";
+import { uResponseNotFound } from "@apachedubbo/dubbo/protocol";
 import {
   universalRequestFromNodeRequest,
   universalResponseToNodeResponse,
@@ -34,7 +35,7 @@ interface DubboNodeAdapterOptions extends DubboRouterOptions {
    * Create a file `connect.ts` with a default export such as this:
    *
    * ```ts
-   * import {DubboRouter} from "apache-dubbo";
+   * import {DubboRouter} from "@apachedubbo/dubbo";
    *
    * export default (router: DubboRouter) => {
    *   router.service(ElizaService, {});
@@ -71,7 +72,7 @@ export function dubboNodeAdapter(
   const router = createDubboRouter(options);
   options.routes(router);
   const prefix = options.requestPathPrefix ?? "";
-  const paths = new Map<string, UniversalHandler>();
+  const paths = new Map<string, UniversalHandler & ExpandHandler>();
   for (const uHandler of router.handlers) {
     paths.set(prefix + uHandler.requestPath + uHandler.serviceVersion + uHandler.serviceGroup, uHandler);
   }

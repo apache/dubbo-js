@@ -61,12 +61,13 @@ type CancelFn = () => void;
  */
 export function createCallbackClient<T extends ServiceType>(
   service: T,
-  transport: Transport
+  transport: Transport,
+  serviceOptions?: TripleClientServiceOptions
 ) {
   return makeAnyClient(service, (method) => {
     switch (method.kind) {
       case MethodKind.Unary:
-        return createUnaryFn(transport, service, method);
+        return createUnaryFn(transport, service, method, serviceOptions);
       case MethodKind.ServerStreaming:
         return createServerStreamingFn(transport, service, method);
       default:

@@ -72,57 +72,57 @@ importers:
 
   packages/dubbo-express:
     dependencies:
+      '@apachedubbo/dubbo':
+        specifier: 3.0.0-alpha
+        version: link:../dubbo
+      '@apachedubbo/dubbo-node':
+        specifier: 3.0.0-alpha
+        version: link:../dubbo-node
       '@bufbuild/protobuf':
         specifier: ^1.2.1
         version: 1.2.1
       '@types/express':
         specifier: ^4.17.17
         version: 4.17.17
-      apache-dubbo:
-        specifier: ^0.0.10
-        version: link:../dubbo
-      apache-dubbo-node:
-        specifier: ^0.0.10
-        version: link:../dubbo-node
 
   packages/dubbo-fastify:
     dependencies:
+      '@apachedubbo/dubbo':
+        specifier: 3.0.0-alpha
+        version: link:../dubbo
+      '@apachedubbo/dubbo-node':
+        specifier: 3.0.0-alpha
+        version: link:../dubbo-node
       '@bufbuild/protobuf':
         specifier: ^1.2.1
         version: 1.2.1
-      apache-dubbo:
-        specifier: ^0.0.10
-        version: link:../dubbo
-      apache-dubbo-node:
-        specifier: ^0.0.10
-        version: link:../dubbo-node
       fastify:
         specifier: ^4.17.0
         version: 4.17.0
 
   packages/dubbo-next:
     dependencies:
+      '@apachedubbo/dubbo':
+        specifier: 3.0.0-alpha
+        version: link:../dubbo
+      '@apachedubbo/dubbo-node':
+        specifier: 3.0.0-alpha
+        version: link:../dubbo-node
       '@bufbuild/protobuf':
         specifier: ^1.2.1
         version: 1.2.1
-      apache-dubbo:
-        specifier: ^0.0.10
-        version: link:../dubbo
-      apache-dubbo-node:
-        specifier: ^0.0.10
-        version: link:../dubbo-node
       next:
         specifier: ^13.2.4
         version: 13.2.4(react-dom@18.2.0)(react@18.2.0)
 
   packages/dubbo-node:
     dependencies:
+      '@apachedubbo/dubbo':
+        specifier: 3.0.0-alpha
+        version: link:../dubbo
       '@bufbuild/protobuf':
         specifier: ^1.2.1
         version: 1.2.1
-      apache-dubbo:
-        specifier: ^0.0.10
-        version: link:../dubbo
       headers-polyfill:
         specifier: ^3.1.2
         version: 3.1.2
@@ -136,6 +136,24 @@ importers:
 
   packages/dubbo-node-test:
     dependencies:
+      '@apachedubbo/dubbo':
+        specifier: 3.0.0-alpha
+        version: link:../dubbo
+      '@apachedubbo/dubbo-express':
+        specifier: 3.0.0-alpha
+        version: link:../dubbo-express
+      '@apachedubbo/dubbo-fastify':
+        specifier: 3.0.0-alpha
+        version: link:../dubbo-fastify
+      '@apachedubbo/dubbo-node':
+        specifier: 3.0.0-alpha
+        version: link:../dubbo-node
+      '@apachedubbo/dubbo-web':
+        specifier: 3.0.0-alpha
+        version: link:../dubbo-web
+      '@apachedubbo/protoc-gen-apache-dubbo-es':
+        specifier: 3.0.0-alpha
+        version: link:../protoc-gen-apache-dubbo-es
       '@bufbuild/protobuf':
         specifier: ^1.2.1
         version: 1.2.1
@@ -151,21 +169,6 @@ importers:
       '@types/jasmine':
         specifier: ^4.3.0
         version: 4.3.1
-      apache-dubbo:
-        specifier: ^0.0.10
-        version: link:../dubbo
-      apache-dubbo-express:
-        specifier: ^0.0.10
-        version: link:../dubbo-express
-      apache-dubbo-fastify:
-        specifier: ^0.0.10
-        version: link:../dubbo-fastify
-      apache-dubbo-node:
-        specifier: ^0.0.10
-        version: link:../dubbo-node
-      apache-dubbo-web:
-        specifier: ^0.0.10
-        version: link:../dubbo-web
       esbuild:
         specifier: ^0.16.12
         version: 0.16.12
@@ -178,30 +181,27 @@ importers:
       jasmine:
         specifier: ^5.0.0
         version: 5.0.0
-      protoc-gen-apache-dubbo-es:
-        specifier: ^0.0.2
-        version: link:../protoc-gen-apache-dubbo-es
 
   packages/dubbo-web:
     dependencies:
+      '@apachedubbo/dubbo':
+        specifier: 3.0.0-alpha
+        version: link:../dubbo
       '@bufbuild/protobuf':
         specifier: ^1.2.1
         version: 1.2.1
-      apache-dubbo:
-        specifier: ^0.0.10
-        version: link:../dubbo
 
   packages/dubbo-web-bench:
     dependencies:
+      '@apachedubbo/dubbo-web':
+        specifier: 3.0.0-alpha
+        version: link:../dubbo-web
       '@bufbuild/protobuf':
         specifier: ^1.2.1
         version: 1.2.1
       '@bufbuild/protoc-gen-es':
         specifier: ^1.2.1
         version: 1.2.1(@bufbuild/protobuf@1.2.1)
-      apache-dubbo-web:
-        specifier: ^0.0.10
-        version: link:../dubbo-web
       brotli:
         specifier: ^1.3.3
         version: 1.3.3
@@ -217,6 +217,15 @@ importers:
 
   packages/dubbo-web-test:
     dependencies:
+      '@apachedubbo/dubbo':
+        specifier: 3.0.0-alpha
+        version: link:../dubbo
+      '@apachedubbo/dubbo-web':
+        specifier: 3.0.0-alpha
+        version: link:../dubbo-web
+      '@apachedubbo/protoc-gen-apache-dubbo-es':
+        specifier: 3.0.0-alpha
+        version: link:../protoc-gen-apache-dubbo-es
       '@bufbuild/protobuf':
         specifier: ^1.2.1
         version: 1.2.1
@@ -226,12 +235,6 @@ importers:
       '@types/jasmine':
         specifier: ^4.3.0
         version: 4.3.1
-      apache-dubbo:
-        specifier: ^0.0.10
-        version: link:../dubbo
-      apache-dubbo-web:
-        specifier: ^0.0.10
-        version: link:../dubbo-web
       esbuild:
         specifier: ^0.16.12
         version: 0.16.12
@@ -253,12 +256,12 @@ importers:
       karma-jasmine:
         specifier: ^5.1.0
         version: 5.1.0(karma@6.4.2)
-      protoc-gen-apache-dubbo-es:
-        specifier: ^0.0.2
-        version: link:../protoc-gen-apache-dubbo-es
 
   packages/protoc-gen-apache-dubbo-es:
     dependencies:
+      '@apachedubbo/dubbo':
+        specifier: 3.0.0-alpha
+        version: link:../dubbo
       '@bufbuild/protobuf':
         specifier: ^1.2.1
         version: 1.2.1
@@ -268,12 +271,12 @@ importers:
       '@bufbuild/protoplugin':
         specifier: ^1.2.1
         version: 1.2.1
-      apache-dubbo:
-        specifier: ^0.0.10
-        version: link:../dubbo
 
   packages/protoc-gen-apache-dubbo-web:
     dependencies:
+      '@apachedubbo/dubbo':
+        specifier: 3.0.0-alpha
+        version: link:../dubbo
       '@bufbuild/protobuf':
         specifier: ^1.2.1
         version: 1.2.1
@@ -283,9 +286,6 @@ importers:
       '@bufbuild/protoplugin':
         specifier: ^1.2.1
         version: 1.2.1
-      apache-dubbo:
-        specifier: ^0.0.10
-        version: link:../dubbo
 
 packages:
 
@@ -4896,7 +4896,7 @@ packages:
     dev: true
 
   /undici@5.22.0:
-    resolution: {integrity: sha512-f6pTQ9RF4DQtwoWSaC42P/NKlUjvezVvd9r155ohqkwFNRyBKM3f3pcty3ouusefNRyM25XhIQEbeQ46sZDJfQ==, tarball: https://registry.npmmirror.com/undici/-/undici-5.21.2.tgz}
+    resolution: {integrity: sha512-f6pTQ9RF4DQtwoWSaC42P/NKlUjvezVvd9r155ohqkwFNRyBKM3f3pcty3ouusefNRyM25XhIQEbeQ46sZDJfQ==, tarball: https://registry.npmmirror.com/undici/-/undici-5.22.0.tgz}
     engines: {node: '>=12.18'}
     deprecated: '[WARNING] Use 5.21.2 instead of 5.22.0, reason: https://github.com/nodejs/undici/pull/2091'
     dependencies:

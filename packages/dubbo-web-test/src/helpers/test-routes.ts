@@ -18,8 +18,8 @@ import {
   DubboError,
   decodeBinaryHeader,
   encodeBinaryHeader,
-} from "apache-dubbo";
-import type { DubboRouter, ServiceImpl } from "apache-dubbo";
+} from "@apachedubbo/dubbo";
+import type { DubboRouter, ServiceImpl } from "@apachedubbo/dubbo";
 import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import type { StreamingOutputCallRequest } from "../gen/grpc/testing/messages_pb.js";
 import {

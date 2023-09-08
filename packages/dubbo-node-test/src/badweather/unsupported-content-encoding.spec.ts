@@ -14,13 +14,13 @@
 
 import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import { createTestServers } from "../helpers/testserver.js";
-import { Code, DubboError } from "apache-dubbo";
-import { createMethodUrl } from "apache-dubbo/protocol";
+import { Code, DubboError } from "@apachedubbo/dubbo";
+import { createMethodUrl } from "@apachedubbo/dubbo/protocol";
 import {
   codeFromHttpStatus,
   endStreamFromJson,
   errorFromJsonBytes,
-} from "apache-dubbo/protocol-triple";
+} from "@apachedubbo/dubbo/protocol-triple";
 import { http2Request } from "../helpers/http2-request.js";
 
 describe("unsupported content encoding", () => {
@@ -28,7 +28,7 @@ describe("unsupported content encoding", () => {
   beforeAll(async () => await servers.start());
 
   servers.describeServers(
-    ["apache-dubbo-node (h2c)"],
+    ["@apachedubbo/dubbo-node (h2c)"],
     (server, serverName) => {
       const rejectUnauthorized = true; // TODO set up cert for go server correctly
 

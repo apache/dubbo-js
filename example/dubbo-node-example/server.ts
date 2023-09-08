@@ -1,5 +1,5 @@
 import { fastify } from "fastify";
-import { fastifyDubboPlugin } from "apache-dubbo-fastify";
+import { fastifyDubboPlugin } from "@apachedubbo/dubbo-fastify";
 import routes from "./dubbo";
 import cors from "@fastify/cors";
 

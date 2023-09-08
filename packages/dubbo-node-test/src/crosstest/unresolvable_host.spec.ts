@@ -17,12 +17,12 @@ import {
   DubboError,
   createCallbackClient,
   createPromiseClient,
-} from "apache-dubbo";
+} from "@apachedubbo/dubbo";
 import {
   createDubboTransport,
   createGrpcTransport,
   createGrpcWebTransport,
-} from "apache-dubbo-node";
+} from "@apachedubbo/dubbo-node";
 import { TestService } from "../gen/grpc/testing/test_dubbo.js";
 import { PayloadType } from "../gen/grpc/testing/messages_pb.js";
 
@@ -40,23 +40,23 @@ describe("unresolvable_host", function () {
   };
   const transports = [
     [
-      "apache-dubbo-node (gRPC-web, http2)",
+      "@apachedubbo/dubbo-node (gRPC-web, http2)",
       createGrpcWebTransport(optionsHttp2),
     ],
     [
-      "apache-dubbo-node (gRPC-web, http)",
+      "@apachedubbo/dubbo-node (gRPC-web, http)",
       createGrpcTransport(optionsHttp1),
     ],
     [
-      "apache-dubbo-node (Connect, http2)",
+      "@apachedubbo/dubbo-node (Triple, http2)",
       createDubboTransport(optionsHttp2),
     ],
     [
-      "apache-dubbo-node (Connect, http)",
+      "@apachedubbo/dubbo-node (Triple, http)",
       createDubboTransport(optionsHttp1),
     ],
-    ["apache-dubbo-node (gRPC, http2)", createGrpcTransport(optionsHttp2)],
-    ["apache-dubbo-node (gRPC, http)", createGrpcTransport(optionsHttp1)],
+    ["@apachedubbo/dubbo-node (gRPC, http2)", createGrpcTransport(optionsHttp2)],
+    ["@apachedubbo/dubbo-node (gRPC, http)", createGrpcTransport(optionsHttp1)],
   ] as const;
   for (const [name, transport] of transports) {
     describe(`${name} against unresolvable domain`, function () {

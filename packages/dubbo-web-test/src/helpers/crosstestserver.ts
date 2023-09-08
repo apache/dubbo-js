@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { type Transport, createRouterTransport } from "apache-dubbo";
+import { type Transport, createRouterTransport } from "@apachedubbo/dubbo";
 import {
   createDubboTransport,
   createGrpcWebTransport,
-} from "apache-dubbo-web";
+} from "@apachedubbo/dubbo-web";
 import { testRoutes } from "./test-routes.js";
 
 // The following servers are available through crosstests:
@@ -31,14 +31,14 @@ const connectNodeH1BaseUrl = "http://127.0.0.1:8085";
 
 const crosstestTransports = {
   // gRPC-web
-  "apache-dubbo-web (gRPC-web, binary) gRPC-web against apache-dubbo-node (h1)":
+  "@apachedubbo/dubbo-web (gRPC-web, binary) gRPC-web against @apachedubbo/dubbo-node (h1)":
     (options?: Record<string, unknown>) =>
       createGrpcWebTransport({
         ...options,
         baseUrl: connectNodeH1BaseUrl,
         useBinaryFormat: true,
       }),
-  "apache-dubbo-web (gRPC-web, JSON) gRPC-web against apache-dubbo-node (h1)":
+  "@apachedubbo/dubbo-web (gRPC-web, JSON) gRPC-web against @apachedubbo/dubbo-node (h1)":
     (options?: Record<string, unknown>) =>
       createGrpcWebTransport({
         ...options,
@@ -46,14 +46,14 @@ const crosstestTransports = {
         useBinaryFormat: false,
       }),
   // Triple
-  "apache-dubbo-web (Triple, binary) against apache-dubbo-node (h1)":
+  "@apachedubbo/dubbo-web (Triple, binary) against @apachedubbo/dubbo-node (h1)":
     (options?: Record<string, unknown>) =>
       createDubboTransport({
         ...options,
         baseUrl: connectNodeH1BaseUrl,
         useBinaryFormat: true,
       }),
-  "apache-dubbo-web (Triple, JSON) against apache-dubbo-node (h1)": (
+  "@apachedubbo/dubbo-web (Triple, JSON) against @apachedubbo/dubbo-node (h1)": (
     options?: Record<string, unknown>
   ) =>
     createDubboTransport({
@@ -63,7 +63,7 @@ const crosstestTransports = {
     }),
 
   // DubboRouter
-  "apache-dubbo-web (DubboRouter, binary)": (
+  "@apachedubbo/dubbo-web (DubboRouter, binary)": (
     options?: Record<string, unknown>
   ) =>
     createRouterTransport(testRoutes, {
@@ -73,7 +73,7 @@ const crosstestTransports = {
       },
     }),
 
-  "apache-dubbo-web (DubboRouter, JSON)": (
+  "@apachedubbo/dubbo-web (DubboRouter, JSON)": (
     options?: Record<string, unknown>
   ) =>
     createRouterTransport(testRoutes, {

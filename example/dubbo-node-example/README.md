@@ -6,10 +6,10 @@
 
 ## <span id="precondition">前置条件</span>
 
-因为使用 Protocol Buffer 的原因，我们首先需要安装相关的代码生成工具，这包括 `@bufbuild/protoc-gen-es`、`@bufbuild/protobuf`、`protoc-gen-apache-dubbo-es`、`apache-dubbo`。
+因为使用 Protocol Buffer 的原因，我们首先需要安装相关的代码生成工具，这包括 `@bufbuild/protoc-gen-es`、`@bufbuild/protobuf`、`@apachedubbo/protoc-gen-apache-dubbo-es`、`@apachedubbo/dubbo`。
 
 ```Shell
-npm install @bufbuild/protoc-gen-es @bufbuild/protobuf protoc-gen-apache-dubbo-es apache-dubbo
+npm install @bufbuild/protoc-gen-es @bufbuild/protobuf @apachedubbo/protoc-gen-apache-dubbo-es @apachedubbo/dubbo
 ```
 
 ## <span id="defineService">定义服务</span>
@@ -81,7 +81,7 @@ PATH=$PATH:$(pwd)/node_modules/.bin \
 创建 dubbo.ts 文件
 
 ```typescript
-import { DubboRouter } from "apache-dubbo";
+import { DubboRouter } from "@apachedubbo/dubbo";
 import { ExampleService } from "./gen/example_dubbo";
 
 export default (router: DubboRouter) =>
@@ -102,7 +102,7 @@ Dubbo 服务可以嵌入到普通的 Node.js 服务器、Next.js、Express 或 F
 在这里我们将使用 Fastify，所以让我们安装 Fastify 以及我们为 Fastify 准备的插件。
 
 ```Shell
-npm install fastify apache-dubbo-fastify
+npm install fastify @apachedubbo/dubbo-fastify
 ```
 
 创建 server.ts 文件，新建一个 Server，把上一步中实现的 `ExampleService` 注册给它。
@@ -110,7 +110,7 @@ npm install fastify apache-dubbo-fastify
 
 ```typescript
 import { fastify } from "fastify";
-import { fastifyDubboPlugin } from "apache-dubbo-fastify";
+import { fastifyDubboPlugin } from "@apachedubbo/dubbo-fastify";
 import routes from "./dubbo";
 
 async function main() {
@@ -153,9 +153,9 @@ curl \
 创建 client.ts 文件。
 
 ```typescript
-import { createPromiseClient } from "apache-dubbo";
+import { createPromiseClient } from "@apachedubbo/dubbo";
 import { ExampleService } from "./gen/example_dubbo";
-import { createDubboTransport } from "apache-dubbo-node";
+import { createDubboTransport } from "@apachedubbo/dubbo-node";
 
 const transport = createDubboTransport({
   baseUrl: "http://localhost:8080",

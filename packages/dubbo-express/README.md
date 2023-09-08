@@ -1,10 +1,10 @@
-# apache-dubbo-express
+# @apachedubbo/dubbo-express
 
 Dubbo is a family of libraries for building and consuming APIs on different languages and platforms, and
-[apache-dubbo](https://www.npmjs.com/package/apache-dubbo) brings type-safe APIs with Protobuf to
+[@apachedubbo/dubbo](https://www.npmjs.com/package/@apachedubbo/dubbo) brings type-safe APIs with Protobuf to
 TypeScript.
 
-`apache-dubbo-express` provides a middleware for [Express](https://expressjs.com/), the fast, 
+`@apachedubbo/dubbo-express` provides a middleware for [Express](https://expressjs.com/), the fast, 
 unopinionated, minimalist web framework for Node.js
 
 ### expressDubboMiddleware()
@@ -13,7 +13,7 @@ Adds your Dubbo RPCs to an Express server.
 
 ```ts
 // connect.ts
-import { DubboRouter } from "apache-dubbo";
+import { DubboRouter } from "@apachedubbo/dubbo";
 
 export default function(router: DubboRouter) {
   // implement rpc Say(SayRequest) returns (SayResponse)
@@ -28,7 +28,7 @@ export default function(router: DubboRouter) {
 import http from "http";
 import express from "express";
 + import routes from "dubbo";
-+ import { expressDubboMiddleware } from "apache-dubbo-express";
++ import { expressDubboMiddleware } from "@apachedubbo/dubbo-express";
 
 const app = express();
 
@@ -50,11 +50,11 @@ curl \
     http://localhost:8080/buf.connect.demo.eliza.v1.ElizaService/Say
 ```
 
-Node.js with the gRPC-web protocol (using a transport from [apache-dubbo-node](https://www.npmjs.com/package/apache-dubbo-node)):
+Node.js with the gRPC-web protocol (using a transport from [@apachedubbo/dubbo-node](https://www.npmjs.com/package/@apachedubbo/dubbo-node)):
 
 ```ts
-import { createPromiseClient } from "apache-dubbo";
-import { createGrpcWebTransport } from "apache-dubbo-node";
+import { createPromiseClient } from "@apachedubbo/dubbo";
+import { createGrpcWebTransport } from "@apachedubbo/dubbo-node";
 import { ElizaService } from "./gen/eliza_dubbo.js";
 
 const transport = createGrpcWebTransport({
@@ -68,7 +68,7 @@ console.log(sentence) // you said: I feel happy.
 ```
 
 A client for the web browser actually looks identical to this example - it would
-simply use `createDubboTransport` from [apache-dubbo-web](https://www.npmjs.com/package/apache-dubbo-web) 
+simply use `createDubboTransport` from [@apachedubbo/dubbo-web](https://www.npmjs.com/package/@apachedubbo/dubbo-web) 
 instead.
 
 Note that support for gRPC is limited, since many gRPC clients require HTTP/2, 

@@ -1,7 +1,7 @@
-# apache-dubbo
+# @apachedubbo/dubbo
 
 Dubbo is a family of libraries for building type-safe APIs with different languages and platforms.  
-[apache-dubbo](https://www.npmjs.com/package/apache-dubbo) brings them to TypeScript,
+[@apachedubbo/dubbo](https://www.npmjs.com/package/@apachedubbo/dubbo) brings them to TypeScript,
 the web browser, and to Node.js.
 
 

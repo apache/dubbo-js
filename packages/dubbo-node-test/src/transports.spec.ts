@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code, DubboError } from "apache-dubbo";
+import { Code, DubboError } from "@apachedubbo/dubbo";
 import {
   createDubboTransport,
   Http2SessionManager,
-} from "apache-dubbo-node";
+} from "@apachedubbo/dubbo-node";
 
 describe("createDubboTransport()", function () {
   it("should take just httpVersion and baseUrl", function () {

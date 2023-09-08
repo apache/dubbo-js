@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code, DubboError } from "apache-dubbo";
+import { Code, DubboError } from "@apachedubbo/dubbo";
 
 /**
  * Similar to DubboError.from(), this function turns any value into

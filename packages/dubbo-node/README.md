@@ -1,18 +1,18 @@
-# apache-dubbo-node
+# @apachedubbo/dubbo-node
 
 Dubbo is a family of libraries for building and consuming APIs on different languages and platforms, and 
-[apache-dubbo](https://www.npmjs.com/package/apache-dubbo) brings type-safe APIs with Protobuf to 
+[@apachedubbo/dubbo](https://www.npmjs.com/package/@apachedubbo/dubbo) brings type-safe APIs with Protobuf to 
 TypeScript.
 
-`apache-dubbo-node` provides the following adapters for Node.js:
+`@apachedubbo/dubbo-node` provides the following adapters for Node.js:
 
 ### createDubboTransport()
 
 Lets your clients running on Node.js talk to a server with the Dubbo protocol:
 
 ```diff
-import { createPromiseClient } from "apache-dubbo";
-+ import { createDubboTransport } from "apache-dubbo-node";
+import { createPromiseClient } from "@apachedubbo/dubbo";
++ import { createDubboTransport } from "@apachedubbo/dubbo-node";
 import { ElizaService } from "./gen/eliza_dubbo.js";
 
 + // A transport for clients using the Dubbo protocol with Node.js `http` module
@@ -31,8 +31,8 @@ console.log(sentence) // you said: I feel happy.
 Lets your clients running on Node.js talk to a server with the gRPC protocol:
 
 ```diff
-import { createPromiseClient } from "apache-dubbo";
-+ import { createGrpcTransport } from "apache-dubbo-node";
+import { createPromiseClient } from "@apachedubbo/dubbo";
++ import { createGrpcTransport } from "@apachedubbo/dubbo-node";
 import { ElizaService } from "./gen/eliza_dubbo.js";
 
 + // A transport for clients using the gRPC protocol with Node.js `http2` module
@@ -51,8 +51,8 @@ console.log(sentence) // you said: I feel happy.
 Lets your clients running on Node.js talk to a server with the gRPC-web protocol:
 
 ```diff
-import { createPromiseClient } from "apache-dubbo";
-+ import { createGrpcWebTransport } from "apache-dubbo-node";
+import { createPromiseClient } from "@apachedubbo/dubbo";
++ import { createGrpcWebTransport } from "@apachedubbo/dubbo-node";
 import { ElizaService } from "./gen/eliza_dubbo.js";
 
 + // A transport for clients using the Dubbo protocol with Node.js `http` module
@@ -73,7 +73,7 @@ Run your Dubbo RPCs on the Node.js `http`, `https`, or `http2` modules.
 
 ```ts
 // connect.ts
-import { DubboRouter } from "apache-dubbo";
+import { DubboRouter } from "@apachedubbo/dubbo";
 
 export default function(router: DubboRouter) {
   // implement rpc Say(SayRequest) returns (SayResponse)
@@ -87,7 +87,7 @@ export default function(router: DubboRouter) {
 // server.ts
 import * as http2 from "http2";
 + import routes from "dubbo";
-+ import { dubboNodeAdapter } from "apache-dubbo-node";
++ import { dubboNodeAdapter } from "@apachedubbo/dubbo-node";
 
 http2.createServer(
 + dubboNodeAdapter({ routes }) // responds with 404 for other requests
@@ -119,8 +119,8 @@ curl \
 Node.js with the gRPC protocol:
 
 ```ts
-import { createPromiseClient } from "apache-dubbo";
-import { createGrpcTransport } from "apache-dubbo-node";
+import { createPromiseClient } from "@apachedubbo/dubbo";
+import { createGrpcTransport } from "@apachedubbo/dubbo-node";
 import { ElizaService } from "./gen/eliza_dubbo.js";
 
 const transport = createGrpcTransport({
@@ -134,7 +134,7 @@ console.log(sentence) // you said: I feel happy.
 ```
 
 A client for the web browser actually looks identical to this example - it would
-simply use `createDubboTransport` from [apache-dubbo-web](https://www.npmjs.com/package/apache-dubbo-web) 
+simply use `createDubboTransport` from [@apachedubbo/dubbo-web](https://www.npmjs.com/package/@apachedubbo/dubbo-web) 
 instead.
 
 

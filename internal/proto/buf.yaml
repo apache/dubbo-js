@@ -1,0 +1,12 @@
+version: v1
+lint:
+  use:
+    - DEFAULT
+  ignore:
+    # We don't control these definitions, so we ignore lint errors.
+    - grpc/testing/empty.proto
+    - grpc/testing/messages.proto
+    - grpc/testing/test.proto
+breaking:
+  use:
+    - WIRE_JSON
