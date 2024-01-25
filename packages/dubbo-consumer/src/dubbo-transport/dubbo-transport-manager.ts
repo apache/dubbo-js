@@ -222,13 +222,12 @@ export default class DubboTransportManager extends EventEmitter {
     return this.dubboServiceMap
       .get(dubboInterface)
       .filter((url) => {
-        // "*" refer to default wildcard in dubbo
-        const isSameVersion =
-          !version || version === '*' || url.version === version
-        //如果Group为null，就默认匹配， 不检查group
-        //如果Group不为null，确保group和接口的group一致
-        const isSameGroup = !group || group === url.group
-        return isSameGroup && isSameVersion
+          // "*" refer to default wildcard in dubbo
+          const isSameVersion = version === '*' || url.version === version
+          //如果Group为null，就默认匹配， 不检查group
+          //如果Group不为null，确保group和接口的group一致
+          const isSameGroup = group === '*' || group === url.group
+          return isSameGroup && isSameVersion
       })
       .reduce((reducer: Set<HostName>, prop: DubboUrl) => {
         reducer.add(prop.hostname)
