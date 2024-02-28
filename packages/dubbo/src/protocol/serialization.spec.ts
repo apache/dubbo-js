@@ -12,160 +12,158 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { StringValue } from "@bufbuild/protobuf";
-import type { Serialization } from "./serialization.js";
+import { StringValue } from '@bufbuild/protobuf'
+import type { Serialization } from './serialization.js'
 import {
   createBinarySerialization,
   createJsonSerialization,
   getJsonOptions,
-  limitSerialization,
-} from "./serialization.js";
-import { DubboError } from "../dubbo-error.js";
+  limitSerialization
+} from './serialization.js'
+import { DubboError } from '../dubbo-error.js'
 
-describe("createBinarySerialization()", function () {
-  const goldenMessage = new StringValue({ value: "abc" });
-  const goldenBytes = new StringValue({ value: "abc" }).toBinary();
-  const ser = createBinarySerialization(StringValue, undefined);
+describe('createBinarySerialization()', function () {
+  const goldenMessage = new StringValue({ value: 'abc' })
+  const goldenBytes = new StringValue({ value: 'abc' }).toBinary()
+  const ser = createBinarySerialization(StringValue, undefined)
 
-  it("should serialize", function () {
-    const bytes = ser.serialize(goldenMessage);
-    expect(bytes).toEqual(goldenBytes);
-  });
+  it('should serialize', function () {
+    const bytes = ser.serialize(goldenMessage)
+    expect(bytes).toEqual(goldenBytes)
+  })
 
-  it("should parse", function () {
-    const message = ser.parse(goldenBytes);
-    expect(goldenMessage.equals(message)).toBeTrue();
-  });
+  it('should parse', function () {
+    const message = ser.parse(goldenBytes)
+    expect(goldenMessage.equals(message)).toBeTrue()
+  })
 
-  describe("parsing invalid data", function () {
-    it("should raise connect error", function () {
+  describe('parsing invalid data', function () {
+    it('should raise connect error', function () {
       try {
-        ser.parse(new Uint8Array([0xde]));
-        fail("expected error");
+        ser.parse(new Uint8Array([0xde]))
+        fail('expected error')
       } catch (e) {
-        expect(e).toBeInstanceOf(DubboError);
-        const c = DubboError.from(e);
-        expect(c.message).toBe(
-          "[invalid_argument] parse binary: premature EOF"
-        );
+        expect(e).toBeInstanceOf(DubboError)
+        const c = DubboError.from(e)
+        expect(c.message).toBe('[invalid_argument] parse binary: premature EOF')
       }
-    });
-  });
+    })
+  })
 
-  describe("serializing invalid data", function () {
-    it("should raise connect error", function () {
-      const f = goldenMessage.clone();
+  describe('serializing invalid data', function () {
+    it('should raise connect error', function () {
+      const f = goldenMessage.clone()
       f.toBinary = () => {
-        throw "x";
-      };
-      try {
-        ser.serialize(f);
-        fail("expected error");
-      } catch (e) {
-        expect(e).toBeInstanceOf(DubboError);
-        const c = DubboError.from(e);
-        expect(c.message).toBe("[internal] serialize binary: x");
+        throw 'x'
       }
-    });
-  });
-});
-
-describe("createJsonSerialization()", function () {
-  const goldenMessage = new StringValue({ value: "abc" });
-  const goldenBytes = new TextEncoder().encode(`"abc"`);
-  const ser = createJsonSerialization(StringValue, undefined);
-
-  it("should serialize", function () {
-    const bytes = ser.serialize(goldenMessage);
-    expect(bytes).toEqual(goldenBytes);
-  });
-
-  it("should parse", function () {
-    const message = ser.parse(goldenBytes);
-    expect(goldenMessage.equals(message)).toBeTrue();
-  });
-
-  describe("parsing invalid data", function () {
-    it("should raise connect error", function () {
       try {
-        ser.parse(new Uint8Array([0xde]));
-        fail("expected error");
+        ser.serialize(f)
+        fail('expected error')
       } catch (e) {
-        expect(e).toBeInstanceOf(DubboError);
-        const c = DubboError.from(e);
+        expect(e).toBeInstanceOf(DubboError)
+        const c = DubboError.from(e)
+        expect(c.message).toBe('[internal] serialize binary: x')
+      }
+    })
+  })
+})
+
+describe('createJsonSerialization()', function () {
+  const goldenMessage = new StringValue({ value: 'abc' })
+  const goldenBytes = new TextEncoder().encode(`"abc"`)
+  const ser = createJsonSerialization(StringValue, undefined)
+
+  it('should serialize', function () {
+    const bytes = ser.serialize(goldenMessage)
+    expect(bytes).toEqual(goldenBytes)
+  })
+
+  it('should parse', function () {
+    const message = ser.parse(goldenBytes)
+    expect(goldenMessage.equals(message)).toBeTrue()
+  })
+
+  describe('parsing invalid data', function () {
+    it('should raise connect error', function () {
+      try {
+        ser.parse(new Uint8Array([0xde]))
+        fail('expected error')
+      } catch (e) {
+        expect(e).toBeInstanceOf(DubboError)
+        const c = DubboError.from(e)
         expect(c.message).toMatch(
           /^\[invalid_argument] cannot decode google.protobuf.StringValue from JSON: Unexpected token/
-        );
+        )
       }
-    });
-  });
+    })
+  })
 
-  describe("serializing invalid data", function () {
-    it("should raise connect error", function () {
-      const f = goldenMessage.clone();
+  describe('serializing invalid data', function () {
+    it('should raise connect error', function () {
+      const f = goldenMessage.clone()
       f.toJsonString = () => {
-        throw "x";
-      };
-      try {
-        ser.serialize(f);
-        fail("expected error");
-      } catch (e) {
-        expect(e).toBeInstanceOf(DubboError);
-        const c = DubboError.from(e);
-        expect(c.message).toBe("[internal] x");
+        throw 'x'
       }
-    });
-  });
-});
+      try {
+        ser.serialize(f)
+        fail('expected error')
+      } catch (e) {
+        expect(e).toBeInstanceOf(DubboError)
+        const c = DubboError.from(e)
+        expect(c.message).toBe('[internal] x')
+      }
+    })
+  })
+})
 
-describe("limitSerialization()", function () {
+describe('limitSerialization()', function () {
   const ser: Serialization<string> = {
     serialize(data: string): Uint8Array {
-      return new TextEncoder().encode(data);
+      return new TextEncoder().encode(data)
     },
     parse(data: Uint8Array): string {
-      return new TextDecoder().decode(data);
-    },
-  };
-  it("limits serialize", function () {
+      return new TextDecoder().decode(data)
+    }
+  }
+  it('limits serialize', function () {
     const limitedSer = limitSerialization(ser, {
       readMaxBytes: 0xffffffff,
-      writeMaxBytes: 3,
-    });
-    expect(() => limitedSer.serialize("abcdef")).toThrowError(
+      writeMaxBytes: 3
+    })
+    expect(() => limitedSer.serialize('abcdef')).toThrowError(
       DubboError,
-      "[resource_exhausted] message size 6 is larger than configured writeMaxBytes 3"
-    );
+      '[resource_exhausted] message size 6 is larger than configured writeMaxBytes 3'
+    )
     expect(() =>
-      limitedSer.parse(new TextEncoder().encode("abcdef"))
-    ).not.toThrowError();
-  });
-  it("limits parse", function () {
+      limitedSer.parse(new TextEncoder().encode('abcdef'))
+    ).not.toThrowError()
+  })
+  it('limits parse', function () {
     const limitedSer = limitSerialization(ser, {
       readMaxBytes: 3,
-      writeMaxBytes: 0xffffffff,
-    });
-    expect(() => limitedSer.serialize("abcdef")).not.toThrowError();
+      writeMaxBytes: 0xffffffff
+    })
+    expect(() => limitedSer.serialize('abcdef')).not.toThrowError()
     expect(() =>
-      limitedSer.parse(new TextEncoder().encode("abcdef"))
+      limitedSer.parse(new TextEncoder().encode('abcdef'))
     ).toThrowError(
       DubboError,
-      "[resource_exhausted] message size 6 is larger than configured readMaxBytes 3"
-    );
-  });
-});
+      '[resource_exhausted] message size 6 is larger than configured readMaxBytes 3'
+    )
+  })
+})
 
-describe("getJsonOptions()", function () {
-  it("sets ignoreUnknownFields to true if not already set on options object", function () {
-    const opts = getJsonOptions({ emitDefaultValues: true });
-    expect(opts.ignoreUnknownFields).toBeTrue();
-  });
-  it("sets ignoreUnknownFields to true if undefined is passed", function () {
-    const opts = getJsonOptions(undefined);
-    expect(opts.ignoreUnknownFields).toBeTrue();
-  });
+describe('getJsonOptions()', function () {
+  it('sets ignoreUnknownFields to true if not already set on options object', function () {
+    const opts = getJsonOptions({ emitDefaultValues: true })
+    expect(opts.ignoreUnknownFields).toBeTrue()
+  })
+  it('sets ignoreUnknownFields to true if undefined is passed', function () {
+    const opts = getJsonOptions(undefined)
+    expect(opts.ignoreUnknownFields).toBeTrue()
+  })
   it("doesn't change ignoreUnknownFields if already set", function () {
-    const opts = getJsonOptions({ ignoreUnknownFields: false });
-    expect(opts.ignoreUnknownFields).toBeFalse();
-  });
-});
+    const opts = getJsonOptions({ ignoreUnknownFields: false })
+    expect(opts.ignoreUnknownFields).toBeFalse()
+  })
+})

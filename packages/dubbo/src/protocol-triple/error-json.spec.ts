@@ -12,190 +12,190 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { DubboError } from "../dubbo-error.js";
-import { Code } from "../code.js";
-import { Message, proto3, protoBase64, ScalarType } from "@bufbuild/protobuf";
-import { errorFromJson, errorToJson } from "./error-json.js";
+import { DubboError } from '../dubbo-error.js'
+import { Code } from '../code.js'
+import { Message, proto3, protoBase64, ScalarType } from '@bufbuild/protobuf'
+import { errorFromJson, errorToJson } from './error-json.js'
 
-describe("errorToJson()", () => {
-  it("serializes code and message", () => {
+describe('errorToJson()', () => {
+  it('serializes code and message', () => {
     const json = errorToJson(
-      new DubboError("Not permitted", Code.PermissionDenied),
+      new DubboError('Not permitted', Code.PermissionDenied),
       undefined
-    );
-    expect(json.status as unknown).toBe(Code.PermissionDenied);
-    expect(json.message as unknown).toBe("Not permitted");
-  });
-  it("does not serialize empty message", () => {
+    )
+    expect(json.status as unknown).toBe(Code.PermissionDenied)
+    expect(json.message as unknown).toBe('Not permitted')
+  })
+  it('does not serialize empty message', () => {
     const json = errorToJson(
-      new DubboError("", Code.PermissionDenied),
+      new DubboError('', Code.PermissionDenied),
       undefined
-    );
-    expect(json.status as unknown).toBe(Code.PermissionDenied);
-    expect(json.message as unknown).toBeUndefined();
-  });
-  it("serializes details", () => {
+    )
+    expect(json.status as unknown).toBe(Code.PermissionDenied)
+    expect(json.message as unknown).toBeUndefined()
+  })
+  it('serializes details', () => {
     type ErrorDetail = Message<ErrorDetail> & {
-      reason: string;
-      domain: string;
-    };
+      reason: string
+      domain: string
+    }
     const ErrorDetail = proto3.makeMessageType<ErrorDetail>(
-      "handwritten.ErrorDetail",
+      'handwritten.ErrorDetail',
       [
-        { no: 1, name: "reason", kind: "scalar", T: ScalarType.STRING },
-        { no: 2, name: "domain", kind: "scalar", T: ScalarType.STRING },
+        { no: 1, name: 'reason', kind: 'scalar', T: ScalarType.STRING },
+        { no: 2, name: 'domain', kind: 'scalar', T: ScalarType.STRING }
       ]
-    );
-    const err = new DubboError("Not permitted", Code.PermissionDenied);
+    )
+    const err = new DubboError('Not permitted', Code.PermissionDenied)
     err.details.push(
-      new ErrorDetail({ reason: "soirée 🎉", domain: "example.com" })
-    );
-    const got = errorToJson(err, undefined);
+      new ErrorDetail({ reason: 'soirée 🎉', domain: 'example.com' })
+    )
+    const got = errorToJson(err, undefined)
     const want = {
       status: Code.PermissionDenied,
-      message: "Not permitted",
+      message: 'Not permitted',
       details: [
         {
           type: ErrorDetail.typeName,
           value: protoBase64.enc(
             new ErrorDetail({
-              reason: "soirée 🎉",
-              domain: "example.com",
+              reason: 'soirée 🎉',
+              domain: 'example.com'
             }).toBinary()
           ),
           debug: {
-            reason: "soirée 🎉",
-            domain: "example.com",
-          },
-        },
-      ],
-    };
-    expect(got).toEqual(want);
-  });
-});
+            reason: 'soirée 🎉',
+            domain: 'example.com'
+          }
+        }
+      ]
+    }
+    expect(got).toEqual(want)
+  })
+})
 
-describe("errorFromJson()", () => {
-  it("parses code and message", () => {
+describe('errorFromJson()', () => {
+  it('parses code and message', () => {
     const error = errorFromJson(
       {
         status: Code.PermissionDenied,
-        message: "Not permitted",
+        message: 'Not permitted'
       },
       undefined,
-      new DubboError("foo", Code.ResourceExhausted)
-    );
-    expect(error.code).toBe(Code.PermissionDenied);
-    expect(error.rawMessage).toBe("Not permitted");
-    expect(error.details.length).toBe(0);
-  });
-  it("does not require message", () => {
+      new DubboError('foo', Code.ResourceExhausted)
+    )
+    expect(error.code).toBe(Code.PermissionDenied)
+    expect(error.rawMessage).toBe('Not permitted')
+    expect(error.details.length).toBe(0)
+  })
+  it('does not require message', () => {
     const error = errorFromJson(
       {
-        status: Code.PermissionDenied,
+        status: Code.PermissionDenied
       },
       undefined,
-      new DubboError("foo", Code.ResourceExhausted)
-    );
-    expect(error.message).toBe("[permission_denied]");
-    expect(error.rawMessage).toBe("");
-  });
-  it("with invalid code throws fallback", () => {
+      new DubboError('foo', Code.ResourceExhausted)
+    )
+    expect(error.message).toBe('[permission_denied]')
+    expect(error.rawMessage).toBe('')
+  })
+  it('with invalid code throws fallback', () => {
     expect(() =>
       errorFromJson(
         {
           status: -1,
-          message: "Not permitted",
+          message: 'Not permitted'
         },
         undefined,
-        new DubboError("foo", Code.ResourceExhausted)
+        new DubboError('foo', Code.ResourceExhausted)
       )
-    ).toThrowError("[resource_exhausted] foo");
-  });
-  it("with invalid code throws fallback with metadata", () => {
+    ).toThrowError('[resource_exhausted] foo')
+  })
+  it('with invalid code throws fallback with metadata', () => {
     try {
       errorFromJson(
         {
-          code: "wrong code",
-          message: "Not permitted",
+          code: 'wrong code',
+          message: 'Not permitted'
         },
-        new Headers({ foo: "bar" }),
-        new DubboError("foo", Code.ResourceExhausted)
-      );
-      fail("expected error");
+        new Headers({ foo: 'bar' }),
+        new DubboError('foo', Code.ResourceExhausted)
+      )
+      fail('expected error')
     } catch (e) {
-      expect(e).toBeInstanceOf(DubboError);
-      expect(DubboError.from(e).message).toBe("[resource_exhausted] foo");
-      expect(DubboError.from(e).metadata.get("foo")).toBe("bar");
+      expect(e).toBeInstanceOf(DubboError)
+      expect(DubboError.from(e).message).toBe('[resource_exhausted] foo')
+      expect(DubboError.from(e).metadata.get('foo')).toBe('bar')
     }
-  });
-  it("with code Ok throws fallback", () => {
+  })
+  it('with code Ok throws fallback', () => {
     expect(() =>
       errorFromJson(
         {
-          code: "ok",
-          message: "Not permitted",
+          code: 'ok',
+          message: 'Not permitted'
         },
         undefined,
-        new DubboError("foo", Code.ResourceExhausted)
+        new DubboError('foo', Code.ResourceExhausted)
       )
-    ).toThrowError("[resource_exhausted] foo");
-  });
-  it("with missing code throws fallback", () => {
+    ).toThrowError('[resource_exhausted] foo')
+  })
+  it('with missing code throws fallback', () => {
     expect(() =>
       errorFromJson(
         {
-          message: "Not permitted",
+          message: 'Not permitted'
         },
         undefined,
-        new DubboError("foo", Code.ResourceExhausted)
+        new DubboError('foo', Code.ResourceExhausted)
       )
-    ).toThrowError("[resource_exhausted] foo");
-  });
-  describe("with details", () => {
+    ).toThrowError('[resource_exhausted] foo')
+  })
+  describe('with details', () => {
     type ErrorDetail = Message<ErrorDetail> & {
-      reason: string;
-      domain: string;
-    };
+      reason: string
+      domain: string
+    }
     const ErrorDetail = proto3.makeMessageType<ErrorDetail>(
-      "handwritten.ErrorDetail",
+      'handwritten.ErrorDetail',
       [
-        { no: 1, name: "reason", kind: "scalar", T: ScalarType.STRING },
-        { no: 2, name: "domain", kind: "scalar", T: ScalarType.STRING },
+        { no: 1, name: 'reason', kind: 'scalar', T: ScalarType.STRING },
+        { no: 2, name: 'domain', kind: 'scalar', T: ScalarType.STRING }
       ]
-    );
+    )
     const json = {
       status: Code.PermissionDenied,
-      message: "Not permitted",
+      message: 'Not permitted',
       details: [
         {
           type: ErrorDetail.typeName,
           value: protoBase64.enc(
             new ErrorDetail({
-              reason: "soirée 🎉",
-              domain: "example.com",
+              reason: 'soirée 🎉',
+              domain: 'example.com'
             }).toBinary()
-          ),
-        },
-      ],
-    };
-    it("adds to raw detail", () => {
+          )
+        }
+      ]
+    }
+    it('adds to raw detail', () => {
       const error = errorFromJson(
         json,
         undefined,
-        new DubboError("foo", Code.ResourceExhausted)
-      );
-      expect(error.details.length).toBe(1);
-    });
-    it("works with findDetails()", () => {
+        new DubboError('foo', Code.ResourceExhausted)
+      )
+      expect(error.details.length).toBe(1)
+    })
+    it('works with findDetails()', () => {
       const error = errorFromJson(
         json,
         undefined,
-        new DubboError("foo", Code.ResourceExhausted)
-      );
-      const details = error.findDetails(ErrorDetail);
-      expect(details.length).toBe(1);
-      expect(details[0]?.reason).toBe("soirée 🎉");
-      expect(details[0]?.domain).toBe("example.com");
-    });
-  });
-});
+        new DubboError('foo', Code.ResourceExhausted)
+      )
+      const details = error.findDetails(ErrorDetail)
+      expect(details.length).toBe(1)
+      expect(details[0]?.reason).toBe('soirée 🎉')
+      expect(details[0]?.domain).toBe('example.com')
+    })
+  })
+})

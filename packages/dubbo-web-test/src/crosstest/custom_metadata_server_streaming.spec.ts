@@ -16,87 +16,87 @@ import {
   decodeBinaryHeader,
   encodeBinaryHeader,
   createCallbackClient,
-  createPromiseClient,
-} from "@apachedubbo/dubbo";
-import { TestService } from "../gen/grpc/testing/test_dubbo.js";
-import { describeTransports } from "../helpers/crosstestserver.js";
+  createPromiseClient
+} from '@apachedubbo/dubbo'
+import { TestService } from '../gen/grpc/testing/test_dubbo.js'
+import { describeTransports } from '../helpers/crosstestserver.js'
 import {
   StreamingOutputCallRequest,
-  StreamingOutputCallResponse,
-} from "../gen/grpc/testing/messages_pb.js";
-import { interop } from "../helpers/interop.js";
+  StreamingOutputCallResponse
+} from '../gen/grpc/testing/messages_pb.js'
+import { interop } from '../helpers/interop.js'
 
-describe("custom_metadata_server_streaming", function () {
+describe('custom_metadata_server_streaming', function () {
   describeTransports((transport) => {
-    const size = 314159;
-    const binaryValue = new Uint8Array([0xab, 0xab, 0xab]);
+    const size = 314159
+    const binaryValue = new Uint8Array([0xab, 0xab, 0xab])
     const requestHeaders = {
-      [interop.leadingMetadataKey]: "test_initial_metadata_value",
-      [interop.trailingMetadataKey]: encodeBinaryHeader(binaryValue),
-    };
+      [interop.leadingMetadataKey]: 'test_initial_metadata_value',
+      [interop.trailingMetadataKey]: encodeBinaryHeader(binaryValue)
+    }
     const request = new StreamingOutputCallRequest({
-      responseParameters: [{ size }],
-    });
+      responseParameters: [{ size }]
+    })
     function expectResponseSize(response: StreamingOutputCallResponse) {
-      expect(response.payload).toBeDefined();
-      expect(response.payload?.body.length).toEqual(size);
+      expect(response.payload).toBeDefined()
+      expect(response.payload?.body.length).toEqual(size)
     }
     function expectResponseHeaders(responseHeaders: Headers | undefined) {
-      const want = requestHeaders[interop.leadingMetadataKey];
-      const got = responseHeaders?.get(interop.leadingMetadataKey);
-      expect(got).toBe(want);
+      const want = requestHeaders[interop.leadingMetadataKey]
+      const got = responseHeaders?.get(interop.leadingMetadataKey)
+      expect(got).toBe(want)
     }
     function expectResponseTrailers(responseTrailers: Headers | undefined) {
-      const gotRaw = responseTrailers?.get(interop.trailingMetadataKey);
-      expect(gotRaw).toBeDefined();
-      expect(gotRaw).not.toBeNull();
+      const gotRaw = responseTrailers?.get(interop.trailingMetadataKey)
+      expect(gotRaw).toBeDefined()
+      expect(gotRaw).not.toBeNull()
       if (gotRaw != null) {
-        expect(decodeBinaryHeader(gotRaw)).toEqual(binaryValue);
+        expect(decodeBinaryHeader(gotRaw)).toEqual(binaryValue)
       }
     }
-    it("with promise client", async function () {
-      const client = createPromiseClient(TestService, transport());
-      let responseHeaders: Headers | undefined;
-      let responseTrailers: Headers | undefined;
+    it('with promise client', async function () {
+      const client = createPromiseClient(TestService, transport())
+      let responseHeaders: Headers | undefined
+      let responseTrailers: Headers | undefined
       for await (const response of client.streamingOutputCall(request, {
         headers: requestHeaders,
         onHeader(header) {
-          responseHeaders = header;
+          responseHeaders = header
         },
         onTrailer(trailer) {
-          responseTrailers = trailer;
-        },
+          responseTrailers = trailer
+        }
       })) {
-        expectResponseSize(response);
+        expectResponseSize(response)
       }
-      expectResponseHeaders(responseHeaders);
-      expectResponseTrailers(responseTrailers);
-    });
-    it("with callback client", function (done) {
-      const client = createCallbackClient(TestService, transport());
-      let responseHeaders: Headers | undefined;
-      let responseTrailers: Headers | undefined;
+      expectResponseHeaders(responseHeaders)
+      expectResponseTrailers(responseTrailers)
+    })
+    it('with callback client', function (done) {
+      const client = createCallbackClient(TestService, transport())
+      let responseHeaders: Headers | undefined
+      let responseTrailers: Headers | undefined
       client.streamingOutputCall(
         request,
         (response) => {
-          expectResponseSize(response);
+          expectResponseSize(response)
         },
         (err) => {
-          expect(err).toBeUndefined();
-          expectResponseHeaders(responseHeaders);
-          expectResponseTrailers(responseTrailers);
-          done();
+          expect(err).toBeUndefined()
+          expectResponseHeaders(responseHeaders)
+          expectResponseTrailers(responseTrailers)
+          done()
         },
         {
           headers: requestHeaders,
           onHeader(header) {
-            responseHeaders = header;
+            responseHeaders = header
           },
           onTrailer(trailer) {
-            responseTrailers = trailer;
-          },
+            responseTrailers = trailer
+          }
         }
-      );
-    });
-  });
-});
+      )
+    })
+  })
+})

@@ -20,11 +20,11 @@ import type {
   Message,
   MessageType,
   MethodInfo,
-  PartialMessage,
-} from "@bufbuild/protobuf";
-import { DubboError } from "../dubbo-error.js";
-import { Code } from "../code.js";
-import { assertReadMaxBytes, assertWriteMaxBytes } from "./limit-io.js";
+  PartialMessage
+} from '@bufbuild/protobuf'
+import { DubboError } from '../dubbo-error.js'
+import { Code } from '../code.js'
+import { assertReadMaxBytes, assertWriteMaxBytes } from './limit-io.js'
 
 /**
  * Serialization provides methods to serialize or parse data with a certain
@@ -36,12 +36,12 @@ export interface Serialization<T> {
   /**
    * Serialize T. Raises a DubboError with Code.Internal if an error occurs.
    */
-  serialize: (data: T) => Uint8Array;
+  serialize: (data: T) => Uint8Array
 
   /**
    * Parse T. Raises a DubboError with Code.InvalidArgument if an error occurs.
    */
-  parse: (data: Uint8Array) => T;
+  parse: (data: Uint8Array) => T
 }
 
 /**
@@ -54,9 +54,9 @@ export interface Serialization<T> {
 export function getJsonOptions(
   options: Partial<JsonReadOptions & JsonWriteOptions> | undefined
 ) {
-  const o = { ...options };
-  o.ignoreUnknownFields ??= true;
-  return o;
+  const o = { ...options }
+  o.ignoreUnknownFields ??= true
+  return o
 }
 
 /**
@@ -73,34 +73,34 @@ export function createMethodSerializationLookup<
   binaryOptions: Partial<BinaryReadOptions & BinaryWriteOptions> | undefined,
   jsonOptions: Partial<JsonReadOptions & JsonWriteOptions> | undefined,
   limitOptions: {
-    writeMaxBytes: number;
-    readMaxBytes: number;
+    writeMaxBytes: number
+    readMaxBytes: number
   }
 ): MethodSerializationLookup<I, O> {
   const inputBinary = limitSerialization(
     createBinarySerialization(method.I, binaryOptions),
     limitOptions
-  );
+  )
   const inputJson = limitSerialization(
     createJsonSerialization(method.I, jsonOptions),
     limitOptions
-  );
+  )
   const outputBinary = limitSerialization(
     createBinarySerialization(method.O, binaryOptions),
     limitOptions
-  );
+  )
   const outputJson = limitSerialization(
     createJsonSerialization(method.O, jsonOptions),
     limitOptions
-  );
+  )
   return {
     getI(useBinaryFormat) {
-      return useBinaryFormat ? inputBinary : inputJson;
+      return useBinaryFormat ? inputBinary : inputJson
     },
     getO(useBinaryFormat) {
-      return useBinaryFormat ? outputBinary : outputJson;
-    },
-  };
+      return useBinaryFormat ? outputBinary : outputJson
+    }
+  }
 }
 
 /**
@@ -116,11 +116,11 @@ export interface MethodSerializationLookup<
   /**
    * Get the JSON or binary serialization for the request message type.
    */
-  getI(useBinaryFormat: boolean): Serialization<I>;
+  getI(useBinaryFormat: boolean): Serialization<I>
   /**
    * Get the JSON or binary serialization for the response message type.
    */
-  getO(useBinaryFormat: boolean): Serialization<O>;
+  getO(useBinaryFormat: boolean): Serialization<O>
 }
 
 /**
@@ -139,15 +139,15 @@ export function createClientMethodSerializers<
   binaryOptions?: BinarySerializationOptions
 ) {
   function normalize(input: PartialMessage<I>): I {
-    return input instanceof method.I ? input : new method.I(input);
+    return input instanceof method.I ? input : new method.I(input)
   }
   const input = useBinaryFormat
     ? createBinarySerialization(method.I, binaryOptions)
-    : createJsonSerialization(method.I, jsonOptions);
+    : createJsonSerialization(method.I, jsonOptions)
   const output = useBinaryFormat
     ? createBinarySerialization(method.O, binaryOptions)
-    : createJsonSerialization(method.O, jsonOptions);
-  return { normalize, parse: output.parse, serialize: input.serialize };
+    : createJsonSerialization(method.O, jsonOptions)
+  return { normalize, parse: output.parse, serialize: input.serialize }
 }
 
 /**
@@ -158,21 +158,21 @@ export function createClientMethodSerializers<
 export function limitSerialization<T>(
   serialization: Serialization<T>,
   limitOptions: {
-    writeMaxBytes: number;
-    readMaxBytes: number;
+    writeMaxBytes: number
+    readMaxBytes: number
   }
 ): Serialization<T> {
   return {
     serialize(data) {
-      const bytes = serialization.serialize(data);
-      assertWriteMaxBytes(limitOptions.writeMaxBytes, bytes.byteLength);
-      return bytes;
+      const bytes = serialization.serialize(data)
+      assertWriteMaxBytes(limitOptions.writeMaxBytes, bytes.byteLength)
+      return bytes
     },
     parse(data) {
-      assertReadMaxBytes(limitOptions.readMaxBytes, data.byteLength, true);
-      return serialization.parse(data);
-    },
-  };
+      assertReadMaxBytes(limitOptions.readMaxBytes, data.byteLength, true)
+      return serialization.parse(data)
+    }
+  }
 }
 
 /**
@@ -180,7 +180,7 @@ export function limitSerialization<T>(
  */
 type BinarySerializationOptions = Partial<
   BinaryReadOptions & BinaryWriteOptions
->;
+>
 
 /**
  * Creates a Serialization object for serializing the given protobuf message
@@ -193,30 +193,30 @@ export function createBinarySerialization<T extends Message<T>>(
   return {
     parse(data: Uint8Array): T {
       try {
-        return messageType.fromBinary(data, options);
+        return messageType.fromBinary(data, options)
       } catch (e) {
-        const m = e instanceof Error ? e.message : String(e);
-        throw new DubboError(`parse binary: ${m}`, Code.InvalidArgument);
+        const m = e instanceof Error ? e.message : String(e)
+        throw new DubboError(`parse binary: ${m}`, Code.InvalidArgument)
       }
     },
     serialize(data: T): Uint8Array {
       try {
-        return data.toBinary(options);
+        return data.toBinary(options)
       } catch (e) {
-        const m = e instanceof Error ? e.message : String(e);
-        throw new DubboError(`serialize binary: ${m}`, Code.Internal);
+        const m = e instanceof Error ? e.message : String(e)
+        throw new DubboError(`serialize binary: ${m}`, Code.Internal)
       }
-    },
-  };
+    }
+  }
 }
 
 /**
  * Options for createJsonSerialization()
  */
 type JsonSerializationOptions = Partial<JsonReadOptions & JsonWriteOptions> & {
-  textEncoder?: { encode(input?: string): Uint8Array };
-  textDecoder?: { decode(input?: Uint8Array): string };
-};
+  textEncoder?: { encode(input?: string): Uint8Array }
+  textDecoder?: { decode(input?: Uint8Array): string }
+}
 
 /**
  * Creates a Serialization object for serializing the given protobuf message
@@ -228,25 +228,25 @@ export function createJsonSerialization<T extends Message<T>>(
   messageType: MessageType<T>,
   options: JsonSerializationOptions | undefined
 ): Serialization<T> {
-  const textEncoder = options?.textEncoder ?? new TextEncoder();
-  const textDecoder = options?.textDecoder ?? new TextDecoder();
-  const o = getJsonOptions(options);
+  const textEncoder = options?.textEncoder ?? new TextEncoder()
+  const textDecoder = options?.textDecoder ?? new TextDecoder()
+  const o = getJsonOptions(options)
   return {
     parse(data: Uint8Array): T {
       try {
-        const json = textDecoder.decode(data);
-        return messageType.fromJsonString(json, o);
+        const json = textDecoder.decode(data)
+        return messageType.fromJsonString(json, o)
       } catch (e) {
-        throw DubboError.from(e, Code.InvalidArgument);
+        throw DubboError.from(e, Code.InvalidArgument)
       }
     },
     serialize(data: T): Uint8Array {
       try {
-        const json = data.toJsonString(o);
-        return textEncoder.encode(json);
+        const json = data.toJsonString(o)
+        return textEncoder.encode(json)
       } catch (e) {
-        throw DubboError.from(e, Code.Internal);
+        throw DubboError.from(e, Code.Internal)
       }
-    },
-  };
+    }
+  }
 }

@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Message, MethodKind } from "@bufbuild/protobuf";
-import type { PartialMessage } from "@bufbuild/protobuf";
-import { DubboError } from "../dubbo-error.js";
-import { Code } from "../code.js";
-import type { HandlerContext, MethodImplSpec } from "../implementation.js";
-import type { AsyncIterableTransform } from "./async-iterable.js";
+import { Message, MethodKind } from '@bufbuild/protobuf'
+import type { PartialMessage } from '@bufbuild/protobuf'
+import { DubboError } from '../dubbo-error.js'
+import { Code } from '../code.js'
+import type { HandlerContext, MethodImplSpec } from '../implementation.js'
+import type { AsyncIterableTransform } from './async-iterable.js'
 
 /**
  * Invoke a user-provided implementation of a unary RPC. Returns a normalized
@@ -33,8 +33,8 @@ export async function invokeUnaryImplementation<
   context: HandlerContext,
   input: I
 ): Promise<O> {
-  const output = await spec.impl(input, context);
-  return normalizeOutput(spec, output);
+  const output = await spec.impl(input, context)
+  return normalizeOutput(spec, output)
 }
 
 /**
@@ -54,56 +54,56 @@ export function transformInvokeImplementation<
   switch (spec.kind) {
     case MethodKind.Unary:
       return async function* unary(input: AsyncIterable<I>) {
-        const inputIt = input[Symbol.asyncIterator]();
-        const input1 = await inputIt.next();
+        const inputIt = input[Symbol.asyncIterator]()
+        const input1 = await inputIt.next()
         if (input1.done === true) {
           throw new DubboError(
-            "protocol error: missing input message for unary method",
+            'protocol error: missing input message for unary method',
             Code.InvalidArgument
-          );
+          )
         }
-        yield normalizeOutput(spec, await spec.impl(input1.value, context));
-        const input2 = await inputIt.next();
+        yield normalizeOutput(spec, await spec.impl(input1.value, context))
+        const input2 = await inputIt.next()
         if (input2.done !== true) {
           throw new DubboError(
-            "protocol error: received extra input message for unary method",
+            'protocol error: received extra input message for unary method',
             Code.InvalidArgument
-          );
+          )
         }
-      };
+      }
     case MethodKind.ServerStreaming: {
       return async function* serverStreaming(input: AsyncIterable<I>) {
-        const inputIt = input[Symbol.asyncIterator]();
-        const input1 = await inputIt.next();
+        const inputIt = input[Symbol.asyncIterator]()
+        const input1 = await inputIt.next()
         if (input1.done === true) {
           throw new DubboError(
-            "protocol error: missing input message for server-streaming method",
+            'protocol error: missing input message for server-streaming method',
             Code.InvalidArgument
-          );
+          )
         }
         for await (const o of spec.impl(input1.value, context)) {
-          yield normalizeOutput(spec, o);
+          yield normalizeOutput(spec, o)
         }
-        const input2 = await inputIt.next();
+        const input2 = await inputIt.next()
         if (input2.done !== true) {
           throw new DubboError(
-            "protocol error: received extra input message for server-streaming method",
+            'protocol error: received extra input message for server-streaming method',
             Code.InvalidArgument
-          );
+          )
         }
-      };
+      }
     }
     case MethodKind.ClientStreaming: {
       return async function* clientStreaming(input: AsyncIterable<I>) {
-        yield normalizeOutput(spec, await spec.impl(input, context));
-      };
+        yield normalizeOutput(spec, await spec.impl(input, context))
+      }
     }
     case MethodKind.BiDiStreaming:
       return async function* biDiStreaming(input: AsyncIterable<I>) {
         for await (const o of spec.impl(input, context)) {
-          yield normalizeOutput(spec, o);
+          yield normalizeOutput(spec, o)
         }
-      };
+      }
   }
 }
 
@@ -112,10 +112,10 @@ function normalizeOutput<I extends Message<I>, O extends Message<O>>(
   message: O | PartialMessage<O>
 ) {
   if (message instanceof Message) {
-    return message;
+    return message
   }
   try {
-    return new spec.method.O(message);
+    return new spec.method.O(message)
   } catch (e) {
     throw new DubboError(
       `failed to normalize message ${spec.method.O.typeName}`,
@@ -123,6 +123,6 @@ function normalizeOutput<I extends Message<I>, O extends Message<O>>(
       undefined,
       undefined,
       e
-    );
+    )
   }
 }

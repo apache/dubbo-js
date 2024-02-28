@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { MethodKind } from "@bufbuild/protobuf";
-import { Code } from "../code.js";
-import { codeFromHttpStatus } from "./http-status.js";
-import { DubboError } from "../dubbo-error.js";
-import { headerStreamEncoding, headerUnaryEncoding } from "./headers.js";
-import type { Compression } from "../protocol/compression.js";
+import { MethodKind } from '@bufbuild/protobuf'
+import { Code } from '../code.js'
+import { codeFromHttpStatus } from './http-status.js'
+import { DubboError } from '../dubbo-error.js'
+import { headerStreamEncoding, headerUnaryEncoding } from './headers.js'
+import type { Compression } from '../protocol/compression.js'
 
 /**
  * Validates response status and header for the Connect protocol.
@@ -41,13 +41,13 @@ export function validateResponse(
       `HTTP ${status}`,
       codeFromHttpStatus(status),
       headers
-    );
+    )
     if (methodKind == MethodKind.Unary) {
-      return { isUnaryError: true, unaryError: errorFromStatus };
+      return { isUnaryError: true, unaryError: errorFromStatus }
     }
-    throw errorFromStatus;
+    throw errorFromStatus
   }
-  return { isUnaryError: false };
+  return { isUnaryError: false }
 }
 
 /**
@@ -63,24 +63,24 @@ export function validateResponseWithCompression(
   status: number,
   headers: Headers
 ): ReturnType<typeof validateResponse> & {
-  compression: Compression | undefined;
+  compression: Compression | undefined
 } {
-  let compression: Compression | undefined;
+  let compression: Compression | undefined
   const encoding = headers.get(
     methodKind == MethodKind.Unary ? headerUnaryEncoding : headerStreamEncoding
-  );
-  if (encoding != null && encoding.toLowerCase() !== "identity") {
-    compression = acceptCompression.find((c) => c.name === encoding);
+  )
+  if (encoding != null && encoding.toLowerCase() !== 'identity') {
+    compression = acceptCompression.find((c) => c.name === encoding)
     if (!compression) {
       throw new DubboError(
         `unsupported response encoding "${encoding}"`,
         Code.InvalidArgument,
         headers
-      );
+      )
     }
   }
   return {
     compression,
-    ...validateResponse(methodKind, status, headers),
-  };
+    ...validateResponse(methodKind, status, headers)
+  }
 }

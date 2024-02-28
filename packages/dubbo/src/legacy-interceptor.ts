@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { AnyMessage, Message } from "@bufbuild/protobuf";
+import type { AnyMessage, Message } from '@bufbuild/protobuf'
 import type {
   Interceptor,
   StreamRequest,
   StreamResponse,
   UnaryRequest,
-  UnaryResponse,
-} from "./interceptor.js";
+  UnaryResponse
+} from './interceptor.js'
 
 /**
  * Runs a unary method with the given interceptors. Note that this function
@@ -33,9 +33,9 @@ export function runUnary<I extends Message<I>, O extends Message<O>>(
   interceptors: Interceptor[] | undefined
 ): Promise<UnaryResponse<I, O>> {
   if (interceptors) {
-    next = applyInterceptors(next, interceptors);
+    next = applyInterceptors(next, interceptors)
   }
-  return next(req);
+  return next(req)
 }
 
 /**
@@ -50,9 +50,9 @@ export function runStreaming<I extends Message<I>, O extends Message<O>>(
   interceptors: Interceptor[] | undefined
 ): Promise<StreamResponse<I, O>> {
   if (interceptors) {
-    next = applyInterceptors(next, interceptors);
+    next = applyInterceptors(next, interceptors)
   }
-  return next(req);
+  return next(req)
 }
 
 /**
@@ -68,7 +68,7 @@ function applyInterceptors<T>(next: T, interceptors: Interceptor[]): T {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       (n, i) => i(n),
       next as any // eslint-disable-line @typescript-eslint/no-explicit-any
-    ) as T;
+    ) as T
 }
 
 /**
@@ -81,7 +81,7 @@ function applyInterceptors<T>(next: T, interceptors: Interceptor[]): T {
 type UnaryFn<
   I extends Message<I> = AnyMessage,
   O extends Message<O> = AnyMessage
-> = (req: UnaryRequest<I, O>) => Promise<UnaryResponse<I, O>>;
+> = (req: UnaryRequest<I, O>) => Promise<UnaryResponse<I, O>>
 
 /**
  * StreamingFn represents the client-side invocation of a streaming RPC - a
@@ -93,4 +93,4 @@ type UnaryFn<
 type StreamingFn<
   I extends Message<I> = AnyMessage,
   O extends Message<O> = AnyMessage
-> = (req: StreamRequest<I, O>) => Promise<StreamResponse<I, O>>;
+> = (req: StreamRequest<I, O>) => Promise<StreamResponse<I, O>>

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code } from "../code.js";
+import { Code } from '../code.js'
 
 /**
  * Determine the gRPC-web error code for the given HTTP status code.
@@ -23,23 +23,23 @@ import { Code } from "../code.js";
 export function codeFromHttpStatus(httpStatus: number): Code {
   switch (httpStatus) {
     case 400: // Bad Request
-      return Code.Internal;
+      return Code.Internal
     case 401: // Unauthorized
-      return Code.Unauthenticated;
+      return Code.Unauthenticated
     case 403: // Forbidden
-      return Code.PermissionDenied;
+      return Code.PermissionDenied
     case 404: // Not Found
-      return Code.Unimplemented;
+      return Code.Unimplemented
     case 429: // Too Many Requests
-      return Code.Unavailable;
+      return Code.Unavailable
     case 502: // Bad Gateway
-      return Code.Unavailable;
+      return Code.Unavailable
     case 503: // Service Unavailable
-      return Code.Unavailable;
+      return Code.Unavailable
     case 504: // Gateway Timeout
-      return Code.Unavailable;
+      return Code.Unavailable
     default:
       // 200 is UNKNOWN because there should be a grpc-status in case of truly OK response.
-      return Code.Unknown;
+      return Code.Unknown
   }
 }

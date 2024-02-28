@@ -12,90 +12,90 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Int32Value, MethodKind, StringValue } from "@bufbuild/protobuf";
-import type { Transport } from "../transport.js";
-import { createTransport } from "./transport.js";
+import { Int32Value, MethodKind, StringValue } from '@bufbuild/protobuf'
+import type { Transport } from '../transport.js'
+import { createTransport } from './transport.js'
 import type {
   UniversalClientRequest,
-  UniversalClientResponse,
-} from "../protocol/index.js";
-import { createAsyncIterable, encodeEnvelope } from "../protocol/index.js";
-import { DubboError } from "../dubbo-error.js";
-import { Code } from "../code.js";
+  UniversalClientResponse
+} from '../protocol/index.js'
+import { createAsyncIterable, encodeEnvelope } from '../protocol/index.js'
+import { DubboError } from '../dubbo-error.js'
+import { Code } from '../code.js'
 
 const TestService = {
-  typeName: "TestService",
+  typeName: 'TestService',
   methods: {
     unary: {
-      name: "Unary",
+      name: 'Unary',
       I: Int32Value,
       O: StringValue,
-      kind: MethodKind.Unary,
+      kind: MethodKind.Unary
     },
     server: {
-      name: "Server",
+      name: 'Server',
       I: Int32Value,
       O: StringValue,
-      kind: MethodKind.ServerStreaming,
+      kind: MethodKind.ServerStreaming
     },
     client: {
-      name: "Client",
+      name: 'Client',
       I: Int32Value,
       O: StringValue,
-      kind: MethodKind.ClientStreaming,
+      kind: MethodKind.ClientStreaming
     },
     biDi: {
-      name: "BiDi",
+      name: 'BiDi',
       I: Int32Value,
       O: StringValue,
-      kind: MethodKind.BiDiStreaming,
-    },
-  },
-} as const;
+      kind: MethodKind.BiDiStreaming
+    }
+  }
+} as const
 
-describe("gRPC transport", function () {
+describe('gRPC transport', function () {
   const defaultOptions = {
-    baseUrl: "http://example.com",
+    baseUrl: 'http://example.com',
     interceptors: [],
     acceptCompression: [],
     compressMinBytes: 0,
     readMaxBytes: 0xffffff,
     sendCompression: null,
     useBinaryFormat: true,
-    writeMaxBytes: 0xffffff,
-  };
-  describe("against server responding with an error", function () {
-    let httpRequestAborted = false;
-    let transport: Transport = null as unknown as Transport;
+    writeMaxBytes: 0xffffff
+  }
+  describe('against server responding with an error', function () {
+    let httpRequestAborted = false
+    let transport: Transport = null as unknown as Transport
     beforeEach(function () {
-      httpRequestAborted = false;
+      httpRequestAborted = false
       transport = createTransport({
         httpClient(
           request: UniversalClientRequest
         ): Promise<UniversalClientResponse> {
           request.signal?.addEventListener(
-            "abort",
+            'abort',
             () => (httpRequestAborted = true)
-          );
+          )
           return Promise.resolve({
             status: 200,
             header: new Headers({
-              "Content-Type": "application/grpc+proto",
+              'Content-Type': 'application/grpc+proto'
             }),
             body: createAsyncIterable([
-              encodeEnvelope(0, new StringValue({ value: "abc" }).toBinary()),
+              encodeEnvelope(0, new StringValue({ value: 'abc' }).toBinary())
             ]),
             trailer: new Headers({
-              "grpc-status": Code.ResourceExhausted.toString(),
-              "grpc-message": "foo",
-            }),
-          });
+              'grpc-status': Code.ResourceExhausted.toString(),
+              'grpc-message': 'foo'
+            })
+          })
         },
-        ...defaultOptions,
-      });
-    });
+        ...defaultOptions
+      })
+    })
 
-    it("should cancel the HTTP request for unary", async function () {
+    it('should cancel the HTTP request for unary', async function () {
       try {
         await transport.unary(
           TestService,
@@ -104,16 +104,16 @@ describe("gRPC transport", function () {
           undefined,
           undefined,
           {}
-        );
-        fail("expected error");
+        )
+        fail('expected error')
       } catch (e) {
-        expect(e).toBeInstanceOf(DubboError);
-        expect(DubboError.from(e).message).toBe("[resource_exhausted] foo");
+        expect(e).toBeInstanceOf(DubboError)
+        expect(DubboError.from(e).message).toBe('[resource_exhausted] foo')
       }
-      expect(httpRequestAborted).toBeTrue();
-    });
+      expect(httpRequestAborted).toBeTrue()
+    })
 
-    it("should cancel the HTTP request for server-streaming", async function () {
+    it('should cancel the HTTP request for server-streaming', async function () {
       const res = await transport.stream(
         TestService,
         TestService.methods.server,
@@ -121,19 +121,19 @@ describe("gRPC transport", function () {
         undefined,
         undefined,
         createAsyncIterable([])
-      );
-      const messagesReceived: StringValue[] = [];
+      )
+      const messagesReceived: StringValue[] = []
       try {
         for await (const m of res.message) {
-          messagesReceived.push(m);
+          messagesReceived.push(m)
         }
-        fail("expected error");
+        fail('expected error')
       } catch (e) {
-        expect(e).toBeInstanceOf(DubboError);
-        expect(DubboError.from(e).message).toBe("[resource_exhausted] foo");
+        expect(e).toBeInstanceOf(DubboError)
+        expect(DubboError.from(e).message).toBe('[resource_exhausted] foo')
       }
-      expect(messagesReceived.length).toBe(1);
-      expect(httpRequestAborted).toBeTrue();
-    });
-  });
-});
+      expect(messagesReceived.length).toBe(1)
+      expect(httpRequestAborted).toBeTrue()
+    })
+  })
+})

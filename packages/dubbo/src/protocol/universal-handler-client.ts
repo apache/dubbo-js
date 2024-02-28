@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code } from "../code.js";
-import { DubboError } from "../dubbo-error.js";
-import { createAsyncIterable, pipe } from "./async-iterable.js";
-import type { UniversalHandler } from "./universal-handler.js";
-import type { UniversalClientFn } from "./universal.js";
-import { getAbortSignalReason } from "./signals.js";
+import { Code } from '../code.js'
+import { DubboError } from '../dubbo-error.js'
+import { createAsyncIterable, pipe } from './async-iterable.js'
+import type { UniversalHandler } from './universal-handler.js'
+import type { UniversalClientFn } from './universal.js'
+import { getAbortSignalReason } from './signals.js'
 
 /**
  * An in-memory UniversalClientFn that can be used to route requests to a DubboRouter
@@ -26,59 +26,59 @@ import { getAbortSignalReason } from "./signals.js";
 export function createUniversalHandlerClient(
   uHandlers: UniversalHandler[]
 ): UniversalClientFn {
-  const handlerMap = new Map<string, UniversalHandler>();
+  const handlerMap = new Map<string, UniversalHandler>()
   for (const handler of uHandlers) {
-    handlerMap.set(handler.requestPath, handler);
+    handlerMap.set(handler.requestPath, handler)
   }
   return async (uClientReq) => {
-    const pathname = new URL(uClientReq.url).pathname;
-    const handler = handlerMap.get(pathname);
+    const pathname = new URL(uClientReq.url).pathname
+    const handler = handlerMap.get(pathname)
     if (!handler) {
       throw new DubboError(
         `RouterHttpClient: no handler registered for ${pathname}`,
         Code.Unimplemented
-      );
+      )
     }
-    const reqSignal = uClientReq.signal ?? new AbortController().signal;
+    const reqSignal = uClientReq.signal ?? new AbortController().signal
     const uServerRes = await raceSignal(
       reqSignal,
       handler({
         body: uClientReq.body ?? createAsyncIterable([]),
-        httpVersion: "2.0",
+        httpVersion: '2.0',
         method: uClientReq.method,
         url: uClientReq.url,
         header: uClientReq.header,
-        signal: reqSignal,
+        signal: reqSignal
       })
-    );
-    const body = uServerRes.body ?? createAsyncIterable([]);
+    )
+    const body = uServerRes.body ?? createAsyncIterable([])
     return {
       body: pipe(body, (iterable) => {
         return {
           [Symbol.asyncIterator]() {
-            const it = iterable[Symbol.asyncIterator]();
+            const it = iterable[Symbol.asyncIterator]()
             const w: AsyncIterator<Uint8Array> = {
               next() {
-                return raceSignal(reqSignal, it.next());
-              },
-            };
+                return raceSignal(reqSignal, it.next())
+              }
+            }
             if (it.throw !== undefined) {
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- can't handle mutated object sensibly
-              w.throw = (e: unknown) => it.throw!(e);
+              w.throw = (e: unknown) => it.throw!(e)
             }
             if (it.return !== undefined) {
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-explicit-any -- can't handle mutated object sensibly
-              w.return = (value?: any) => it.return!(value);
+              w.return = (value?: any) => it.return!(value)
             }
-            return w;
-          },
-        };
+            return w
+          }
+        }
       }),
       header: new Headers(uServerRes.header),
       status: uServerRes.status,
-      trailer: new Headers(uServerRes.trailer),
-    };
-  };
+      trailer: new Headers(uServerRes.trailer)
+    }
+  }
 }
 
 /**
@@ -86,14 +86,14 @@ export function createUniversalHandlerClient(
  * promise is settled.
  */
 function raceSignal<T>(signal: AbortSignal, promise: Promise<T>): Promise<T> {
-  let cleanup: (() => void) | undefined;
+  let cleanup: (() => void) | undefined
   const signalPromise = new Promise<never>((_, reject) => {
-    const onAbort = () => reject(getAbortSignalReason(signal));
+    const onAbort = () => reject(getAbortSignalReason(signal))
     if (signal.aborted) {
-      return onAbort();
+      return onAbort()
     }
-    signal.addEventListener("abort", onAbort);
-    cleanup = () => signal.removeEventListener("abort", onAbort);
-  });
-  return Promise.race([signalPromise, promise]).finally(cleanup);
+    signal.addEventListener('abort', onAbort)
+    cleanup = () => signal.removeEventListener('abort', onAbort)
+  })
+  return Promise.race([signalPromise, promise]).finally(cleanup)
 }

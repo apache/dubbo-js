@@ -17,26 +17,26 @@ import type {
   Message,
   MethodInfo,
   PartialMessage,
-  ServiceType,
-} from "@bufbuild/protobuf";
-import { MethodIdempotency } from "@bufbuild/protobuf";
-import { requestHeaderWithCompression } from "./request-header.js";
-import { headerUnaryContentLength, headerUnaryEncoding } from "./headers.js";
-import { validateResponseWithCompression } from "./validate-response.js";
-import { trailerDemux } from "./trailer-mux.js";
-import { errorFromJsonBytes } from "./error-json.js";
-import { createEndStreamSerialization, endStreamFlag } from "./end-stream.js";
-import { transformConnectPostToGetRequest } from "./get-request.js";
-import type { CommonTransportOptions } from "../protocol/transport-options.js";
-import { Code } from "../code.js";
-import { DubboError } from "../dubbo-error.js";
-import { appendHeaders } from "../http-headers.js";
+  ServiceType
+} from '@bufbuild/protobuf'
+import { MethodIdempotency } from '@bufbuild/protobuf'
+import { requestHeaderWithCompression } from './request-header.js'
+import { headerUnaryContentLength, headerUnaryEncoding } from './headers.js'
+import { validateResponseWithCompression } from './validate-response.js'
+import { trailerDemux } from './trailer-mux.js'
+import { errorFromJsonBytes } from './error-json.js'
+import { createEndStreamSerialization, endStreamFlag } from './end-stream.js'
+import { transformConnectPostToGetRequest } from './get-request.js'
+import type { CommonTransportOptions } from '../protocol/transport-options.js'
+import { Code } from '../code.js'
+import { DubboError } from '../dubbo-error.js'
+import { appendHeaders } from '../http-headers.js'
 import type {
   UnaryResponse,
   UnaryRequest,
   StreamResponse,
-  StreamRequest,
-} from "../interceptor.js";
+  StreamRequest
+} from '../interceptor.js'
 import {
   createAsyncIterable,
   pipeTo,
@@ -48,13 +48,13 @@ import {
   transformJoinEnvelopes,
   transformSplitEnvelope,
   transformDecompressEnvelope,
-  transformParseEnvelope,
-} from "../protocol/async-iterable.js";
-import { createMethodUrl } from "../protocol/create-method-url.js";
-import { runUnaryCall, runStreamingCall } from "../protocol/run-call.js";
-import { createMethodSerializationLookup } from "../protocol/serialization.js";
-import type { Transport } from "../transport.js";
-import type { TripleClientServiceOptions } from './client-service-options.js';
+  transformParseEnvelope
+} from '../protocol/async-iterable.js'
+import { createMethodUrl } from '../protocol/create-method-url.js'
+import { runUnaryCall, runStreamingCall } from '../protocol/run-call.js'
+import { createMethodSerializationLookup } from '../protocol/serialization.js'
+import type { Transport } from '../transport.js'
+import type { TripleClientServiceOptions } from './client-service-options.js'
 
 /**
  * Create a Transport for the Connect protocol.
@@ -78,7 +78,7 @@ export function createTransport(opt: CommonTransportOptions): Transport {
         opt.binaryOptions,
         opt.jsonOptions,
         opt
-      );
+      )
       return await runUnaryCall<I, O>({
         interceptors: opt.interceptors,
         signal,
@@ -98,50 +98,49 @@ export function createTransport(opt: CommonTransportOptions): Transport {
             opt.sendCompression,
             serviceOptions
           ),
-          message:
-            message instanceof method.I ? message : new method.I(message),
+          message: message instanceof method.I ? message : new method.I(message)
         },
         next: async (req: UnaryRequest<I, O>): Promise<UnaryResponse<I, O>> => {
           let requestBody = serialization
             .getI(opt.useBinaryFormat)
-            .serialize(req.message);
+            .serialize(req.message)
           if (
             opt.sendCompression &&
             requestBody.byteLength > opt.compressMinBytes
           ) {
-            requestBody = await opt.sendCompression.compress(requestBody);
-            req.header.set(headerUnaryEncoding, opt.sendCompression.name);
+            requestBody = await opt.sendCompression.compress(requestBody)
+            req.header.set(headerUnaryEncoding, opt.sendCompression.name)
           } else {
-            req.header.delete(headerUnaryEncoding);
+            req.header.delete(headerUnaryEncoding)
           }
           const useGet =
             opt.useHttpGet === true &&
-            method.idempotency === MethodIdempotency.NoSideEffects;
-          let body: AsyncIterable<Uint8Array> | undefined;
+            method.idempotency === MethodIdempotency.NoSideEffects
+          let body: AsyncIterable<Uint8Array> | undefined
           if (useGet) {
             req = transformConnectPostToGetRequest(
               req,
               requestBody,
               opt.useBinaryFormat
-            );
+            )
           } else {
-            body = createAsyncIterable([requestBody]);
+            body = createAsyncIterable([requestBody])
           }
           const universalResponse = await opt.httpClient({
             url: req.url,
-            method: req.init.method ?? "POST",
+            method: req.init.method ?? 'POST',
             header: req.header,
             signal: req.signal,
-            body,
-          });
+            body
+          })
           const { compression, isUnaryError, unaryError } =
             validateResponseWithCompression(
               method.kind,
               opt.acceptCompression,
               universalResponse.status,
               universalResponse.header
-            );
-          const [header, trailer] = trailerDemux(universalResponse.header);
+            )
+          const [header, trailer] = trailerDemux(universalResponse.header)
           let responseBody = await pipeTo(
             universalResponse.body,
             sinkAllBytes(
@@ -149,19 +148,19 @@ export function createTransport(opt: CommonTransportOptions): Transport {
               universalResponse.header.get(headerUnaryContentLength)
             ),
             { propagateDownStreamError: false }
-          );
+          )
           if (compression) {
             responseBody = await compression.decompress(
               responseBody,
               opt.readMaxBytes
-            );
+            )
           }
           if (isUnaryError) {
             throw errorFromJsonBytes(
               responseBody,
               appendHeaders(header, trailer),
               unaryError
-            );
+            )
           }
           return <UnaryResponse<I, O>>{
             stream: false,
@@ -171,10 +170,10 @@ export function createTransport(opt: CommonTransportOptions): Transport {
             message: serialization
               .getO(opt.useBinaryFormat)
               .parse(responseBody),
-            trailer,
-          };
-        },
-      });
+            trailer
+          }
+        }
+      })
     },
 
     async stream<
@@ -193,10 +192,10 @@ export function createTransport(opt: CommonTransportOptions): Transport {
         opt.binaryOptions,
         opt.jsonOptions,
         opt
-      );
+      )
       const endStreamSerialization = createEndStreamSerialization(
         opt.jsonOptions
-      );
+      )
       return runStreamingCall<I, O>({
         interceptors: opt.interceptors,
         signal,
@@ -207,9 +206,9 @@ export function createTransport(opt: CommonTransportOptions): Transport {
           method,
           url: createMethodUrl(opt.baseUrl, service, method),
           init: {
-            method: "POST",
-            redirect: "error",
-            mode: "cors",
+            method: 'POST',
+            redirect: 'error',
+            mode: 'cors'
           },
           header: requestHeaderWithCompression(
             method.kind,
@@ -220,13 +219,13 @@ export function createTransport(opt: CommonTransportOptions): Transport {
             opt.sendCompression
           ),
           message: pipe(input, transformNormalizeMessage(method.I), {
-            propagateDownStreamError: true,
-          }),
+            propagateDownStreamError: true
+          })
         },
         next: async (req: StreamRequest<I, O>) => {
           const uRes = await opt.httpClient({
             url: req.url,
-            method: "POST",
+            method: 'POST',
             header: req.header,
             signal: req.signal,
             body: pipe(
@@ -241,14 +240,14 @@ export function createTransport(opt: CommonTransportOptions): Transport {
               ),
               transformJoinEnvelopes(),
               { propagateDownStreamError: true }
-            ),
-          });
+            )
+          })
           const { compression } = validateResponseWithCompression(
             method.kind,
             opt.acceptCompression,
             uRes.status,
             uRes.header
-          );
+          )
           const res: StreamResponse<I, O> = {
             ...req,
             header: uRes.header,
@@ -266,45 +265,45 @@ export function createTransport(opt: CommonTransportOptions): Transport {
                 endStreamSerialization
               ),
               async function* (iterable) {
-                let endStreamReceived = false;
+                let endStreamReceived = false
                 for await (const chunk of iterable) {
                   if (chunk.end) {
                     if (endStreamReceived) {
                       throw new DubboError(
-                        "protocol error: received extra EndStreamResponse",
+                        'protocol error: received extra EndStreamResponse',
                         Code.InvalidArgument
-                      );
+                      )
                     }
-                    endStreamReceived = true;
+                    endStreamReceived = true
                     if (chunk.value.error) {
-                      throw chunk.value.error;
+                      throw chunk.value.error
                     }
                     chunk.value.metadata.forEach((value, key) =>
                       res.trailer.set(key, value)
-                    );
-                    continue;
+                    )
+                    continue
                   }
                   if (endStreamReceived) {
                     throw new DubboError(
-                      "protocol error: received extra message after EndStreamResponse",
+                      'protocol error: received extra message after EndStreamResponse',
                       Code.InvalidArgument
-                    );
+                    )
                   }
-                  yield chunk.value;
+                  yield chunk.value
                 }
                 if (!endStreamReceived) {
                   throw new DubboError(
-                    "protocol error: missing EndStreamResponse",
+                    'protocol error: missing EndStreamResponse',
                     Code.InvalidArgument
-                  );
+                  )
                 }
               },
               { propagateDownStreamError: true }
-            ),
-          };
-          return res;
-        },
-      });
-    },
-  };
+            )
+          }
+          return res
+        }
+      })
+    }
+  }
 }

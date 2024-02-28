@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type * as express from "express";
+import type * as express from 'express'
 
 /**
  * Express requires the TS compiler setting allowSyntheticDefaultImports to be
@@ -22,8 +22,8 @@ import type * as express from "express";
 export async function importExpress(): Promise<typeof express> {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const expressImport = (await import("express")) as {
-    default: typeof express;
-  };
-  return expressImport.default;
+  const expressImport = (await import('express')) as {
+    default: typeof express
+  }
+  return expressImport.default
 }

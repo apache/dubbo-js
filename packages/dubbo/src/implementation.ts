@@ -20,14 +20,14 @@ import type {
   MethodInfo,
   MethodKind,
   PartialMessage,
-  ServiceType,
-} from "@bufbuild/protobuf";
-import { DubboError } from "./dubbo-error.js";
-import { Code } from "./code.js";
+  ServiceType
+} from '@bufbuild/protobuf'
+import { DubboError } from './dubbo-error.js'
+import { Code } from './code.js'
 import {
   createDeadlineSignal,
-  createLinkedAbortController,
-} from "./protocol/signals.js";
+  createLinkedAbortController
+} from './protocol/signals.js'
 
 // prettier-ignore
 /**
@@ -53,11 +53,11 @@ interface MI<
   O extends Message<O> = AnyMessage,
   K extends MethodKind = MethodKind
 > {
-  readonly kind: K;
-  readonly name: string;
-  readonly I: MessageType<I>;
-  readonly O: MessageType<O>;
-  readonly idempotency?: MethodIdempotency;
+  readonly kind: K
+  readonly name: string
+  readonly I: MessageType<I>
+  readonly O: MessageType<O>
+  readonly idempotency?: MethodIdempotency
 }
 
 /**
@@ -68,12 +68,12 @@ export interface HandlerContext {
   /**
    * Metadata for the method being called.
    */
-  readonly method: MethodInfo;
+  readonly method: MethodInfo
 
   /**
    * Metadata for the service being called.
    */
-  readonly service: ServiceType;
+  readonly service: ServiceType
 
   /**
    * An AbortSignal that is aborted when the connection with the client is closed
@@ -81,24 +81,24 @@ export interface HandlerContext {
    *
    * The signal can be used to automatically cancel downstream calls.
    */
-  readonly signal: AbortSignal;
+  readonly signal: AbortSignal
 
   /**
    * If the current request has a timeout, this function returns the remaining
    * time.
    */
-  readonly timeoutMs: () => number | undefined;
+  readonly timeoutMs: () => number | undefined
 
   /**
    * HTTP method of incoming request, usually "POST", but "GET" in the case of
    * Dubbo Get.
    */
-  readonly requestMethod: string;
+  readonly requestMethod: string
 
   /**
    * Incoming request headers.
    */
-  readonly requestHeader: Headers;
+  readonly requestHeader: Headers
 
   /**
    * Outgoing response headers.
@@ -106,37 +106,37 @@ export interface HandlerContext {
    * For methods that return a stream, response headers must be set before
    * yielding the first response message.
    */
-  readonly responseHeader: Headers;
+  readonly responseHeader: Headers
 
   /**
    * Outgoing response trailers.
    */
-  readonly responseTrailer: Headers;
+  readonly responseTrailer: Headers
 
   /**
    * Name of the RPC protocol in use; one of "triple", "grpc" or "grpc-web".
    */
-  readonly protocolName: string;
+  readonly protocolName: string
 }
 
 /**
  * Options for creating a HandlerContext.
  */
 interface HandlerContextInit {
-  service: ServiceType;
-  method: MethodInfo;
-  protocolName: string;
-  requestMethod: string;
-  timeoutMs?: number;
-  shutdownSignal?: AbortSignal;
-  requestSignal?: AbortSignal;
-  requestHeader?: HeadersInit;
-  responseHeader?: HeadersInit;
-  responseTrailer?: HeadersInit;
+  service: ServiceType
+  method: MethodInfo
+  protocolName: string
+  requestMethod: string
+  timeoutMs?: number
+  shutdownSignal?: AbortSignal
+  requestSignal?: AbortSignal
+  requestHeader?: HeadersInit
+  responseHeader?: HeadersInit
+  responseTrailer?: HeadersInit
 }
 
 interface HandlerContextController extends HandlerContext {
-  abort(reason?: unknown): void;
+  abort(reason?: unknown): void
 }
 
 /**
@@ -149,19 +149,19 @@ interface HandlerContextController extends HandlerContext {
 export function createHandlerContext(
   init: HandlerContextInit
 ): HandlerContextController {
-  let timeoutMs: () => undefined | number;
+  let timeoutMs: () => undefined | number
   if (init.timeoutMs !== undefined) {
-    const date = new Date(Date.now() + init.timeoutMs);
-    timeoutMs = () => date.getTime() - Date.now();
+    const date = new Date(Date.now() + init.timeoutMs)
+    timeoutMs = () => date.getTime() - Date.now()
   } else {
-    timeoutMs = () => undefined;
+    timeoutMs = () => undefined
   }
-  const deadline = createDeadlineSignal(init.timeoutMs);
+  const deadline = createDeadlineSignal(init.timeoutMs)
   const abortController = createLinkedAbortController(
     deadline.signal,
     init.requestSignal,
     init.shutdownSignal
-  );
+  )
   return {
     ...init,
     signal: abortController.signal,
@@ -170,10 +170,10 @@ export function createHandlerContext(
     responseHeader: new Headers(init.responseHeader),
     responseTrailer: new Headers(init.responseTrailer),
     abort(reason?: unknown) {
-      deadline.cleanup();
-      abortController.abort(reason);
-    },
-  };
+      deadline.cleanup()
+      abortController.abort(reason)
+    }
+  }
 }
 
 /**
@@ -182,7 +182,7 @@ export function createHandlerContext(
 export type UnaryImpl<I extends Message<I>, O extends Message<O>> = (
   request: I,
   context: HandlerContext
-) => Promise<O | PartialMessage<O>> | O | PartialMessage<O>;
+) => Promise<O | PartialMessage<O>> | O | PartialMessage<O>
 
 /**
  * ClientStreamingImpl is the signature of the implementation of a
@@ -191,7 +191,7 @@ export type UnaryImpl<I extends Message<I>, O extends Message<O>> = (
 export type ClientStreamingImpl<I extends Message<I>, O extends Message<O>> = (
   requests: AsyncIterable<I>,
   context: HandlerContext
-) => Promise<O | PartialMessage<O>>;
+) => Promise<O | PartialMessage<O>>
 
 /**
  * ServerStreamingImpl is the signature of the implementation of a
@@ -200,7 +200,7 @@ export type ClientStreamingImpl<I extends Message<I>, O extends Message<O>> = (
 export type ServerStreamingImpl<I extends Message<I>, O extends Message<O>> = (
   request: I,
   context: HandlerContext
-) => AsyncIterable<O | PartialMessage<O>>;
+) => AsyncIterable<O | PartialMessage<O>>
 
 /**
  * BiDiStreamingImpl is the signature of the implementation of a bi-di
@@ -209,7 +209,7 @@ export type ServerStreamingImpl<I extends Message<I>, O extends Message<O>> = (
 export type BiDiStreamingImpl<I extends Message<I>, O extends Message<O>> = (
   requests: AsyncIterable<I>,
   context: HandlerContext
-) => AsyncIterable<O | PartialMessage<O>>;
+) => AsyncIterable<O | PartialMessage<O>>
 
 // prettier-ignore
 /**
@@ -232,11 +232,11 @@ export type MethodImplSpec<I extends Message<I> = AnyMessage, O extends Message<
  * Wraps a user-provided service implementation and provides metadata.
  */
 export type ServiceImplSpec = {
-  service: ServiceType;
+  service: ServiceType
   methods: {
-    [key: string]: MethodImplSpec;
-  };
-};
+    [key: string]: MethodImplSpec
+  }
+}
 
 /**
  * Create an MethodImplSpec - a user-provided implementation for a method,
@@ -251,8 +251,8 @@ export function createMethodImplSpec<M extends MethodInfo>(
     kind: method.kind,
     service,
     method,
-    impl,
-  } as MethodImplSpec;
+    impl
+  } as MethodImplSpec
 }
 
 /**
@@ -263,18 +263,18 @@ export function createServiceImplSpec<T extends ServiceType>(
   service: T,
   impl: Partial<ServiceImpl<T>>
 ): ServiceImplSpec {
-  const s: ServiceImplSpec = { service, methods: {} };
+  const s: ServiceImplSpec = { service, methods: {} }
   for (const [localName, methodInfo] of Object.entries(service.methods)) {
-    let fn: MethodImpl<typeof methodInfo> | undefined = impl[localName];
-    if (typeof fn == "function") {
-      fn = fn.bind(impl);
+    let fn: MethodImpl<typeof methodInfo> | undefined = impl[localName]
+    if (typeof fn == 'function') {
+      fn = fn.bind(impl)
     } else {
-      const message = `${service.typeName}.${methodInfo.name} is not implemented`;
+      const message = `${service.typeName}.${methodInfo.name} is not implemented`
       fn = function unimplemented() {
-        throw new DubboError(message, Code.Unimplemented);
-      };
+        throw new DubboError(message, Code.Unimplemented)
+      }
     }
-    s.methods[localName] = createMethodImplSpec(service, methodInfo, fn);
+    s.methods[localName] = createMethodImplSpec(service, methodInfo, fn)
   }
-  return s;
+  return s
 }

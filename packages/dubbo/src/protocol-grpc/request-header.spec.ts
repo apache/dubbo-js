@@ -12,64 +12,64 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { Compression } from "../protocol/index.js";
+import type { Compression } from '../protocol/index.js'
 import {
   requestHeader,
-  requestHeaderWithCompression,
-} from "./request-header.js";
-import { headerEncoding, headerAcceptEncoding } from "./headers.js";
+  requestHeaderWithCompression
+} from './request-header.js'
+import { headerEncoding, headerAcceptEncoding } from './headers.js'
 
 function listHeaderKeys(header: Headers): string[] {
-  const keys: string[] = [];
-  header.forEach((_, key) => keys.push(key));
-  return keys;
+  const keys: string[] = []
+  header.forEach((_, key) => keys.push(key))
+  return keys
 }
 
-describe("requestHeader", () => {
-  it("should create request headers", () => {
-    const headers = requestHeader(true, undefined, undefined);
+describe('requestHeader', () => {
+  it('should create request headers', () => {
+    const headers = requestHeader(true, undefined, undefined)
     expect(listHeaderKeys(headers)).toEqual([
-      "content-type",
-      "te",
-      "user-agent",
-    ]);
-    expect(headers.get("Content-Type")).toBe("application/grpc+proto");
-    expect(headers.get("User-Agent")).toBe("@apachedubbo/dubbo-web");
-  });
+      'content-type',
+      'te',
+      'user-agent'
+    ])
+    expect(headers.get('Content-Type')).toBe('application/grpc+proto')
+    expect(headers.get('User-Agent')).toBe('@apachedubbo/dubbo-web')
+  })
 
-  it("should create request headers with timeout", () => {
-    const headers = requestHeader(true, 10, undefined);
+  it('should create request headers with timeout', () => {
+    const headers = requestHeader(true, 10, undefined)
     expect(listHeaderKeys(headers)).toEqual([
-      "content-type",
-      "grpc-timeout",
-      "te",
-      "user-agent",
-    ]);
-    expect(headers.get("Grpc-Timeout")).toBe("10m");
-  });
+      'content-type',
+      'grpc-timeout',
+      'te',
+      'user-agent'
+    ])
+    expect(headers.get('Grpc-Timeout')).toBe('10m')
+  })
 
-  it("should create request headers with compression", () => {
+  it('should create request headers with compression', () => {
     const compressionMock: Compression = {
-      name: "gzip",
+      name: 'gzip',
       compress: (bytes: Uint8Array) => Promise.resolve(bytes),
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      decompress: (bytes: Uint8Array, _: number) => Promise.resolve(bytes),
-    };
+      decompress: (bytes: Uint8Array, _: number) => Promise.resolve(bytes)
+    }
     const headers = requestHeaderWithCompression(
       true,
       undefined,
       undefined,
       [compressionMock],
       compressionMock
-    );
+    )
     expect(listHeaderKeys(headers)).toEqual([
-      "content-type",
-      "grpc-accept-encoding",
-      "grpc-encoding",
-      "te",
-      "user-agent",
-    ]);
-    expect(headers.get(headerEncoding)).toBe(compressionMock.name);
-    expect(headers.get(headerAcceptEncoding)).toBe(compressionMock.name);
-  });
-});
+      'content-type',
+      'grpc-accept-encoding',
+      'grpc-encoding',
+      'te',
+      'user-agent'
+    ])
+    expect(headers.get(headerEncoding)).toBe(compressionMock.name)
+    expect(headers.get(headerAcceptEncoding)).toBe(compressionMock.name)
+  })
+})

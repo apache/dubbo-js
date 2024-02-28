@@ -16,8 +16,8 @@ import type {
   AnyMessage,
   Message,
   MethodInfo,
-  ServiceType,
-} from "@bufbuild/protobuf";
+  ServiceType
+} from '@bufbuild/protobuf'
 
 /**
  * An interceptor can add logic to clients, similar to the decorators
@@ -43,7 +43,7 @@ import type {
  * invocation. In an array of interceptors, the interceptor at the end of
  * the array is applied first.
  */
-export type Interceptor = (next: AnyFn) => AnyFn;
+export type Interceptor = (next: AnyFn) => AnyFn
 
 /**
  * AnyFn represents the client-side invocation of an RPC. Interceptors can wrap
@@ -52,7 +52,7 @@ export type Interceptor = (next: AnyFn) => AnyFn;
  */
 type AnyFn = (
   req: UnaryRequest | StreamRequest
-) => Promise<UnaryResponse | StreamResponse>;
+) => Promise<UnaryResponse | StreamResponse>
 
 /**
  * UnaryRequest is used in interceptors to represent a request with a
@@ -66,12 +66,12 @@ export interface UnaryRequest<
    * The `stream` property discriminates between UnaryRequest and
    * StreamingRequest.
    */
-  readonly stream: false;
+  readonly stream: false
 
   /**
    * The input message that will be transmitted.
    */
-  readonly message: I;
+  readonly message: I
 }
 
 /**
@@ -86,12 +86,12 @@ export interface UnaryResponse<
    * The `stream` property discriminates between UnaryResponse and
    * StreamingConn.
    */
-  readonly stream: false;
+  readonly stream: false
 
   /**
    * The received output message.
    */
-  readonly message: O;
+  readonly message: O
 }
 
 /**
@@ -106,12 +106,12 @@ export interface StreamRequest<
    * The `stream` property discriminates between UnaryRequest and
    * StreamingRequest.
    */
-  readonly stream: true;
+  readonly stream: true
 
   /**
    * The input messages that will be transmitted.
    */
-  readonly message: AsyncIterable<I>;
+  readonly message: AsyncIterable<I>
 }
 
 /**
@@ -126,66 +126,66 @@ export interface StreamResponse<
    * The `stream` property discriminates between UnaryResponse and
    * StreamingConn.
    */
-  readonly stream: true;
+  readonly stream: true
 
   /**
    * The output messages.
    */
-  readonly message: AsyncIterable<O>;
+  readonly message: AsyncIterable<O>
 }
 
 interface RequestCommon<I extends Message<I>, O extends Message<O>> {
   /**
    * Metadata related to the service that is being called.
    */
-  readonly service: ServiceType;
+  readonly service: ServiceType
 
   /**
    * Metadata related to the service method that is being called.
    */
-  readonly method: MethodInfo<I, O>;
+  readonly method: MethodInfo<I, O>
 
   /**
    * The URL the request is going to hit.
    */
-  readonly url: string;
+  readonly url: string
 
   /**
    * Optional parameters to the fetch API.
    */
-  readonly init: Exclude<RequestInit, "body" | "headers" | "signal">;
+  readonly init: Exclude<RequestInit, 'body' | 'headers' | 'signal'>
 
   /**
    * The AbortSignal for the current call.
    */
-  readonly signal: AbortSignal;
+  readonly signal: AbortSignal
 
   /**
    * Headers that will be sent along with the request.
    */
-  readonly header: Headers;
+  readonly header: Headers
 }
 
 interface ResponseCommon<I extends Message<I>, O extends Message<O>> {
   /**
    * Metadata related to the service that is being called.
    */
-  readonly service: ServiceType;
+  readonly service: ServiceType
 
   /**
    * Metadata related to the service method that is being called.
    */
-  readonly method: MethodInfo<I, O>;
+  readonly method: MethodInfo<I, O>
 
   /**
    * Headers received from the response.
    */
-  readonly header: Headers;
+  readonly header: Headers
 
   /**
    * Trailers received from the response.
    * Note that trailers are only populated when the entirety of the response
    * has been read.
    */
-  readonly trailer: Headers;
+  readonly trailer: Headers
 }

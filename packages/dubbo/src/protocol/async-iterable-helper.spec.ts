@@ -17,33 +17,33 @@ export async function* createAsyncIterableBytes(
   chunkSize = 2,
   delay = 5
 ): AsyncIterable<Uint8Array> {
-  let offset = 0;
+  let offset = 0
   for (;;) {
-    await new Promise((resolve) => setTimeout(resolve, delay));
-    const end = Math.min(offset + chunkSize, bytes.byteLength);
-    yield bytes.slice(offset, end);
-    offset = end;
+    await new Promise((resolve) => setTimeout(resolve, delay))
+    const end = Math.min(offset + chunkSize, bytes.byteLength)
+    yield bytes.slice(offset, end)
+    offset = end
     if (offset === bytes.length) {
-      break;
+      break
     }
   }
 }
 
 export async function readAll<T>(it: AsyncIterable<T>): Promise<T[]> {
-  const all: T[] = [];
+  const all: T[] = []
   for await (const item of it) {
-    all.push(item);
+    all.push(item)
   }
-  return all;
+  return all
 }
 
 export async function readAllBytes(
   it: AsyncIterable<Uint8Array>
 ): Promise<Uint8Array> {
   return (await readAll(it)).reduce((p, c) => {
-    const n = new Uint8Array(p.byteLength + c.byteLength);
-    n.set(p, 0);
-    n.set(c, p.byteLength);
-    return n;
-  }, new Uint8Array(0));
+    const n = new Uint8Array(p.byteLength + c.byteLength)
+    n.set(p, 0)
+    n.set(c, p.byteLength)
+    return n
+  }, new Uint8Array(0))
 }

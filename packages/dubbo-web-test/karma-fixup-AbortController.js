@@ -14,89 +14,89 @@
 
 // a simplistic polyfill for AbortController and AbortSignal
 
-(function () {
+;(function () {
   if (globalThis.AbortController && globalThis.AbortSignal) {
-    return;
+    return
   }
 
   function AbortSignal() {
-    Object.defineProperty(this, "listeners", {
+    Object.defineProperty(this, 'listeners', {
       value: [],
       writable: true,
-      configurable: true,
-    });
+      configurable: true
+    })
   }
 
   AbortSignal.prototype.addEventListener = function (type, callback) {
-    if (type !== "abort") {
-      return;
+    if (type !== 'abort') {
+      return
     }
     if (!(type in this.listeners)) {
-      this.listeners[type] = [];
+      this.listeners[type] = []
     }
-    this.listeners[type].push(callback);
-  };
+    this.listeners[type].push(callback)
+  }
 
   AbortSignal.prototype.removeEventListener = function (type, callback) {
-    if (type !== "abort") {
-      return;
+    if (type !== 'abort') {
+      return
     }
     for (let i = 0; i < this.listeners.length; i++) {
       if (this.listeners[i] === callback) {
-        this.listeners.splice(i, 1);
-        break;
+        this.listeners.splice(i, 1)
+        break
       }
     }
-  };
+  }
 
   AbortSignal.prototype.dispatchEvent = function (event) {
-    if (event.type !== "abort") {
-      return;
+    if (event.type !== 'abort') {
+      return
     }
-    this.aborted = true;
-    if (typeof this.onabort === "function") {
-      this.onabort.call(this, event);
+    this.aborted = true
+    if (typeof this.onabort === 'function') {
+      this.onabort.call(this, event)
     }
-    const l = this.listeners.concat();
+    const l = this.listeners.concat()
     for (let i = 0; i < l.length; i++) {
-      const listener = l[i];
+      const listener = l[i]
       try {
-        listener.call(this, event);
+        listener.call(this, event)
       } catch (e) {
         Promise.resolve().then(() => {
-          throw e;
-        });
+          throw e
+        })
       }
     }
-    return !event.defaultPrevented;
-  };
+    return !event.defaultPrevented
+  }
 
   AbortSignal.prototype.toString = function () {
-    return "[object AbortSignal]";
-  };
+    return '[object AbortSignal]'
+  }
 
   function AbortController() {
-    Object.defineProperty(this, "signal", {
+    Object.defineProperty(this, 'signal', {
       value: new AbortSignal(),
       writable: true,
-      configurable: true,
-    });
+      configurable: true
+    })
   }
 
   AbortController.prototype.abort = function () {
-    let event;
+    let event
     try {
-      event = new Event("abort");
+      event = new Event('abort')
     } catch (e) {
       // no support for IE
     }
-    this.signal.dispatchEvent(event);
-  };
+    this.signal.dispatchEvent(event)
+  }
 
   AbortController.prototype.toString = function () {
-    return "[object AbortController]";
-  };
+    return '[object AbortController]'
+  }
 
-  globalThis.AbortController = AbortController;
-  globalThis.AbortSignal = AbortSignal;
-})();
+  globalThis.AbortController = AbortController
+  globalThis.AbortSignal = AbortSignal
+})()

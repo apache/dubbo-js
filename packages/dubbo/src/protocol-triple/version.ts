@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { headerProtocolVersion } from "./headers.js";
-import { paramProtocolVersion } from "./query-params.js";
-import { DubboError } from "../dubbo-error.js";
-import { Code } from "../code.js";
+import { headerProtocolVersion } from './headers.js'
+import { paramProtocolVersion } from './query-params.js'
+import { DubboError } from '../dubbo-error.js'
+import { Code } from '../code.js'
 
 /**
  * The only know value for the header TRI-Protocol-Version.
  *
  * @private Internal code, does not follow semantic versioning.
  */
-export const protocolVersion = "1.0.0";
+export const protocolVersion = '1.0.0'
 
 /**
  * Requires the TRI-Protocol-Version header to be present with the expected
@@ -31,17 +31,17 @@ export const protocolVersion = "1.0.0";
  * @private Internal code, does not follow semantic versioning.
  */
 export function requireProtocolVersionHeader(requestHeader: Headers) {
-  const v = requestHeader.get(headerProtocolVersion);
+  const v = requestHeader.get(headerProtocolVersion)
   if (v === null) {
     throw new DubboError(
       `missing required header: set ${headerProtocolVersion} to "${protocolVersion}"`,
       Code.InvalidArgument
-    );
+    )
   } else if (v !== protocolVersion) {
     throw new DubboError(
       `${headerProtocolVersion} must be "${protocolVersion}": got "${v}"`,
       Code.InvalidArgument
-    );
+    )
   }
 }
 
@@ -52,16 +52,16 @@ export function requireProtocolVersionHeader(requestHeader: Headers) {
  * @private Internal code, does not follow semantic versioning.
  */
 export function requireProtocolVersionParam(queryParams: URLSearchParams) {
-  const v = queryParams.get(paramProtocolVersion);
+  const v = queryParams.get(paramProtocolVersion)
   if (v === null) {
     throw new DubboError(
       `missing required parameter: set ${paramProtocolVersion} to "v${protocolVersion}"`,
       Code.InvalidArgument
-    );
+    )
   } else if (v !== `v${protocolVersion}`) {
     throw new DubboError(
       `${paramProtocolVersion} must be "v${protocolVersion}": got "${v}"`,
       Code.InvalidArgument
-    );
+    )
   }
 }

@@ -12,52 +12,52 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { TestService } from "../gen/grpc/testing/test_dubbo.js";
-import { createTestServers } from "../helpers/testserver.js";
-import { createMethodUrl } from "@apachedubbo/dubbo/protocol";
-import { http2Request } from "../helpers/http2-request.js";
+import { TestService } from '../gen/grpc/testing/test_dubbo.js'
+import { createTestServers } from '../helpers/testserver.js'
+import { createMethodUrl } from '@apachedubbo/dubbo/protocol'
+import { http2Request } from '../helpers/http2-request.js'
 
-describe("unsupported method", () => {
-  const servers = createTestServers();
-  beforeAll(async () => await servers.start());
+describe('unsupported method', () => {
+  const servers = createTestServers()
+  beforeAll(async () => await servers.start())
 
   servers.describeServers(
-    ["@apachedubbo/dubbo-node (h2c)"],
+    ['@apachedubbo/dubbo-node (h2c)'],
     (server, serverName) => {
-      const rejectUnauthorized = true; // TODO set up cert for go server correctly
+      const rejectUnauthorized = true // TODO set up cert for go server correctly
 
-      describe("unary method", function () {
-        it("should raise HTTP 405 Method Not Allowed for GET", async () => {
+      describe('unary method', function () {
+        it('should raise HTTP 405 Method Not Allowed for GET', async () => {
           const res = await http2Request({
             url: createMethodUrl(
               server.getUrl(),
               TestService,
               TestService.methods.unaryCall
             ),
-            method: "GET",
-            ctype: "application/json",
-            rejectUnauthorized,
-          });
-          expect(res.status).toBe(405);
-          expect(res.body.byteLength).toBe(0);
-        });
-        it("should raise HTTP 405 Method Not Allowed for PUT", async () => {
+            method: 'GET',
+            ctype: 'application/json',
+            rejectUnauthorized
+          })
+          expect(res.status).toBe(405)
+          expect(res.body.byteLength).toBe(0)
+        })
+        it('should raise HTTP 405 Method Not Allowed for PUT', async () => {
           const res = await http2Request({
             url: createMethodUrl(
               server.getUrl(),
               TestService,
               TestService.methods.unaryCall
             ),
-            method: "PUT",
-            ctype: "application/json",
-            rejectUnauthorized,
-          });
-          expect(res.status).toBe(405);
-          expect(res.body.byteLength).toBe(0);
-        });
-      });
+            method: 'PUT',
+            ctype: 'application/json',
+            rejectUnauthorized
+          })
+          expect(res.status).toBe(405)
+          expect(res.body.byteLength).toBe(0)
+        })
+      })
     }
-  );
+  )
 
-  afterAll(async () => await servers.stop());
-});
+  afterAll(async () => await servers.stop())
+})

@@ -12,77 +12,77 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { trailerParse, trailerSerialize } from "./trailer.js";
+import { trailerParse, trailerSerialize } from './trailer.js'
 
-describe("trailerParse()", () => {
-  it("parses very simple case", () => {
-    const h = trailerParse(new TextEncoder().encode("foo: bar\r\n"));
-    expect(h.get("foo")).toBe("bar");
-  });
-  it("parses empty", () => {
-    const h = trailerParse(new TextEncoder().encode(""));
-    expect(countFields(h)).toBe(0);
-  });
-  it("trims values", () => {
-    const h = trailerParse(new TextEncoder().encode("foo:bar \r\n"));
-    expect(h.get("foo")).toBe("bar");
-  });
-  it("does not require last newline", () => {
-    const h = trailerParse(new TextEncoder().encode("foo: bar"));
-    expect(h.get("foo")).toBe("bar");
-  });
-  it("appends", () => {
-    const h = trailerParse(new TextEncoder().encode("foo: a\r\nfoo: b\r\n"));
-    expect(h.get("foo")).toBe("a, b");
-  });
-});
+describe('trailerParse()', () => {
+  it('parses very simple case', () => {
+    const h = trailerParse(new TextEncoder().encode('foo: bar\r\n'))
+    expect(h.get('foo')).toBe('bar')
+  })
+  it('parses empty', () => {
+    const h = trailerParse(new TextEncoder().encode(''))
+    expect(countFields(h)).toBe(0)
+  })
+  it('trims values', () => {
+    const h = trailerParse(new TextEncoder().encode('foo:bar \r\n'))
+    expect(h.get('foo')).toBe('bar')
+  })
+  it('does not require last newline', () => {
+    const h = trailerParse(new TextEncoder().encode('foo: bar'))
+    expect(h.get('foo')).toBe('bar')
+  })
+  it('appends', () => {
+    const h = trailerParse(new TextEncoder().encode('foo: a\r\nfoo: b\r\n'))
+    expect(h.get('foo')).toBe('a, b')
+  })
+})
 
-describe("trailerSerialize()", () => {
-  it("serializes empty", () => {
-    const trailer = new Headers();
-    const data = trailerSerialize(trailer);
-    expect(new TextDecoder().decode(data)).toBe("");
-  });
-  it("Headers trims whitespace", () => {
+describe('trailerSerialize()', () => {
+  it('serializes empty', () => {
+    const trailer = new Headers()
+    const data = trailerSerialize(trailer)
+    expect(new TextDecoder().decode(data)).toBe('')
+  })
+  it('Headers trims whitespace', () => {
     const trailer = new Headers({
-      foo: "bar ",
-    });
-    expect(trailer.get("foo")).toBe("bar");
-    const data = trailerSerialize(trailer);
-    expect(new TextDecoder().decode(data)).toBe("foo: bar\r\n");
-  });
-  it("serializes lowercase field names", () => {
+      foo: 'bar '
+    })
+    expect(trailer.get('foo')).toBe('bar')
+    const data = trailerSerialize(trailer)
+    expect(new TextDecoder().decode(data)).toBe('foo: bar\r\n')
+  })
+  it('serializes lowercase field names', () => {
     const trailer = new Headers({
-      Foo: "bar ",
-    });
-    const data = trailerSerialize(trailer);
-    expect(new TextDecoder().decode(data)).toBe("foo: bar\r\n");
-  });
-});
+      Foo: 'bar '
+    })
+    const data = trailerSerialize(trailer)
+    expect(new TextDecoder().decode(data)).toBe('foo: bar\r\n')
+  })
+})
 
-describe("trailer roundtrip", () => {
-  it("should work", () => {
+describe('trailer roundtrip', () => {
+  it('should work', () => {
     const a = new Headers({
-      foo: "a, b",
-      bar: "123",
-    });
-    const b = trailerParse(trailerSerialize(a));
-    expect(countFields(b)).toBe(2);
-    expect(b.get("foo")).toBe("a, b");
-    expect(b.get("bar")).toBe("123");
-  });
-  it("happens to preserve non-ascii", () => {
+      foo: 'a, b',
+      bar: '123'
+    })
+    const b = trailerParse(trailerSerialize(a))
+    expect(countFields(b)).toBe(2)
+    expect(b.get('foo')).toBe('a, b')
+    expect(b.get('bar')).toBe('123')
+  })
+  it('happens to preserve non-ascii', () => {
     const a = new Headers({
-      foo: "bär",
-    });
-    const b = trailerParse(trailerSerialize(a));
-    expect(countFields(b)).toBe(1);
-    expect(b.get("foo")).toBe("bär");
-  });
-});
+      foo: 'bär'
+    })
+    const b = trailerParse(trailerSerialize(a))
+    expect(countFields(b)).toBe(1)
+    expect(b.get('foo')).toBe('bär')
+  })
+})
 
 function countFields(h: Headers): number {
-  let numKeys = 0;
-  h.forEach(() => numKeys++);
-  return numKeys;
+  let numKeys = 0
+  h.forEach(() => numKeys++)
+  return numKeys
 }

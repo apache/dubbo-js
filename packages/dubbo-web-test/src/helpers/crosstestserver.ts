@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { type Transport, createRouterTransport } from "@apachedubbo/dubbo";
+import { type Transport, createRouterTransport } from '@apachedubbo/dubbo'
 import {
   createDubboTransport,
-  createGrpcWebTransport,
-} from "@apachedubbo/dubbo-web";
-import { testRoutes } from "./test-routes.js";
+  createGrpcWebTransport
+} from '@apachedubbo/dubbo-web'
+import { testRoutes } from './test-routes.js'
 
 // The following servers are available through crosstests:
 //
@@ -27,62 +27,61 @@ import { testRoutes } from "./test-routes.js";
 //
 
 // see dubbo-node-h1-server.mjs
-const connectNodeH1BaseUrl = "http://127.0.0.1:8085";
+const connectNodeH1BaseUrl = 'http://127.0.0.1:8085'
 
 const crosstestTransports = {
   // gRPC-web
-  "@apachedubbo/dubbo-web (gRPC-web, binary) gRPC-web against @apachedubbo/dubbo-node (h1)":
+  '@apachedubbo/dubbo-web (gRPC-web, binary) gRPC-web against @apachedubbo/dubbo-node (h1)':
     (options?: Record<string, unknown>) =>
       createGrpcWebTransport({
         ...options,
         baseUrl: connectNodeH1BaseUrl,
-        useBinaryFormat: true,
+        useBinaryFormat: true
       }),
-  "@apachedubbo/dubbo-web (gRPC-web, JSON) gRPC-web against @apachedubbo/dubbo-node (h1)":
+  '@apachedubbo/dubbo-web (gRPC-web, JSON) gRPC-web against @apachedubbo/dubbo-node (h1)':
     (options?: Record<string, unknown>) =>
       createGrpcWebTransport({
         ...options,
         baseUrl: connectNodeH1BaseUrl,
-        useBinaryFormat: false,
+        useBinaryFormat: false
       }),
   // Triple
-  "@apachedubbo/dubbo-web (Triple, binary) against @apachedubbo/dubbo-node (h1)":
+  '@apachedubbo/dubbo-web (Triple, binary) against @apachedubbo/dubbo-node (h1)':
     (options?: Record<string, unknown>) =>
       createDubboTransport({
         ...options,
         baseUrl: connectNodeH1BaseUrl,
-        useBinaryFormat: true,
+        useBinaryFormat: true
       }),
-  "@apachedubbo/dubbo-web (Triple, JSON) against @apachedubbo/dubbo-node (h1)": (
-    options?: Record<string, unknown>
-  ) =>
-    createDubboTransport({
-      ...options,
-      baseUrl: connectNodeH1BaseUrl,
-      useBinaryFormat: false,
-    }),
+  '@apachedubbo/dubbo-web (Triple, JSON) against @apachedubbo/dubbo-node (h1)':
+    (options?: Record<string, unknown>) =>
+      createDubboTransport({
+        ...options,
+        baseUrl: connectNodeH1BaseUrl,
+        useBinaryFormat: false
+      }),
 
   // DubboRouter
-  "@apachedubbo/dubbo-web (DubboRouter, binary)": (
+  '@apachedubbo/dubbo-web (DubboRouter, binary)': (
     options?: Record<string, unknown>
   ) =>
     createRouterTransport(testRoutes, {
       transport: {
         ...options,
-        useBinaryFormat: true,
-      },
+        useBinaryFormat: true
+      }
     }),
 
-  "@apachedubbo/dubbo-web (DubboRouter, JSON)": (
+  '@apachedubbo/dubbo-web (DubboRouter, JSON)': (
     options?: Record<string, unknown>
   ) =>
     createRouterTransport(testRoutes, {
       transport: {
         ...options,
-        useBinaryFormat: false,
-      },
-    }),
-};
+        useBinaryFormat: false
+      }
+    })
+}
 
 export function describeTransports(
   specDefinitions: (
@@ -95,8 +94,8 @@ export function describeTransports(
       specDefinitions(
         transportFactory,
         name as keyof typeof crosstestTransports
-      );
-    });
+      )
+    })
   }
 }
 
@@ -109,13 +108,13 @@ export function describeTransportsExcluding(
 ) {
   for (const [name, transportFactory] of Object.entries(crosstestTransports)) {
     if (exclude.includes(name as keyof typeof crosstestTransports)) {
-      continue;
+      continue
     }
     describe(name, () => {
       specDefinitions(
         transportFactory,
         name as keyof typeof crosstestTransports
-      );
-    });
+      )
+    })
   }
 }

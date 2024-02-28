@@ -17,10 +17,10 @@
  */
 export function assertFetchApi(): void {
   try {
-    new Headers();
+    new Headers()
   } catch (_) {
     throw new Error(
-      "dubbo-web requires the fetch API. Are you running on an old version of Node.js? Node.js is not supported in Dubbo for Web - please stay tuned for Dubbo for Node."
-    );
+      'dubbo-web requires the fetch API. Are you running on an old version of Node.js? Node.js is not supported in Dubbo for Web - please stay tuned for Dubbo for Node.'
+    )
   }
 }

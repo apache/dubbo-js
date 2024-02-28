@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { JsonValue } from "@bufbuild/protobuf";
-import { Code, DubboError, createDubboRouter } from "@apachedubbo/dubbo";
-import type { DubboRouter, DubboRouterOptions } from "@apachedubbo/dubbo";
-import * as protoTriple from "@apachedubbo/dubbo/protocol-triple";
-import * as protoGrpcWeb from "@apachedubbo/dubbo/protocol-grpc-web";
-import * as protoGrpc from "@apachedubbo/dubbo/protocol-grpc";
-import type { UniversalHandler } from "@apachedubbo/dubbo/protocol";
-import type { ExpandHandler } from "@apachedubbo/dubbo/protocol-triple";
+import type { JsonValue } from '@bufbuild/protobuf'
+import { Code, DubboError, createDubboRouter } from '@apachedubbo/dubbo'
+import type { DubboRouter, DubboRouterOptions } from '@apachedubbo/dubbo'
+import * as protoTriple from '@apachedubbo/dubbo/protocol-triple'
+import * as protoGrpcWeb from '@apachedubbo/dubbo/protocol-grpc-web'
+import * as protoGrpc from '@apachedubbo/dubbo/protocol-grpc'
+import type { UniversalHandler } from '@apachedubbo/dubbo/protocol'
+import type { ExpandHandler } from '@apachedubbo/dubbo/protocol-triple'
 import {
   compressionBrotli,
   compressionGzip,
   universalRequestFromNodeRequest,
-  universalResponseToNodeResponse,
-} from "@apachedubbo/dubbo-node";
-import type { FastifyInstance } from "fastify/types/instance";
+  universalResponseToNodeResponse
+} from '@apachedubbo/dubbo-node'
+import type { FastifyInstance } from 'fastify/types/instance'
 
 interface FastifyDubboPluginOptions extends DubboRouterOptions {
   /**
@@ -44,7 +44,7 @@ interface FastifyDubboPluginOptions extends DubboRouterOptions {
    *
    * Then pass this function here.
    */
-  routes?: (router: DubboRouter) => void;
+  routes?: (router: DubboRouter) => void
 }
 
 /**
@@ -56,34 +56,34 @@ export function fastifyDubboPlugin(
   done: (err?: Error) => void
 ) {
   if (opts.routes === undefined) {
-    done();
-    return;
+    done()
+    return
   }
   if (opts.acceptCompression === undefined) {
-    opts.acceptCompression = [compressionGzip, compressionBrotli];
+    opts.acceptCompression = [compressionGzip, compressionBrotli]
   }
-  const router = createDubboRouter(opts);
-  opts.routes(router);
+  const router = createDubboRouter(opts)
+  opts.routes(router)
 
-  const uHandlers = router.handlers;
+  const uHandlers = router.handlers
   if (uHandlers.length == 0) {
-    done();
-    return;
+    done()
+    return
   }
 
   // we can override all content type parsers (including application/json) in
   // this plugin without affecting outer scope
-  addNoopContentTypeParsers(instance);
+  addNoopContentTypeParsers(instance)
 
-  const paths = new Map<string, Map<string, UniversalHandler & ExpandHandler>>();
+  const paths = new Map<string, Map<string, UniversalHandler & ExpandHandler>>()
 
   for (const uHandler of router.handlers) {
-    let handlersMap = paths.get(uHandler.requestPath);
+    let handlersMap = paths.get(uHandler.requestPath)
     if (!handlersMap) {
-      handlersMap = new Map();
-      paths.set(uHandler.requestPath, handlersMap);
+      handlersMap = new Map()
+      paths.set(uHandler.requestPath, handlersMap)
     }
-    handlersMap.set(uHandler.serviceVersion + uHandler.serviceGroup, uHandler);
+    handlersMap.set(uHandler.serviceVersion + uHandler.serviceGroup, uHandler)
   }
 
   for (const [requestPath, handlersMap] of paths) {
@@ -91,10 +91,15 @@ export function fastifyDubboPlugin(
       requestPath,
       {},
       async function handleFastifyRequest(req, reply) {
-        const uHandler = handlersMap.get((req.headers['tri-service-version'] ?? "") as string + (req.headers['tri-service-group'] ?? "") as string);
-        if(!uHandler) {
-          reply.status(404).send({ status: Code.Unimplemented, message: 'HTTP 404' });
-          return;
+        const uHandler = handlersMap.get(
+          (((req.headers['tri-service-version'] ?? '') as string) +
+            (req.headers['tri-service-group'] ?? '')) as string
+        )
+        if (!uHandler) {
+          reply
+            .status(404)
+            .send({ status: Code.Unimplemented, message: 'HTTP 404' })
+          return
         }
         try {
           const uRes = await uHandler(
@@ -102,31 +107,31 @@ export function fastifyDubboPlugin(
               req.raw,
               req.body as JsonValue | undefined
             )
-          );
+          )
           // Fastify maintains response headers on the reply object and only moves them to
           // the raw response during reply.send, but we are not using reply.send with this plugin.
           // So we need to manually copy them to the raw response before handing off to vanilla Node.
           for (const [key, value] of Object.entries(reply.getHeaders())) {
             if (value !== undefined) {
-              reply.raw.setHeader(key, value);
+              reply.raw.setHeader(key, value)
             }
           }
-          await universalResponseToNodeResponse(uRes, reply.raw);
+          await universalResponseToNodeResponse(uRes, reply.raw)
         } catch (e) {
           if (DubboError.from(e).code == Code.Aborted) {
-            return;
+            return
           }
           // eslint-disable-next-line no-console
           console.error(
             `handler for rpc ${uHandler.method.name} of ${uHandler.service.typeName} failed`,
             e
-          );
+          )
         }
       }
-    );
+    )
   }
 
-  done();
+  done()
 }
 
 /**
@@ -141,22 +146,22 @@ function addNoopContentTypeParsers(instance: FastifyInstance): void {
       protoGrpcWeb.contentTypeProto,
       protoGrpcWeb.contentTypeJson,
       protoGrpc.contentTypeProto,
-      protoGrpc.contentTypeJson,
+      protoGrpc.contentTypeJson
     ],
     noopContentTypeParser
-  );
+  )
   instance.addContentTypeParser(
     protoGrpc.contentTypeRegExp,
     noopContentTypeParser
-  );
+  )
   instance.addContentTypeParser(
     protoGrpcWeb.contentTypeRegExp,
     noopContentTypeParser
-  );
+  )
   instance.addContentTypeParser(
     protoTriple.contentTypeRegExp,
     noopContentTypeParser
-  );
+  )
 }
 
 function noopContentTypeParser(
@@ -164,5 +169,5 @@ function noopContentTypeParser(
   _payload: unknown,
   done: (err: null, body?: undefined) => void
 ) {
-  done(null, undefined);
+  done(null, undefined)
 }

@@ -22,15 +22,15 @@ export {
   headerTimeout,
   headerGrpcStatus,
   headerGrpcMessage,
-  headerStatusDetailsBin,
-} from "../protocol-grpc/headers.js";
+  headerStatusDetailsBin
+} from '../protocol-grpc/headers.js'
 
 /**
  * gRPC-web does not use the standard header User-Agent.
  *
  * @private Internal code, does not follow semantic versioning.
  */
-export const headerXUserAgent = "X-User-Agent";
+export const headerXUserAgent = 'X-User-Agent'
 
 /**
  * The canonical grpc/grpc-web JavaScript implementation sets
@@ -41,4 +41,4 @@ export const headerXUserAgent = "X-User-Agent";
  *
  * @private Internal code, does not follow semantic versioning.
  */
-export const headerXGrpcWeb = "X-Grpc-Web";
+export const headerXGrpcWeb = 'X-Grpc-Web'

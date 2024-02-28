@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { MethodImplSpec } from "../implementation.js";
-import type { UniversalHandler } from "./universal-handler.js";
+import type { MethodImplSpec } from '../implementation.js'
+import type { UniversalHandler } from './universal-handler.js'
 
 /**
  * Creates a handler function for an RPC definition and an RPC implementation,
@@ -25,10 +25,10 @@ export interface ProtocolHandlerFactory {
   /**
    * Create a new handler with the user-provided implementation of the procedure.
    */
-  (spec: MethodImplSpec): UniversalHandler;
+  (spec: MethodImplSpec): UniversalHandler
 
   /**
    * The name of the protocol that the created handlers implement.
    */
-  protocolName: string;
+  protocolName: string
 }

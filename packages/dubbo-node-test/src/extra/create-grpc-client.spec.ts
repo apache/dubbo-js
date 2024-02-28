@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { TestService } from "../gen/grpc/testing/test_dubbo.js";
-import { createGrpcClient } from "./create-grpc-client.js";
-import * as grpc from "@grpc/grpc-js";
+import { TestService } from '../gen/grpc/testing/test_dubbo.js'
+import { createGrpcClient } from './create-grpc-client.js'
+import * as grpc from '@grpc/grpc-js'
 
-describe("createGrpcClient()", function () {
-  it("should create the expected methods", function () {
+describe('createGrpcClient()', function () {
+  it('should create the expected methods', function () {
     const grpcClient = createGrpcClient(TestService, {
-      address: "localhost:5002",
+      address: 'localhost:5002',
       channelCredentials: grpc.ChannelCredentials.createInsecure(),
       clientOptions: {},
-      binaryOptions: {},
-    });
-    expect(grpcClient).toBeDefined();
-    expect(typeof grpcClient.emptyCall).toBe("function");
-    expect(typeof grpcClient.streamingOutputCall).toBe("function");
-    expect(typeof grpcClient.streamingInputCall).toBe("function");
-    expect(typeof grpcClient.fullDuplexCall).toBe("function");
-  });
-});
+      binaryOptions: {}
+    })
+    expect(grpcClient).toBeDefined()
+    expect(typeof grpcClient.emptyCall).toBe('function')
+    expect(typeof grpcClient.streamingOutputCall).toBe('function')
+    expect(typeof grpcClient.streamingInputCall).toBe('function')
+    expect(typeof grpcClient.fullDuplexCall).toBe('function')
+  })
+})

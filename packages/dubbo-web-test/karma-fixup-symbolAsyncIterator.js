@@ -16,8 +16,8 @@
 // only required to identify async iterables, and we only need to provide the
 // symbol.
 
-(function () {
+;(function () {
   if (!Symbol.asyncIterator) {
-    Symbol.asyncIterator = Symbol("fake-async-iterator");
+    Symbol.asyncIterator = Symbol('fake-async-iterator')
   }
-})();
+})()

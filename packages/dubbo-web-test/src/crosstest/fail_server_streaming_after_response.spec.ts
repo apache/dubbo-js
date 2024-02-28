@@ -16,66 +16,64 @@ import {
   Code,
   DubboError,
   createCallbackClient,
-  createPromiseClient,
-} from "@apachedubbo/dubbo";
-import { TestService } from "../gen/grpc/testing/test_dubbo.js";
-import { describeTransports } from "../helpers/crosstestserver.js";
+  createPromiseClient
+} from '@apachedubbo/dubbo'
+import { TestService } from '../gen/grpc/testing/test_dubbo.js'
+import { describeTransports } from '../helpers/crosstestserver.js'
 import {
   ErrorDetail,
   StreamingOutputCallRequest,
-  StreamingOutputCallResponse,
-} from "../gen/grpc/testing/messages_pb.js";
-import { interop } from "../helpers/interop.js";
+  StreamingOutputCallResponse
+} from '../gen/grpc/testing/messages_pb.js'
+import { interop } from '../helpers/interop.js'
 
-describe("fail_server_streaming_after_response", () => {
+describe('fail_server_streaming_after_response', () => {
   function expectError(err: unknown) {
-    expect(err).toBeInstanceOf(DubboError);
+    expect(err).toBeInstanceOf(DubboError)
     if (err instanceof DubboError) {
-      expect(err.code).toEqual(Code.ResourceExhausted);
-      expect(err.rawMessage).toEqual(interop.nonASCIIErrMsg);
-      const details = err.findDetails(ErrorDetail);
-      expect(details).toEqual([interop.errorDetail]);
+      expect(err.code).toEqual(Code.ResourceExhausted)
+      expect(err.rawMessage).toEqual(interop.nonASCIIErrMsg)
+      const details = err.findDetails(ErrorDetail)
+      expect(details).toEqual([interop.errorDetail])
     }
   }
   const request = new StreamingOutputCallRequest({
     responseParameters: [
       { size: 64, intervalUs: 0 },
       { size: 64, intervalUs: 0 },
-      { size: 64, intervalUs: 0 },
-    ],
-  });
+      { size: 64, intervalUs: 0 }
+    ]
+  })
   describeTransports((transport) => {
-    it("with promise client", async function () {
-      const client = createPromiseClient(TestService, transport());
-      const receivedResponses: StreamingOutputCallResponse[] = [];
+    it('with promise client', async function () {
+      const client = createPromiseClient(TestService, transport())
+      const receivedResponses: StreamingOutputCallResponse[] = []
       try {
         for await (const response of client.failStreamingOutputCall(request)) {
-          receivedResponses.push(response);
+          receivedResponses.push(response)
         }
-        fail("expected to catch an error");
+        fail('expected to catch an error')
       } catch (e) {
-        expectError(e);
-        expect(receivedResponses.length).toBe(
-          request.responseParameters.length
-        );
+        expectError(e)
+        expect(receivedResponses.length).toBe(request.responseParameters.length)
       }
-    });
-    it("with callback client", function (done) {
-      const client = createCallbackClient(TestService, transport());
-      const receivedResponses: StreamingOutputCallResponse[] = [];
+    })
+    it('with callback client', function (done) {
+      const client = createCallbackClient(TestService, transport())
+      const receivedResponses: StreamingOutputCallResponse[] = []
       client.failStreamingOutputCall(
         request,
         (response) => {
-          receivedResponses.push(response);
+          receivedResponses.push(response)
         },
         (err: DubboError | undefined) => {
-          expectError(err);
+          expectError(err)
           expect(receivedResponses.length).toBe(
             request.responseParameters.length
-          );
-          done();
+          )
+          done()
         }
-      );
-    });
-  });
-});
+      )
+    })
+  })
+})

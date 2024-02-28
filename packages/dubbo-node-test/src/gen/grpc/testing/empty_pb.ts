@@ -18,8 +18,15 @@
 // @generated from file grpc/testing/empty.proto (package grpc.testing, syntax proto3)
 /* eslint-disable */
 
-import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
-import { Message, proto3 } from "@bufbuild/protobuf";
+import type {
+  BinaryReadOptions,
+  FieldList,
+  JsonReadOptions,
+  JsonValue,
+  PartialMessage,
+  PlainMessage
+} from '@bufbuild/protobuf'
+import { Message, proto3 } from '@bufbuild/protobuf'
 
 /**
  * An empty message that you can re-use to avoid defining duplicated empty
@@ -35,29 +42,39 @@ import { Message, proto3 } from "@bufbuild/protobuf";
  */
 export class Empty extends Message<Empty> {
   constructor(data?: PartialMessage<Empty>) {
-    super();
-    proto3.util.initPartial(data, this);
+    super()
+    proto3.util.initPartial(data, this)
   }
 
-  static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "grpc.testing.Empty";
-  static readonly fields: FieldList = proto3.util.newFieldList(() => [
-  ]);
+  static readonly runtime: typeof proto3 = proto3
+  static readonly typeName = 'grpc.testing.Empty'
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [])
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Empty {
-    return new Empty().fromBinary(bytes, options);
+  static fromBinary(
+    bytes: Uint8Array,
+    options?: Partial<BinaryReadOptions>
+  ): Empty {
+    return new Empty().fromBinary(bytes, options)
   }
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Empty {
-    return new Empty().fromJson(jsonValue, options);
+  static fromJson(
+    jsonValue: JsonValue,
+    options?: Partial<JsonReadOptions>
+  ): Empty {
+    return new Empty().fromJson(jsonValue, options)
   }
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Empty {
-    return new Empty().fromJsonString(jsonString, options);
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>
+  ): Empty {
+    return new Empty().fromJsonString(jsonString, options)
   }
 
-  static equals(a: Empty | PlainMessage<Empty> | undefined, b: Empty | PlainMessage<Empty> | undefined): boolean {
-    return proto3.util.equals(Empty, a, b);
+  static equals(
+    a: Empty | PlainMessage<Empty> | undefined,
+    b: Empty | PlainMessage<Empty> | undefined
+  ): boolean {
+    return proto3.util.equals(Empty, a, b)
   }
 }
-

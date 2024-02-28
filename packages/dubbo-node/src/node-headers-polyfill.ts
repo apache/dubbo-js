@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Headers as HeadersPolyfill } from "headers-polyfill";
+import { Headers as HeadersPolyfill } from 'headers-polyfill'
 
 // The global Headers class was introduced in Node v16.15.0, behind the
 // --experimental-fetch flag. It became available by default with Node
@@ -21,10 +21,10 @@ import { Headers as HeadersPolyfill } from "headers-polyfill";
 // implementation if one has not already been polyfilled.
 
 const [major] = process.versions.node
-  .split(".")
-  .map((value) => parseInt(value, 10));
+  .split('.')
+  .map((value) => parseInt(value, 10))
 if (major < 18) {
-  if (typeof globalThis.Headers === "undefined") {
-    globalThis.Headers = HeadersPolyfill as unknown as typeof Headers;
+  if (typeof globalThis.Headers === 'undefined') {
+    globalThis.Headers = HeadersPolyfill as unknown as typeof Headers
   }
 }

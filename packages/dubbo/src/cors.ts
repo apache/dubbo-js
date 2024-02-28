@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as triple from "./protocol-triple/headers.js";
-import * as grpc from "./protocol-grpc/headers.js";
-import * as grpcWeb from "./protocol-grpc-web/headers.js";
+import * as triple from './protocol-triple/headers.js'
+import * as grpc from './protocol-grpc/headers.js'
+import * as grpcWeb from './protocol-grpc-web/headers.js'
 
 /**
  * CORS prevents rogue scripts in a web browser from making arbitrary requests
@@ -25,7 +25,7 @@ import * as grpcWeb from "./protocol-grpc-web/headers.js";
  *
  * Make sure to add application-specific headers that your application
  * uses as well.
- * 
+ *
  * Mainly used for testing of dubbo-node-test
  */
 export const cors = {
@@ -36,7 +36,7 @@ export const cors = {
    * these headers fields must be included in the preflight response header
    * Access-Control-Allow-Methods.
    */
-  allowedMethods: ["POST", "GET"] as ReadonlyArray<string>,
+  allowedMethods: ['POST', 'GET'] as ReadonlyArray<string>,
 
   /**
    * Header fields that scripts running in the browser are permitted to send.
@@ -61,7 +61,7 @@ export const cors = {
     grpc.headerMessageType, // Unused in web browsers, but added for future-proofing
     grpcWeb.headerXGrpcWeb,
     grpcWeb.headerXUserAgent,
-    grpcWeb.headerTimeout,
+    grpcWeb.headerTimeout
   ] as ReadonlyArray<string>,
 
   /**
@@ -82,6 +82,6 @@ export const cors = {
     grpcWeb.headerGrpcMessage, // Crucial for gRPC-web
     grpcWeb.headerStatusDetailsBin, // Error details in gRPC, gRPC-web
     triple.headerUnaryEncoding, // Unused in web browsers, but added for future-proofing
-    triple.headerStreamEncoding, // Unused in web browsers, but added for future-proofing
-  ] as ReadonlyArray<string>,
-};
+    triple.headerStreamEncoding // Unused in web browsers, but added for future-proofing
+  ] as ReadonlyArray<string>
+}

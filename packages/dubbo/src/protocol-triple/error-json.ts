@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Message, protoBase64 } from "@bufbuild/protobuf";
+import { Message, protoBase64 } from '@bufbuild/protobuf'
 import type {
   JsonObject,
   JsonValue,
-  JsonWriteOptions,
-} from "@bufbuild/protobuf";
-import { Code } from "../code.js";
-import { DubboError } from "../dubbo-error.js";
+  JsonWriteOptions
+} from '@bufbuild/protobuf'
+import { Code } from '../code.js'
+import { DubboError } from '../dubbo-error.js'
 
 /**
  * Parse a Connect error from a JSON value.
@@ -35,50 +35,50 @@ export function errorFromJson(
   if (metadata) {
     new Headers(metadata).forEach((value, key) =>
       fallback.metadata.append(key, value)
-    );
+    )
   }
   if (
-    typeof jsonValue !== "object" ||
+    typeof jsonValue !== 'object' ||
     jsonValue == null ||
     Array.isArray(jsonValue) ||
-    !("status" in jsonValue) ||
-    typeof jsonValue.status !== "number"
+    !('status' in jsonValue) ||
+    typeof jsonValue.status !== 'number'
   ) {
-    throw fallback;
+    throw fallback
   }
-  const code = jsonValue.status;
+  const code = jsonValue.status
   if (code === undefined || !(code in Code)) {
-    throw fallback;
+    throw fallback
   }
-  const message = jsonValue.message;
-  if (message != null && typeof message !== "string") {
-    throw fallback;
+  const message = jsonValue.message
+  if (message != null && typeof message !== 'string') {
+    throw fallback
   }
-  const error = new DubboError(message ?? "", code, metadata);
-  if ("details" in jsonValue && Array.isArray(jsonValue.details)) {
+  const error = new DubboError(message ?? '', code, metadata)
+  if ('details' in jsonValue && Array.isArray(jsonValue.details)) {
     for (const detail of jsonValue.details) {
       if (
         detail === null ||
-        typeof detail != "object" ||
+        typeof detail != 'object' ||
         Array.isArray(detail) ||
-        typeof detail.type != "string" ||
-        typeof detail.value != "string" ||
-        ("debug" in detail && typeof detail.debug != "object")
+        typeof detail.type != 'string' ||
+        typeof detail.value != 'string' ||
+        ('debug' in detail && typeof detail.debug != 'object')
       ) {
-        throw fallback;
+        throw fallback
       }
       try {
         error.details.push({
           type: detail.type,
           value: protoBase64.dec(detail.value),
-          debug: detail.debug,
-        });
+          debug: detail.debug
+        })
       } catch (e) {
-        throw fallback;
+        throw fallback
       }
     }
   }
-  return error;
+  return error
 }
 
 /**
@@ -92,13 +92,13 @@ export function errorFromJsonBytes(
   metadata: HeadersInit | undefined,
   fallback: DubboError
 ): DubboError {
-  let jsonValue: JsonValue;
+  let jsonValue: JsonValue
   try {
-    jsonValue = JSON.parse(new TextDecoder().decode(bytes)) as JsonValue;
+    jsonValue = JSON.parse(new TextDecoder().decode(bytes)) as JsonValue
   } catch (e) {
-    throw fallback;
+    throw fallback
   }
-  return errorFromJson(jsonValue, metadata, fallback);
+  return errorFromJson(jsonValue, metadata, fallback)
 }
 
 /**
@@ -118,42 +118,42 @@ export function errorToJson(
   jsonWriteOptions: Partial<JsonWriteOptions> | undefined
 ): JsonObject {
   const o: JsonObject = {
-    status: error.code,
-  };
+    status: error.code
+  }
   if (error.rawMessage.length > 0) {
-    o.message = error.rawMessage;
+    o.message = error.rawMessage
   }
   if (error.details.length > 0) {
     type IncomingDetail = {
-      type: string;
-      value: Uint8Array;
-      debug?: JsonValue;
-    };
+      type: string
+      value: Uint8Array
+      debug?: JsonValue
+    }
     o.details = error.details
       .map((value) => {
         if (value instanceof Message) {
           const i: IncomingDetail = {
             type: value.getType().typeName,
-            value: value.toBinary(),
-          };
+            value: value.toBinary()
+          }
           try {
-            i.debug = value.toJson(jsonWriteOptions);
+            i.debug = value.toJson(jsonWriteOptions)
           } catch (e) {
             // We deliberately ignore errors that may occur when serializing
             // a message to JSON (the message contains an Any).
             // The rationale is that we are only trying to provide optional
             // debug information.
           }
-          return i;
+          return i
         }
-        return value;
+        return value
       })
       .map(({ value, ...rest }) => ({
         ...rest,
-        value: protoBase64.enc(value),
-      }));
+        value: protoBase64.enc(value)
+      }))
   }
-  return o;
+  return o
 }
 
 /**
@@ -166,16 +166,16 @@ export function errorToJsonBytes(
   error: DubboError,
   jsonWriteOptions: Partial<JsonWriteOptions> | undefined
 ): Uint8Array {
-  const textEncoder = new TextEncoder();
+  const textEncoder = new TextEncoder()
   try {
-    const jsonObject = errorToJson(error, jsonWriteOptions);
-    const jsonString = JSON.stringify(jsonObject);
-    return textEncoder.encode(jsonString);
+    const jsonObject = errorToJson(error, jsonWriteOptions)
+    const jsonString = JSON.stringify(jsonObject)
+    return textEncoder.encode(jsonString)
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    const m = e instanceof Error ? e.message : String(e)
     throw new DubboError(
       `failed to serialize Connect Error: ${m}`,
       Code.Internal
-    );
+    )
   }
 }

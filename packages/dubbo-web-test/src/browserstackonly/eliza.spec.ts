@@ -12,40 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createPromiseClient } from "@apachedubbo/dubbo";
-import { createDubboTransport } from "@apachedubbo/dubbo-web";
-import { ElizaService } from "../gen/buf/connect/demo/eliza/v1/eliza_dubbo.js";
-import { IntroduceRequest } from "../gen/buf/connect/demo/eliza/v1/eliza_pb.js";
+import { createPromiseClient } from '@apachedubbo/dubbo'
+import { createDubboTransport } from '@apachedubbo/dubbo-web'
+import { ElizaService } from '../gen/buf/connect/demo/eliza/v1/eliza_dubbo.js'
+import { IntroduceRequest } from '../gen/buf/connect/demo/eliza/v1/eliza_pb.js'
 
-const timeoutMs = 15000;
+const timeoutMs = 15000
 
-describe("eliza", () => {
+describe('eliza', () => {
   const transport = createDubboTransport({
-    baseUrl: "https://demo.connect.build",
-  });
+    baseUrl: 'https://demo.connect.build'
+  })
   it(
-    "say()",
+    'say()',
     async () => {
-      const client = createPromiseClient(ElizaService, transport);
-      const res = await client.say({ sentence: "I feel happy." });
-      expect(typeof res.sentence).toBe("string");
+      const client = createPromiseClient(ElizaService, transport)
+      const res = await client.say({ sentence: 'I feel happy.' })
+      expect(typeof res.sentence).toBe('string')
     },
     timeoutMs
-  );
+  )
   it(
-    "introduce()",
+    'introduce()',
     async () => {
-      const client = createPromiseClient(ElizaService, transport);
+      const client = createPromiseClient(ElizaService, transport)
       const request = new IntroduceRequest({
-        name: "Browser",
-      });
-      let receivedMessages = 0;
+        name: 'Browser'
+      })
+      let receivedMessages = 0
       for await (const response of client.introduce(request)) {
-        expect(response.sentence.length > 0).toBe(true);
-        receivedMessages++;
+        expect(response.sentence.length > 0).toBe(true)
+        receivedMessages++
       }
-      expect(receivedMessages > 3).toBe(true);
+      expect(receivedMessages > 3).toBe(true)
     },
     timeoutMs
-  );
-});
+  )
+})

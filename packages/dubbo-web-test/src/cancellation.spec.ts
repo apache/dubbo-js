@@ -12,105 +12,105 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { CallOptions } from "@apachedubbo/dubbo";
+import type { CallOptions } from '@apachedubbo/dubbo'
 import {
   Code,
   DubboError,
   createCallbackClient,
-  createPromiseClient,
-} from "@apachedubbo/dubbo";
-import { describeTransports } from "./helpers/crosstestserver.js";
-import { TestService } from "./gen/grpc/testing/test_dubbo.js";
+  createPromiseClient
+} from '@apachedubbo/dubbo'
+import { describeTransports } from './helpers/crosstestserver.js'
+import { TestService } from './gen/grpc/testing/test_dubbo.js'
 
-describe("explicit cancellation with AbortController", function () {
-  const abort = new AbortController();
-  abort.abort();
+describe('explicit cancellation with AbortController', function () {
+  const abort = new AbortController()
+  abort.abort()
   const options: Readonly<CallOptions> = {
-    signal: abort.signal,
-  };
+    signal: abort.signal
+  }
   describeTransports((transport) => {
-    describe("with promise client", () => {
-      const client = createPromiseClient(TestService, transport());
-      it("works for unary method", async () => {
-        let caughtError = false;
+    describe('with promise client', () => {
+      const client = createPromiseClient(TestService, transport())
+      it('works for unary method', async () => {
+        let caughtError = false
         try {
-          await client.unaryCall({}, options);
+          await client.unaryCall({}, options)
         } catch (e) {
-          caughtError = true;
-          expect(e).toBeInstanceOf(DubboError);
+          caughtError = true
+          expect(e).toBeInstanceOf(DubboError)
           if (e instanceof DubboError) {
-            expect(e.code).toBe(Code.Canceled);
+            expect(e.code).toBe(Code.Canceled)
           }
         }
-        expect(caughtError).toBeTrue();
-      });
-      it("works for server-streaming method", async () => {
-        let caughtError = false;
+        expect(caughtError).toBeTrue()
+      })
+      it('works for server-streaming method', async () => {
+        let caughtError = false
         try {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           for await (const _res of client.streamingOutputCall({}, options)) {
             //
           }
         } catch (e) {
-          caughtError = true;
-          expect(e).toBeInstanceOf(DubboError);
+          caughtError = true
+          expect(e).toBeInstanceOf(DubboError)
           if (e instanceof DubboError) {
-            expect(e.code).toBe(Code.Canceled);
+            expect(e.code).toBe(Code.Canceled)
           }
         }
-        expect(caughtError).toBeTrue();
-      });
-    });
-    describe("with callback client", () => {
-      const client = createCallbackClient(TestService, transport());
-      it("works for unary method", (done) => {
+        expect(caughtError).toBeTrue()
+      })
+    })
+    describe('with callback client', () => {
+      const client = createCallbackClient(TestService, transport())
+      it('works for unary method', (done) => {
         client.unaryCall(
           {},
           () => {
-            fail("expected callback client to swallow AbortError");
+            fail('expected callback client to swallow AbortError')
           },
           options
-        );
-        setTimeout(done, 50);
-      });
-      it("works for unary method with returned cancel-fn", (done) => {
+        )
+        setTimeout(done, 50)
+      })
+      it('works for unary method with returned cancel-fn', (done) => {
         const cancelFn = client.unaryCall(
           {},
           () => {
-            fail("expected callback client to swallow AbortError");
+            fail('expected callback client to swallow AbortError')
           },
           options
-        );
-        cancelFn();
-        setTimeout(done, 50);
-      });
-      it("works for server-streaming method", (done) => {
+        )
+        cancelFn()
+        setTimeout(done, 50)
+      })
+      it('works for server-streaming method', (done) => {
         client.streamingOutputCall(
           {},
           () => {
-            fail("expected call to cancel right away, but got message");
+            fail('expected call to cancel right away, but got message')
           },
           (error) => {
-            expect(error).toBeUndefined();
+            expect(error).toBeUndefined()
           },
           options
-        );
-        setTimeout(done, 50);
-      });
-      it("works for server-streaming method with returned cancel-fn", (done) => {
+        )
+        setTimeout(done, 50)
+      })
+      it('works for server-streaming method with returned cancel-fn', (done) => {
         const cancelFn = client.streamingOutputCall(
           {},
           () => {
-            fail("expected call to cancel right away, but got message");
+            fail('expected call to cancel right away, but got message')
           },
           (error) => {
-            expect(error).toBeUndefined();
+            expect(error).toBeUndefined()
           },
           options
-        );
-        cancelFn();
-        setTimeout(done, 50);
-      });
-    });
-  });
-});
+        )
+        cancelFn()
+        setTimeout(done, 50)
+      })
+    })
+  })
+})

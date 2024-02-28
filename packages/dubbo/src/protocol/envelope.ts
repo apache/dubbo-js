@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { DubboError } from "../dubbo-error.js";
-import { Code } from "../code.js";
-import { compressedFlag } from "./compression.js";
-import type { Compression } from "./compression.js";
+import { DubboError } from '../dubbo-error.js'
+import { Code } from '../code.js'
+import { compressedFlag } from './compression.js'
+import type { Compression } from './compression.js'
 
 /**
  * Represents an Enveloped-Message of the Triple protocol.
@@ -27,12 +27,12 @@ export interface EnvelopedMessage {
   /**
    * Envelope-Flags, a set of 8 bitwise flags.
    */
-  flags: number;
+  flags: number
 
   /**
    * Raw data of the message that was enveloped.
    */
-  data: Uint8Array;
+  data: Uint8Array
 }
 
 /**
@@ -47,57 +47,57 @@ export interface EnvelopedMessage {
 export function createEnvelopeReadableStream(
   stream: ReadableStream<Uint8Array>
 ): ReadableStream<EnvelopedMessage> {
-  let reader: ReadableStreamDefaultReader<Uint8Array>;
-  let buffer = new Uint8Array(0);
+  let reader: ReadableStreamDefaultReader<Uint8Array>
+  let buffer = new Uint8Array(0)
 
   function append(chunk: Uint8Array): void {
-    const n = new Uint8Array(buffer.length + chunk.length);
-    n.set(buffer);
-    n.set(chunk, buffer.length);
-    buffer = n;
+    const n = new Uint8Array(buffer.length + chunk.length)
+    n.set(buffer)
+    n.set(chunk, buffer.length)
+    buffer = n
   }
 
   return new ReadableStream<EnvelopedMessage>({
     start() {
-      reader = stream.getReader();
+      reader = stream.getReader()
     },
     async pull(controller): Promise<void> {
-      let header: { length: number; flags: number } | undefined = undefined;
+      let header: { length: number; flags: number } | undefined = undefined
       for (;;) {
         if (header === undefined && buffer.byteLength >= 5) {
-          let length = 0;
+          let length = 0
           for (let i = 1; i < 5; i++) {
-            length = (length << 8) + buffer[i];
+            length = (length << 8) + buffer[i]
           }
-          header = { flags: buffer[0], length };
+          header = { flags: buffer[0], length }
         }
         if (header !== undefined && buffer.byteLength >= header.length + 5) {
-          break;
+          break
         }
-        const result = await reader.read();
+        const result = await reader.read()
         if (result.done) {
-          break;
+          break
         }
-        append(result.value);
+        append(result.value)
       }
       if (header === undefined) {
         if (buffer.byteLength == 0) {
-          controller.close();
-          return;
+          controller.close()
+          return
         }
         controller.error(
-          new DubboError("premature end of stream", Code.DataLoss)
-        );
-        return;
+          new DubboError('premature end of stream', Code.DataLoss)
+        )
+        return
       }
-      const data = buffer.subarray(5, 5 + header.length);
-      buffer = buffer.subarray(5 + header.length);
+      const data = buffer.subarray(5, 5 + header.length)
+      buffer = buffer.subarray(5 + header.length)
       controller.enqueue({
         flags: header.flags,
-        data,
-      });
-    },
-  });
+        data
+      })
+    }
+  })
 }
 
 /**
@@ -112,18 +112,15 @@ export async function envelopeCompress(
   compression: Compression | null,
   compressMinBytes: number
 ): Promise<EnvelopedMessage> {
-  let { flags, data } = envelope;
+  let { flags, data } = envelope
   if ((flags & compressedFlag) === compressedFlag) {
-    throw new DubboError(
-      "invalid envelope, already compressed",
-      Code.Internal
-    );
+    throw new DubboError('invalid envelope, already compressed', Code.Internal)
   }
   if (compression && data.byteLength >= compressMinBytes) {
-    data = await compression.compress(data);
-    flags = flags | compressedFlag;
+    data = await compression.compress(data)
+    flags = flags | compressedFlag
   }
-  return { data, flags };
+  return { data, flags }
 }
 
 /**
@@ -142,18 +139,18 @@ export async function envelopeDecompress(
   compression: Compression | null,
   readMaxBytes: number
 ): Promise<EnvelopedMessage> {
-  let { flags, data } = envelope;
+  let { flags, data } = envelope
   if ((flags & compressedFlag) === compressedFlag) {
     if (!compression) {
       throw new DubboError(
-        "received compressed envelope, but do not know how to decompress",
+        'received compressed envelope, but do not know how to decompress',
         Code.InvalidArgument
-      );
+      )
     }
-    data = await compression.decompress(data, readMaxBytes);
-    flags = flags ^ compressedFlag;
+    data = await compression.decompress(data, readMaxBytes)
+    flags = flags ^ compressedFlag
   }
-  return { data, flags };
+  return { data, flags }
 }
 
 /**
@@ -162,12 +159,12 @@ export async function envelopeDecompress(
  * @private Internal code, does not follow semantic versioning.
  */
 export function encodeEnvelope(flags: number, data: Uint8Array): Uint8Array {
-  const bytes = new Uint8Array(data.length + 5);
-  bytes.set(data, 5);
-  const v = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-  v.setUint8(0, flags); // first byte is flags
-  v.setUint32(1, data.length); // 4 bytes message length
-  return bytes;
+  const bytes = new Uint8Array(data.length + 5)
+  bytes.set(data, 5)
+  const v = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
+  v.setUint8(0, flags) // first byte is flags
+  v.setUint32(1, data.length) // 4 bytes message length
+  return bytes
 }
 
 /**
@@ -180,15 +177,15 @@ export function encodeEnvelopes(...envelopes: EnvelopedMessage[]): Uint8Array {
     (previousValue, currentValue) =>
       previousValue + currentValue.data.length + 5,
     0
-  );
-  const bytes = new Uint8Array(len);
-  const v = new DataView(bytes.buffer);
-  let offset = 0;
+  )
+  const bytes = new Uint8Array(len)
+  const v = new DataView(bytes.buffer)
+  let offset = 0
   for (const e of envelopes) {
-    v.setUint8(offset, e.flags); // first byte is flags
-    v.setUint32(offset + 1, e.data.length); // 4 bytes message length
-    bytes.set(e.data, offset + 5);
-    offset += e.data.length + 5;
+    v.setUint8(offset, e.flags) // first byte is flags
+    v.setUint32(offset + 1, e.data.length) // 4 bytes message length
+    bytes.set(e.data, offset + 5)
+    offset += e.data.length + 5
   }
-  return bytes;
+  return bytes
 }

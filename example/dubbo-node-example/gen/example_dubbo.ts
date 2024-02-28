@@ -3,24 +3,23 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { SayRequest, SayResponse } from "./example_pb.js";
-import { MethodKind } from "@bufbuild/protobuf";
+import { SayRequest, SayResponse } from './example_pb.js'
+import { MethodKind } from '@bufbuild/protobuf'
 
 /**
  * @generated from service apache.dubbo.demo.example.v1.ExampleService
  */
 export const ExampleService = {
-  typeName: "apache.dubbo.demo.example.v1.ExampleService",
+  typeName: 'apache.dubbo.demo.example.v1.ExampleService',
   methods: {
     /**
      * @generated from rpc apache.dubbo.demo.example.v1.ExampleService.Say
      */
     say: {
-      name: "Say",
+      name: 'Say',
       I: SayRequest,
       O: SayResponse,
-      kind: MethodKind.Unary,
-    },
+      kind: MethodKind.Unary
+    }
   }
-} as const;
-
+} as const

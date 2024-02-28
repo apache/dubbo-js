@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { Message, MessageType, PartialMessage } from "@bufbuild/protobuf";
-import { Code } from "../code.js";
-import { DubboError } from "../dubbo-error.js";
-import type { EnvelopedMessage } from "./envelope.js";
+import type { Message, MessageType, PartialMessage } from '@bufbuild/protobuf'
+import { Code } from '../code.js'
+import { DubboError } from '../dubbo-error.js'
+import type { EnvelopedMessage } from './envelope.js'
 import {
   encodeEnvelope,
   envelopeCompress,
-  envelopeDecompress,
-} from "./envelope.js";
-import type { Serialization } from "./serialization.js";
-import type { Compression } from "./compression.js";
-import { assertReadMaxBytes } from "./limit-io.js";
+  envelopeDecompress
+} from './envelope.js'
+import type { Serialization } from './serialization.js'
+import type { Compression } from './compression.js'
+import { assertReadMaxBytes } from './limit-io.js'
 
 /**
  * A function that takes an asynchronous iterable as a source, and returns a
@@ -55,7 +55,7 @@ import { assertReadMaxBytes } from "./limit-io.js";
  */
 export type AsyncIterableTransform<I, O = I> = (
   data: AsyncIterable<I>
-) => AsyncIterable<O>;
+) => AsyncIterable<O>
 
 /**
  * A function that takes an asynchronous iterable as a source and consumes it
@@ -67,7 +67,7 @@ export type AsyncIterableTransform<I, O = I> = (
  */
 export type AsyncIterableSink<T, R = void> = (
   iterable: AsyncIterable<T>
-) => Promise<R>;
+) => Promise<R>
 
 /**
  * Options for pipe() and pipeTo().
@@ -121,7 +121,7 @@ interface PipeOptions {
    * iterable returned by pipe() can abort the source iterable by calling throw()
    * on the iterator.
    */
-  propagateDownStreamError?: boolean;
+  propagateDownStreamError?: boolean
 }
 
 /**
@@ -135,7 +135,7 @@ interface PipeOptions {
  */
 type ParsedEnvelopedMessage<M, E> =
   | { end: false; value: M }
-  | { end: true; value: E };
+  | { end: true; value: E }
 
 /**
  * Takes an asynchronous iterable as a source, and passes it to a sink.
@@ -146,7 +146,7 @@ export function pipeTo<T1, T2>(
   iterable: AsyncIterable<T1>,
   sink: AsyncIterableSink<T1, T2>,
   options?: PipeOptions
-): Promise<T2>;
+): Promise<T2>
 /**
  * Takes an asynchronous iterable as a source, applies transformations, and
  * passes it to a sink.
@@ -158,7 +158,7 @@ export function pipeTo<T1, T2, T3>(
   transform: AsyncIterableTransform<T1, T2>,
   sink: AsyncIterableSink<T2, T3>,
   options?: PipeOptions
-): Promise<T3>;
+): Promise<T3>
 /**
  * Takes an asynchronous iterable as a source, applies transformations, and
  * passes it to a sink.
@@ -171,7 +171,7 @@ export function pipeTo<T1, T2, T3, T4>(
   transform2: AsyncIterableTransform<T2, T3>,
   sink: AsyncIterableSink<T3, T4>,
   options?: PipeOptions
-): Promise<T4>;
+): Promise<T4>
 /**
  * Takes an asynchronous iterable as a source, applies transformations, and
  * passes it to a sink.
@@ -185,7 +185,7 @@ export function pipeTo<T1, T2, T3, T4, T5>(
   transform3: AsyncIterableTransform<T3, T4>,
   sink: AsyncIterableSink<T4, T5>,
   options?: PipeOptions
-): Promise<T5>;
+): Promise<T5>
 /**
  * Takes an asynchronous iterable as a source, applies transformations, and
  * passes it to a sink.
@@ -200,7 +200,7 @@ export function pipeTo<T1, T2, T3, T4, T5, T6>(
   transform4: AsyncIterableTransform<T4, T5>,
   sink: AsyncIterableSink<T5, T6>,
   options?: PipeOptions
-): Promise<T6>;
+): Promise<T6>
 /**
  * Takes an asynchronous iterable as a source, applies transformations, and
  * passes it to a sink.
@@ -216,7 +216,7 @@ export function pipeTo<T1, T2, T3, T4, T5, T6, T7>(
   transform5: AsyncIterableTransform<T5, T6>,
   sink: AsyncIterableSink<T6, T7>,
   options?: PipeOptions
-): Promise<T7>;
+): Promise<T7>
 /**
  * Takes an asynchronous iterable as a source, applies transformations, and
  * passes it to a sink.
@@ -233,7 +233,7 @@ export function pipeTo<T1, T2, T3, T4, T5, T6, T7, T8>(
   transform6: AsyncIterableTransform<T6, T7>,
   sink: AsyncIterableSink<T7, T8>,
   options?: PipeOptions
-): Promise<T8>;
+): Promise<T8>
 /**
  * Takes an asynchronous iterable as a source, applies transformations, and
  * passes it to a sink.
@@ -251,7 +251,7 @@ export function pipeTo<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
   transform7: AsyncIterableTransform<T7, T8>,
   sink: AsyncIterableSink<T8, T9>,
   options?: PipeOptions
-): Promise<T9>;
+): Promise<T9>
 /**
  * Takes an asynchronous iterable as a source, applies transformations, and
  * passes it to a sink.
@@ -270,7 +270,7 @@ export function pipeTo<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
   transform8: AsyncIterableTransform<T8, T9>,
   sink: AsyncIterableSink<T9, T10>,
   options?: PipeOptions
-): Promise<T10>;
+): Promise<T10>
 // prettier-ignore
 /**
  * Takes an asynchronous iterable as a source, applies transformations, and
@@ -318,24 +318,24 @@ export function pipeTo(
   source: AsyncIterable<unknown>,
   ...rest: unknown[]
 ): Promise<unknown> {
-  const [transforms, sink, opt] = pickTransformsAndSink(rest);
+  const [transforms, sink, opt] = pickTransformsAndSink(rest)
 
-  let iterable = source;
-  let abortable: Abortable | undefined;
+  let iterable = source
+  let abortable: Abortable | undefined
   if (opt?.propagateDownStreamError === true) {
-    iterable = abortable = makeIterableAbortable(iterable);
+    iterable = abortable = makeIterableAbortable(iterable)
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  iterable = pipe(iterable, ...transforms, { propagateDownStreamError: false });
+  iterable = pipe(iterable, ...transforms, { propagateDownStreamError: false })
 
   return sink(iterable).catch((reason) => {
     if (abortable) {
-      return abortable.abort(reason).then(() => Promise.reject(reason));
+      return abortable.abort(reason).then(() => Promise.reject(reason))
     }
-    return Promise.reject(reason);
-  });
+    return Promise.reject(reason)
+  })
 }
 
 // pick transforms, the sink, and options from the pipeTo() rest parameter
@@ -346,12 +346,12 @@ function pickTransformsAndSink(
   AsyncIterableSink<unknown>,
   PipeOptions | undefined
 ] {
-  let opt: PipeOptions | undefined;
-  if (typeof rest[rest.length - 1] != "function") {
-    opt = rest.pop() as PipeOptions;
+  let opt: PipeOptions | undefined
+  if (typeof rest[rest.length - 1] != 'function') {
+    opt = rest.pop() as PipeOptions
   }
-  const sink = rest.pop() as AsyncIterableSink<unknown>;
-  return [rest as AsyncIterableTransform<unknown>[], sink, opt];
+  const sink = rest.pop() as AsyncIterableSink<unknown>
+  return [rest as AsyncIterableTransform<unknown>[], sink, opt]
 }
 
 /**
@@ -361,12 +361,12 @@ function pickTransformsAndSink(
  */
 export function sinkAll<T>(): AsyncIterableSink<T, T[]> {
   return async function (iterable: AsyncIterable<T>) {
-    const all: T[] = [];
+    const all: T[] = []
     for await (const chunk of iterable) {
-      all.push(chunk);
+      all.push(chunk)
     }
-    return all;
-  };
+    return all
+  }
 }
 
 /**
@@ -388,8 +388,8 @@ export function sinkAllBytes(
   lengthHint?: number | string | null
 ): AsyncIterableSink<Uint8Array, Uint8Array> {
   return async function (iterable: AsyncIterable<Uint8Array>) {
-    return await readAllBytes(iterable, readMaxBytes, lengthHint);
-  };
+    return await readAllBytes(iterable, readMaxBytes, lengthHint)
+  }
 }
 
 /**
@@ -401,7 +401,7 @@ export function pipe<T1, T2>(
   iterable: AsyncIterable<T1>,
   transform: AsyncIterableTransform<T1, T2>,
   options?: PipeOptions
-): AsyncIterable<T2>;
+): AsyncIterable<T2>
 /**
  * Apply one or more transformations to an asynchronous iterable.
  *
@@ -412,7 +412,7 @@ export function pipe<T1, T2, T3>(
   transform1: AsyncIterableTransform<T1, T2>,
   transform2: AsyncIterableTransform<T2, T3>,
   options?: PipeOptions
-): AsyncIterable<T3>;
+): AsyncIterable<T3>
 /**
  * Apply one or more transformations to an asynchronous iterable.
  *
@@ -424,7 +424,7 @@ export function pipe<T1, T2, T3, T4>(
   transform2: AsyncIterableTransform<T2, T3>,
   transform3: AsyncIterableTransform<T3, T4>,
   options?: PipeOptions
-): AsyncIterable<T4>;
+): AsyncIterable<T4>
 /**
  * Apply one or more transformations to an asynchronous iterable.
  *
@@ -437,7 +437,7 @@ export function pipe<T1, T2, T3, T4, T5>(
   transform3: AsyncIterableTransform<T3, T4>,
   transform4: AsyncIterableTransform<T4, T5>,
   options?: PipeOptions
-): AsyncIterable<T5>;
+): AsyncIterable<T5>
 /**
  * Apply one or more transformations to an asynchronous iterable.
  *
@@ -451,7 +451,7 @@ export function pipe<T1, T2, T3, T4, T5, T6>(
   transform4: AsyncIterableTransform<T4, T5>,
   transform5: AsyncIterableTransform<T5, T6>,
   options?: PipeOptions
-): AsyncIterable<T6>;
+): AsyncIterable<T6>
 /**
  * Apply one or more transformations to an asynchronous iterable.
  *
@@ -466,7 +466,7 @@ export function pipe<T1, T2, T3, T4, T5, T6, T7>(
   transform5: AsyncIterableTransform<T5, T6>,
   transform6: AsyncIterableTransform<T6, T7>,
   options?: PipeOptions
-): AsyncIterable<T7>;
+): AsyncIterable<T7>
 /**
  * Apply one or more transformations to an asynchronous iterable.
  *
@@ -482,7 +482,7 @@ export function pipe<T1, T2, T3, T4, T5, T6, T7, T8>(
   transform6: AsyncIterableTransform<T6, T7>,
   transform7: AsyncIterableTransform<T7, T8>,
   options?: PipeOptions
-): AsyncIterable<T8>;
+): AsyncIterable<T8>
 /**
  * Apply one or more transformations to an asynchronous iterable.
  *
@@ -499,7 +499,7 @@ export function pipe<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
   transform7: AsyncIterableTransform<T7, T8>,
   transform8: AsyncIterableTransform<T8, T9>,
   options?: PipeOptions
-): AsyncIterable<T9>;
+): AsyncIterable<T9>
 /**
  * Apply one or more transformations to an asynchronous iterable.
  *
@@ -517,7 +517,7 @@ export function pipe<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
   transform8: AsyncIterableTransform<T8, T9>,
   transform9: AsyncIterableTransform<T9, T10>,
   options?: PipeOptions
-): AsyncIterable<T10>;
+): AsyncIterable<T10>
 // prettier-ignore
 /**
  * Apply one or more transformations to an asynchronous iterable.
@@ -563,30 +563,30 @@ export async function* pipe<I, O>(
   source: AsyncIterable<I>,
   ...rest: (AsyncIterableTransform<unknown> | PipeOptions | undefined)[]
 ): AsyncIterable<O> {
-  const [transforms, opt] = pickTransforms(rest);
-  let abortable: Abortable | undefined;
-  let iterable: AsyncIterable<unknown> = source;
+  const [transforms, opt] = pickTransforms(rest)
+  let abortable: Abortable | undefined
+  let iterable: AsyncIterable<unknown> = source
   if (opt?.propagateDownStreamError === true) {
-    iterable = abortable = makeIterableAbortable(iterable);
+    iterable = abortable = makeIterableAbortable(iterable)
   }
   for (const t of transforms) {
-    iterable = t(iterable);
+    iterable = t(iterable)
   }
-  const it = iterable[Symbol.asyncIterator]();
+  const it = iterable[Symbol.asyncIterator]()
   for (;;) {
-    const r = await it.next();
+    const r = await it.next()
     if (r.done === true) {
-      break;
+      break
     }
     if (!abortable) {
-      yield r.value as O;
-      continue;
+      yield r.value as O
+      continue
     }
     try {
-      yield r.value as O;
+      yield r.value as O
     } catch (e) {
-      await abortable.abort(e); // propagate downstream error to the source
-      throw e;
+      await abortable.abort(e) // propagate downstream error to the source
+      throw e
     }
   }
 }
@@ -594,11 +594,11 @@ export async function* pipe<I, O>(
 function pickTransforms(
   rest: (AsyncIterableTransform<unknown> | PipeOptions | undefined)[]
 ): [AsyncIterableTransform<unknown>[], PipeOptions | undefined] {
-  let opt: PipeOptions | undefined;
-  if (typeof rest[rest.length - 1] != "function") {
-    opt = rest.pop() as PipeOptions;
+  let opt: PipeOptions | undefined
+  if (typeof rest[rest.length - 1] != 'function') {
+    opt = rest.pop() as PipeOptions
   }
-  return [rest as AsyncIterableTransform<unknown>[], opt];
+  return [rest as AsyncIterableTransform<unknown>[], opt]
 }
 
 /**
@@ -615,30 +615,30 @@ export function transformCatch<T>(
   return async function* (iterable) {
     // we deliberate avoid a for-await loop because we only want to catch upstream
     // errors, not downstream errors (yield).
-    const it = iterable[Symbol.asyncIterator]();
+    const it = iterable[Symbol.asyncIterator]()
     for (;;) {
-      let r: IteratorResult<T>;
+      let r: IteratorResult<T>
       try {
-        r = await it.next();
+        r = await it.next()
       } catch (e) {
-        const caught = await catchError(e);
+        const caught = await catchError(e)
         if (caught !== undefined) {
-          yield caught;
+          yield caught
         }
-        break;
+        break
       }
       if (r.done === true) {
-        break;
+        break
       }
-      yield r.value;
+      yield r.value
     }
-  };
+  }
 }
 
 type TransformCatchErrorFn<C> =
   | ((reason: unknown) => void)
   | ((reason: unknown) => C | undefined)
-  | ((reason: unknown) => Promise<C | undefined>);
+  | ((reason: unknown) => Promise<C | undefined>)
 
 /**
  * Creates an AsyncIterableTransform that catches any error from the input, and
@@ -653,32 +653,32 @@ export function transformCatchFinally<T>(
   return async function* (iterable) {
     // we deliberate avoid a for-await loop because we only want to catch upstream
     // errors, not downstream errors (yield).
-    let err: unknown | undefined;
-    const it = iterable[Symbol.asyncIterator]();
+    let err: unknown | undefined
+    const it = iterable[Symbol.asyncIterator]()
     for (;;) {
-      let r: IteratorResult<T>;
+      let r: IteratorResult<T>
       try {
-        r = await it.next();
+        r = await it.next()
       } catch (e) {
-        err = e;
-        break;
+        err = e
+        break
       }
       if (r.done === true) {
-        break;
+        break
       }
-      yield r.value;
+      yield r.value
     }
-    const caught = await catchFinally(err);
+    const caught = await catchFinally(err)
     if (caught !== undefined) {
-      yield caught;
+      yield caught
     }
-  };
+  }
 }
 
 type TransformCatchFinallyFn<C> =
   | ((reason: unknown | undefined) => void)
   | ((reason: unknown | undefined) => C | undefined)
-  | ((reason: unknown | undefined) => Promise<C | undefined>);
+  | ((reason: unknown | undefined) => Promise<C | undefined>)
 
 /**
  * Creates an AsyncIterableTransform that appends a value.
@@ -693,13 +693,13 @@ export function transformAppend<T>(
 ): AsyncIterableTransform<Awaited<T>> {
   return async function* (iterable) {
     for await (const chunk of iterable) {
-      yield chunk;
+      yield chunk
     }
-    const append = await provide();
+    const append = await provide()
     if (append !== undefined) {
-      yield append;
+      yield append
     }
-  };
+  }
 }
 
 /**
@@ -714,19 +714,19 @@ export function transformPrepend<T>(
   provide: TransformXpendProvide<T>
 ): AsyncIterableTransform<Awaited<T>> {
   return async function* (iterable) {
-    const prepend = await provide();
+    const prepend = await provide()
     if (prepend !== undefined) {
-      yield prepend;
+      yield prepend
     }
     for await (const chunk of iterable) {
-      yield chunk;
+      yield chunk
     }
-  };
+  }
 }
 
 type TransformXpendProvide<T> = T extends undefined
   ? never
-  : (() => T | undefined) | (() => Promise<T | undefined>);
+  : (() => T | undefined) | (() => Promise<T | undefined>)
 
 /**
  * Creates an AsyncIterableTransform that reads all bytes from the input, and
@@ -747,8 +747,8 @@ export function transformReadAllBytes(
   lengthHint?: number | string | null
 ): AsyncIterableTransform<Uint8Array> {
   return async function* (iterable) {
-    yield await readAllBytes(iterable, readMaxBytes, lengthHint);
-  };
+    yield await readAllBytes(iterable, readMaxBytes, lengthHint)
+  }
 }
 
 /**
@@ -763,12 +763,12 @@ export function transformNormalizeMessage<T extends Message<T>>(
   return async function* (iterable) {
     for await (const chunk of iterable) {
       if (chunk instanceof messageType) {
-        yield chunk;
+        yield chunk
       } else {
-        yield new messageType(chunk as PartialMessage<T>);
+        yield new messageType(chunk as PartialMessage<T>)
       }
     }
-  };
+  }
 }
 
 /**
@@ -783,7 +783,7 @@ export function transformNormalizeMessage<T extends Message<T>>(
  */
 export function transformSerializeEnvelope<T>(
   serialization: Serialization<T>
-): AsyncIterableTransform<T, EnvelopedMessage>;
+): AsyncIterableTransform<T, EnvelopedMessage>
 /**
  * Creates an AsyncIterableTransform that takes a value or special end type, and
  * serializes it as an enveloped message.
@@ -802,7 +802,7 @@ export function transformSerializeEnvelope<T, E>(
   serialization: Serialization<T>,
   endStreamFlag: number,
   endSerialization: Serialization<E>
-): AsyncIterableTransform<ParsedEnvelopedMessage<T, E>, EnvelopedMessage>;
+): AsyncIterableTransform<ParsedEnvelopedMessage<T, E>, EnvelopedMessage>
 export function transformSerializeEnvelope<T, E>(
   serialization: Serialization<T>,
   endStreamFlag?: number,
@@ -815,26 +815,26 @@ export function transformSerializeEnvelope<T, E>(
       iterable: AsyncIterable<T>
     ): AsyncIterable<EnvelopedMessage> {
       for await (const chunk of iterable) {
-        const data = serialization.serialize(chunk);
-        yield { flags: 0, data };
+        const data = serialization.serialize(chunk)
+        yield { flags: 0, data }
       }
-    };
+    }
   }
   return async function* (
     iterable: AsyncIterable<ParsedEnvelopedMessage<T, E>>
   ): AsyncIterable<EnvelopedMessage> {
     for await (const chunk of iterable) {
-      let data: Uint8Array;
-      let flags = 0;
+      let data: Uint8Array
+      let flags = 0
       if (chunk.end) {
-        flags = flags | endStreamFlag;
-        data = endSerialization.serialize(chunk.value);
+        flags = flags | endStreamFlag
+        data = endSerialization.serialize(chunk.value)
       } else {
-        data = serialization.serialize(chunk.value);
+        data = serialization.serialize(chunk.value)
       }
-      yield { flags, data };
+      yield { flags, data }
     }
-  };
+  }
 }
 
 /**
@@ -849,7 +849,7 @@ export function transformSerializeEnvelope<T, E>(
  */
 export function transformParseEnvelope<T>(
   serialization: Serialization<T>
-): AsyncIterableTransform<EnvelopedMessage, T>;
+): AsyncIterableTransform<EnvelopedMessage, T>
 /**
  * Creates an AsyncIterableTransform that takes enveloped messages as input,
  * parses the envelope payload and outputs the result.
@@ -862,7 +862,7 @@ export function transformParseEnvelope<T>(
 export function transformParseEnvelope<T>(
   serialization: Serialization<T>,
   endStreamFlag: number
-): AsyncIterableTransform<EnvelopedMessage, T>;
+): AsyncIterableTransform<EnvelopedMessage, T>
 /**
  * Creates an AsyncIterableTransform that takes enveloped messages as input,
  * parses the envelope payload and outputs the result.
@@ -876,7 +876,7 @@ export function transformParseEnvelope<T>(
   serialization: Serialization<T>,
   endStreamFlag: number,
   endSerialization: null
-): AsyncIterableTransform<EnvelopedMessage, T>;
+): AsyncIterableTransform<EnvelopedMessage, T>
 /**
  * Creates an AsyncIterableTransform that takes an enveloped message as input,
  * and outputs a ParsedEnvelopedMessage.
@@ -894,7 +894,7 @@ export function transformParseEnvelope<T, E>(
   serialization: Serialization<T>,
   endStreamFlag: number,
   endSerialization: Serialization<E>
-): AsyncIterableTransform<EnvelopedMessage, ParsedEnvelopedMessage<T, E>>;
+): AsyncIterableTransform<EnvelopedMessage, ParsedEnvelopedMessage<T, E>>
 export function transformParseEnvelope<T, E>(
   serialization: Serialization<T>,
   endStreamFlag?: number,
@@ -909,12 +909,12 @@ export function transformParseEnvelope<T, E>(
     ): AsyncIterable<ParsedEnvelopedMessage<T, E>> {
       for await (const { flags, data } of iterable) {
         if ((flags & endStreamFlag) === endStreamFlag) {
-          yield { value: endSerialization.parse(data), end: true };
+          yield { value: endSerialization.parse(data), end: true }
         } else {
-          yield { value: serialization.parse(data), end: false };
+          yield { value: serialization.parse(data), end: false }
         }
       }
-    };
+    }
   }
   // code path always yields T
   return async function* (
@@ -926,14 +926,14 @@ export function transformParseEnvelope<T, E>(
         (flags & endStreamFlag) === endStreamFlag
       ) {
         if (endSerialization === null) {
-          throw new DubboError("unexpected end flag", Code.InvalidArgument);
+          throw new DubboError('unexpected end flag', Code.InvalidArgument)
         }
         // skips end-of-stream envelope
-        continue;
+        continue
       }
-      yield serialization.parse(data);
+      yield serialization.parse(data)
     }
-  };
+  }
 }
 
 /**
@@ -948,9 +948,9 @@ export function transformCompressEnvelope(
 ): AsyncIterableTransform<EnvelopedMessage, EnvelopedMessage> {
   return async function* (iterable) {
     for await (const env of iterable) {
-      yield await envelopeCompress(env, compression, compressMinBytes);
+      yield await envelopeCompress(env, compression, compressMinBytes)
     }
-  };
+  }
 }
 
 /**
@@ -968,9 +968,9 @@ export function transformDecompressEnvelope(
 ): AsyncIterableTransform<EnvelopedMessage, EnvelopedMessage> {
   return async function* (iterable) {
     for await (const env of iterable) {
-      yield await envelopeDecompress(env, compression, readMaxBytes);
+      yield await envelopeDecompress(env, compression, readMaxBytes)
     }
-  };
+  }
 }
 
 /**
@@ -985,9 +985,9 @@ export function transformJoinEnvelopes(): AsyncIterableTransform<
 > {
   return async function* (iterable) {
     for await (const { flags, data } of iterable) {
-      yield encodeEnvelope(flags, data);
+      yield encodeEnvelope(flags, data)
     }
-  };
+  }
 }
 
 /**
@@ -1006,10 +1006,10 @@ export function transformSplitEnvelope(
 ): AsyncIterableTransform<Uint8Array, EnvelopedMessage> {
   // append chunk to buffer, returning updated buffer
   function append(buffer: Uint8Array, chunk: Uint8Array): Uint8Array {
-    const n = new Uint8Array(buffer.byteLength + chunk.byteLength);
-    n.set(buffer);
-    n.set(chunk, buffer.length);
-    return n;
+    const n = new Uint8Array(buffer.byteLength + chunk.byteLength)
+    n.set(buffer)
+    n.set(chunk, buffer.length)
+    return n
   }
 
   // tuple 0: envelope, or undefined if incomplete
@@ -1019,12 +1019,12 @@ export function transformSplitEnvelope(
     header: { length: number; flags: number }
   ): [EnvelopedMessage | undefined, Uint8Array] {
     if (buffer.byteLength < 5 + header.length) {
-      return [undefined, buffer];
+      return [undefined, buffer]
     }
     return [
       { flags: header.flags, data: buffer.subarray(5, 5 + header.length) },
-      buffer.subarray(5 + header.length),
-    ];
+      buffer.subarray(5 + header.length)
+    ]
   }
 
   // undefined: header is incomplete
@@ -1032,47 +1032,47 @@ export function transformSplitEnvelope(
     buffer: Uint8Array
   ): { length: number; flags: number } | undefined {
     if (buffer.byteLength < 5) {
-      return undefined;
+      return undefined
     }
     const view = new DataView(
       buffer.buffer,
       buffer.byteOffset,
       buffer.byteLength
-    );
-    const length = view.getUint32(1); // 4 bytes message length
-    const flags = view.getUint8(0); // first byte is flags
-    return { length, flags };
+    )
+    const length = view.getUint32(1) // 4 bytes message length
+    const flags = view.getUint8(0) // first byte is flags
+    return { length, flags }
   }
 
   return async function* (iterable): AsyncIterable<EnvelopedMessage> {
-    let buffer = new Uint8Array(0);
+    let buffer = new Uint8Array(0)
     for await (const chunk of iterable) {
-      buffer = append(buffer, chunk);
+      buffer = append(buffer, chunk)
       for (;;) {
-        const header = peekHeader(buffer);
+        const header = peekHeader(buffer)
         if (!header) {
-          break;
+          break
         }
-        assertReadMaxBytes(readMaxBytes, header.length, true);
-        let env: EnvelopedMessage | undefined;
-        [env, buffer] = shiftEnvelope(buffer, header);
+        assertReadMaxBytes(readMaxBytes, header.length, true)
+        let env: EnvelopedMessage | undefined
+        ;[env, buffer] = shiftEnvelope(buffer, header)
         if (!env) {
-          break;
+          break
         }
-        yield env;
+        yield env
       }
     }
     if (buffer.byteLength > 0) {
-      const header = peekHeader(buffer);
-      let message = "protocol error: incomplete envelope";
+      const header = peekHeader(buffer)
+      let message = 'protocol error: incomplete envelope'
       if (header) {
         message = `protocol error: promised ${
           header.length
-        } bytes in enveloped message, got ${buffer.byteLength - 5} bytes`;
+        } bytes in enveloped message, got ${buffer.byteLength - 5} bytes`
       }
-      throw new DubboError(message, Code.InvalidArgument);
+      throw new DubboError(message, Code.InvalidArgument)
     }
-  };
+  }
 }
 
 /**
@@ -1091,13 +1091,13 @@ export async function readAllBytes(
   readMaxBytes: number,
   lengthHint?: number | string | null
 ): Promise<Uint8Array> {
-  const [ok, hint] = parseLengthHint(lengthHint);
+  const [ok, hint] = parseLengthHint(lengthHint)
   if (ok) {
     if (hint > readMaxBytes) {
-      assertReadMaxBytes(readMaxBytes, hint, true);
+      assertReadMaxBytes(readMaxBytes, hint, true)
     }
-    const buffer = new Uint8Array(hint);
-    let offset = 0;
+    const buffer = new Uint8Array(hint)
+    let offset = 0
     for await (const chunk of iterable) {
       if (offset + chunk.byteLength > hint) {
         throw new DubboError(
@@ -1105,33 +1105,33 @@ export async function readAllBytes(
             offset + chunk.byteLength
           }`,
           Code.InvalidArgument
-        );
+        )
       }
-      buffer.set(chunk, offset);
-      offset += chunk.byteLength;
+      buffer.set(chunk, offset)
+      offset += chunk.byteLength
     }
     if (offset < hint) {
       throw new DubboError(
         `protocol error: promised ${hint} bytes, received ${offset}`,
         Code.InvalidArgument
-      );
+      )
     }
-    return buffer;
+    return buffer
   }
-  const chunks: Uint8Array[] = [];
-  let count = 0;
+  const chunks: Uint8Array[] = []
+  let count = 0
   for await (const chunk of iterable) {
-    count += chunk.byteLength;
-    assertReadMaxBytes(readMaxBytes, count);
-    chunks.push(chunk);
+    count += chunk.byteLength
+    assertReadMaxBytes(readMaxBytes, count)
+    chunks.push(chunk)
   }
-  const all = new Uint8Array(count);
-  let offset = 0;
+  const all = new Uint8Array(count)
+  let offset = 0
   for (let chunk = chunks.shift(); chunk; chunk = chunks.shift()) {
-    all.set(chunk, offset);
-    offset += chunk.byteLength;
+    all.set(chunk, offset)
+    offset += chunk.byteLength
   }
-  return all;
+  return all
 }
 
 // parse the lengthHint argument of readAllBytes()
@@ -1139,14 +1139,14 @@ function parseLengthHint(
   lengthHint: number | string | null | undefined
 ): [boolean, number] {
   if (lengthHint === undefined || lengthHint === null) {
-    return [false, 0];
+    return [false, 0]
   }
   const n =
-    typeof lengthHint == "string" ? parseInt(lengthHint, 10) : lengthHint;
+    typeof lengthHint == 'string' ? parseInt(lengthHint, 10) : lengthHint
   if (!Number.isSafeInteger(n) || n < 0) {
-    return [false, n];
+    return [false, n]
   }
-  return [true, n];
+  return [true, n]
 }
 
 /**
@@ -1158,41 +1158,41 @@ function parseLengthHint(
 export async function untilFirst<T>(
   iterable: AsyncIterable<T>
 ): Promise<AsyncIterable<T>> {
-  const it = iterable[Symbol.asyncIterator]();
-  let first: IteratorResult<T> | null = await it.next();
+  const it = iterable[Symbol.asyncIterator]()
+  let first: IteratorResult<T> | null = await it.next()
   return {
     [Symbol.asyncIterator]() {
       const w: AsyncIterator<T> = {
         async next() {
           if (first !== null) {
-            const n = first;
-            first = null;
-            return n;
+            const n = first
+            first = null
+            return n
           }
-          return await it.next();
-        },
-      };
+          return await it.next()
+        }
+      }
       if (it.throw !== undefined) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- can't handle mutated object sensibly
-        w.throw = (e: unknown) => it.throw!(e);
+        w.throw = (e: unknown) => it.throw!(e)
       }
       if (it.return !== undefined) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-explicit-any -- can't handle mutated object sensibly
-        w.return = (value?: any) => it.return!(value);
+        w.return = (value?: any) => it.return!(value)
       }
-      return w;
-    },
-  };
+      return w
+    }
+  }
 }
 
 interface Abortable {
   /**
    * Abort the iterator.
    */
-  readonly abort: (reason: unknown) => Promise<AbortState>;
+  readonly abort: (reason: unknown) => Promise<AbortState>
 }
 
-type AbortState = "rethrown" | "completed" | "caught";
+type AbortState = 'rethrown' | 'completed' | 'caught'
 
 /**
  * Wrap the given iterable and return an iterable with an abort() method.
@@ -1228,166 +1228,166 @@ type AbortState = "rethrown" | "completed" | "caught";
 export function makeIterableAbortable<T>(
   iterable: AsyncIterable<T>
 ): AsyncIterable<T> & Abortable {
-  const innerCandidate = iterable[Symbol.asyncIterator]();
+  const innerCandidate = iterable[Symbol.asyncIterator]()
   if (innerCandidate.throw === undefined) {
-    throw new Error("AsyncIterable does not implement throw");
+    throw new Error('AsyncIterable does not implement throw')
   }
-  const inner = innerCandidate as Required<AsyncIterator<T>>;
-  let aborted: { reason: unknown; state: Promise<AbortState> } | undefined;
-  let resultPromise: Promise<IteratorResult<T>> | undefined;
+  const inner = innerCandidate as Required<AsyncIterator<T>>
+  let aborted: { reason: unknown; state: Promise<AbortState> } | undefined
+  let resultPromise: Promise<IteratorResult<T>> | undefined
   let it: AsyncIterator<T> = {
     next(): Promise<IteratorResult<T>> {
       resultPromise = inner.next().finally(() => {
-        resultPromise = undefined;
-      });
-      return resultPromise;
+        resultPromise = undefined
+      })
+      return resultPromise
     },
     throw(e?: unknown): Promise<IteratorResult<T>> {
-      return inner.throw(e);
-    },
-  };
+      return inner.throw(e)
+    }
+  }
   if (innerCandidate.return === undefined) {
     it = {
       ...it,
       return(value?: unknown): Promise<IteratorResult<T>> {
-        return inner.return(value);
-      },
-    };
+        return inner.return(value)
+      }
+    }
   }
-  let used = false;
+  let used = false
   return {
     abort(reason: unknown): Promise<AbortState> {
       if (aborted) {
-        return aborted.state;
+        return aborted.state
       }
       const f = (): Promise<AbortState> => {
         return inner.throw(reason).then(
-          (r) => (r.done === true ? "completed" : "caught"),
-          () => "rethrown"
-        );
-      };
-      if (resultPromise) {
-        aborted = { reason, state: resultPromise.then(f, f) };
-        return aborted.state;
+          (r) => (r.done === true ? 'completed' : 'caught'),
+          () => 'rethrown'
+        )
       }
-      aborted = { reason, state: f() };
-      return aborted.state;
+      if (resultPromise) {
+        aborted = { reason, state: resultPromise.then(f, f) }
+        return aborted.state
+      }
+      aborted = { reason, state: f() }
+      return aborted.state
     },
     [Symbol.asyncIterator](): AsyncIterator<T> {
       if (used) {
-        throw new Error("AsyncIterable cannot be re-used");
+        throw new Error('AsyncIterable cannot be re-used')
       }
-      used = true;
-      return it;
-    },
-  };
+      used = true
+      return it
+    }
+  }
 }
 
 // QueueElement represents an element in the writer queue, which consists of the payload being written as well as an
 // associated resolve function to be invoked/resolved when the written element is read from the queue via the async
 // iterator.
 interface QueueElement<T> {
-  payload: IteratorResult<T>;
-  resolve?: () => void;
-  reject?: (reason?: Error) => void;
+  payload: IteratorResult<T>
+  resolve?: () => void
+  reject?: (reason?: Error) => void
 }
 
 // WritableIterable represents an AsyncIterable that is able to be written to.
 export interface WritableIterable<T> extends AsyncIterable<T> {
-  write: (payload: T) => Promise<void>;
-  close: () => Promise<void>;
-  isClosed: () => boolean;
+  write: (payload: T) => Promise<void>
+  close: () => Promise<void>
+  isClosed: () => boolean
 }
 
 // Create an instance of a WritableIterable of type T
 export function createWritableIterable<T>(): WritableIterable<T> {
-  let queue: QueueElement<T>[] = [];
+  let queue: QueueElement<T>[] = []
   // Represents the resolve function of the promise returned by the async iterator if no values exist in the queue at
   // the time of request.  It is resolved when a value is successfully received into the queue.
-  let queueResolve: ((val: IteratorResult<T>) => void) | undefined;
-  let error: Error | undefined = undefined;
+  let queueResolve: ((val: IteratorResult<T>) => void) | undefined
+  let error: Error | undefined = undefined
 
   const process = async (payload: IteratorResult<T, undefined>) => {
     // // If the writer's internal error was set, then reject any attempts at processing a payload.
     if (error) {
-      return Promise.reject(String(error));
+      return Promise.reject(String(error))
     }
     // If there is an iterator resolver then a consumer of the async iterator is waiting on a value.  So resolve that
     // promise with the new value being sent and return a promise that is immediately resolved
     if (queueResolve) {
-      queueResolve(payload);
-      queueResolve = undefined;
-      return Promise.resolve();
+      queueResolve(payload)
+      queueResolve = undefined
+      return Promise.resolve()
     }
     const elem: QueueElement<T> = {
-      payload,
-    };
+      payload
+    }
     const prom = new Promise<void>((resolve, reject) => {
-      elem.resolve = resolve;
-      elem.reject = reject;
-    });
+      elem.resolve = resolve
+      elem.reject = reject
+    })
     // Otherwise no one is waiting on a value yet so add it to the queue and return a promise that will be resolved
     // when someone reads this value
-    queue.push(elem);
+    queue.push(elem)
 
-    return prom;
-  };
-  let closed = false;
+    return prom
+  }
+  let closed = false
   return {
     isClosed() {
-      return closed;
+      return closed
     },
     async write(payload) {
       if (closed) {
-        throw new DubboError("cannot write, already closed");
+        throw new DubboError('cannot write, already closed')
       }
-      return process({ value: payload, done: false });
+      return process({ value: payload, done: false })
     },
     async close() {
       if (closed) {
-        throw new DubboError("cannot close, already closed");
+        throw new DubboError('cannot close, already closed')
       }
-      closed = true;
-      return process({ value: undefined, done: true });
+      closed = true
+      return process({ value: undefined, done: true })
     },
     [Symbol.asyncIterator](): AsyncIterator<T> {
       return {
         next: async () => {
           // If the writer's internal error was set, then reject any attempts at processing a payload.
           if (error) {
-            return Promise.reject(String(error));
+            return Promise.reject(String(error))
           }
-          const elem = queue.shift();
+          const elem = queue.shift()
           if (!elem) {
             // We don't have any payloads ready to be sent (i.e. the consumer of the iterator is consuming faster than
             // senders are sending).  So return a Promise ensuring we'll resolve it when we get something.
             return new Promise<IteratorResult<T>>((resolve) => {
-              queueResolve = resolve;
-            });
+              queueResolve = resolve
+            })
           }
           // Resolve the send promise on a successful send/close.
           if (elem.resolve) {
-            elem.resolve();
+            elem.resolve()
           }
-          return elem.payload;
+          return elem.payload
         },
         throw: async (e: Error) => {
-          error = e;
+          error = e
           // The reader of this iterator has failed with the given error.  So anything left in the queue should be
           // drained and rejected with the given error
           for (const item of queue) {
             if (item.reject) {
-              item.reject(e);
+              item.reject(e)
             }
           }
-          queue = [];
+          queue = []
           return new Promise<IteratorResult<T>>((resolve) => {
-            resolve({ value: undefined, done: true });
-          });
-        },
-      };
-    },
-  };
+            resolve({ value: undefined, done: true })
+          })
+        }
+      }
+    }
+  }
 }
 
 /**
@@ -1397,5 +1397,5 @@ export function createWritableIterable<T>(): WritableIterable<T> {
  */
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function* createAsyncIterable<T>(items: T[]): AsyncIterable<T> {
-  yield* items;
+  yield* items
 }

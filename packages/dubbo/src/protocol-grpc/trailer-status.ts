@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Any, Message } from "@bufbuild/protobuf";
-import { Status } from "./gen/status_pb.js";
-import { DubboError } from "../dubbo-error.js";
-import { decodeBinaryHeader, encodeBinaryHeader } from "../http-headers.js";
-import { Code } from "../code.js";
+import { Any, Message } from '@bufbuild/protobuf'
+import { Status } from './gen/status_pb.js'
+import { DubboError } from '../dubbo-error.js'
+import { decodeBinaryHeader, encodeBinaryHeader } from '../http-headers.js'
+import { Code } from '../code.js'
 import {
   headerGrpcMessage,
   headerGrpcStatus,
-  headerStatusDetailsBin,
-} from "./headers.js";
+  headerStatusDetailsBin
+} from './headers.js'
 
 /**
  * The value of the Grpc-Status header or trailer in case of success.
@@ -29,7 +29,7 @@ import {
  *
  * @private Internal code, does not follow semantic versioning.
  */
-export const grpcStatusOk = "0";
+export const grpcStatusOk = '0'
 
 /**
  * Sets the fields "grpc-status" and "grpc-message" in the given
@@ -45,8 +45,8 @@ export function setTrailerStatus(
   error: DubboError | undefined
 ): Headers {
   if (error) {
-    target.set(headerGrpcStatus, error.code.toString(10));
-    target.set(headerGrpcMessage, encodeURIComponent(error.rawMessage));
+    target.set(headerGrpcStatus, error.code.toString(10))
+    target.set(headerGrpcMessage, encodeURIComponent(error.rawMessage))
     if (error.details.length > 0) {
       const status = new Status({
         code: error.code,
@@ -56,16 +56,16 @@ export function setTrailerStatus(
             ? Any.pack(value)
             : new Any({
                 typeUrl: `type.googleapis.com/${value.type}`,
-                value: value.value,
+                value: value.value
               })
-        ),
-      });
-      target.set(headerStatusDetailsBin, encodeBinaryHeader(status));
+        )
+      })
+      target.set(headerStatusDetailsBin, encodeBinaryHeader(status))
     }
   } else {
-    target.set(headerGrpcStatus, grpcStatusOk.toString());
+    target.set(headerGrpcStatus, grpcStatusOk.toString())
   }
-  return target;
+  return target
 }
 
 /**
@@ -85,41 +85,37 @@ export function findTrailerError(
   // let message: string = "";
 
   // Prefer the protobuf-encoded data to the grpc-status header.
-  const statusBytes = headerOrTrailer.get(headerStatusDetailsBin);
+  const statusBytes = headerOrTrailer.get(headerStatusDetailsBin)
   if (statusBytes != null) {
-    const status = decodeBinaryHeader(statusBytes, Status);
+    const status = decodeBinaryHeader(statusBytes, Status)
     if (status.code == 0) {
-      return undefined;
+      return undefined
     }
-    const error = new DubboError(
-      status.message,
-      status.code,
-      headerOrTrailer
-    );
+    const error = new DubboError(status.message, status.code, headerOrTrailer)
     error.details = status.details.map((any) => ({
-      type: any.typeUrl.substring(any.typeUrl.lastIndexOf("/") + 1),
-      value: any.value,
-    }));
-    return error;
+      type: any.typeUrl.substring(any.typeUrl.lastIndexOf('/') + 1),
+      value: any.value
+    }))
+    return error
   }
-  const grpcStatus = headerOrTrailer.get(headerGrpcStatus);
+  const grpcStatus = headerOrTrailer.get(headerGrpcStatus)
   if (grpcStatus != null) {
     if (grpcStatus === grpcStatusOk) {
-      return undefined;
+      return undefined
     }
-    const code = parseInt(grpcStatus, 10);
+    const code = parseInt(grpcStatus, 10)
     if (code in Code) {
       return new DubboError(
-        decodeURIComponent(headerOrTrailer.get(headerGrpcMessage) ?? ""),
+        decodeURIComponent(headerOrTrailer.get(headerGrpcMessage) ?? ''),
         code,
         headerOrTrailer
-      );
+      )
     }
     return new DubboError(
       `invalid grpc-status: ${grpcStatus}`,
       Code.Internal,
       headerOrTrailer
-    );
+    )
   }
-  return undefined;
+  return undefined
 }

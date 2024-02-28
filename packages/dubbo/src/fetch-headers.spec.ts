@@ -12,28 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export {}; // Required to transpile this file with isolatedModules
+export {} // Required to transpile this file with isolatedModules
 
-describe("Fetch API Headers", function () {
-  let headers: Headers;
+describe('Fetch API Headers', function () {
+  let headers: Headers
   beforeEach(() => {
     headers = new Headers({
-      "Content-Type": "application/connect+json",
-    });
-  });
-  it("get()", function () {
-    expect(headers.get("Content-Type")).toEqual("application/connect+json");
-    expect(headers.get("content-type")).toEqual("application/connect+json");
-  });
-  it("forEach()", function () {
+      'Content-Type': 'application/connect+json'
+    })
+  })
+  it('get()', function () {
+    expect(headers.get('Content-Type')).toEqual('application/connect+json')
+    expect(headers.get('content-type')).toEqual('application/connect+json')
+  })
+  it('forEach()', function () {
     headers.forEach((value, key) => {
       // Note all keys are lowercase when iterating over them
-      expect(key).toEqual("content-type");
-      expect(value).toEqual("application/connect+json");
-    });
-  });
-  it("has()", function () {
-    expect(headers.has("Content-Type")).toBeTrue();
-    expect(headers.has("content-type")).toBeTrue();
-  });
-});
+      expect(key).toEqual('content-type')
+      expect(value).toEqual('application/connect+json')
+    })
+  })
+  it('has()', function () {
+    expect(headers.has('Content-Type')).toBeTrue()
+    expect(headers.has('content-type')).toBeTrue()
+  })
+})

@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createPromiseClient } from "@apachedubbo/dubbo";
-import { createDubboTransport } from "@apachedubbo/dubbo-web";
-import { ElizaService } from "./gen/connectweb/buf/connect/demo/eliza/v1/eliza_dubbo.js";
+import { createPromiseClient } from '@apachedubbo/dubbo'
+import { createDubboTransport } from '@apachedubbo/dubbo-web'
+import { ElizaService } from './gen/connectweb/buf/connect/demo/eliza/v1/eliza_dubbo.js'
 
 const client = createPromiseClient(
   ElizaService,
   createDubboTransport({
-    baseUrl: "https://demo.connect.build",
+    baseUrl: 'https://demo.connect.build'
   })
-);
+)
 
 // eslint-disable-next-line no-console -- log statement makes sure the variable is in use
-console.log(client);
+console.log(client)

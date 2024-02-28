@@ -18,7 +18,7 @@
  * @private Internal code, does not follow semantic versioning.
  */
 export const contentTypeRegExp =
-  /^application\/(connect\+)?(?:(json)(?:; ?charset=utf-?8)?|(proto))$/i;
+  /^application\/(connect\+)?(?:(json)(?:; ?charset=utf-?8)?|(proto))$/i
 
 /**
  * Regular Expression that matches a Connect unary Content-Type header value.
@@ -26,7 +26,7 @@ export const contentTypeRegExp =
  * @private Internal code, does not follow semantic versioning.
  */
 export const contentTypeUnaryRegExp =
-  /^application\/(?:json(?:; ?charset=utf-?8)?|proto)$/i;
+  /^application\/(?:json(?:; ?charset=utf-?8)?|proto)$/i
 
 /**
  * Regular Expression that matches a Connect streaming Content-Type header value.
@@ -34,15 +34,15 @@ export const contentTypeUnaryRegExp =
  * @private Internal code, does not follow semantic versioning.
  */
 export const contentTypeStreamRegExp =
-  /^application\/connect\+?(?:json(?:; ?charset=utf-?8)?|proto)$/i;
+  /^application\/connect\+?(?:json(?:; ?charset=utf-?8)?|proto)$/i
 
-export const contentTypeUnaryProto = "application/proto";
-export const contentTypeUnaryJson = "application/json";
-export const contentTypeStreamProto = "application/connect+proto";
-export const contentTypeStreamJson = "application/connect+json";
+export const contentTypeUnaryProto = 'application/proto'
+export const contentTypeUnaryJson = 'application/json'
+export const contentTypeStreamProto = 'application/connect+proto'
+export const contentTypeStreamJson = 'application/connect+json'
 
-const encodingProto = "proto";
-const encodingJson = "json";
+const encodingProto = 'proto'
+const encodingJson = 'json'
 
 /**
  * Parse a Connect Content-Type header.
@@ -52,13 +52,13 @@ const encodingJson = "json";
 export function parseContentType(
   contentType: string | null
 ): { stream: boolean; binary: boolean } | undefined {
-  const match = contentType?.match(contentTypeRegExp);
+  const match = contentType?.match(contentTypeRegExp)
   if (!match) {
-    return undefined;
+    return undefined
   }
-  const stream = !!match[1];
-  const binary = !!match[3];
-  return { stream, binary };
+  const stream = !!match[1]
+  const binary = !!match[3]
+  return { stream, binary }
 }
 
 /**
@@ -71,10 +71,10 @@ export function parseEncodingQuery(
 ): { stream: boolean; binary: boolean } | undefined {
   switch (encoding) {
     case encodingProto:
-      return { stream: false, binary: true };
+      return { stream: false, binary: true }
     case encodingJson:
-      return { stream: false, binary: false };
+      return { stream: false, binary: false }
     default:
-      return undefined;
+      return undefined
   }
 }

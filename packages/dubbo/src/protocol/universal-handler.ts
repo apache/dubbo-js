@@ -12,32 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { MethodKind } from "@bufbuild/protobuf";
+import { MethodKind } from '@bufbuild/protobuf'
 import type {
   BinaryReadOptions,
   BinaryWriteOptions,
   JsonReadOptions,
   JsonWriteOptions,
   MethodInfo,
-  ServiceType,
-} from "@bufbuild/protobuf";
-import type { MethodImplSpec, ServiceImplSpec } from "../implementation.js";
+  ServiceType
+} from '@bufbuild/protobuf'
+import type { MethodImplSpec, ServiceImplSpec } from '../implementation.js'
 import {
   uResponseMethodNotAllowed,
   uResponseUnsupportedMediaType,
-  uResponseVersionNotSupported,
-} from "./universal.js";
-import type {
-  UniversalHandlerFn,
-  UniversalServerRequest,
-} from "./universal.js";
-import { contentTypeMatcher } from "./content-type-matcher.js";
-import type { ContentTypeMatcher } from "./content-type-matcher.js";
-import type { Compression } from "./compression.js";
-import type { ProtocolHandlerFactory } from "./protocol-handler-factory.js";
-import { validateReadWriteMaxBytes } from "./limit-io.js";
-import { DubboError } from "../dubbo-error.js";
-import { Code } from "../code.js";
+  uResponseVersionNotSupported
+} from './universal.js'
+import type { UniversalHandlerFn, UniversalServerRequest } from './universal.js'
+import { contentTypeMatcher } from './content-type-matcher.js'
+import type { ContentTypeMatcher } from './content-type-matcher.js'
+import type { Compression } from './compression.js'
+import type { ProtocolHandlerFactory } from './protocol-handler-factory.js'
+import { validateReadWriteMaxBytes } from './limit-io.js'
+import { DubboError } from '../dubbo-error.js'
+import { Code } from '../code.js'
 
 /**
  * Common options for handlers.
@@ -49,7 +46,7 @@ export interface UniversalHandlerOptions {
    * Compression algorithms available to a server for decompressing request
    * messages, and for compressing response messages.
    */
-  acceptCompression: Compression[];
+  acceptCompression: Compression[]
 
   /**
    * Sets a minimum size threshold for compression: Messages that are smaller
@@ -58,7 +55,7 @@ export interface UniversalHandlerOptions {
    * The default value is 1 kibibyte, because the CPU cost of compressing very
    * small messages usually isn't worth the small reduction in network I/O.
    */
-  compressMinBytes: number;
+  compressMinBytes: number
 
   /**
    * Limits the performance impact of pathologically large messages sent by the
@@ -67,32 +64,32 @@ export interface UniversalHandlerOptions {
    *
    * The default limit is the maximum supported value of ~4GiB.
    */
-  readMaxBytes: number;
+  readMaxBytes: number
 
   /**
    * Prevents sending messages too large for the client to handle.
    *
    * The default limit is the maximum supported value of ~4GiB.
    */
-  writeMaxBytes: number;
+  writeMaxBytes: number
 
   /**
    * Options for the JSON format.
    * By default, unknown fields are ignored.
    */
-  jsonOptions?: Partial<JsonReadOptions & JsonWriteOptions>;
+  jsonOptions?: Partial<JsonReadOptions & JsonWriteOptions>
 
   /**
    * Options for the binary wire format.
    */
-  binaryOptions?: Partial<BinaryReadOptions & BinaryWriteOptions>;
+  binaryOptions?: Partial<BinaryReadOptions & BinaryWriteOptions>
 
   /**
    * The maximum value for timeouts that clients may specify.
    * If a clients requests a timeout that is greater than maxTimeoutMs,
    * the server responds with the error code InvalidArgument.
    */
-  maxTimeoutMs: number;
+  maxTimeoutMs: number
 
   /**
    * To shut down servers gracefully, this option takes an AbortSignal.
@@ -102,7 +99,7 @@ export interface UniversalHandlerOptions {
    * Abort this signal with a DubboError to send a message and code to
    * clients.
    */
-  shutdownSignal?: AbortSignal;
+  shutdownSignal?: AbortSignal
 
   /**
    * Require requests using the Dubbo protocol to include the header
@@ -115,7 +112,7 @@ export interface UniversalHandlerOptions {
    * This option has no effect if the client uses the gRPC or the gRPC-web
    * protocol.
    */
-  requireConnectProtocolHeader: boolean;
+  requireConnectProtocolHeader: boolean
 }
 
 /**
@@ -126,34 +123,34 @@ export interface UniversalHandler extends UniversalHandlerFn {
   /**
    * The name of the protocols this handler implements.
    */
-  protocolNames: string[];
+  protocolNames: string[]
 
   /**
    * Information about the related protobuf service.
    */
-  service: ServiceType;
+  service: ServiceType
 
   /**
    * Information about the method of the protobuf service.
    */
-  method: MethodInfo;
+  method: MethodInfo
 
   /**
    * The request path of the procedure, without any prefixes.
    * For example, "/something/foo.FooService/Bar" for the method
    * "Bar" of the service "foo.FooService".
    */
-  requestPath: string;
+  requestPath: string
 
   /**
    * The HTTP request methods this procedure allows. For example, "POST".
    */
-  allowedMethods: string[];
+  allowedMethods: string[]
 
   /**
    * A matcher for Content-Type header values that this procedure supports.
    */
-  supportedContentType: ContentTypeMatcher;
+  supportedContentType: ContentTypeMatcher
 }
 
 /**
@@ -167,13 +164,12 @@ export interface UniversalHandler extends UniversalHandlerFn {
 export function validateUniversalHandlerOptions(
   opt: Partial<UniversalHandlerOptions> | undefined
 ): UniversalHandlerOptions {
-  opt ??= {};
+  opt ??= {}
   const acceptCompression = opt.acceptCompression
     ? [...opt.acceptCompression]
-    : [];
-  const requireConnectProtocolHeader =
-    opt.requireConnectProtocolHeader ?? false;
-  const maxTimeoutMs = opt.maxTimeoutMs ?? Number.MAX_SAFE_INTEGER;
+    : []
+  const requireConnectProtocolHeader = opt.requireConnectProtocolHeader ?? false
+  const maxTimeoutMs = opt.maxTimeoutMs ?? Number.MAX_SAFE_INTEGER
   return {
     acceptCompression,
     ...validateReadWriteMaxBytes(
@@ -186,7 +182,7 @@ export function validateUniversalHandlerOptions(
     maxTimeoutMs,
     shutdownSignal: opt.shutdownSignal,
     requireConnectProtocolHeader
-  };
+  }
 }
 
 /**
@@ -203,7 +199,7 @@ export function createUniversalServiceHandlers(
 ): UniversalHandler[] {
   return Object.entries(spec.methods).map(([, implSpec]) =>
     createUniversalMethodHandler(implSpec, protocols)
-  );
+  )
 }
 
 /**
@@ -218,7 +214,7 @@ export function createUniversalMethodHandler(
   spec: MethodImplSpec,
   protocols: ProtocolHandlerFactory[]
 ): UniversalHandler {
-  return negotiateProtocol(protocols.map((f) => f(spec)));
+  return negotiateProtocol(protocols.map((f) => f(spec)))
 }
 
 /**
@@ -238,58 +234,58 @@ export function negotiateProtocol(
   protocolHandlers: UniversalHandler[]
 ): UniversalHandler {
   if (protocolHandlers.length == 0) {
-    throw new DubboError("at least one protocol is required", Code.Internal);
+    throw new DubboError('at least one protocol is required', Code.Internal)
   }
-  const service = protocolHandlers[0].service;
-  const method = protocolHandlers[0].method;
-  const requestPath = protocolHandlers[0].requestPath;
+  const service = protocolHandlers[0].service
+  const method = protocolHandlers[0].method
+  const requestPath = protocolHandlers[0].requestPath
   if (
     protocolHandlers.some((h) => h.service !== service || h.method !== method)
   ) {
     throw new DubboError(
-      "cannot negotiate protocol for different RPCs",
+      'cannot negotiate protocol for different RPCs',
       Code.Internal
-    );
+    )
   }
   if (protocolHandlers.some((h) => h.requestPath !== requestPath)) {
     throw new DubboError(
-      "cannot negotiate protocol for different requestPaths",
+      'cannot negotiate protocol for different requestPaths',
       Code.Internal
-    );
+    )
   }
   async function protocolNegotiatingHandler(request: UniversalServerRequest) {
     if (
       method.kind == MethodKind.BiDiStreaming &&
-      request.httpVersion.startsWith("1.")
+      request.httpVersion.startsWith('1.')
     ) {
       return {
         ...uResponseVersionNotSupported,
         // Clients coded to expect full-duplex connections may hang if they've
         // mistakenly negotiated HTTP/1.1. To unblock them, we must close the
         // underlying TCP connection.
-        header: new Headers({ Connection: "close" }),
-      };
+        header: new Headers({ Connection: 'close' })
+      }
     }
-    const contentType = request.header.get("Content-Type") ?? "";
+    const contentType = request.header.get('Content-Type') ?? ''
     const matchingMethod = protocolHandlers.filter((h) =>
       h.allowedMethods.includes(request.method)
-    );
+    )
     if (matchingMethod.length == 0) {
-      return uResponseMethodNotAllowed;
+      return uResponseMethodNotAllowed
     }
     // If Content-Type is unset but only one handler matches, use it.
-    if (matchingMethod.length == 1 && contentType === "") {
-      const onlyMatch = matchingMethod[0];
-      return onlyMatch(request);
+    if (matchingMethod.length == 1 && contentType === '') {
+      const onlyMatch = matchingMethod[0]
+      return onlyMatch(request)
     }
     const matchingContentTypes = matchingMethod.filter((h) =>
       h.supportedContentType(contentType)
-    );
+    )
     if (matchingContentTypes.length == 0) {
-      return uResponseUnsupportedMediaType;
+      return uResponseUnsupportedMediaType
     }
-    const firstMatch = matchingContentTypes[0];
-    return firstMatch(request);
+    const firstMatch = matchingContentTypes[0]
+    return firstMatch(request)
   }
 
   return Object.assign(protocolNegotiatingHandler, {
@@ -304,6 +300,6 @@ export function negotiateProtocol(
       .filter((value, index, array) => array.indexOf(value) === index),
     allowedMethods: protocolHandlers
       .flatMap((h) => h.allowedMethods)
-      .filter((value, index, array) => array.indexOf(value) === index),
-  });
+      .filter((value, index, array) => array.indexOf(value) === index)
+  })
 }

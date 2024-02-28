@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code, DubboError } from "@apachedubbo/dubbo";
+import { Code, DubboError } from '@apachedubbo/dubbo'
 
 /**
  * Similar to DubboError.from(), this function turns any value into
@@ -20,9 +20,9 @@ import { Code, DubboError } from "@apachedubbo/dubbo";
  * sets an appropriate Dubbo error code.
  */
 export function dubboErrorFromNodeReason(reason: unknown): DubboError {
-  let code = Code.Internal;
-  const chain = unwrapNodeErrorChain(reason).map(getNodeErrorProps);
-  if (chain.some((p) => p.code == "ERR_STREAM_WRITE_AFTER_END")) {
+  let code = Code.Internal
+  const chain = unwrapNodeErrorChain(reason).map(getNodeErrorProps)
+  if (chain.some((p) => p.code == 'ERR_STREAM_WRITE_AFTER_END')) {
     // We do not want intentional errors from the server to be shadowed
     // by client-side errors.
     // This can occur if the server has written a response with an error
@@ -33,36 +33,36 @@ export function dubboErrorFromNodeReason(reason: unknown): DubboError {
     // DubboError with Code.Aborted. The special meaning of this code
     // in this situation is documented in StreamingConn.send() and in
     // createServerStreamingFn().
-    code = Code.Aborted;
+    code = Code.Aborted
   } else if (
     chain.some(
       (p) =>
-        p.code == "ERR_STREAM_DESTROYED" ||
-        p.code == "ERR_HTTP2_INVALID_STREAM" ||
-        p.code == "ECONNRESET"
+        p.code == 'ERR_STREAM_DESTROYED' ||
+        p.code == 'ERR_HTTP2_INVALID_STREAM' ||
+        p.code == 'ECONNRESET'
     )
   ) {
     // A handler whose stream is suddenly destroyed usually means the client
     // hung up. This behavior is triggered by the crosstest "cancel_after_begin".
-    code = Code.Aborted;
+    code = Code.Aborted
   } else if (
     chain.some(
       (p) =>
-        p.code == "ENOTFOUND" ||
-        p.code == "EAI_AGAIN" ||
-        p.code == "ECONNREFUSED"
+        p.code == 'ENOTFOUND' ||
+        p.code == 'EAI_AGAIN' ||
+        p.code == 'ECONNREFUSED'
     )
   ) {
     // Calling an unresolvable host should raise a DubboError with
     // Code.Aborted.
     // This behavior is covered by the crosstest "unresolvable_host".
-    code = Code.Unavailable;
+    code = Code.Unavailable
   }
-  const ce = DubboError.from(reason, code);
+  const ce = DubboError.from(reason, code)
   if (ce !== reason) {
-    ce.cause = reason;
+    ce.cause = reason
   }
-  return ce;
+  return ce
 }
 
 /**
@@ -71,22 +71,22 @@ export function dubboErrorFromNodeReason(reason: unknown): DubboError {
  * This function is useful to find the root cause of an error.
  */
 export function unwrapNodeErrorChain(reason: unknown): Error[] {
-  const chain: Error[] = [];
+  const chain: Error[] = []
   for (;;) {
     if (!(reason instanceof Error)) {
-      break;
+      break
     }
     if (chain.includes(reason)) {
       // safeguard against infinite loop when "cause" points to an ancestor
-      break;
+      break
     }
-    chain.push(reason);
-    if (!("cause" in reason)) {
-      break;
+    chain.push(reason)
+    if (!('cause' in reason)) {
+      break
     }
-    reason = reason.cause;
+    reason = reason.cause
   }
-  return chain;
+  return chain
 }
 
 /**
@@ -99,19 +99,19 @@ export function unwrapNodeErrorChain(reason: unknown): Error[] {
  * For more information, see https://github.com/nodejs/node/blob/f6052c68c1f9a4400a723e9c0b79da14197ab754/lib/internal/errors.js
  */
 export function getNodeErrorProps(reason: unknown): {
-  code?: string;
-  syscall?: string;
+  code?: string
+  syscall?: string
 } {
-  const props: { code?: string; syscall?: string } = {};
+  const props: { code?: string; syscall?: string } = {}
   if (reason instanceof Error) {
-    if ("code" in reason && typeof reason.code == "string") {
-      props.code = reason.code;
+    if ('code' in reason && typeof reason.code == 'string') {
+      props.code = reason.code
     }
-    if ("syscall" in reason && typeof reason.syscall == "string") {
-      props.syscall = reason.syscall;
+    if ('syscall' in reason && typeof reason.syscall == 'string') {
+      props.syscall = reason.syscall
     }
   }
-  return props;
+  return props
 }
 
 /**
@@ -133,48 +133,48 @@ export function dubboErrorFromH2ResetCode(
           H2Code[rstCode]
         } (0x${rstCode.toString(16)})`,
         Code.Internal
-      );
+      )
     case H2Code.REFUSED_STREAM:
       return new DubboError(
         `http/2 stream closed with error code ${
           H2Code[rstCode]
         } (0x${rstCode.toString(16)})`,
         Code.Unavailable
-      );
+      )
     case H2Code.CANCEL:
       return new DubboError(
         `http/2 stream closed with error code ${
           H2Code[rstCode]
         } (0x${rstCode.toString(16)})`,
         Code.Canceled
-      );
+      )
     case H2Code.ENHANCE_YOUR_CALM:
       return new DubboError(
         `http/2 stream closed with error code ${
           H2Code[rstCode]
         } (0x${rstCode.toString(16)})`,
         Code.ResourceExhausted
-      );
+      )
     case H2Code.INADEQUATE_SECURITY:
       return new DubboError(
         `http/2 stream closed with error code ${
           H2Code[rstCode]
         } (0x${rstCode.toString(16)})`,
         Code.PermissionDenied
-      );
+      )
     case H2Code.HTTP_1_1_REQUIRED:
       return new DubboError(
         `http/2 stream closed with error code ${
           H2Code[rstCode]
         } (0x${rstCode.toString(16)})`,
         Code.PermissionDenied
-      );
+      )
     case H2Code.STREAM_CLOSED:
     default:
       // Intentionally not mapping STREAM_CLOSED (0x5), see https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md#errors
-      break;
+      break
   }
-  return undefined;
+  return undefined
 }
 
 export enum H2Code {
@@ -190,5 +190,5 @@ export enum H2Code {
   CONNECT_ERROR = 0xa,
   ENHANCE_YOUR_CALM = 0xb,
   INADEQUATE_SECURITY = 0xc,
-  HTTP_1_1_REQUIRED = 0xd,
+  HTTP_1_1_REQUIRED = 0xd
 }

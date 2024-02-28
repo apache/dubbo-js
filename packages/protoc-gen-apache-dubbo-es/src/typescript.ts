@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { DescService } from "@bufbuild/protobuf";
-import { MethodIdempotency, MethodKind } from "@bufbuild/protobuf";
-import type { GeneratedFile, Schema } from "@bufbuild/protoplugin/ecmascript";
+import type { DescService } from '@bufbuild/protobuf'
+import { MethodIdempotency, MethodKind } from '@bufbuild/protobuf'
+import type { GeneratedFile, Schema } from '@bufbuild/protoplugin/ecmascript'
 import {
   literalString,
   makeJsDoc,
-  localName,
-} from "@bufbuild/protoplugin/ecmascript";
+  localName
+} from '@bufbuild/protoplugin/ecmascript'
 
 export function generateTs(schema: Schema) {
   for (const protoFile of schema.files) {
-    const file = schema.generateFile(protoFile.name + "_dubbo.ts");
-    file.preamble(protoFile);
+    const file = schema.generateFile(protoFile.name + '_dubbo.ts')
+    file.preamble(protoFile)
     for (const service of protoFile.services) {
-      generateService(schema, file, service);
+      generateService(schema, file, service)
     }
   }
 }

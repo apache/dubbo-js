@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { findTrailerError } from "./trailer-status.js";
+import { findTrailerError } from './trailer-status.js'
 
 /**
  * Validates a trailer for the gRPC and the gRPC-web protocol.
@@ -21,8 +21,8 @@ import { findTrailerError } from "./trailer-status.js";
  * @private Internal code, does not follow semantic versioning.
  */
 export function validateTrailer(trailer: Headers): void {
-  const err = findTrailerError(trailer);
+  const err = findTrailerError(trailer)
   if (err) {
-    throw err;
+    throw err
   }
 }

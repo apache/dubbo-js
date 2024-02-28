@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code } from "../code.js";
-import { DubboError } from "../dubbo-error.js";
+import { Code } from '../code.js'
+import { DubboError } from '../dubbo-error.js'
 
 /**
  * Parse a gRPC Timeout (Deadline) header.
@@ -27,16 +27,16 @@ export function parseTimeout(
   | { timeoutMs?: number; error?: undefined }
   | { timeoutMs?: number; error: DubboError } {
   if (value === null) {
-    return {};
+    return {}
   }
-  const results = /^(\d{1,8})([HMSmun])$/.exec(value);
+  const results = /^(\d{1,8})([HMSmun])$/.exec(value)
   if (results === null) {
     return {
       error: new DubboError(
         `protocol error: invalid grpc timeout value: ${value}`,
         Code.InvalidArgument
-      ),
-    };
+      )
+    }
   }
   const unitToMultiplicand = {
     H: 60 * 60 * 1000, // hour
@@ -44,21 +44,21 @@ export function parseTimeout(
     S: 1000, // second
     m: 1, // millisecond
     u: 0.001, // microsecond
-    n: 0.000001, // nanosecond
-  };
+    n: 0.000001 // nanosecond
+  }
   const timeoutMs =
     unitToMultiplicand[results[2] as keyof typeof unitToMultiplicand] *
-    parseInt(results[1]);
+    parseInt(results[1])
   if (timeoutMs > maxTimeoutMs) {
     return {
       timeoutMs: timeoutMs,
       error: new DubboError(
         `timeout ${timeoutMs}ms must be <= ${maxTimeoutMs}`,
         Code.InvalidArgument
-      ),
-    };
+      )
+    }
   }
   return {
-    timeoutMs,
-  };
+    timeoutMs
+  }
 }

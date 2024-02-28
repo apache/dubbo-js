@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createEcmaScriptPlugin } from "@bufbuild/protoplugin";
-import { generateTs } from "./typescript.js";
-import { generateJs } from "./javascript.js";
-import { generateDts } from "./declaration.js";
-import { version } from "../package.json";
+import { createEcmaScriptPlugin } from '@bufbuild/protoplugin'
+import { generateTs } from './typescript.js'
+import { generateJs } from './javascript.js'
+import { generateDts } from './declaration.js'
+import { version } from '../package.json'
 
 export const protocGenDubboEs = createEcmaScriptPlugin({
-  name: "@apachedubbo/protoc-gen-apache-dubbo-es",
+  name: '@apachedubbo/protoc-gen-apache-dubbo-es',
   version: `v${String(version)}`,
   generateTs,
   generateJs,
-  generateDts,
-});
+  generateDts
+})

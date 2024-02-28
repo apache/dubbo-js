@@ -17,10 +17,10 @@ import {
   headerContentType,
   headerEncoding,
   headerTimeout,
-  headerUserAgent,
-} from "./headers.js";
-import { contentTypeJson, contentTypeProto } from "./content-type.js";
-import type { Compression } from "../protocol/compression.js";
+  headerUserAgent
+} from './headers.js'
+import { contentTypeJson, contentTypeProto } from './content-type.js'
+import type { Compression } from '../protocol/compression.js'
 
 /**
  * Creates headers for a gRPC request.
@@ -32,22 +32,22 @@ export function requestHeader(
   timeoutMs: number | undefined,
   userProvidedHeaders: HeadersInit | undefined
 ): Headers {
-  const result = new Headers(userProvidedHeaders ?? {});
+  const result = new Headers(userProvidedHeaders ?? {})
   result.set(
     headerContentType,
     useBinaryFormat ? contentTypeProto : contentTypeJson
-  );
+  )
   // Note that we do not comply with recommended structure for the
   // user-agent string.
   // https://github.com/grpc/grpc/blob/c462bb8d485fc1434ecfae438823ca8d14cf3154/doc/PROTOCOL-HTTP2.md#user-agents
-  result.set(headerUserAgent, "@apachedubbo/dubbo-web");
+  result.set(headerUserAgent, '@apachedubbo/dubbo-web')
   if (timeoutMs !== undefined) {
-    result.set(headerTimeout, `${timeoutMs}m`);
+    result.set(headerTimeout, `${timeoutMs}m`)
   }
   // The gRPC-HTTP2 specification requires this - it flushes out proxies that
   // don't support HTTP trailers.
-  result.set("Te", "trailers");
-  return result;
+  result.set('Te', 'trailers')
+  return result
 }
 
 /**
@@ -62,15 +62,15 @@ export function requestHeaderWithCompression(
   acceptCompression: Compression[],
   sendCompression: Compression | null
 ): Headers {
-  const result = requestHeader(useBinaryFormat, timeoutMs, userProvidedHeaders);
+  const result = requestHeader(useBinaryFormat, timeoutMs, userProvidedHeaders)
   if (sendCompression != null) {
-    result.set(headerEncoding, sendCompression.name);
+    result.set(headerEncoding, sendCompression.name)
   }
   if (acceptCompression.length > 0) {
     result.set(
       headerAcceptEncoding,
-      acceptCompression.map((c) => c.name).join(",")
-    );
+      acceptCompression.map((c) => c.name).join(',')
+    )
   }
-  return result;
+  return result
 }

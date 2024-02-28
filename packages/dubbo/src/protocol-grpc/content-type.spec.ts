@@ -15,39 +15,39 @@
 import {
   parseContentType,
   contentTypeProto,
-  contentTypeJson,
-} from "./content-type.js";
+  contentTypeJson
+} from './content-type.js'
 
-describe("parseContentType()", function () {
-  it("should parse", function () {
+describe('parseContentType()', function () {
+  it('should parse', function () {
     expect(parseContentType(contentTypeProto)).toEqual({
-      binary: true,
-    });
+      binary: true
+    })
     expect(parseContentType(contentTypeJson)).toEqual({
-      binary: false,
-    });
-    expect(parseContentType("application/grpc")).toEqual({
-      binary: true,
-    });
-    expect(parseContentType("application/GRPC")).toEqual({
-      binary: true,
-    });
-    expect(parseContentType("application/grpc+proto")).toEqual({
-      binary: true,
-    });
-    expect(parseContentType("application/grpc+json")).toEqual({
-      binary: false,
-    });
-    expect(parseContentType("application/grpc+json;charset=utf8")).toEqual({
-      binary: false,
-    });
-    expect(parseContentType("application/grpc+json; charset=utf-8")).toEqual({
-      binary: false,
-    });
-    expect(parseContentType("application/octet-stream")).toBeUndefined();
+      binary: false
+    })
+    expect(parseContentType('application/grpc')).toEqual({
+      binary: true
+    })
+    expect(parseContentType('application/GRPC')).toEqual({
+      binary: true
+    })
+    expect(parseContentType('application/grpc+proto')).toEqual({
+      binary: true
+    })
+    expect(parseContentType('application/grpc+json')).toEqual({
+      binary: false
+    })
+    expect(parseContentType('application/grpc+json;charset=utf8')).toEqual({
+      binary: false
+    })
+    expect(parseContentType('application/grpc+json; charset=utf-8')).toEqual({
+      binary: false
+    })
+    expect(parseContentType('application/octet-stream')).toBeUndefined()
     expect(
-      parseContentType("application/grpc-web+json;charset=iso-8859-1")
-    ).toBeUndefined();
-    expect(parseContentType("application/grpc-web+thrift")).toBeUndefined();
-  });
-});
+      parseContentType('application/grpc-web+json;charset=iso-8859-1')
+    ).toBeUndefined()
+    expect(parseContentType('application/grpc-web+thrift')).toBeUndefined()
+  })
+})

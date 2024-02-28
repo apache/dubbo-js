@@ -15,13 +15,13 @@
 /**
  * @private Internal code, does not follow semantic versioning.
  */
-export const headerContentType = "Content-Type";
-export const headerUnaryContentLength = "Content-Length";
-export const headerUnaryEncoding = "Content-Encoding";
-export const headerStreamEncoding = "Connect-Content-Encoding";
-export const headerUnaryAcceptEncoding = "Accept-Encoding";
-export const headerStreamAcceptEncoding = "Connect-Accept-Encoding";
-export const headerTimeout = "TRI-Service-Timeout";
-export const headerProtocolVersion = "TRI-Protocol-Version";
-export const headerServiceGroup = "TRI-Service-Group";
-export const headerServiceVersion = "TRI-Service-Version";
+export const headerContentType = 'Content-Type'
+export const headerUnaryContentLength = 'Content-Length'
+export const headerUnaryEncoding = 'Content-Encoding'
+export const headerStreamEncoding = 'Connect-Content-Encoding'
+export const headerUnaryAcceptEncoding = 'Accept-Encoding'
+export const headerStreamAcceptEncoding = 'Connect-Accept-Encoding'
+export const headerTimeout = 'TRI-Service-Timeout'
+export const headerProtocolVersion = 'TRI-Protocol-Version'
+export const headerServiceGroup = 'TRI-Service-Group'
+export const headerServiceVersion = 'TRI-Service-Version'

@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as zlib from "zlib";
-import { promisify } from "util";
-import type { Compression } from "@apachedubbo/dubbo/protocol";
-import { Code, DubboError } from "@apachedubbo/dubbo";
-import { getNodeErrorProps } from "./node-error.js";
+import * as zlib from 'zlib'
+import { promisify } from 'util'
+import type { Compression } from '@apachedubbo/dubbo/protocol'
+import { Code, DubboError } from '@apachedubbo/dubbo'
+import { getNodeErrorProps } from './node-error.js'
 
-const gzip = promisify(zlib.gzip);
-const gunzip = promisify(zlib.gunzip);
-const brotliCompress = promisify(zlib.brotliCompress);
-const brotliDecompress = promisify(zlib.brotliDecompress);
+const gzip = promisify(zlib.gzip)
+const gunzip = promisify(zlib.gunzip)
+const brotliCompress = promisify(zlib.brotliCompress)
+const brotliDecompress = promisify(zlib.brotliDecompress)
 
 /**
  * The gzip compression algorithm, implemented with the Node.js built-in module
@@ -30,19 +30,19 @@ const brotliDecompress = promisify(zlib.brotliDecompress);
  * plugins like `fastifyDubboPlugin` from @apachedubbo/dubbo-fastify.
  */
 export const compressionGzip: Compression = {
-  name: "gzip",
+  name: 'gzip',
   compress(bytes) {
-    return gzip(bytes, {});
+    return gzip(bytes, {})
   },
   decompress(bytes, readMaxBytes) {
     return wrapZLibErrors(
       gunzip(bytes, {
-        maxOutputLength: readMaxBytes,
+        maxOutputLength: readMaxBytes
       }),
       readMaxBytes
-    );
-  },
-};
+    )
+  }
+}
 
 /**
  * The brotli compression algorithm, implemented with the Node.js built-in module
@@ -51,54 +51,54 @@ export const compressionGzip: Compression = {
  * plugins like `fastifyDubboPlugin` from @apachedubbo/dubbo-fastify.
  */
 export const compressionBrotli: Compression = {
-  name: "br",
+  name: 'br',
   compress(bytes) {
-    return brotliCompress(bytes, {});
+    return brotliCompress(bytes, {})
   },
   decompress(bytes, readMaxBytes) {
     return wrapZLibErrors(
       brotliDecompress(bytes, {
-        maxOutputLength: readMaxBytes,
+        maxOutputLength: readMaxBytes
       }),
       readMaxBytes
-    );
-  },
-};
+    )
+  }
+}
 
 function wrapZLibErrors<T>(
   promise: Promise<T>,
   readMaxBytes: number
 ): Promise<T> {
   return promise.catch((e) => {
-    const { code } = getNodeErrorProps(e);
+    const { code } = getNodeErrorProps(e)
     // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     switch (code) {
-      case "ERR_BUFFER_TOO_LARGE":
+      case 'ERR_BUFFER_TOO_LARGE':
         e = new DubboError(
           `message is larger than configured readMaxBytes ${readMaxBytes} after decompression`,
           Code.ResourceExhausted
-        );
-        break;
-      case "Z_DATA_ERROR":
-      case "ERR_PADDING_2":
+        )
+        break
+      case 'Z_DATA_ERROR':
+      case 'ERR_PADDING_2':
         e = new DubboError(
-          "decompression failed",
+          'decompression failed',
           Code.InvalidArgument,
           undefined,
           undefined,
           e
-        );
-        break;
+        )
+        break
       default:
         e = new DubboError(
-          "decompression failed",
+          'decompression failed',
           Code.Internal,
           undefined,
           undefined,
           e
-        );
-        break;
+        )
+        break
     }
-    return Promise.reject(e);
-  });
+    return Promise.reject(e)
+  })
 }

@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { AnyMessage, Message } from "@bufbuild/protobuf";
+import type { AnyMessage, Message } from '@bufbuild/protobuf'
 import type {
   Interceptor,
   StreamRequest,
   StreamResponse,
   UnaryRequest,
-  UnaryResponse,
-} from "../interceptor.js";
-import { DubboError } from "../dubbo-error.js";
+  UnaryResponse
+} from '../interceptor.js'
+import { DubboError } from '../dubbo-error.js'
 import {
   createDeadlineSignal,
   createLinkedAbortController,
-  getAbortSignalReason,
-} from "./signals.js";
+  getAbortSignalReason
+} from './signals.js'
 
 /**
  * UnaryFn represents the client-side invocation of a unary RPC - a method
@@ -37,29 +37,29 @@ import {
 type UnaryFn<
   I extends Message<I> = AnyMessage,
   O extends Message<O> = AnyMessage
-> = (req: UnaryRequest<I, O>) => Promise<UnaryResponse<I, O>>;
+> = (req: UnaryRequest<I, O>) => Promise<UnaryResponse<I, O>>
 
 /**
  * Runs a unary method with the given interceptors. Note that this function
  * is only used when implementing a Transport.
  */
 export function runUnaryCall<I extends Message<I>, O extends Message<O>>(opt: {
-  req: Omit<UnaryRequest<I, O>, "signal">;
-  next: UnaryFn<I, O>;
-  timeoutMs?: number;
-  signal?: AbortSignal;
-  interceptors?: Interceptor[];
+  req: Omit<UnaryRequest<I, O>, 'signal'>
+  next: UnaryFn<I, O>
+  timeoutMs?: number
+  signal?: AbortSignal
+  interceptors?: Interceptor[]
 }): Promise<UnaryResponse<I, O>> {
-  const next = applyInterceptors(opt.next, opt.interceptors);
-  const [signal, abort, done] = setupSignal(opt);
+  const next = applyInterceptors(opt.next, opt.interceptors)
+  const [signal, abort, done] = setupSignal(opt)
   const req = {
     ...opt.req,
-    signal,
-  };
+    signal
+  }
   return next(req).then((res) => {
-    done();
-    return res;
-  }, abort);
+    done()
+    return res
+  }, abort)
 }
 
 /**
@@ -72,7 +72,7 @@ export function runUnaryCall<I extends Message<I>, O extends Message<O>>(opt: {
 type StreamingFn<
   I extends Message<I> = AnyMessage,
   O extends Message<O> = AnyMessage
-> = (req: StreamRequest<I, O>) => Promise<StreamResponse<I, O>>;
+> = (req: StreamRequest<I, O>) => Promise<StreamResponse<I, O>>
 
 /**
  * Runs a server-streaming method with the given interceptors. Note that this
@@ -82,47 +82,47 @@ export function runStreamingCall<
   I extends Message<I>,
   O extends Message<O>
 >(opt: {
-  req: Omit<StreamRequest<I, O>, "signal">;
-  next: StreamingFn<I, O>;
-  timeoutMs?: number;
-  signal?: AbortSignal;
-  interceptors?: Interceptor[];
+  req: Omit<StreamRequest<I, O>, 'signal'>
+  next: StreamingFn<I, O>
+  timeoutMs?: number
+  signal?: AbortSignal
+  interceptors?: Interceptor[]
 }): Promise<StreamResponse<I, O>> {
-  const next = applyInterceptors(opt.next, opt.interceptors);
-  const [signal, abort, done] = setupSignal(opt);
+  const next = applyInterceptors(opt.next, opt.interceptors)
+  const [signal, abort, done] = setupSignal(opt)
   const req = {
     ...opt.req,
-    signal,
-  };
+    signal
+  }
   return next(req).then((res) => {
     return {
       ...res,
       message: {
         [Symbol.asyncIterator]() {
-          const it = res.message[Symbol.asyncIterator]();
+          const it = res.message[Symbol.asyncIterator]()
           const w: AsyncIterator<O> = {
             next() {
               return it.next().then((r) => {
                 if (r.done == true) {
-                  done();
+                  done()
                 }
-                return r;
-              }, abort);
-            },
-          };
+                return r
+              }, abort)
+            }
+          }
           if (it.throw !== undefined) {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- can't handle mutated object sensibly
-            w.throw = (e: unknown) => it.throw!(e);
+            w.throw = (e: unknown) => it.throw!(e)
           }
           if (it.return !== undefined) {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-explicit-any -- can't handle mutated object sensibly
-            w.return = (value?: any) => it.return!(value);
+            w.return = (value?: any) => it.return!(value)
           }
-          return w;
-        },
-      },
-    };
-  }, abort);
+          return w
+        }
+      }
+    }
+  }, abort)
 }
 
 /**
@@ -140,11 +140,11 @@ export function runStreamingCall<
  * [2]: Function to call if the Transport finished without an error.
  */
 function setupSignal(opt: {
-  timeoutMs?: number;
-  signal?: AbortSignal;
+  timeoutMs?: number
+  signal?: AbortSignal
 }): [AbortSignal, (reason: unknown) => Promise<never>, () => void] {
-  const { signal, cleanup } = createDeadlineSignal(opt.timeoutMs);
-  const controller = createLinkedAbortController(opt.signal, signal);
+  const { signal, cleanup } = createDeadlineSignal(opt.timeoutMs)
+  const controller = createLinkedAbortController(opt.signal, signal)
   return [
     controller.signal,
     function abort(reason: unknown): Promise<never> {
@@ -152,16 +152,16 @@ function setupSignal(opt: {
       // abort that discards the signal reason.
       const e = DubboError.from(
         signal.aborted ? getAbortSignalReason(signal) : reason
-      );
-      controller.abort(e);
-      cleanup();
-      return Promise.reject(e);
+      )
+      controller.abort(e)
+      cleanup()
+      return Promise.reject(e)
     },
     function done() {
-      cleanup();
-      controller.abort();
-    },
-  ];
+      cleanup()
+      controller.abort()
+    }
+  ]
 }
 
 /**
@@ -182,5 +182,5 @@ function applyInterceptors<T>(
         (n, i) => i(n),
         next as any // eslint-disable-line @typescript-eslint/no-explicit-any
       ) as T) ?? next
-  );
+  )
 }

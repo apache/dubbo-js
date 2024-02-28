@@ -12,45 +12,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { DubboError } from "../dubbo-error.js";
-import { parseTimeout } from "./parse-timeout.js";
+import { DubboError } from '../dubbo-error.js'
+import { parseTimeout } from './parse-timeout.js'
 
-describe("parseTimeout()", function () {
-  it("should parse proper timeout", () => {
-    expect(parseTimeout("1", Number.MAX_SAFE_INTEGER)).toEqual({
-      timeoutMs: 1,
-    });
-    expect(parseTimeout("1234567890", Number.MAX_SAFE_INTEGER)).toEqual({
-      timeoutMs: 1234567890,
-    });
-    expect(parseTimeout("0", Number.MAX_SAFE_INTEGER)).toEqual({
-      timeoutMs: 0,
-    });
-  });
-  it("should should return undefined for null value", () => {
-    const r = parseTimeout(null, Number.MAX_SAFE_INTEGER);
-    expect(r.timeoutMs).toBeUndefined();
-    expect(r.error).toBeUndefined();
-  });
-  it("should return a DubboError for a value exceeding maxTimeoutMs", function () {
-    expect(parseTimeout("1", 0).error?.message).toBe(
-      "[invalid_argument] timeout 1ms must be <= 0"
-    );
-    expect(parseTimeout("1024", 1000).error?.message).toBe(
-      "[invalid_argument] timeout 1024ms must be <= 1000"
-    );
-  });
-  const invalidValues = ["100m", "1H", "-1", "1e+10", "", "12345678901", "foo"];
+describe('parseTimeout()', function () {
+  it('should parse proper timeout', () => {
+    expect(parseTimeout('1', Number.MAX_SAFE_INTEGER)).toEqual({
+      timeoutMs: 1
+    })
+    expect(parseTimeout('1234567890', Number.MAX_SAFE_INTEGER)).toEqual({
+      timeoutMs: 1234567890
+    })
+    expect(parseTimeout('0', Number.MAX_SAFE_INTEGER)).toEqual({
+      timeoutMs: 0
+    })
+  })
+  it('should should return undefined for null value', () => {
+    const r = parseTimeout(null, Number.MAX_SAFE_INTEGER)
+    expect(r.timeoutMs).toBeUndefined()
+    expect(r.error).toBeUndefined()
+  })
+  it('should return a DubboError for a value exceeding maxTimeoutMs', function () {
+    expect(parseTimeout('1', 0).error?.message).toBe(
+      '[invalid_argument] timeout 1ms must be <= 0'
+    )
+    expect(parseTimeout('1024', 1000).error?.message).toBe(
+      '[invalid_argument] timeout 1024ms must be <= 1000'
+    )
+  })
+  const invalidValues = ['100m', '1H', '-1', '1e+10', '', '12345678901', 'foo']
   for (const invalidValue of invalidValues) {
     it(`should should return a DubboError for an incorrect value "${invalidValue}"`, () => {
-      const r = parseTimeout(invalidValue, Number.MAX_SAFE_INTEGER);
-      expect(r.timeoutMs).toBeUndefined();
-      expect(r.error).toBeInstanceOf(DubboError);
+      const r = parseTimeout(invalidValue, Number.MAX_SAFE_INTEGER)
+      expect(r.timeoutMs).toBeUndefined()
+      expect(r.error).toBeInstanceOf(DubboError)
       if (r instanceof DubboError) {
         expect(r.message).toBe(
           `protocol error: invalid connect timeout value: ${invalidValue}`
-        );
+        )
       }
-    });
+    })
   }
-});
+})
