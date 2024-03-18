@@ -37,6 +37,10 @@ module.exports = {
           {
             text: 'Getting Started',
             link: '/guide/'
+          },
+          {
+            text: 'Generating Code',
+            link: '/guide/GeneratingCode'
           }
         ]
       },
