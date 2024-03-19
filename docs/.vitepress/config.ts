@@ -33,14 +33,107 @@ module.exports = {
     sidebar: [
       {
         text: 'Guide',
+        collapsed: true,
         items: [
           {
-            text: 'Getting Started',
+            text: 'Introduce',
             link: '/guide/'
           },
           {
-            text: 'Generating Code',
-            link: '/guide/GeneratingCode'
+            text: 'Dubbo for Web',
+            collapsed: true,
+            items: [
+              {
+                text: 'Getting Started',
+                link: '/guide/dubboForWEB/GettingStarted'
+              },
+              {
+                text: 'Generating Code',
+                link: '/guide/dubboForWEB/GeneratingCode'
+              },
+              {
+                text: 'Using clients',
+                link: '/guide/dubboForWEB/UsingClients'
+              },
+              {
+                text: 'Errors',
+                link: '/guide/dubboForWEB/Errors'
+              },
+              {
+                text: 'Headers & trailers',
+                link: '/guide/dubboForWEB/HeadersandTrailers'
+              },
+              {
+                text: 'Cancellation & Timeouts',
+                link: '/guide/dubboForWEB/CancellationandTimeouts'
+              },
+              {
+                text: 'Interceptors',
+                link: '/guide/dubboForWEB/Interceptors'
+              },
+              {
+                text: 'Choosing a protocol',
+                link: '/guide/dubboForWEB/Choosingaprotocol'
+              },
+              {
+                text: 'Supported browsers & frameworks',
+                link: '/guide/dubboForWEB/SupportedBrowsersandFrameworks'
+              },
+              {
+                text: 'Common errors',
+                link: '/guide/dubboForWEB/CommonErrors'
+              },
+              {
+                text: 'Testing',
+                link: '/guide/dubboForWEB/Testing'
+              },
+              {
+                text: 'Get Requests and Caching',
+                link: '/guide/dubboForWEB/GetRequestsandCaching'
+              },
+              {
+                text: 'Server-Side Rendering',
+                link: '/guide/dubboForWEB/Server-SideRendering'
+              },
+              {
+                text: 'Connect for TanStack Query',
+                link: '/guide/dubboForWEB/ConnectForTanStackQuery'
+              }
+            ]
+          },
+          {
+            text: 'Dubbo for Node.js',
+            collapsed: true,
+            items: [
+              {
+                text:"Getting started",
+                link:"/guide/dubboForNode/GettingStarted"
+              },
+              {
+                text:"Implementing services",
+                link:"/guide/dubboForNode/ImplementingServices"
+              },
+              {
+                text:"Server plugins",
+                link:"/guide/dubboForNode/ServerPlugins"
+              },
+              {
+                text:"Interceptors",
+                link:"/guide/dubboForNode/Interceptors"
+              },
+              {
+                text:"Using clients",
+                link:"/guide/dubboForNode/UsingClients"
+              },
+              {
+                text:"Get Requests and Caching",
+                link:"/guide/dubboForNode/GetRequestsAndCaching"
+              },
+              {
+                text:"Testing",
+                link:"/guide/dubboForNode/Testing"
+              }
+            ]
           }
         ]
       },
