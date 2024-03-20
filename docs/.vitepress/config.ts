@@ -92,8 +92,8 @@ module.exports = {
                 link: '/guide/dubboForWEB/GetRequestsandCaching'
               },
               {
-                text: 'Server-Side Rendering',
-                link: '/guide/dubboForWEB/Server-SideRendering'
+                text: 'Server-Side Rendering (SSR)',
+                link: '/guide/dubboForWEB/ServerSideRendering'
               },
               {
                 text: 'Connect for TanStack Query',
