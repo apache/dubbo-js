@@ -12,6 +12,8 @@ module.exports = {
     sourceType: 'module'
   },
   plugins: ['@typescript-eslint'],
+  semi: false,
+  singleQuote: false,
   rules: {
     indent: ['error', 2],
     'linebreak-style': ['error', 'unix'],
