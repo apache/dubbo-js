@@ -46,7 +46,7 @@ In addition, Dubbo integrates middlewares such as express, fastify, and next, ma
 ## Service Governance features
 Besides rpc protocol, we plan to provide dubbo-js rich service governance features so it can work seamlessly with other microservice architecture. 
 
-The features lsited below are still under development, we will update each feature's status once ready.
+The features listed below are still under development, we will update each feature's status once ready.
 
 - :construction: **Service Discovery**:
 
