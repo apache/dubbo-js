@@ -56,3 +56,7 @@ dj_lint
 # System Files
 .DS_Store
 Thumbs.db
+
+# docs
+.vitepress/cache
+
