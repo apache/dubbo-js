@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { DubboError } from "../dubbo-error.js";
-import { Code } from "../code.js";
+import { DubboError } from '../dubbo-error.js'
+import { Code } from '../code.js'
 
 /**
  * Create an AbortController that is automatically aborted if one of the given
@@ -29,30 +29,30 @@ import { Code } from "../code.js";
 export function createLinkedAbortController(
   ...signals: (AbortSignal | undefined)[]
 ): AbortController {
-  const controller = new AbortController();
+  const controller = new AbortController()
 
   const sa = signals
     .filter((s) => s !== undefined)
-    .concat(controller.signal) as AbortSignal[];
+    .concat(controller.signal) as AbortSignal[]
 
   for (const signal of sa) {
     if (signal.aborted) {
-      onAbort.apply(signal);
-      break;
+      onAbort.apply(signal)
+      break
     }
-    signal.addEventListener("abort", onAbort);
+    signal.addEventListener('abort', onAbort)
   }
 
   function onAbort(this: AbortSignal) {
     if (!controller.signal.aborted) {
-      controller.abort(getAbortSignalReason(this));
+      controller.abort(getAbortSignalReason(this))
     }
     for (const signal of sa) {
-      signal.removeEventListener("abort", onAbort);
+      signal.removeEventListener('abort', onAbort)
     }
   }
 
-  return controller;
+  return controller
 }
 
 /**
@@ -66,24 +66,24 @@ export function createLinkedAbortController(
  * @private Internal code, does not follow semantic versioning.
  */
 export function createDeadlineSignal(timeoutMs: number | undefined): {
-  signal: AbortSignal;
-  cleanup: () => void;
+  signal: AbortSignal
+  cleanup: () => void
 } {
-  const controller = new AbortController();
+  const controller = new AbortController()
   const listener = () => {
     controller.abort(
-      new DubboError("the operation timed out", Code.DeadlineExceeded)
-    );
-  };
-  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+      new DubboError('the operation timed out', Code.DeadlineExceeded)
+    )
+  }
+  let timeoutId: ReturnType<typeof setTimeout> | undefined
   if (timeoutMs !== undefined) {
-    if (timeoutMs <= 0) listener();
-    else timeoutId = setTimeout(listener, timeoutMs);
+    if (timeoutMs <= 0) listener()
+    else timeoutId = setTimeout(listener, timeoutMs)
   }
   return {
     signal: controller.signal,
-    cleanup: () => clearTimeout(timeoutId),
-  };
+    cleanup: () => clearTimeout(timeoutId)
+  }
 }
 
 /**
@@ -97,14 +97,14 @@ export function createDeadlineSignal(timeoutMs: number | undefined): {
  */
 export function getAbortSignalReason(signal: AbortSignal): unknown {
   if (!signal.aborted) {
-    return undefined;
+    return undefined
   }
   if (signal.reason !== undefined) {
-    return signal.reason;
+    return signal.reason
   }
   // AbortSignal.reason is available in Node.js v16, v18, and later,
   // and in all browsers since early 2022.
-  const e = new Error("This operation was aborted");
-  e.name = "AbortError";
-  return e;
+  const e = new Error('This operation was aborted')
+  e.name = 'AbortError'
+  return e
 }

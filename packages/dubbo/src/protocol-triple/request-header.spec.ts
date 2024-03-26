@@ -12,56 +12,56 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { MethodKind } from "@bufbuild/protobuf";
-import type { Compression } from "../protocol/index.js";
+import { MethodKind } from '@bufbuild/protobuf'
+import type { Compression } from '../protocol/index.js'
 import {
   requestHeader,
-  requestHeaderWithCompression,
-} from "./request-header.js";
+  requestHeaderWithCompression
+} from './request-header.js'
 import {
   headerStreamAcceptEncoding,
   headerStreamEncoding,
   headerUnaryAcceptEncoding,
-  headerUnaryEncoding,
-} from "./headers.js";
+  headerUnaryEncoding
+} from './headers.js'
 
 function listHeaderKeys(header: Headers): string[] {
-  const keys: string[] = [];
-  header.forEach((_, key) => keys.push(key));
-  return keys;
+  const keys: string[] = []
+  header.forEach((_, key) => keys.push(key))
+  return keys
 }
 
-describe("requestHeader", () => {
-  it("should create request headers", () => {
-    const headers = requestHeader(MethodKind.Unary, true, undefined, undefined);
+describe('requestHeader', () => {
+  it('should create request headers', () => {
+    const headers = requestHeader(MethodKind.Unary, true, undefined, undefined)
     expect(listHeaderKeys(headers)).toEqual([
-      "content-type",
-      "tri-protocol-version",
-    ]);
-    expect(headers.get("Content-Type")).toBe("application/proto");
-    expect(headers.get("TRI-Protocol-Version")).toBe("1.0.0");
-  });
+      'content-type',
+      'tri-protocol-version'
+    ])
+    expect(headers.get('Content-Type')).toBe('application/proto')
+    expect(headers.get('TRI-Protocol-Version')).toBe('1.0.0')
+  })
 
-  it("should create request headers with timeout", () => {
-    const headers = requestHeader(MethodKind.Unary, true, 10, undefined);
+  it('should create request headers with timeout', () => {
+    const headers = requestHeader(MethodKind.Unary, true, 10, undefined)
     expect(listHeaderKeys(headers)).toEqual([
-      "content-type",
-      "tri-protocol-version",
-      "tri-service-timeout",
-    ]);
-    expect(headers.get("TRI-Service-Timeout")).toBe("10");
-  });
-});
+      'content-type',
+      'tri-protocol-version',
+      'tri-service-timeout'
+    ])
+    expect(headers.get('TRI-Service-Timeout')).toBe('10')
+  })
+})
 
-describe("requestHeaderWithCompression", () => {
+describe('requestHeaderWithCompression', () => {
   const compressionMock: Compression = {
-    name: "gzip",
+    name: 'gzip',
     compress: (bytes: Uint8Array) => Promise.resolve(bytes),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    decompress: (bytes: Uint8Array, _: number) => Promise.resolve(bytes),
-  };
+    decompress: (bytes: Uint8Array, _: number) => Promise.resolve(bytes)
+  }
 
-  it("should create request headers with compression for unary request", () => {
+  it('should create request headers with compression for unary request', () => {
     const headers = requestHeaderWithCompression(
       MethodKind.Unary,
       true,
@@ -69,18 +69,18 @@ describe("requestHeaderWithCompression", () => {
       undefined,
       [compressionMock],
       compressionMock
-    );
+    )
     expect(listHeaderKeys(headers)).toEqual([
-      "accept-encoding",
-      "content-encoding",
-      "content-type",
-      "tri-protocol-version",
-    ]);
-    expect(headers.get(headerUnaryEncoding)).toBe(compressionMock.name);
-    expect(headers.get(headerUnaryAcceptEncoding)).toBe(compressionMock.name);
-  });
+      'accept-encoding',
+      'content-encoding',
+      'content-type',
+      'tri-protocol-version'
+    ])
+    expect(headers.get(headerUnaryEncoding)).toBe(compressionMock.name)
+    expect(headers.get(headerUnaryAcceptEncoding)).toBe(compressionMock.name)
+  })
 
-  it("should create request headers with compression for stream request", () => {
+  it('should create request headers with compression for stream request', () => {
     const headers = requestHeaderWithCompression(
       MethodKind.ClientStreaming,
       true,
@@ -88,14 +88,14 @@ describe("requestHeaderWithCompression", () => {
       undefined,
       [compressionMock],
       compressionMock
-    );
+    )
     expect(listHeaderKeys(headers)).toEqual([
-      "connect-accept-encoding",
-      "connect-content-encoding",
-      "content-type",
-      "tri-protocol-version",
-    ]);
-    expect(headers.get(headerStreamEncoding)).toBe(compressionMock.name);
-    expect(headers.get(headerStreamAcceptEncoding)).toBe(compressionMock.name);
-  });
-});
+      'connect-accept-encoding',
+      'connect-content-encoding',
+      'content-type',
+      'tri-protocol-version'
+    ])
+    expect(headers.get(headerStreamEncoding)).toBe(compressionMock.name)
+    expect(headers.get(headerStreamAcceptEncoding)).toBe(compressionMock.name)
+  })
+})

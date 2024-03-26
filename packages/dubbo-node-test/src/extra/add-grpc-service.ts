@@ -20,10 +20,10 @@ import type {
   MethodInfoServerStreaming,
   MethodInfoUnary,
   PartialMessage,
-  ServiceType,
-} from "@bufbuild/protobuf";
-import type * as grpc from "@grpc/grpc-js";
-import { createGrpcServiceDefinition } from "./create-grpc-definition.js";
+  ServiceType
+} from '@bufbuild/protobuf'
+import type * as grpc from '@grpc/grpc-js'
+import { createGrpcServiceDefinition } from './create-grpc-definition.js'
 
 // prettier-ignore
 /**
@@ -50,6 +50,6 @@ export function addGrpcService<T extends ServiceType>(
   implementation: GrpcServiceImplementation<T>,
   binaryOptions?: Partial<BinaryReadOptions & BinaryWriteOptions>
 ): void {
-  const definition = createGrpcServiceDefinition(service, binaryOptions);
-  grpcServer.addService(definition, implementation);
+  const definition = createGrpcServiceDefinition(service, binaryOptions)
+  grpcServer.addService(definition, implementation)
 }

@@ -17,54 +17,54 @@ import {
   contentTypeStreamProto,
   contentTypeUnaryJson,
   contentTypeUnaryProto,
-  parseContentType,
-} from "./content-type.js";
+  parseContentType
+} from './content-type.js'
 
-describe("parseContentType()", function () {
-  it("should parse", function () {
+describe('parseContentType()', function () {
+  it('should parse', function () {
     expect(parseContentType(contentTypeUnaryJson)).toEqual({
       stream: false,
-      binary: false,
-    });
+      binary: false
+    })
     expect(parseContentType(contentTypeUnaryProto)).toEqual({
       stream: false,
-      binary: true,
-    });
+      binary: true
+    })
     expect(parseContentType(contentTypeStreamJson)).toEqual({
       stream: true,
-      binary: false,
-    });
+      binary: false
+    })
     expect(parseContentType(contentTypeStreamProto)).toEqual({
       stream: true,
-      binary: true,
-    });
-    expect(parseContentType("application/json")).toEqual({
+      binary: true
+    })
+    expect(parseContentType('application/json')).toEqual({
       stream: false,
-      binary: false,
-    });
-    expect(parseContentType("application/json;charset=utf8")).toEqual({
+      binary: false
+    })
+    expect(parseContentType('application/json;charset=utf8')).toEqual({
       stream: false,
-      binary: false,
-    });
-    expect(parseContentType("application/json; charset=utf-8")).toEqual({
+      binary: false
+    })
+    expect(parseContentType('application/json; charset=utf-8')).toEqual({
       stream: false,
-      binary: false,
-    });
-    expect(parseContentType("application/proto")).toEqual({
+      binary: false
+    })
+    expect(parseContentType('application/proto')).toEqual({
       stream: false,
-      binary: true,
-    });
-    expect(parseContentType("application/connect+json")).toEqual({
+      binary: true
+    })
+    expect(parseContentType('application/connect+json')).toEqual({
       stream: true,
-      binary: false,
-    });
-    expect(parseContentType("application/connect+json;charset=utf8")).toEqual({
+      binary: false
+    })
+    expect(parseContentType('application/connect+json;charset=utf8')).toEqual({
       stream: true,
-      binary: false,
-    });
-    expect(parseContentType("application/connect+proto")).toEqual({
+      binary: false
+    })
+    expect(parseContentType('application/connect+proto')).toEqual({
       stream: true,
-      binary: true,
-    });
-  });
-});
+      binary: true
+    })
+  })
+})

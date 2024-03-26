@@ -16,34 +16,34 @@ import {
   Code,
   DubboError,
   createCallbackClient,
-  createPromiseClient,
-} from "@apachedubbo/dubbo";
-import { UnimplementedService } from "../gen/grpc/testing/test_dubbo.js";
-import { createTestServers } from "../helpers/testserver.js";
+  createPromiseClient
+} from '@apachedubbo/dubbo'
+import { UnimplementedService } from '../gen/grpc/testing/test_dubbo.js'
+import { createTestServers } from '../helpers/testserver.js'
 
-describe("unimplemented_service", function () {
-  const servers = createTestServers();
-  beforeAll(async () => await servers.start());
+describe('unimplemented_service', function () {
+  const servers = createTestServers()
+  beforeAll(async () => await servers.start())
 
   servers.describeTransports((transport) => {
-    it("with promise client", async function () {
-      const client = createPromiseClient(UnimplementedService, transport());
+    it('with promise client', async function () {
+      const client = createPromiseClient(UnimplementedService, transport())
       try {
-        await client.unimplementedCall({});
-        fail("expected to catch an error");
+        await client.unimplementedCall({})
+        fail('expected to catch an error')
       } catch (e) {
-        expect(e).toBeInstanceOf(DubboError);
-        expect(DubboError.from(e).code).toBe(Code.Unimplemented);
+        expect(e).toBeInstanceOf(DubboError)
+        expect(DubboError.from(e).code).toBe(Code.Unimplemented)
       }
-    });
-    it("with callback client", function (done) {
-      const client = createCallbackClient(UnimplementedService, transport());
+    })
+    it('with callback client', function (done) {
+      const client = createCallbackClient(UnimplementedService, transport())
       client.unimplementedCall({}, (err: DubboError | undefined) => {
-        expect(err?.code).toBe(Code.Unimplemented);
-        done();
-      });
-    });
-  });
+        expect(err?.code).toBe(Code.Unimplemented)
+        done()
+      })
+    })
+  })
 
-  afterAll(async () => await servers.stop());
-});
+  afterAll(async () => await servers.stop())
+})

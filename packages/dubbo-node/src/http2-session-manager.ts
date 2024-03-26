@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as http2 from "http2";
-import { Code, DubboError } from "@apachedubbo/dubbo";
-import { dubboErrorFromNodeReason } from "./node-error.js";
+import * as http2 from 'http2'
+import { Code, DubboError } from '@apachedubbo/dubbo'
+import { dubboErrorFromNodeReason } from './node-error.js'
 
 export interface Http2SessionOptions {
   /**
@@ -31,7 +31,7 @@ export interface Http2SessionOptions {
    *
    * This option is equivalent to GRPC_ARG_KEEPALIVE_TIME_MS in gRPC Core.
    */
-  pingIntervalMs?: number;
+  pingIntervalMs?: number
 
   /**
    * Enable PING frames for connections that are have no open streams.
@@ -47,7 +47,7 @@ export interface Http2SessionOptions {
    * This option is equivalent to GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS in
    * gRPC Core.
    */
-  pingIdleConnection?: boolean;
+  pingIdleConnection?: boolean
 
   /**
    * Timeout for PING frames. If a PING is not answered within this time, the
@@ -58,7 +58,7 @@ export interface Http2SessionOptions {
    *
    * This option is equivalent to GRPC_ARG_KEEPALIVE_TIME_MS in gRPC Core.
    */
-  pingTimeoutMs?: number;
+  pingTimeoutMs?: number
 
   /**
    * Automatically close a connection if the time since the last request stream
@@ -68,7 +68,7 @@ export interface Http2SessionOptions {
    *
    * This option is equivalent to GRPC_ARG_CLIENT_IDLE_TIMEOUT_MS of gRPC core.
    */
-  idleConnectionTimeoutMs?: number;
+  idleConnectionTimeoutMs?: number
 }
 
 /**
@@ -84,7 +84,7 @@ export class Http2SessionManager {
   /**
    * The host this session manager connect to.
    */
-  authority: string;
+  authority: string
 
   /**
    * The current state of the connection:
@@ -118,11 +118,11 @@ export class Http2SessionManager {
    *   may have failed to reach the host, or the connection may have died,
    *   or it may have been aborted.
    */
-  state(): "closed" | "connecting" | "open" | "idle" | "verifying" | "error" {
-    if (this.s.t == "ready") {
-      return this.s.streamCount() > 0 ? "open" : "idle";
+  state(): 'closed' | 'connecting' | 'open' | 'idle' | 'verifying' | 'error' {
+    if (this.s.t == 'ready') {
+      return this.s.streamCount() > 0 ? 'open' : 'idle'
     }
-    return this.s.t;
+    return this.s.t
   }
 
   /**
@@ -130,10 +130,10 @@ export class Http2SessionManager {
    * `undefined` otherwise.
    */
   error(): unknown {
-    if (this.s.t == "error") {
-      return this.s.reason;
+    if (this.s.t == 'error') {
+      return this.s.reason
     }
-    return undefined;
+    return undefined
   }
 
   private s:
@@ -141,14 +141,14 @@ export class Http2SessionManager {
     | StateError
     | StateConnecting
     | StateVerifying
-    | StateReady = closed();
+    | StateReady = closed()
 
   private readonly http2SessionOptions:
     | http2.ClientSessionOptions
     | http2.SecureClientSessionOptions
-    | undefined;
+    | undefined
 
-  private readonly options: Required<Http2SessionOptions>;
+  private readonly options: Required<Http2SessionOptions>
 
   public constructor(
     authority: URL | string,
@@ -157,27 +157,27 @@ export class Http2SessionManager {
       | http2.ClientSessionOptions
       | http2.SecureClientSessionOptions
   ) {
-    this.authority = new URL(authority).origin;
-    this.http2SessionOptions = http2SessionOptions;
+    this.authority = new URL(authority).origin
+    this.http2SessionOptions = http2SessionOptions
     this.options = {
       pingIntervalMs: pingOptions?.pingIntervalMs ?? Number.POSITIVE_INFINITY,
       pingTimeoutMs: pingOptions?.pingTimeoutMs ?? 1000 * 15,
       pingIdleConnection: pingOptions?.pingIdleConnection ?? false,
       idleConnectionTimeoutMs:
-        pingOptions?.idleConnectionTimeoutMs ?? 1000 * 60 * 15,
-    };
+        pingOptions?.idleConnectionTimeoutMs ?? 1000 * 60 * 15
+    }
   }
 
   /**
    * Open a connection if none exists, verify an existing connection if
    * necessary.
    */
-  async connect(): Promise<"open" | "idle" | "error"> {
+  async connect(): Promise<'open' | 'idle' | 'error'> {
     try {
-      const ready = await this.gotoReady();
-      return ready.streamCount() > 0 ? "open" : "idle";
+      const ready = await this.gotoReady()
+      return ready.streamCount() > 0 ? 'open' : 'idle'
     } catch (e) {
-      return "error";
+      return 'error'
     }
   }
 
@@ -195,19 +195,19 @@ export class Http2SessionManager {
     method: string,
     path: string,
     headers: http2.OutgoingHttpHeaders,
-    options: Omit<http2.ClientSessionRequestOptions, "signal">
+    options: Omit<http2.ClientSessionRequestOptions, 'signal'>
   ): Promise<http2.ClientHttp2Stream> {
-    const ready = await this.gotoReady();
+    const ready = await this.gotoReady()
     const stream = ready.conn.request(
       {
         ...headers,
-        ":method": method,
-        ":path": path,
+        ':method': method,
+        ':path': path
       },
       options
-    );
-    ready.registerRequest(stream);
-    return stream;
+    )
+    ready.registerRequest(stream)
+    return stream
   }
 
   /**
@@ -219,8 +219,8 @@ export class Http2SessionManager {
    * unnecessary PING frames.
    */
   notifyResponseByteRead(stream: http2.ClientHttp2Stream): void {
-    if (this.s.t == "ready") {
-      this.s.responseByteRead(stream);
+    if (this.s.t == 'ready') {
+      this.s.responseByteRead(stream)
     }
   }
 
@@ -228,33 +228,33 @@ export class Http2SessionManager {
    * If there is an open connection, close it. This also closes any open streams.
    */
   abort(reason?: Error): void {
-    const err = reason ?? new DubboError("connection aborted", Code.Canceled);
-    this.s.abort?.(err);
-    this.setState(closedOrError(err));
+    const err = reason ?? new DubboError('connection aborted', Code.Canceled)
+    this.s.abort?.(err)
+    this.setState(closedOrError(err))
   }
 
   private async gotoReady() {
-    if (this.s.t == "ready") {
+    if (this.s.t == 'ready') {
       if (this.s.requiresVerify()) {
         this.setState(
           verify(this.s, this.options, this.authority, this.http2SessionOptions)
-        );
+        )
       }
-    } else if (this.s.t == "closed" || this.s.t == "error") {
-      this.setState(connect(this.authority, this.http2SessionOptions));
+    } else if (this.s.t == 'closed' || this.s.t == 'error') {
+      this.setState(connect(this.authority, this.http2SessionOptions))
     }
-    while (this.s.t !== "ready") {
-      if (this.s.t === "error") {
-        throw this.s.reason;
+    while (this.s.t !== 'ready') {
+      if (this.s.t === 'error') {
+        throw this.s.reason
       }
-      if (this.s.t === "connecting") {
-        await this.s.conn;
+      if (this.s.t === 'connecting') {
+        await this.s.conn
       }
-      if (this.s.t === "verifying") {
-        await this.s.verified;
+      if (this.s.t === 'verifying') {
+        await this.s.verified
       }
     }
-    return this.s;
+    return this.s
   }
 
   private setState(
@@ -266,42 +266,42 @@ export class Http2SessionManager {
       | StateVerifying
       | StateReady
   ): void {
-    this.s.onExitState?.();
+    this.s.onExitState?.()
     switch (state.t) {
-      case "connecting":
+      case 'connecting':
         state.conn.then(
           (value) => {
-            this.setState(ready(value, this.options));
+            this.setState(ready(value, this.options))
           },
           (reason) => {
-            this.setState(closedOrError(reason));
+            this.setState(closedOrError(reason))
           }
-        );
-        break;
-      case "verifying":
+        )
+        break
+      case 'verifying':
         state.verified.then(
           (value) => {
-            if ("t" in value) {
-              this.setState(value);
+            if ('t' in value) {
+              this.setState(value)
             } else {
-              this.setState(ready(value, this.options));
+              this.setState(ready(value, this.options))
             }
           },
           (reason) => {
-            this.setState(closedOrError(reason));
+            this.setState(closedOrError(reason))
           }
-        );
-        break;
-      case "ready":
-        state.onClose = () => this.setState(closed());
-        state.onError = (err) => this.setState(closedOrError(err));
-        break;
-      case "closed":
-        break;
-      case "error":
-        break;
+        )
+        break
+      case 'ready':
+        state.onClose = () => this.setState(closed())
+        state.onError = (err) => this.setState(closedOrError(err))
+        break
+      case 'closed':
+        break
+      case 'error':
+        break
     }
-    this.s = state;
+    this.s = state
   }
 }
 
@@ -309,28 +309,28 @@ interface StateCommon {
   /**
    * A unique string that serves as a discriminator for each state type.
    */
-  readonly t: string;
+  readonly t: string
   /**
    * Abort this state, cancelling any work, and terminating any connection.
    */
-  abort?: (reason?: Error) => void;
+  abort?: (reason?: Error) => void
   /**
    * Called when the manager is leaving this state.
    */
-  onExitState?: () => void;
+  onExitState?: () => void
 }
 
 /**
  * The connection is closed, or no connection has been opened yet.
  */
 interface StateClosed extends StateCommon {
-  readonly t: "closed";
+  readonly t: 'closed'
 }
 
 function closed(): StateClosed {
   return {
-    t: "closed",
-  };
+    t: 'closed'
+  }
 }
 
 /**
@@ -339,38 +339,38 @@ function closed(): StateClosed {
  * died, or it may have been aborted.
  */
 interface StateError extends StateCommon {
-  readonly t: "error";
+  readonly t: 'error'
   /**
    * The error.
    */
-  readonly reason: unknown;
+  readonly reason: unknown
 }
 
 function error(reason: unknown): StateError {
   return {
-    t: "error",
-    reason,
-  };
+    t: 'error',
+    reason
+  }
 }
 
 function closedOrError(reason: unknown) {
   const isCancel =
     reason instanceof DubboError &&
-    DubboError.from(reason).code == Code.Canceled;
-  return isCancel ? closed() : error(reason);
+    DubboError.from(reason).code == Code.Canceled
+  return isCancel ? closed() : error(reason)
 }
 
 /**
  * The manager is currently establishing a connection.
  */
 interface StateConnecting extends StateCommon {
-  readonly t: "connecting";
+  readonly t: 'connecting'
 
   /**
    * A promise for the new connection that resolves if the connection was
    * established, but rejects if the connection failed or the state was aborted.
    */
-  readonly conn: Promise<http2.ClientHttp2Session>;
+  readonly conn: Promise<http2.ClientHttp2Session>
 }
 
 function connect(
@@ -380,57 +380,57 @@ function connect(
     | http2.SecureClientSessionOptions
     | undefined
 ): StateConnecting {
-  let resolve: ((value: http2.ClientHttp2Session) => void) | undefined;
-  let reject: ((reason: unknown) => void) | undefined;
+  let resolve: ((value: http2.ClientHttp2Session) => void) | undefined
+  let reject: ((reason: unknown) => void) | undefined
   const conn = new Promise<http2.ClientHttp2Session>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-  const newConn = http2.connect(authority, http2SessionOptions);
-  newConn.on("connect", onConnect);
-  newConn.on("error", onError);
+    resolve = res
+    reject = rej
+  })
+  const newConn = http2.connect(authority, http2SessionOptions)
+  newConn.on('connect', onConnect)
+  newConn.on('error', onError)
 
   function onConnect() {
-    resolve?.(newConn);
-    cleanup();
+    resolve?.(newConn)
+    cleanup()
   }
 
   function onError(err: unknown) {
-    reject?.(dubboErrorFromNodeReason(err));
-    cleanup();
+    reject?.(dubboErrorFromNodeReason(err))
+    cleanup()
   }
 
   function cleanup() {
-    newConn.off("connect", onConnect);
-    newConn.off("error", onError);
+    newConn.off('connect', onConnect)
+    newConn.off('error', onError)
   }
 
   return {
-    t: "connecting",
+    t: 'connecting',
     conn,
     abort(reason) {
       if (!newConn.destroyed) {
-        newConn.destroy(undefined, http2.constants.NGHTTP2_CANCEL);
+        newConn.destroy(undefined, http2.constants.NGHTTP2_CANCEL)
       }
       // According to the documentation, destroy() should immediately terminate
       // the session and the socket, but we still receive a "connect" event.
       // We must not resolve a broken connection, so we reject it manually here.
-      reject?.(reason);
+      reject?.(reason)
     },
     onExitState() {
-      cleanup();
-    },
-  } satisfies StateConnecting;
+      cleanup()
+    }
+  } satisfies StateConnecting
 }
 
 interface StateVerifying extends StateCommon {
-  readonly t: "verifying";
+  readonly t: 'verifying'
 
   /**
    * The existing connection (StateReady) if it has been successfully verified
    * with a PING frame. A new connection otherwise.
    */
-  readonly verified: Promise<StateReady | StateConnecting>;
+  readonly verified: Promise<StateReady | StateConnecting>
 }
 
 export function verify(
@@ -444,67 +444,67 @@ export function verify(
 ): StateVerifying {
   const verified = stateReady.ping().then((success) => {
     if (success) {
-      return stateReady;
+      return stateReady
     }
     // ping() has destroyed the old connection
-    return connect(authority, http2SessionOptions);
-  });
+    return connect(authority, http2SessionOptions)
+  })
   return {
-    t: "verifying",
+    t: 'verifying',
     verified,
     abort(reason) {
-      stateReady.abort?.(reason);
-    },
-  };
+      stateReady.abort?.(reason)
+    }
+  }
 }
 
 interface StateReady extends StateCommon {
-  readonly t: "ready";
+  readonly t: 'ready'
 
   /**
    * The open connection that is ready to use, but might require verification.
    */
-  readonly conn: http2.ClientHttp2Session;
+  readonly conn: http2.ClientHttp2Session
 
   /**
    * Returns the number of open streams.
    */
-  streamCount(): number;
+  streamCount(): number
 
   /**
    * Returns true if the connection should be verified before use, because it
    * has not received a PING response or response bytes for longer than
    * pingIntervalMs.
    */
-  requiresVerify(): boolean;
+  requiresVerify(): boolean
 
   /**
    * Register a stream, so that we can keep track of open streams, and keep the
    * connection alive with PING frames while streams are open.
    */
-  registerRequest(stream: http2.ClientHttp2Stream): void;
+  registerRequest(stream: http2.ClientHttp2Stream): void
 
   /**
    * Notify the keep-alive logic about received response bytes. A received byte
    * is proof that the connection is alive, resets the interval for PING frames.
    */
-  responseByteRead(stream: http2.ClientHttp2Stream): void;
+  responseByteRead(stream: http2.ClientHttp2Stream): void
 
   /**
    * Send a PING frame, resolve to true if it is responded to in time, resolve
    * to false otherwise (and closes the connection).
    */
-  ping(): Promise<boolean>;
+  ping(): Promise<boolean>
 
   /**
    * Called when the connection closes without error.
    */
-  onClose: (() => void) | undefined;
+  onClose: (() => void) | undefined
 
   /**
    * Called when the connection closes with an error.
    */
-  onError: ((err: Error) => void) | undefined;
+  onError: ((err: Error) => void) | undefined
 }
 
 function ready(
@@ -513,147 +513,147 @@ function ready(
 ): StateReady {
   // the last time we were sure that the connection is alive, via a PING
   // response, or via received response bytes
-  let lastAliveAt = Date.now();
+  let lastAliveAt = Date.now()
   // how many streams are currently open on this session
-  let streamCount = 0;
+  let streamCount = 0
   // timer for the keep-alive interval
-  let pingIntervalId: ReturnType<typeof setTimeout> | undefined;
+  let pingIntervalId: ReturnType<typeof setTimeout> | undefined
   // timer for waiting for a PING response
-  let pingTimeoutId: ReturnType<typeof setTimeout> | undefined;
+  let pingTimeoutId: ReturnType<typeof setTimeout> | undefined
   // keep track of GOAWAY with ENHANCE_YOUR_CALM and with debug data too_many_pings
-  let receivedGoAwayEnhanceYourCalmTooManyPings = false;
+  let receivedGoAwayEnhanceYourCalmTooManyPings = false
   // timer for closing connections without open streams, must be initialized
-  let idleTimeoutId: ReturnType<typeof setTimeout> | undefined;
-  resetIdleTimeout();
+  let idleTimeoutId: ReturnType<typeof setTimeout> | undefined
+  resetIdleTimeout()
 
   const state: StateReady = {
-    t: "ready",
+    t: 'ready',
     conn,
     streamCount() {
-      return streamCount;
+      return streamCount
     },
     requiresVerify(): boolean {
-      const elapsedMs = Date.now() - lastAliveAt;
-      return elapsedMs > options.pingIntervalMs;
+      const elapsedMs = Date.now() - lastAliveAt
+      return elapsedMs > options.pingIntervalMs
     },
     onClose: undefined,
     onError: undefined,
     registerRequest(stream: http2.ClientHttp2Stream): void {
-      streamCount++;
+      streamCount++
       if (streamCount == 1) {
-        resetPingInterval(); // reset to ping with the appropriate interval for "open"
-        stopIdleTimeout();
+        resetPingInterval() // reset to ping with the appropriate interval for "open"
+        stopIdleTimeout()
       }
-      stream.once("response", () => {
-        lastAliveAt = Date.now();
-        resetPingInterval();
-      });
-      stream.once("close", () => {
-        streamCount--;
+      stream.once('response', () => {
+        lastAliveAt = Date.now()
+        resetPingInterval()
+      })
+      stream.once('close', () => {
+        streamCount--
         if (streamCount == 0) {
-          resetPingInterval(); // reset to ping with the appropriate interval for "idle"
-          resetIdleTimeout();
+          resetPingInterval() // reset to ping with the appropriate interval for "idle"
+          resetIdleTimeout()
         }
-      });
+      })
     },
     responseByteRead(stream: http2.ClientHttp2Stream) {
       if (stream.session !== conn) {
-        return;
+        return
       }
       if (conn.closed || conn.destroyed) {
-        return;
+        return
       }
       if (streamCount <= 0) {
-        return;
+        return
       }
-      lastAliveAt = Date.now();
-      resetPingInterval();
+      lastAliveAt = Date.now()
+      resetPingInterval()
     },
     ping() {
       return new Promise<boolean>((resolve) => {
-        commonPing(() => resolve(true));
-        conn.once("error", () => resolve(false));
-      });
+        commonPing(() => resolve(true))
+        conn.once('error', () => resolve(false))
+      })
     },
     abort(reason) {
       if (!conn.destroyed) {
-        conn.once("error", () => {
+        conn.once('error', () => {
           // conn.destroy() may raise an error after onExitState() was called
           // and our error listeners are removed.
           // We attach this one to swallow uncaught exceptions.
-        });
-        conn.destroy(reason, http2.constants.NGHTTP2_CANCEL);
+        })
+        conn.destroy(reason, http2.constants.NGHTTP2_CANCEL)
       }
     },
     onExitState() {
-      cleanup();
-      this.onError = undefined;
-      this.onClose = undefined;
-    },
-  };
+      cleanup()
+      this.onError = undefined
+      this.onClose = undefined
+    }
+  }
 
   // start or restart the ping interval
   function resetPingInterval() {
-    stopPingInterval();
+    stopPingInterval()
     if (streamCount > 0 || options.pingIdleConnection) {
-      pingIntervalId = safeSetTimeout(onPingInterval, options.pingIntervalMs);
+      pingIntervalId = safeSetTimeout(onPingInterval, options.pingIntervalMs)
     }
   }
 
   function stopPingInterval() {
-    clearTimeout(pingIntervalId);
-    clearTimeout(pingTimeoutId);
+    clearTimeout(pingIntervalId)
+    clearTimeout(pingTimeoutId)
   }
 
   function onPingInterval() {
-    commonPing(resetPingInterval);
+    commonPing(resetPingInterval)
   }
 
   function commonPing(onSuccess: () => void) {
-    clearTimeout(pingTimeoutId);
+    clearTimeout(pingTimeoutId)
     pingTimeoutId = safeSetTimeout(() => {
       conn.destroy(
-        new DubboError("PING timed out", Code.Unavailable),
+        new DubboError('PING timed out', Code.Unavailable),
         http2.constants.NGHTTP2_CANCEL
-      );
-    }, options.pingTimeoutMs);
+      )
+    }, options.pingTimeoutMs)
     conn.ping((err, duration) => {
-      clearTimeout(pingTimeoutId);
+      clearTimeout(pingTimeoutId)
       if (err !== null) {
         // We will receive an ERR_HTTP2_PING_CANCEL here if we destroy the
         // connection with a pending ping.
         // We might also see other errors, but they should be picked up by the
         // "error" event listener.
-        return;
+        return
       }
       if (duration > options.pingTimeoutMs) {
         // setTimeout is not precise, and HTTP/2 pings take less than 1ms in
         // tests.
         conn.destroy(
-          new DubboError("PING timed out", Code.Unavailable),
+          new DubboError('PING timed out', Code.Unavailable),
           http2.constants.NGHTTP2_CANCEL
-        );
-        return;
+        )
+        return
       }
-      lastAliveAt = Date.now();
-      onSuccess();
-    });
+      lastAliveAt = Date.now()
+      onSuccess()
+    })
   }
 
   function stopIdleTimeout() {
-    clearTimeout(idleTimeoutId);
+    clearTimeout(idleTimeoutId)
   }
 
   function resetIdleTimeout() {
     idleTimeoutId = safeSetTimeout(
       onIdleTimeout,
       options.idleConnectionTimeoutMs
-    );
+    )
   }
 
   function onIdleTimeout() {
-    conn.close();
-    onClose(); // trigger a state change right away so we are not open to races
+    conn.close()
+    onClose() // trigger a state change right away so we are not open to races
   }
 
   function onGoaway(
@@ -661,24 +661,24 @@ function ready(
     lastStreamID: number,
     opaqueData: Buffer
   ) {
-    const tooManyPingsAscii = Buffer.from("too_many_pings", "ascii");
+    const tooManyPingsAscii = Buffer.from('too_many_pings', 'ascii')
     if (
       errorCode === http2.constants.NGHTTP2_ENHANCE_YOUR_CALM &&
       opaqueData.equals(tooManyPingsAscii)
     ) {
       // double pingIntervalMs, following the last paragraph of https://github.com/grpc/proposal/blob/0ba0c1905050525f9b0aee46f3f23c8e1e515489/A8-client-side-keepalive.md#basic-keepalive
-      options.pingIntervalMs = options.pingIntervalMs * 2;
-      receivedGoAwayEnhanceYourCalmTooManyPings = true;
+      options.pingIntervalMs = options.pingIntervalMs * 2
+      receivedGoAwayEnhanceYourCalmTooManyPings = true
     }
   }
 
   function onClose() {
-    cleanup();
-    state.onClose?.();
+    cleanup()
+    state.onClose?.()
   }
 
   function onError(err: Error) {
-    cleanup();
+    cleanup()
     if (receivedGoAwayEnhanceYourCalmTooManyPings) {
       // We cannot prevent node from destroying session and streams with its own
       // error that does not carry debug data, but at least we can wrap the error
@@ -688,26 +688,26 @@ function ready(
           16
         )}), too_many_pings, doubled the interval`,
         Code.ResourceExhausted
-      );
-      state.onError?.(ce);
+      )
+      state.onError?.(ce)
     } else {
-      state.onError?.(dubboErrorFromNodeReason(err));
+      state.onError?.(dubboErrorFromNodeReason(err))
     }
   }
 
   function cleanup() {
-    stopPingInterval();
-    stopIdleTimeout();
-    conn.off("error", onError);
-    conn.off("close", onClose);
-    conn.off("goaway", onGoaway);
+    stopPingInterval()
+    stopIdleTimeout()
+    conn.off('error', onError)
+    conn.off('close', onClose)
+    conn.off('goaway', onGoaway)
   }
 
-  conn.on("error", onError);
-  conn.on("close", onClose);
-  conn.on("goaway", onGoaway);
+  conn.on('error', onError)
+  conn.on('close', onClose)
+  conn.on('goaway', onGoaway)
 
-  return state;
+  return state
 }
 
 /**
@@ -719,7 +719,7 @@ function safeSetTimeout(
   ms: number
 ): ReturnType<typeof setTimeout> | undefined {
   if (ms > 0x7fffffff) {
-    return;
+    return
   }
-  return setTimeout(callback, ms);
+  return setTimeout(callback, ms)
 }

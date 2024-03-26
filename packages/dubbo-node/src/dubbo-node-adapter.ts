@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code, DubboError, createDubboRouter } from "@apachedubbo/dubbo";
-import type { DubboRouter, DubboRouterOptions } from "@apachedubbo/dubbo";
-import type { UniversalHandler } from "@apachedubbo/dubbo/protocol";
-import type { ExpandHandler } from "@apachedubbo/dubbo/protocol-triple";
-import { uResponseNotFound } from "@apachedubbo/dubbo/protocol";
+import { Code, DubboError, createDubboRouter } from '@apachedubbo/dubbo'
+import type { DubboRouter, DubboRouterOptions } from '@apachedubbo/dubbo'
+import type { UniversalHandler } from '@apachedubbo/dubbo/protocol'
+import type { ExpandHandler } from '@apachedubbo/dubbo/protocol-triple'
+import { uResponseNotFound } from '@apachedubbo/dubbo/protocol'
 import {
   universalRequestFromNodeRequest,
-  universalResponseToNodeResponse,
-} from "./node-universal-handler.js";
+  universalResponseToNodeResponse
+} from './node-universal-handler.js'
 import type {
   NodeHandlerFn,
   NodeServerRequest,
-  NodeServerResponse,
-} from "./node-universal-handler.js";
-import { compressionBrotli, compressionGzip } from "./compression.js";
+  NodeServerResponse
+} from './node-universal-handler.js'
+import { compressionBrotli, compressionGzip } from './compression.js'
 
 interface DubboNodeAdapterOptions extends DubboRouterOptions {
   /**
@@ -44,18 +44,18 @@ interface DubboNodeAdapterOptions extends DubboRouterOptions {
    *
    * Then pass this function here.
    */
-  routes: (router: DubboRouter) => void;
+  routes: (router: DubboRouter) => void
   /**
    * If none of the handler request paths match, a 404 is served. This option
    * can provide a custom fallback for this case.
    */
-  fallback?: NodeHandlerFn;
+  fallback?: NodeHandlerFn
   /**
    * Serve all handlers under this prefix. For example, the prefix "/something"
    * will serve the RPC foo.FooService/Bar under "/something/foo.FooService/Bar".
    * Note that many gRPC client implementations do not allow for prefixes.
    */
-  requestPathPrefix?: string;
+  requestPathPrefix?: string
 }
 
 /**
@@ -67,42 +67,52 @@ export function dubboNodeAdapter(
   options: DubboNodeAdapterOptions
 ): NodeHandlerFn {
   if (options.acceptCompression === undefined) {
-    options.acceptCompression = [compressionGzip, compressionBrotli];
+    options.acceptCompression = [compressionGzip, compressionBrotli]
   }
-  const router = createDubboRouter(options);
-  options.routes(router);
-  const prefix = options.requestPathPrefix ?? "";
-  const paths = new Map<string, UniversalHandler & ExpandHandler>();
+  const router = createDubboRouter(options)
+  options.routes(router)
+  const prefix = options.requestPathPrefix ?? ''
+  const paths = new Map<string, UniversalHandler & ExpandHandler>()
   for (const uHandler of router.handlers) {
-    paths.set(prefix + uHandler.requestPath + uHandler.serviceVersion + uHandler.serviceGroup, uHandler);
+    paths.set(
+      prefix +
+        uHandler.requestPath +
+        uHandler.serviceVersion +
+        uHandler.serviceGroup,
+      uHandler
+    )
   }
   return function nodeRequestHandler(
     req: NodeServerRequest,
     res: NodeServerResponse
   ): void {
     // Strip the query parameter when matching paths.
-    const uHandler = paths.get((req.url?.split("?", 2)[0] ?? "") + (req.headers['tri-service-version'] ?? "") + (req.headers['tri-service-group'] ?? ""));
+    const uHandler = paths.get(
+      (req.url?.split('?', 2)[0] ?? '') +
+        (req.headers['tri-service-version'] ?? '') +
+        (req.headers['tri-service-group'] ?? '')
+    )
     if (!uHandler) {
-      (options.fallback ?? fallback)(req, res);
-      return;
+      ;(options.fallback ?? fallback)(req, res)
+      return
     }
-    const uReq = universalRequestFromNodeRequest(req, undefined);
+    const uReq = universalRequestFromNodeRequest(req, undefined)
     uHandler(uReq)
       .then((uRes) => universalResponseToNodeResponse(uRes, res))
       .catch((reason) => {
         if (DubboError.from(reason).code == Code.Aborted) {
-          return;
+          return
         }
         // eslint-disable-next-line no-console
         console.error(
           `handler for rpc ${uHandler.method.name} of ${uHandler.service.typeName} failed`,
           reason
-        );
-      });
-  };
+        )
+      })
+  }
 }
 
 const fallback: NodeHandlerFn = (request, response) => {
-  response.writeHead(uResponseNotFound.status);
-  response.end();
-};
+  response.writeHead(uResponseNotFound.status)
+  response.end()
+}

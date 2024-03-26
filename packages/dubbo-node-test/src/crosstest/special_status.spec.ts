@@ -16,48 +16,48 @@ import {
   Code,
   DubboError,
   createCallbackClient,
-  createPromiseClient,
-} from "@apachedubbo/dubbo";
-import { TestService } from "../gen/grpc/testing/test_dubbo.js";
-import { SimpleRequest } from "../gen/grpc/testing/messages_pb.js";
-import { createTestServers } from "../helpers/testserver.js";
+  createPromiseClient
+} from '@apachedubbo/dubbo'
+import { TestService } from '../gen/grpc/testing/test_dubbo.js'
+import { SimpleRequest } from '../gen/grpc/testing/messages_pb.js'
+import { createTestServers } from '../helpers/testserver.js'
 
-describe("special_status", function () {
-  const servers = createTestServers();
-  beforeAll(async () => await servers.start());
+describe('special_status', function () {
+  const servers = createTestServers()
+  beforeAll(async () => await servers.start())
 
   servers.describeTransports((transport) => {
-    const TEST_STATUS_MESSAGE = `\t\ntest with whitespace\r\nand Unicode BMP ☺ and non-BMP 😈\t\n`;
+    const TEST_STATUS_MESSAGE = `\t\ntest with whitespace\r\nand Unicode BMP ☺ and non-BMP 😈\t\n`
     const request = new SimpleRequest({
       responseStatus: {
         code: Code.Unknown,
-        message: TEST_STATUS_MESSAGE,
-      },
-    });
+        message: TEST_STATUS_MESSAGE
+      }
+    })
     function expectError(err: unknown) {
-      expect(err).toBeInstanceOf(DubboError);
+      expect(err).toBeInstanceOf(DubboError)
       if (err instanceof DubboError) {
-        expect(err.code).toEqual(Code.Unknown);
-        expect(err.rawMessage).toEqual(TEST_STATUS_MESSAGE);
+        expect(err.code).toEqual(Code.Unknown)
+        expect(err.rawMessage).toEqual(TEST_STATUS_MESSAGE)
       }
     }
-    it("with promise client", async function () {
-      const client = createPromiseClient(TestService, transport());
+    it('with promise client', async function () {
+      const client = createPromiseClient(TestService, transport())
       try {
-        await client.unaryCall(request);
-        fail("expected to catch an error");
+        await client.unaryCall(request)
+        fail('expected to catch an error')
       } catch (e) {
-        expectError(e);
+        expectError(e)
       }
-    });
-    it("with callback client", function (done) {
-      const client = createCallbackClient(TestService, transport());
+    })
+    it('with callback client', function (done) {
+      const client = createCallbackClient(TestService, transport())
       client.unaryCall(request, (err: DubboError | undefined) => {
-        expectError(err);
-        done();
-      });
-    });
-  });
+        expectError(err)
+        done()
+      })
+    })
+  })
 
-  afterAll(async () => await servers.stop());
-});
+  afterAll(async () => await servers.stop())
+})

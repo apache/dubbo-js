@@ -12,59 +12,57 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { MethodKind } from "@bufbuild/protobuf";
-import { validateResponse } from "./validate-response.js";
-import { DubboError } from "../dubbo-error.js";
+import { MethodKind } from '@bufbuild/protobuf'
+import { validateResponse } from './validate-response.js'
+import { DubboError } from '../dubbo-error.js'
 
-describe("Connect validateResponse()", function () {
-  describe("with unary", function () {
-    const methodKind = MethodKind.Unary;
-    it("should be successful for HTTP 200", function () {
-      const r = validateResponse(methodKind, 200, new Headers());
-      expect(r.isUnaryError).toBeFalse();
-      expect(r.unaryError).toBeUndefined();
-    });
-    it("should return error for HTTP 204", function () {
-      const r = validateResponse(methodKind, 204, new Headers());
-      expect(r.isUnaryError).toBeTrue();
-      expect(r.unaryError?.message).toBe("[unknown] HTTP 204");
-    });
-    it("should return error for HTTP error status", function () {
-      const r = validateResponse(methodKind, 400, new Headers());
-      expect(r.isUnaryError).toBeTrue();
-      expect(r.unaryError?.message).toBe("[invalid_argument] HTTP 400");
-    });
-    it("should include headers as error metadata", function () {
-      const r = validateResponse(methodKind, 204, new Headers({ Foo: "Bar" }));
-      expect(r.unaryError?.metadata.get("Foo")).toBe("Bar");
-    });
-  });
-  describe("with streaming", function () {
-    const methodKind = MethodKind.ServerStreaming;
-    it("should be successful for HTTP 200", function () {
-      const r = validateResponse(methodKind, 200, new Headers());
-      expect(r.isUnaryError).toBeFalse();
-      expect(r.unaryError).toBeUndefined();
-    });
-    it("should throw error for HTTP error status", function () {
+describe('Connect validateResponse()', function () {
+  describe('with unary', function () {
+    const methodKind = MethodKind.Unary
+    it('should be successful for HTTP 200', function () {
+      const r = validateResponse(methodKind, 200, new Headers())
+      expect(r.isUnaryError).toBeFalse()
+      expect(r.unaryError).toBeUndefined()
+    })
+    it('should return error for HTTP 204', function () {
+      const r = validateResponse(methodKind, 204, new Headers())
+      expect(r.isUnaryError).toBeTrue()
+      expect(r.unaryError?.message).toBe('[unknown] HTTP 204')
+    })
+    it('should return error for HTTP error status', function () {
+      const r = validateResponse(methodKind, 400, new Headers())
+      expect(r.isUnaryError).toBeTrue()
+      expect(r.unaryError?.message).toBe('[invalid_argument] HTTP 400')
+    })
+    it('should include headers as error metadata', function () {
+      const r = validateResponse(methodKind, 204, new Headers({ Foo: 'Bar' }))
+      expect(r.unaryError?.metadata.get('Foo')).toBe('Bar')
+    })
+  })
+  describe('with streaming', function () {
+    const methodKind = MethodKind.ServerStreaming
+    it('should be successful for HTTP 200', function () {
+      const r = validateResponse(methodKind, 200, new Headers())
+      expect(r.isUnaryError).toBeFalse()
+      expect(r.unaryError).toBeUndefined()
+    })
+    it('should throw error for HTTP error status', function () {
       try {
-        validateResponse(methodKind, 400, new Headers());
-        fail("expected error");
+        validateResponse(methodKind, 400, new Headers())
+        fail('expected error')
       } catch (e) {
-        expect(e).toBeInstanceOf(DubboError);
-        expect(DubboError.from(e).message).toBe(
-          "[invalid_argument] HTTP 400"
-        );
+        expect(e).toBeInstanceOf(DubboError)
+        expect(DubboError.from(e).message).toBe('[invalid_argument] HTTP 400')
       }
-    });
-    it("should include headers as error metadata", function () {
+    })
+    it('should include headers as error metadata', function () {
       try {
-        validateResponse(methodKind, 400, new Headers({ Foo: "Bar" }));
-        fail("expected error");
+        validateResponse(methodKind, 400, new Headers({ Foo: 'Bar' }))
+        fail('expected error')
       } catch (e) {
-        expect(e).toBeInstanceOf(DubboError);
-        expect(DubboError.from(e).metadata.get("Foo")).toBe("Bar");
+        expect(e).toBeInstanceOf(DubboError)
+        expect(DubboError.from(e).metadata.get('Foo')).toBe('Bar')
       }
-    });
-  });
-});
+    })
+  })
+})

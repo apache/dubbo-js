@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Message, protoBase64 } from "@bufbuild/protobuf";
-import type { AnyMessage } from "@bufbuild/protobuf";
+import { Message, protoBase64 } from '@bufbuild/protobuf'
+import type { AnyMessage } from '@bufbuild/protobuf'
 import {
   headerContentType,
   headerProtocolVersion,
   headerUnaryAcceptEncoding,
   headerUnaryContentLength,
-  headerUnaryEncoding,
-} from "./headers.js";
-import { protocolVersion } from "./version.js";
-import type { UnaryRequest } from "../interceptor.js";
+  headerUnaryEncoding
+} from './headers.js'
+import { protocolVersion } from './version.js'
+import type { UnaryRequest } from '../interceptor.js'
 
-const contentTypePrefix = "application/";
+const contentTypePrefix = 'application/'
 
 function encodeMessageForUrl(message: Uint8Array, useBase64: boolean): string {
   if (useBase64) {
@@ -32,11 +32,11 @@ function encodeMessageForUrl(message: Uint8Array, useBase64: boolean): string {
     // Can we make protoBase64.enc more flexible?
     return protoBase64
       .enc(message)
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=+$/, "");
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '')
   } else {
-    return encodeURIComponent(new TextDecoder().decode(message));
+    return encodeURIComponent(new TextDecoder().decode(message))
   }
 }
 
@@ -51,41 +51,41 @@ export function transformConnectPostToGetRequest<
   message: Uint8Array,
   useBase64: boolean
 ): UnaryRequest<I, O> {
-  let query = `?triple=v${protocolVersion}`;
-  const contentType = request.header.get(headerContentType);
+  let query = `?triple=v${protocolVersion}`
+  const contentType = request.header.get(headerContentType)
   if (contentType?.indexOf(contentTypePrefix) === 0) {
     query +=
-      "&encoding=" +
-      encodeURIComponent(contentType.slice(contentTypePrefix.length));
+      '&encoding=' +
+      encodeURIComponent(contentType.slice(contentTypePrefix.length))
   }
-  const compression = request.header.get(headerUnaryEncoding);
-  if (compression !== null && compression !== "identity") {
-    query += "&compression=" + encodeURIComponent(compression);
+  const compression = request.header.get(headerUnaryEncoding)
+  if (compression !== null && compression !== 'identity') {
+    query += '&compression=' + encodeURIComponent(compression)
 
     // Force base64 for compressed payloads.
-    useBase64 = true;
+    useBase64 = true
   }
   if (useBase64) {
-    query += "&base64=1";
+    query += '&base64=1'
   }
-  query += "&message=" + encodeMessageForUrl(message, useBase64);
-  const url = request.url + query;
+  query += '&message=' + encodeMessageForUrl(message, useBase64)
+  const url = request.url + query
 
   // Omit headers that are not used for unary GET requests.
-  const header = new Headers(request.header);
-  header.delete(headerProtocolVersion);
-  header.delete(headerContentType);
-  header.delete(headerUnaryContentLength);
-  header.delete(headerUnaryEncoding);
-  header.delete(headerUnaryAcceptEncoding);
+  const header = new Headers(request.header)
+  header.delete(headerProtocolVersion)
+  header.delete(headerContentType)
+  header.delete(headerUnaryContentLength)
+  header.delete(headerUnaryEncoding)
+  header.delete(headerUnaryAcceptEncoding)
 
   return {
     ...request,
     init: {
       ...request.init,
-      method: "GET",
+      method: 'GET'
     },
     url,
-    header,
-  };
+    header
+  }
 }

@@ -16,34 +16,34 @@ import {
   DubboError,
   createCallbackClient,
   createPromiseClient,
-  Code,
-} from "@apachedubbo/dubbo";
-import { TestService } from "../gen/grpc/testing/test_dubbo.js";
-import { describeTransports } from "../helpers/crosstestserver.js";
+  Code
+} from '@apachedubbo/dubbo'
+import { TestService } from '../gen/grpc/testing/test_dubbo.js'
+import { describeTransports } from '../helpers/crosstestserver.js'
 
-describe("unimplemented_method", function () {
+describe('unimplemented_method', function () {
   function expectError(err: unknown) {
-    expect(err).toBeInstanceOf(DubboError);
+    expect(err).toBeInstanceOf(DubboError)
     if (err instanceof DubboError) {
-      expect(err.code).toEqual(Code.Unimplemented);
+      expect(err.code).toEqual(Code.Unimplemented)
     }
   }
   describeTransports((transport) => {
-    it("with promise client", async function () {
-      const client = createPromiseClient(TestService, transport());
+    it('with promise client', async function () {
+      const client = createPromiseClient(TestService, transport())
       try {
-        await client.unimplementedCall({});
-        fail("expected to catch an error");
+        await client.unimplementedCall({})
+        fail('expected to catch an error')
       } catch (e) {
-        expectError(e);
+        expectError(e)
       }
-    });
-    it("with callback client", function (done) {
-      const client = createCallbackClient(TestService, transport());
+    })
+    it('with callback client', function (done) {
+      const client = createCallbackClient(TestService, transport())
       client.unimplementedCall({}, (err: DubboError | undefined) => {
-        expectError(err);
-        done();
-      });
-    });
-  });
-});
+        expectError(err)
+        done()
+      })
+    })
+  })
+})

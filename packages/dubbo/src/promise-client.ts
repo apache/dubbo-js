@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Message, MethodKind } from "@bufbuild/protobuf";
+import { Message, MethodKind } from '@bufbuild/protobuf'
 import type {
   PartialMessage,
   ServiceType,
@@ -20,15 +20,15 @@ import type {
   MethodInfoBiDiStreaming,
   MethodInfoClientStreaming,
   MethodInfoServerStreaming,
-  MethodInfoUnary,
-} from "@bufbuild/protobuf";
-import type { Transport } from "./transport.js";
-import { makeAnyClient } from "./any-client.js";
-import type { CallOptions } from "./call-options.js";
-import { DubboError } from "./dubbo-error.js";
-import { Code } from "./code.js";
-import { createAsyncIterable } from "./protocol/async-iterable.js";
-import type { TripleClientServiceOptions } from './protocol-triple/client-service-options.js';
+  MethodInfoUnary
+} from '@bufbuild/protobuf'
+import type { Transport } from './transport.js'
+import { makeAnyClient } from './any-client.js'
+import type { CallOptions } from './call-options.js'
+import { DubboError } from './dubbo-error.js'
+import { Code } from './code.js'
+import { createAsyncIterable } from './protocol/async-iterable.js'
+import type { TripleClientServiceOptions } from './protocol-triple/client-service-options.js'
 
 // prettier-ignore
 /**
@@ -57,17 +57,17 @@ export function createPromiseClient<T extends ServiceType>(
   return makeAnyClient(service, (method) => {
     switch (method.kind) {
       case MethodKind.Unary:
-        return createUnaryFn(transport, service, method, serviceOptions);
+        return createUnaryFn(transport, service, method, serviceOptions)
       case MethodKind.ServerStreaming:
-        return createServerStreamingFn(transport, service, method);
+        return createServerStreamingFn(transport, service, method)
       case MethodKind.ClientStreaming:
-        return createClientStreamingFn(transport, service, method);
+        return createClientStreamingFn(transport, service, method)
       case MethodKind.BiDiStreaming:
-        return createBiDiStreamingFn(transport, service, method);
+        return createBiDiStreamingFn(transport, service, method)
       default:
-        return null;
+        return null
     }
-  }) as PromiseClient<T>;
+  }) as PromiseClient<T>
 }
 
 /**
@@ -76,7 +76,7 @@ export function createPromiseClient<T extends ServiceType>(
 type UnaryFn<I extends Message<I>, O extends Message<O>> = (
   request: PartialMessage<I>,
   options?: CallOptions
-) => Promise<O>;
+) => Promise<O>
 
 function createUnaryFn<I extends Message<I>, O extends Message<O>>(
   transport: Transport,
@@ -93,11 +93,11 @@ function createUnaryFn<I extends Message<I>, O extends Message<O>>(
       options?.headers,
       input,
       serviceOptions
-    );
-    options?.onHeader?.(response.header);
-    options?.onTrailer?.(response.trailer);
-    return response.message;
-  };
+    )
+    options?.onHeader?.(response.header)
+    options?.onTrailer?.(response.trailer)
+    return response.message
+  }
 }
 
 /**
@@ -107,7 +107,7 @@ function createUnaryFn<I extends Message<I>, O extends Message<O>>(
 type ServerStreamingFn<I extends Message<I>, O extends Message<O>> = (
   request: PartialMessage<I>,
   options?: CallOptions
-) => AsyncIterable<O>;
+) => AsyncIterable<O>
 
 export function createServerStreamingFn<
   I extends Message<I>,
@@ -118,8 +118,7 @@ export function createServerStreamingFn<
   method: MethodInfo<I, O>
 ): ServerStreamingFn<I, O> {
   return async function* (input, options): AsyncIterable<O> {
-    const inputMessage =
-      input instanceof method.I ? input : new method.I(input);
+    const inputMessage = input instanceof method.I ? input : new method.I(input)
     const response = await transport.stream<I, O>(
       service,
       method,
@@ -127,11 +126,11 @@ export function createServerStreamingFn<
       options?.timeoutMs,
       options?.headers,
       createAsyncIterable([inputMessage])
-    );
-    options?.onHeader?.(response.header);
-    yield* response.message;
-    options?.onTrailer?.(response.trailer);
-  };
+    )
+    options?.onHeader?.(response.header)
+    yield* response.message
+    options?.onTrailer?.(response.trailer)
+  }
 }
 
 /**
@@ -141,7 +140,7 @@ export function createServerStreamingFn<
 type ClientStreamingFn<I extends Message<I>, O extends Message<O>> = (
   request: AsyncIterable<PartialMessage<I>>,
   options?: CallOptions
-) => Promise<O>;
+) => Promise<O>
 
 export function createClientStreamingFn<
   I extends Message<I>,
@@ -157,7 +156,7 @@ export function createClientStreamingFn<
   ): Promise<O> {
     async function* input() {
       for await (const partial of request) {
-        yield partial instanceof method.I ? partial : new method.I(partial);
+        yield partial instanceof method.I ? partial : new method.I(partial)
       }
     }
     const response = await transport.stream<I, O>(
@@ -167,21 +166,21 @@ export function createClientStreamingFn<
       options?.timeoutMs,
       options?.headers,
       input()
-    );
-    options?.onHeader?.(response.header);
-    let singleMessage: O | undefined;
+    )
+    options?.onHeader?.(response.header)
+    let singleMessage: O | undefined
     for await (const message of response.message) {
-      singleMessage = message;
+      singleMessage = message
     }
     if (!singleMessage) {
       throw new DubboError(
-        "protocol error: missing response message",
+        'protocol error: missing response message',
         Code.Internal
-      );
+      )
     }
-    options?.onTrailer?.(response.trailer);
-    return singleMessage;
-  };
+    options?.onTrailer?.(response.trailer)
+    return singleMessage
+  }
 }
 
 /**
@@ -191,7 +190,7 @@ export function createClientStreamingFn<
 type BiDiStreamingFn<I extends Message<I>, O extends Message<O>> = (
   request: AsyncIterable<PartialMessage<I>>,
   options?: CallOptions
-) => AsyncIterable<O>;
+) => AsyncIterable<O>
 
 export function createBiDiStreamingFn<
   I extends Message<I>,
@@ -207,7 +206,7 @@ export function createBiDiStreamingFn<
   ): AsyncIterable<O> {
     async function* input() {
       for await (const partial of request) {
-        yield partial instanceof method.I ? partial : new method.I(partial);
+        yield partial instanceof method.I ? partial : new method.I(partial)
       }
     }
     const response = await transport.stream<I, O>(
@@ -217,9 +216,9 @@ export function createBiDiStreamingFn<
       options?.timeoutMs,
       options?.headers,
       input()
-    );
-    options?.onHeader?.(response.header);
-    yield* response.message;
-    options?.onTrailer?.(response.trailer);
-  };
+    )
+    options?.onHeader?.(response.header)
+    yield* response.message
+    options?.onTrailer?.(response.trailer)
+  }
 }

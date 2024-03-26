@@ -12,73 +12,73 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type * as http from "http";
-import * as http2 from "http2";
-import { strict as assert } from "node:assert";
+import type * as http from 'http'
+import * as http2 from 'http2'
+import { strict as assert } from 'node:assert'
 
 interface Http2Response {
-  status: number;
-  body: Uint8Array;
+  status: number
+  body: Uint8Array
 }
 
 interface Http2RequestInit {
-  url: string;
-  method?: string;
-  body?: Uint8Array;
-  ctype?: string;
-  headers?: http2.OutgoingHttpHeaders;
-  rejectUnauthorized?: boolean;
+  url: string
+  method?: string
+  body?: Uint8Array
+  ctype?: string
+  headers?: http2.OutgoingHttpHeaders
+  rejectUnauthorized?: boolean
 }
 
 export function http2Request(init: Http2RequestInit): Promise<Http2Response> {
   return new Promise<Http2Response>((resolve, reject) => {
-    const options: http2.SecureClientSessionOptions = {};
+    const options: http2.SecureClientSessionOptions = {}
     if (init.rejectUnauthorized !== undefined) {
-      options.rejectUnauthorized = init.rejectUnauthorized;
+      options.rejectUnauthorized = init.rejectUnauthorized
     }
     const headers: http.OutgoingHttpHeaders = {
       ...init.headers,
-      ":path": new URL(init.url).pathname,
-      ":method": "GET",
-    };
+      ':path': new URL(init.url).pathname,
+      ':method': 'GET'
+    }
     if (init.ctype !== undefined) {
-      headers["content-type"] = init.ctype;
+      headers['content-type'] = init.ctype
     }
     if (init.method !== undefined) {
-      headers[":method"] = init.method;
+      headers[':method'] = init.method
     }
     http2
       .connect(init.url, options, (sess) => {
-        const stream = sess.request(headers);
-        stream.once("error", reject);
-        stream.once("response", (headers) => {
-          const chunks: Uint8Array[] = [];
+        const stream = sess.request(headers)
+        stream.once('error', reject)
+        stream.once('response', (headers) => {
+          const chunks: Uint8Array[] = []
 
           function read() {
-            let chunk: unknown;
+            let chunk: unknown
             while (null !== (chunk = stream.read() as unknown)) {
-              assert(chunk instanceof Buffer);
-              chunks.push(chunk);
+              assert(chunk instanceof Buffer)
+              chunks.push(chunk)
             }
           }
 
-          stream.on("readable", read);
-          stream.once("end", () => {
-            stream.off("readable", read);
-            stream.off("error", reject);
-            sess.close();
-            const body = Buffer.concat(chunks);
+          stream.on('readable', read)
+          stream.once('end', () => {
+            stream.off('readable', read)
+            stream.off('error', reject)
+            sess.close()
+            const body = Buffer.concat(chunks)
             resolve({
-              status: headers[":status"] ?? -1,
-              body,
-            });
-          });
-        });
+              status: headers[':status'] ?? -1,
+              body
+            })
+          })
+        })
         if (init.body !== undefined) {
-          stream.write(init.body);
+          stream.write(init.body)
         }
-        stream.end();
+        stream.end()
       })
-      .once("error", reject);
-  });
+      .once('error', reject)
+  })
 }

@@ -12,99 +12,97 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code, DubboError } from "@apachedubbo/dubbo";
+import { Code, DubboError } from '@apachedubbo/dubbo'
 import {
   createDubboTransport,
-  Http2SessionManager,
-} from "@apachedubbo/dubbo-node";
+  Http2SessionManager
+} from '@apachedubbo/dubbo-node'
 
-describe("createDubboTransport()", function () {
-  it("should take just httpVersion and baseUrl", function () {
+describe('createDubboTransport()', function () {
+  it('should take just httpVersion and baseUrl', function () {
     const t = createDubboTransport({
-      httpVersion: "2",
-      baseUrl: "https://example.com",
-    });
-    expect(t).toBeDefined();
-  });
-  it("should take session options", function () {
+      httpVersion: '2',
+      baseUrl: 'https://example.com'
+    })
+    expect(t).toBeDefined()
+  })
+  it('should take session options', function () {
     const t = createDubboTransport({
-      httpVersion: "2",
-      baseUrl: "https://example.com",
+      httpVersion: '2',
+      baseUrl: 'https://example.com',
       pingIntervalMs: 1000 * 30,
       pingIdleConnection: true,
       pingTimeoutMs: 1000 * 5,
-      idleConnectionTimeoutMs: 1000 * 60 * 5,
-    });
-    expect(t).toBeDefined();
-  });
-  it("should take node options", function () {
+      idleConnectionTimeoutMs: 1000 * 60 * 5
+    })
+    expect(t).toBeDefined()
+  })
+  it('should take node options', function () {
     const t = createDubboTransport({
-      httpVersion: "2",
-      baseUrl: "https://example.com",
+      httpVersion: '2',
+      baseUrl: 'https://example.com',
       nodeOptions: {
-        maxSessionMemory: 1024 * 1024 * 4,
-      },
-    });
-    expect(t).toBeDefined();
-  });
-  it("should take session manager", function () {
-    const sm = new Http2SessionManager(
-      "https://example.com",
-      {
-        pingIntervalMs: 1000 * 10,
-      },
-      {
-        maxSessionMemory: 1024 * 1024 * 4,
+        maxSessionMemory: 1024 * 1024 * 4
       }
-    );
+    })
+    expect(t).toBeDefined()
+  })
+  it('should take session manager', function () {
+    const sm = new Http2SessionManager(
+      'https://example.com',
+      {
+        pingIntervalMs: 1000 * 10
+      },
+      {
+        maxSessionMemory: 1024 * 1024 * 4
+      }
+    )
     const t = createDubboTransport({
-      httpVersion: "2",
-      baseUrl: "https://example.com",
-      sessionManager: sm,
-    });
-    expect(t).toBeDefined();
-  });
-});
+      httpVersion: '2',
+      baseUrl: 'https://example.com',
+      sessionManager: sm
+    })
+    expect(t).toBeDefined()
+  })
+})
 
-describe("using a session manager to open a connection before starting an application", function () {
-  it("should work", async function () {
-    const sm = new Http2SessionManager("https://demo.connect.build");
+describe('using a session manager to open a connection before starting an application', function () {
+  it('should work', async function () {
+    const sm = new Http2SessionManager('https://demo.connect.build')
     for (let backoff = 1; ; backoff++) {
-      const state = await sm.connect();
-      if (state == "error") {
+      const state = await sm.connect()
+      if (state == 'error') {
         // For a transient error, we can retry here
-        const reason = sm.error();
+        const reason = sm.error()
         if (DubboError.from(reason).code !== Code.Unavailable) {
-          throw sm.error();
+          throw sm.error()
         }
         await new Promise<void>((resolve) =>
           setTimeout(resolve, backoff * 1000)
-        );
+        )
       } else {
         // we are connected (either open or idle), break the loop
-        break;
+        break
       }
     }
     // here we would enter the application logic, and start calling RPCs
-  });
-});
+  })
+})
 
-describe("using a session manager to explicitly close all connections", function () {
-  it("should work", function () {
+describe('using a session manager to explicitly close all connections', function () {
+  it('should work', function () {
     // create a client, keeping a reference to the session manage
-    const sessionManager = new Http2SessionManager(
-      "https://demo.connect.build"
-    );
+    const sessionManager = new Http2SessionManager('https://demo.connect.build')
     createDubboTransport({
-      httpVersion: "2",
-      baseUrl: "https://demo.connect.build",
-      sessionManager,
-    });
+      httpVersion: '2',
+      baseUrl: 'https://demo.connect.build',
+      sessionManager
+    })
     // const client = createPromiseClient(..., transport);
 
     // make calls with the client
 
     // close the connection
-    sessionManager.abort();
-  });
-});
+    sessionManager.abort()
+  })
+})

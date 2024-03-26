@@ -18,11 +18,11 @@
  * @private Internal code, does not follow semantic versioning.
  */
 export interface ContentTypeMatcher {
-  (contentType: string | null): boolean;
-  supported: RegExp[];
+  (contentType: string | null): boolean
+  supported: RegExp[]
 }
 
-const contentTypeMatcherCacheSize = 1024;
+const contentTypeMatcherCacheSize = 1024
 
 /**
  * Create a function that returns true if the given mime type is supported.
@@ -31,30 +31,30 @@ const contentTypeMatcherCacheSize = 1024;
  * @private Internal code, does not follow semantic versioning.
  */
 export function contentTypeMatcher(
-  ...supported: (RegExp | Pick<ContentTypeMatcher, "supported">)[]
+  ...supported: (RegExp | Pick<ContentTypeMatcher, 'supported'>)[]
 ): ContentTypeMatcher {
-  const cache = new Map<string, boolean>();
+  const cache = new Map<string, boolean>()
   const source = supported.reduce(
     (previousValue: RegExp[], currentValue) =>
       previousValue.concat(
-        "supported" in currentValue ? currentValue.supported : currentValue
+        'supported' in currentValue ? currentValue.supported : currentValue
       ),
     []
-  );
+  )
   function match(contentType: string | null): boolean {
     if (contentType === null || contentType.length == 0) {
-      return false;
+      return false
     }
-    const cached = cache.get(contentType);
+    const cached = cache.get(contentType)
     if (cached !== undefined) {
-      return cached;
+      return cached
     }
-    const ok = source.some((re) => re.test(contentType));
+    const ok = source.some((re) => re.test(contentType))
     if (cache.size < contentTypeMatcherCacheSize) {
-      cache.set(contentType, ok);
+      cache.set(contentType, ok)
     }
-    return ok;
+    return ok
   }
-  match.supported = source;
-  return match;
+  match.supported = source
+  return match
 }

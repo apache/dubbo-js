@@ -17,10 +17,10 @@ import type {
   Message,
   MethodInfo,
   PartialMessage,
-  ServiceType,
-} from "@bufbuild/protobuf";
-import type { StreamResponse, UnaryResponse } from "./interceptor.js";
-import type { TripleClientServiceOptions } from './protocol-triple/client-service-options.js';
+  ServiceType
+} from '@bufbuild/protobuf'
+import type { StreamResponse, UnaryResponse } from './interceptor.js'
+import type { TripleClientServiceOptions } from './protocol-triple/client-service-options.js'
 
 /**
  * Transport represents the underlying transport for a client.
@@ -40,7 +40,7 @@ export interface Transport {
     header: HeadersInit | undefined,
     input: PartialMessage<I>,
     serviceOptions?: TripleClientServiceOptions
-  ): Promise<UnaryResponse<I, O>>;
+  ): Promise<UnaryResponse<I, O>>
 
   /**
    * Call a streaming RPC - a method that takes zero or more input messages,
@@ -53,5 +53,5 @@ export interface Transport {
     timeoutMs: number | undefined,
     header: HeadersInit | undefined,
     input: AsyncIterable<I>
-  ): Promise<StreamResponse<I, O>>;
+  ): Promise<StreamResponse<I, O>>
 }

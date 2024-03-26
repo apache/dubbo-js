@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createTransport } from "./protocol-triple/transport.js";
-import type { CommonTransportOptions } from "./protocol/transport-options.js";
-import { createUniversalHandlerClient } from "./protocol/universal-handler-client.js";
-import { createDubboRouter } from "./router.js";
-import type { DubboRouter, DubboRouterOptions } from "./router.js";
+import { createTransport } from './protocol-triple/transport.js'
+import type { CommonTransportOptions } from './protocol/transport-options.js'
+import { createUniversalHandlerClient } from './protocol/universal-handler-client.js'
+import { createDubboRouter } from './router.js'
+import type { DubboRouter, DubboRouterOptions } from './router.js'
 
 /**
  * Creates a Transport that routes requests to the configured router. Useful for testing
@@ -24,24 +24,24 @@ import type { DubboRouter, DubboRouterOptions } from "./router.js";
  *
  * This can be used to test both client logic by using this to stub/mock the backend,
  * and to test server logic by using this to run without needing to spin up a server.
- * 
+ *
  * Mainly used for testing of dubbo-node-test and dubbo-web-test
  */
 export function createRouterTransport(
   routes: (router: DubboRouter) => void,
   options?: {
-    transport?: Partial<CommonTransportOptions>;
-    router?: DubboRouterOptions;
+    transport?: Partial<CommonTransportOptions>
+    router?: DubboRouterOptions
   }
 ) {
   const router = createDubboRouter({
     ...(options?.router ?? {}),
-    triple: true,
-  });
-  routes(router);
+    triple: true
+  })
+  routes(router)
   return createTransport({
     httpClient: createUniversalHandlerClient(router.handlers),
-    baseUrl: "https://in-memory",
+    baseUrl: 'https://in-memory',
     useBinaryFormat: true,
     interceptors: [],
     acceptCompression: [],
@@ -49,6 +49,6 @@ export function createRouterTransport(
     compressMinBytes: Number.MAX_SAFE_INTEGER,
     readMaxBytes: Number.MAX_SAFE_INTEGER,
     writeMaxBytes: Number.MAX_SAFE_INTEGER,
-    ...(options?.transport ?? {}),
-  });
+    ...(options?.transport ?? {})
+  })
 }

@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-(function () {
-  if (typeof globalThis.queueMicrotask === "function") {
-    return;
+;(function () {
+  if (typeof globalThis.queueMicrotask === 'function') {
+    return
   }
 
   globalThis.queueMicrotask = (callback) =>
-    typeof Promise === "function" && typeof Promise.resolve === "function"
+    typeof Promise === 'function' && typeof Promise.resolve === 'function'
       ? Promise.resolve().then(callback)
-      : setTimeout(callback, 0);
-})();
+      : setTimeout(callback, 0)
+})()

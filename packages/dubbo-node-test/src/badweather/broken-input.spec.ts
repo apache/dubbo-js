@@ -12,28 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { TestService } from "../gen/grpc/testing/test_dubbo.js";
-import { createTestServers } from "../helpers/testserver.js";
-import { Code, DubboError } from "@apachedubbo/dubbo";
-import { createMethodUrl } from "@apachedubbo/dubbo/protocol";
+import { TestService } from '../gen/grpc/testing/test_dubbo.js'
+import { createTestServers } from '../helpers/testserver.js'
+import { Code, DubboError } from '@apachedubbo/dubbo'
+import { createMethodUrl } from '@apachedubbo/dubbo/protocol'
 import {
   endStreamFromJson,
   codeFromHttpStatus,
-  errorFromJsonBytes,
-} from "@apachedubbo/dubbo/protocol-triple";
-import { http2Request } from "../helpers/http2-request.js";
+  errorFromJsonBytes
+} from '@apachedubbo/dubbo/protocol-triple'
+import { http2Request } from '../helpers/http2-request.js'
 
-describe("broken input", () => {
-  const servers = createTestServers();
-  beforeAll(async () => await servers.start());
+describe('broken input', () => {
+  const servers = createTestServers()
+  beforeAll(async () => await servers.start())
 
   servers.describeServers(
-    ["@apachedubbo/dubbo-node (h2c)"],
+    ['@apachedubbo/dubbo-node (h2c)'],
     (server, serverName) => {
-      const rejectUnauthorized = true; // TODO set up cert for go server correctly
+      const rejectUnauthorized = true // TODO set up cert for go server correctly
 
-      describe("Connect unary", function () {
-        it("should raise HTTP 400 for invalid JSON", async () => {
+      describe('Connect unary', function () {
+        it('should raise HTTP 400 for invalid JSON', async () => {
           const unaryRequest = async (body: Uint8Array) =>
             http2Request({
               body,
@@ -43,9 +43,9 @@ describe("broken input", () => {
                 TestService,
                 TestService.methods.unaryCall
               ),
-              method: "POST",
-              ctype: "application/json",
-              headers: { "TRI-Protocol-Version": "1.0.0" },
+              method: 'POST',
+              ctype: 'application/json',
+              headers: { 'TRI-Protocol-Version': '1.0.0' }
             }).then((res) => {
               return {
                 status: res.status,
@@ -56,24 +56,24 @@ describe("broken input", () => {
                     `HTTP ${res.status}`,
                     codeFromHttpStatus(res.status)
                   )
-                ),
-              };
-            });
+                )
+              }
+            })
           const { status, error } = await unaryRequest(
-            new TextEncoder().encode("this is not json")
-          );
-          expect(status).toBe(400);
-          expect(error.code).toBe(Code.InvalidArgument);
+            new TextEncoder().encode('this is not json')
+          )
+          expect(status).toBe(400)
+          expect(error.code).toBe(Code.InvalidArgument)
           expect(error.rawMessage).toMatch(
             /^cannot decode grpc.testing.SimpleRequest from JSON: Unexpected token '?h'?.*JSON/
-          );
-        });
-      });
+          )
+        })
+      })
 
       for (const method of [
         TestService.methods.streamingInputCall,
         TestService.methods.streamingOutputCall,
-        TestService.methods.fullDuplexCall,
+        TestService.methods.fullDuplexCall
       ]) {
         describe(`Connect streaming ${method.name}`, function () {
           const streamingRequest = async (body: Uint8Array) =>
@@ -81,84 +81,84 @@ describe("broken input", () => {
               body,
               rejectUnauthorized,
               url: createMethodUrl(server.getUrl(), TestService, method),
-              method: "POST",
-              ctype: "application/connect+json",
-              headers: { "TRI-Protocol-Version": "1.0.0" },
+              method: 'POST',
+              ctype: 'application/connect+json',
+              headers: { 'TRI-Protocol-Version': '1.0.0' }
             }).then((res) => ({
               status: res.status,
-              endStream: endStreamFromJson(res.body.subarray(5)),
-            }));
-          it("should raise HTTP 400 for for invalid JSON", async () => {
-            const json = new TextEncoder().encode("this is not json");
-            const body = new Uint8Array(json.byteLength + 5);
-            body.set(json, 5);
+              endStream: endStreamFromJson(res.body.subarray(5))
+            }))
+          it('should raise HTTP 400 for for invalid JSON', async () => {
+            const json = new TextEncoder().encode('this is not json')
+            const body = new Uint8Array(json.byteLength + 5)
+            body.set(json, 5)
             const v = new DataView(
               body.buffer,
               body.byteOffset,
               body.byteLength
-            );
-            v.setUint8(0, 0b00000000); // first byte is flags
-            v.setUint32(1, json.byteLength); // 4 bytes message length
-            const { status, endStream } = await streamingRequest(body);
-            expect(status).toBe(200);
-            expect(endStream.error?.code).toBe(Code.InvalidArgument);
+            )
+            v.setUint8(0, 0b00000000) // first byte is flags
+            v.setUint32(1, json.byteLength) // 4 bytes message length
+            const { status, endStream } = await streamingRequest(body)
+            expect(status).toBe(200)
+            expect(endStream.error?.code).toBe(Code.InvalidArgument)
             // Error messages tend to change across Node versions. Should this happen again, this link is useful to
             // build the correct RegExp:  https://regex101.com/r/By9VEN/1
             expect(endStream.error?.rawMessage).toMatch(
               /^cannot decode grpc.testing.Streaming(Input|Output)CallRequest from JSON: Unexpected token '?h'?.*JSON/
-            );
-          });
-          it("should raise HTTP 400 for 0 message length", async () => {
-            const body = new Uint8Array(5);
+            )
+          })
+          it('should raise HTTP 400 for 0 message length', async () => {
+            const body = new Uint8Array(5)
             const v = new DataView(
               body.buffer,
               body.byteOffset,
               body.byteLength
-            );
-            v.setUint8(0, 0b00000000); // first byte is flags
-            v.setUint32(1, 1024); // 4 bytes message length
-            const { status, endStream } = await streamingRequest(body);
-            expect(status).toBe(200);
-            expect(endStream.error?.code).toBe(Code.InvalidArgument);
+            )
+            v.setUint8(0, 0b00000000) // first byte is flags
+            v.setUint32(1, 1024) // 4 bytes message length
+            const { status, endStream } = await streamingRequest(body)
+            expect(status).toBe(200)
+            expect(endStream.error?.code).toBe(Code.InvalidArgument)
             expect(endStream.error?.rawMessage).toBe(
-              "protocol error: promised 1024 bytes in enveloped message, got 0 bytes"
-            );
-          });
-          it("should raise HTTP 400 for short message", async () => {
-            const body = new Uint8Array(6);
+              'protocol error: promised 1024 bytes in enveloped message, got 0 bytes'
+            )
+          })
+          it('should raise HTTP 400 for short message', async () => {
+            const body = new Uint8Array(6)
             const v = new DataView(
               body.buffer,
               body.byteOffset,
               body.byteLength
-            );
-            v.setUint8(0, 0b00000000); // first byte is flags
-            v.setUint32(1, 1024); // 4 bytes message length
-            const { status, endStream } = await streamingRequest(body);
-            expect(status).toBe(200);
-            expect(endStream.error?.code).toBe(Code.InvalidArgument);
+            )
+            v.setUint8(0, 0b00000000) // first byte is flags
+            v.setUint32(1, 1024) // 4 bytes message length
+            const { status, endStream } = await streamingRequest(body)
+            expect(status).toBe(200)
+            expect(endStream.error?.code).toBe(Code.InvalidArgument)
             expect(endStream.error?.rawMessage).toMatch(
-              "^protocol error: promised 1024 bytes in enveloped message, got (1|less) bytes"
-            );
-          });
-          it("should raise HTTP 400 for short envelope", async () => {
-            const body = new Uint8Array(1);
+              '^protocol error: promised 1024 bytes in enveloped message, got (1|less) bytes'
+            )
+          })
+          it('should raise HTTP 400 for short envelope', async () => {
+            const body = new Uint8Array(1)
             const v = new DataView(
               body.buffer,
               body.byteOffset,
               body.byteLength
-            );
-            v.setUint8(0, 0b00000000); // first byte is flags
-            const { status, endStream } = await streamingRequest(body);
-            expect(status).toBe(200);
-            expect(endStream.error?.code).toBe(Code.InvalidArgument);
+            )
+            v.setUint8(0, 0b00000000) // first byte is flags
+            const { status, endStream } = await streamingRequest(body)
+            expect(status).toBe(200)
+            expect(endStream.error?.code).toBe(Code.InvalidArgument)
             expect(endStream.error?.rawMessage).toMatch(
-              "^protocol error: incomplete envelope"
-            );
-          });
-        });
+              '^protocol error: incomplete envelope'
+            )
+          })
+        })
       }
     }
-  );
+  )
 
-  afterAll(async () => await servers.stop());
-});
+  afterAll(async () => await servers.stop())
+})

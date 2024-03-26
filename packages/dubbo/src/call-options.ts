@@ -20,26 +20,26 @@ export interface CallOptions {
   /**
    * Timeout in milliseconds.
    */
-  timeoutMs?: number;
+  timeoutMs?: number
 
   /**
    * Custom headers to send with the request.
    */
-  headers?: HeadersInit;
+  headers?: HeadersInit
 
   /**
    * An optional AbortSignal to cancel the call.
    * If cancelled, an error with Code.Canceled is raised.
    */
-  signal?: AbortSignal;
+  signal?: AbortSignal
 
   /**
    * Called when response headers are received.
    */
-  onHeader?(headers: Headers): void;
+  onHeader?(headers: Headers): void
 
   /**
    * Called when response trailers are received.
    */
-  onTrailer?(trailers: Headers): void;
+  onTrailer?(trailers: Headers): void
 }

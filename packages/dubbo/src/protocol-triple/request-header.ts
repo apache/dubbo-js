@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { MethodKind } from "@bufbuild/protobuf";
+import { MethodKind } from '@bufbuild/protobuf'
 import {
   headerContentType,
   headerStreamAcceptEncoding,
@@ -22,17 +22,17 @@ import {
   headerTimeout,
   headerProtocolVersion,
   headerServiceVersion,
-  headerServiceGroup,
-} from "./headers.js";
-import { protocolVersion } from "./version.js";
+  headerServiceGroup
+} from './headers.js'
+import { protocolVersion } from './version.js'
 import {
   contentTypeStreamJson,
   contentTypeStreamProto,
   contentTypeUnaryJson,
-  contentTypeUnaryProto,
-} from "./content-type.js";
-import type { Compression } from "../protocol/compression.js";
-import type { TripleClientServiceOptions } from './client-service-options.js';
+  contentTypeUnaryProto
+} from './content-type.js'
+import type { Compression } from '../protocol/compression.js'
+import type { TripleClientServiceOptions } from './client-service-options.js'
 
 /**
  * Creates headers for a Dubbo request.
@@ -46,9 +46,9 @@ export function requestHeader(
   userProvidedHeaders: HeadersInit | undefined,
   serviceOptions?: TripleClientServiceOptions
 ): Headers {
-  const result = new Headers(userProvidedHeaders ?? {});
+  const result = new Headers(userProvidedHeaders ?? {})
   if (timeoutMs !== undefined) {
-    result.set(headerTimeout, `${timeoutMs}`);
+    result.set(headerTimeout, `${timeoutMs}`)
   }
   result.set(
     headerContentType,
@@ -59,15 +59,15 @@ export function requestHeader(
       : useBinaryFormat
       ? contentTypeStreamProto
       : contentTypeStreamJson
-  );
-  result.set(headerProtocolVersion, protocolVersion);
-  if(serviceOptions?.serviceGroup !== undefined) {
-    result.set(headerServiceGroup, serviceOptions.serviceGroup);
+  )
+  result.set(headerProtocolVersion, protocolVersion)
+  if (serviceOptions?.serviceGroup !== undefined) {
+    result.set(headerServiceGroup, serviceOptions.serviceGroup)
   }
-  if(serviceOptions?.serviceVersion !== undefined) {
-    result.set(headerServiceVersion, serviceOptions.serviceVersion);
+  if (serviceOptions?.serviceVersion !== undefined) {
+    result.set(headerServiceVersion, serviceOptions.serviceVersion)
   }
-  return result;
+  return result
 }
 
 /**
@@ -95,20 +95,20 @@ export function requestHeaderWithCompression(
     timeoutMs,
     userProvidedHeaders,
     serviceOptions
-  );
+  )
   if (sendCompression != null) {
     const name =
       methodKind == MethodKind.Unary
         ? headerUnaryEncoding
-        : headerStreamEncoding;
-    result.set(name, sendCompression.name);
+        : headerStreamEncoding
+    result.set(name, sendCompression.name)
   }
   if (acceptCompression.length > 0) {
     const name =
       methodKind == MethodKind.Unary
         ? headerUnaryAcceptEncoding
-        : headerStreamAcceptEncoding;
-    result.set(name, acceptCompression.map((c) => c.name).join(","));
+        : headerStreamAcceptEncoding
+    result.set(name, acceptCompression.map((c) => c.name).join(','))
   }
-  return result;
+  return result
 }

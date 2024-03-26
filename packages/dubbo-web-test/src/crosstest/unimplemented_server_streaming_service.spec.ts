@@ -16,41 +16,41 @@ import {
   Code,
   DubboError,
   createCallbackClient,
-  createPromiseClient,
-} from "@apachedubbo/dubbo";
-import { UnimplementedService } from "../gen/grpc/testing/test_dubbo.js";
-import { describeTransports } from "../helpers/crosstestserver.js";
-import { Empty } from "../gen/grpc/testing/empty_pb.js";
+  createPromiseClient
+} from '@apachedubbo/dubbo'
+import { UnimplementedService } from '../gen/grpc/testing/test_dubbo.js'
+import { describeTransports } from '../helpers/crosstestserver.js'
+import { Empty } from '../gen/grpc/testing/empty_pb.js'
 
-describe("unimplemented_server_streaming_service", function () {
-  const request = new Empty();
+describe('unimplemented_server_streaming_service', function () {
+  const request = new Empty()
   describeTransports((transport) => {
-    it("with promise client", async function () {
-      const client = createPromiseClient(UnimplementedService, transport());
+    it('with promise client', async function () {
+      const client = createPromiseClient(UnimplementedService, transport())
       try {
         for await (const response of client.unimplementedStreamingOutputCall(
           request
         )) {
-          fail(`expecting no response, got: ${response.toJsonString()}`);
+          fail(`expecting no response, got: ${response.toJsonString()}`)
         }
-        fail("expected to catch an error");
+        fail('expected to catch an error')
       } catch (e) {
-        expect(e).toBeInstanceOf(DubboError);
-        expect(DubboError.from(e).code).toBe(Code.Unimplemented);
+        expect(e).toBeInstanceOf(DubboError)
+        expect(DubboError.from(e).code).toBe(Code.Unimplemented)
       }
-    });
-    it("with callback client", function (done) {
-      const client = createCallbackClient(UnimplementedService, transport());
+    })
+    it('with callback client', function (done) {
+      const client = createCallbackClient(UnimplementedService, transport())
       client.unimplementedStreamingOutputCall(
         request,
         (response) => {
-          fail(`expecting no response, got: ${response.toJsonString()}`);
+          fail(`expecting no response, got: ${response.toJsonString()}`)
         },
         (err: DubboError | undefined) => {
-          expect(err?.code).toBe(Code.Unimplemented);
-          done();
+          expect(err?.code).toBe(Code.Unimplemented)
+          done()
         }
-      );
-    });
-  });
-});
+      )
+    })
+  })
+})

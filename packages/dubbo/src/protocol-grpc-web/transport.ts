@@ -17,20 +17,20 @@ import type {
   Message,
   MethodInfo,
   PartialMessage,
-  ServiceType,
-} from "@bufbuild/protobuf";
-import { validateTrailer } from "../protocol-grpc/validate-trailer.js";
-import { requestHeaderWithCompression } from "./request-header.js";
-import { validateResponseWithCompression } from "./validate-response.js";
-import { createTrailerSerialization, trailerFlag } from "./trailer.js";
-import { Code } from "../code.js";
-import { DubboError } from "../dubbo-error.js";
+  ServiceType
+} from '@bufbuild/protobuf'
+import { validateTrailer } from '../protocol-grpc/validate-trailer.js'
+import { requestHeaderWithCompression } from './request-header.js'
+import { validateResponseWithCompression } from './validate-response.js'
+import { createTrailerSerialization, trailerFlag } from './trailer.js'
+import { Code } from '../code.js'
+import { DubboError } from '../dubbo-error.js'
 import type {
   UnaryResponse,
   UnaryRequest,
   StreamResponse,
-  StreamRequest,
-} from "../interceptor.js";
+  StreamRequest
+} from '../interceptor.js'
 import {
   pipe,
   createAsyncIterable,
@@ -41,13 +41,13 @@ import {
   transformSplitEnvelope,
   transformDecompressEnvelope,
   transformParseEnvelope,
-  transformNormalizeMessage,
-} from "../protocol/async-iterable.js";
-import { createMethodUrl } from "../protocol/create-method-url.js";
-import { runUnaryCall, runStreamingCall } from "../protocol/run-call.js";
-import { createMethodSerializationLookup } from "../protocol/serialization.js";
-import type { CommonTransportOptions } from "../protocol/transport-options.js";
-import type { Transport } from "../transport.js";
+  transformNormalizeMessage
+} from '../protocol/async-iterable.js'
+import { createMethodUrl } from '../protocol/create-method-url.js'
+import { runUnaryCall, runStreamingCall } from '../protocol/run-call.js'
+import { createMethodSerializationLookup } from '../protocol/serialization.js'
+import type { CommonTransportOptions } from '../protocol/transport-options.js'
+import type { Transport } from '../transport.js'
 
 /**
  * Create a Transport for the gRPC-web protocol.
@@ -70,7 +70,7 @@ export function createTransport(opt: CommonTransportOptions): Transport {
         opt.binaryOptions,
         opt.jsonOptions,
         opt
-      );
+      )
       return await runUnaryCall<I, O>({
         interceptors: opt.interceptors,
         signal,
@@ -88,13 +88,12 @@ export function createTransport(opt: CommonTransportOptions): Transport {
             opt.acceptCompression,
             opt.sendCompression
           ),
-          message:
-            message instanceof method.I ? message : new method.I(message),
+          message: message instanceof method.I ? message : new method.I(message)
         },
         next: async (req: UnaryRequest<I, O>): Promise<UnaryResponse<I, O>> => {
           const uRes = await opt.httpClient({
             url: req.url,
-            method: "POST",
+            method: 'POST',
             header: req.header,
             signal: req.signal,
             body: pipe(
@@ -108,15 +107,15 @@ export function createTransport(opt: CommonTransportOptions): Transport {
               ),
               transformJoinEnvelopes(),
               {
-                propagateDownStreamError: true,
+                propagateDownStreamError: true
               }
-            ),
-          });
+            )
+          })
           const { compression } = validateResponseWithCompression(
             opt.acceptCompression,
             uRes.status,
             uRes.header
-          );
+          )
           const { trailer, message } = await pipeTo(
             uRes.body,
             transformSplitEnvelope(opt.readMaxBytes),
@@ -127,45 +126,45 @@ export function createTransport(opt: CommonTransportOptions): Transport {
               createTrailerSerialization()
             ),
             async (iterable) => {
-              let message: O | undefined;
-              let trailer: Headers | undefined;
+              let message: O | undefined
+              let trailer: Headers | undefined
               for await (const env of iterable) {
                 if (env.end) {
                   if (trailer !== undefined) {
                     throw new DubboError(
-                      "protocol error: received extra trailer",
+                      'protocol error: received extra trailer',
                       Code.InvalidArgument
-                    );
+                    )
                   }
-                  trailer = env.value;
+                  trailer = env.value
                 } else {
                   if (message !== undefined) {
                     throw new DubboError(
-                      "protocol error: received extra output message for unary method",
+                      'protocol error: received extra output message for unary method',
                       Code.InvalidArgument
-                    );
+                    )
                   }
-                  message = env.value;
+                  message = env.value
                 }
               }
-              return { trailer, message };
+              return { trailer, message }
             },
             {
-              propagateDownStreamError: false,
+              propagateDownStreamError: false
             }
-          );
+          )
           if (trailer === undefined) {
             throw new DubboError(
-              "protocol error: missing trailer",
+              'protocol error: missing trailer',
               Code.InvalidArgument
-            );
+            )
           }
-          validateTrailer(trailer);
+          validateTrailer(trailer)
           if (message === undefined) {
             throw new DubboError(
-              "protocol error: missing output message for unary method",
+              'protocol error: missing output message for unary method',
               Code.InvalidArgument
-            );
+            )
           }
           return <UnaryResponse<I, O>>{
             stream: false,
@@ -173,10 +172,10 @@ export function createTransport(opt: CommonTransportOptions): Transport {
             method,
             header: uRes.header,
             message,
-            trailer,
-          };
-        },
-      });
+            trailer
+          }
+        }
+      })
     },
     async stream<
       I extends Message<I> = AnyMessage,
@@ -194,7 +193,7 @@ export function createTransport(opt: CommonTransportOptions): Transport {
         opt.binaryOptions,
         opt.jsonOptions,
         opt
-      );
+      )
       return runStreamingCall<I, O>({
         interceptors: opt.interceptors,
         signal,
@@ -205,9 +204,9 @@ export function createTransport(opt: CommonTransportOptions): Transport {
           method,
           url: createMethodUrl(opt.baseUrl, service, method),
           init: {
-            method: "POST",
-            redirect: "error",
-            mode: "cors",
+            method: 'POST',
+            redirect: 'error',
+            mode: 'cors'
           },
           header: requestHeaderWithCompression(
             opt.useBinaryFormat,
@@ -217,13 +216,13 @@ export function createTransport(opt: CommonTransportOptions): Transport {
             opt.sendCompression
           ),
           message: pipe(input, transformNormalizeMessage(method.I), {
-            propagateDownStreamError: true,
-          }),
+            propagateDownStreamError: true
+          })
         },
         next: async (req: StreamRequest<I, O>) => {
           const uRes = await opt.httpClient({
             url: req.url,
-            method: "POST",
+            method: 'POST',
             header: req.header,
             signal: req.signal,
             body: pipe(
@@ -238,13 +237,13 @@ export function createTransport(opt: CommonTransportOptions): Transport {
               ),
               transformJoinEnvelopes(),
               { propagateDownStreamError: true }
-            ),
-          });
+            )
+          })
           const { compression, foundStatus } = validateResponseWithCompression(
             opt.acceptCompression,
             uRes.status,
             uRes.header
-          );
+          )
           const res: StreamResponse<I, O> = {
             ...req,
             header: uRes.header,
@@ -271,52 +270,52 @@ export function createTransport(opt: CommonTransportOptions): Transport {
                   //
                   // > [...] Trailers-Only is permitted for calls that produce an immediate error.
                   // See https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
-                  const r = await iterable[Symbol.asyncIterator]().next();
+                  const r = await iterable[Symbol.asyncIterator]().next()
                   if (r.done !== true) {
                     throw new DubboError(
-                      "protocol error: extra data for trailers-only",
+                      'protocol error: extra data for trailers-only',
                       Code.InvalidArgument
-                    );
+                    )
                   }
-                  return;
+                  return
                 }
-                let trailerReceived = false;
+                let trailerReceived = false
                 for await (const chunk of iterable) {
                   if (chunk.end) {
                     if (trailerReceived) {
                       throw new DubboError(
-                        "protocol error: received extra trailer",
+                        'protocol error: received extra trailer',
                         Code.InvalidArgument
-                      );
+                      )
                     }
-                    trailerReceived = true;
-                    validateTrailer(chunk.value);
+                    trailerReceived = true
+                    validateTrailer(chunk.value)
                     chunk.value.forEach((value, key) =>
                       res.trailer.set(key, value)
-                    );
-                    continue;
+                    )
+                    continue
                   }
                   if (trailerReceived) {
                     throw new DubboError(
-                      "protocol error: received extra message after trailer",
+                      'protocol error: received extra message after trailer',
                       Code.InvalidArgument
-                    );
+                    )
                   }
-                  yield chunk.value;
+                  yield chunk.value
                 }
                 if (!trailerReceived) {
                   throw new DubboError(
-                    "protocol error: missing trailer",
+                    'protocol error: missing trailer',
                     Code.InvalidArgument
-                  );
+                  )
                 }
               },
               { propagateDownStreamError: true }
-            ),
-          };
-          return res;
-        },
-      });
-    },
-  };
+            )
+          }
+          return res
+        }
+      })
+    }
+  }
 }

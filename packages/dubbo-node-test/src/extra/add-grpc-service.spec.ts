@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { TestService } from "../gen/grpc/testing/test_dubbo.js";
-import * as grpc from "@grpc/grpc-js";
-import { addGrpcService } from "./add-grpc-service.js";
+import { TestService } from '../gen/grpc/testing/test_dubbo.js'
+import * as grpc from '@grpc/grpc-js'
+import { addGrpcService } from './add-grpc-service.js'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-describe("addGrpcService()", () => {
-  it("should not raise errors when adding the service", (done) => {
-    const server = new grpc.Server();
+describe('addGrpcService()', () => {
+  it('should not raise errors when adding the service', (done) => {
+    const server = new grpc.Server()
     addGrpcService(server, TestService, {
       cacheableUnaryCall(call, callback) {
         //
@@ -54,20 +54,20 @@ describe("addGrpcService()", () => {
       },
       unimplementedStreamingOutputCall(call) {
         //
-      },
-    });
+      }
+    })
     server.bindAsync(
-      "0.0.0.0:8099",
+      '0.0.0.0:8099',
       grpc.ServerCredentials.createInsecure(),
       (err: Error | null) => {
         if (err) {
-          fail(err);
+          fail(err)
         } else {
-          server.start();
-          server.forceShutdown();
-          done();
+          server.start()
+          server.forceShutdown()
+          done()
         }
       }
-    );
-  });
-});
+    )
+  })
+})

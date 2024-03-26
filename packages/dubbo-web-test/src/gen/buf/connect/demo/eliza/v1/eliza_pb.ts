@@ -16,8 +16,15 @@
 // @generated from file buf/connect/demo/eliza/v1/eliza.proto (package buf.connect.demo.eliza.v1, syntax proto3)
 /* eslint-disable */
 
-import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
-import { Message, proto3 } from "@bufbuild/protobuf";
+import type {
+  BinaryReadOptions,
+  FieldList,
+  JsonReadOptions,
+  JsonValue,
+  PartialMessage,
+  PlainMessage
+} from '@bufbuild/protobuf'
+import { Message, proto3 } from '@bufbuild/protobuf'
 
 /**
  * SayRequest describes the sentence said to the ELIZA program.
@@ -28,33 +35,45 @@ export class SayRequest extends Message<SayRequest> {
   /**
    * @generated from field: string sentence = 1;
    */
-  sentence = "";
+  sentence = ''
 
   constructor(data?: PartialMessage<SayRequest>) {
-    super();
-    proto3.util.initPartial(data, this);
+    super()
+    proto3.util.initPartial(data, this)
   }
 
-  static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "buf.connect.demo.eliza.v1.SayRequest";
+  static readonly runtime: typeof proto3 = proto3
+  static readonly typeName = 'buf.connect.demo.eliza.v1.SayRequest'
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "sentence", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-  ]);
+    { no: 1, name: 'sentence', kind: 'scalar', T: 9 /* ScalarType.STRING */ }
+  ])
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SayRequest {
-    return new SayRequest().fromBinary(bytes, options);
+  static fromBinary(
+    bytes: Uint8Array,
+    options?: Partial<BinaryReadOptions>
+  ): SayRequest {
+    return new SayRequest().fromBinary(bytes, options)
   }
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): SayRequest {
-    return new SayRequest().fromJson(jsonValue, options);
+  static fromJson(
+    jsonValue: JsonValue,
+    options?: Partial<JsonReadOptions>
+  ): SayRequest {
+    return new SayRequest().fromJson(jsonValue, options)
   }
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): SayRequest {
-    return new SayRequest().fromJsonString(jsonString, options);
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>
+  ): SayRequest {
+    return new SayRequest().fromJsonString(jsonString, options)
   }
 
-  static equals(a: SayRequest | PlainMessage<SayRequest> | undefined, b: SayRequest | PlainMessage<SayRequest> | undefined): boolean {
-    return proto3.util.equals(SayRequest, a, b);
+  static equals(
+    a: SayRequest | PlainMessage<SayRequest> | undefined,
+    b: SayRequest | PlainMessage<SayRequest> | undefined
+  ): boolean {
+    return proto3.util.equals(SayRequest, a, b)
   }
 }
 
@@ -67,33 +86,45 @@ export class SayResponse extends Message<SayResponse> {
   /**
    * @generated from field: string sentence = 1;
    */
-  sentence = "";
+  sentence = ''
 
   constructor(data?: PartialMessage<SayResponse>) {
-    super();
-    proto3.util.initPartial(data, this);
+    super()
+    proto3.util.initPartial(data, this)
   }
 
-  static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "buf.connect.demo.eliza.v1.SayResponse";
+  static readonly runtime: typeof proto3 = proto3
+  static readonly typeName = 'buf.connect.demo.eliza.v1.SayResponse'
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "sentence", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-  ]);
+    { no: 1, name: 'sentence', kind: 'scalar', T: 9 /* ScalarType.STRING */ }
+  ])
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SayResponse {
-    return new SayResponse().fromBinary(bytes, options);
+  static fromBinary(
+    bytes: Uint8Array,
+    options?: Partial<BinaryReadOptions>
+  ): SayResponse {
+    return new SayResponse().fromBinary(bytes, options)
   }
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): SayResponse {
-    return new SayResponse().fromJson(jsonValue, options);
+  static fromJson(
+    jsonValue: JsonValue,
+    options?: Partial<JsonReadOptions>
+  ): SayResponse {
+    return new SayResponse().fromJson(jsonValue, options)
   }
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): SayResponse {
-    return new SayResponse().fromJsonString(jsonString, options);
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>
+  ): SayResponse {
+    return new SayResponse().fromJsonString(jsonString, options)
   }
 
-  static equals(a: SayResponse | PlainMessage<SayResponse> | undefined, b: SayResponse | PlainMessage<SayResponse> | undefined): boolean {
-    return proto3.util.equals(SayResponse, a, b);
+  static equals(
+    a: SayResponse | PlainMessage<SayResponse> | undefined,
+    b: SayResponse | PlainMessage<SayResponse> | undefined
+  ): boolean {
+    return proto3.util.equals(SayResponse, a, b)
   }
 }
 
@@ -106,33 +137,45 @@ export class ConverseRequest extends Message<ConverseRequest> {
   /**
    * @generated from field: string sentence = 1;
    */
-  sentence = "";
+  sentence = ''
 
   constructor(data?: PartialMessage<ConverseRequest>) {
-    super();
-    proto3.util.initPartial(data, this);
+    super()
+    proto3.util.initPartial(data, this)
   }
 
-  static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "buf.connect.demo.eliza.v1.ConverseRequest";
+  static readonly runtime: typeof proto3 = proto3
+  static readonly typeName = 'buf.connect.demo.eliza.v1.ConverseRequest'
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "sentence", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-  ]);
+    { no: 1, name: 'sentence', kind: 'scalar', T: 9 /* ScalarType.STRING */ }
+  ])
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ConverseRequest {
-    return new ConverseRequest().fromBinary(bytes, options);
+  static fromBinary(
+    bytes: Uint8Array,
+    options?: Partial<BinaryReadOptions>
+  ): ConverseRequest {
+    return new ConverseRequest().fromBinary(bytes, options)
   }
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ConverseRequest {
-    return new ConverseRequest().fromJson(jsonValue, options);
+  static fromJson(
+    jsonValue: JsonValue,
+    options?: Partial<JsonReadOptions>
+  ): ConverseRequest {
+    return new ConverseRequest().fromJson(jsonValue, options)
   }
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ConverseRequest {
-    return new ConverseRequest().fromJsonString(jsonString, options);
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>
+  ): ConverseRequest {
+    return new ConverseRequest().fromJsonString(jsonString, options)
   }
 
-  static equals(a: ConverseRequest | PlainMessage<ConverseRequest> | undefined, b: ConverseRequest | PlainMessage<ConverseRequest> | undefined): boolean {
-    return proto3.util.equals(ConverseRequest, a, b);
+  static equals(
+    a: ConverseRequest | PlainMessage<ConverseRequest> | undefined,
+    b: ConverseRequest | PlainMessage<ConverseRequest> | undefined
+  ): boolean {
+    return proto3.util.equals(ConverseRequest, a, b)
   }
 }
 
@@ -145,33 +188,45 @@ export class ConverseResponse extends Message<ConverseResponse> {
   /**
    * @generated from field: string sentence = 1;
    */
-  sentence = "";
+  sentence = ''
 
   constructor(data?: PartialMessage<ConverseResponse>) {
-    super();
-    proto3.util.initPartial(data, this);
+    super()
+    proto3.util.initPartial(data, this)
   }
 
-  static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "buf.connect.demo.eliza.v1.ConverseResponse";
+  static readonly runtime: typeof proto3 = proto3
+  static readonly typeName = 'buf.connect.demo.eliza.v1.ConverseResponse'
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "sentence", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-  ]);
+    { no: 1, name: 'sentence', kind: 'scalar', T: 9 /* ScalarType.STRING */ }
+  ])
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ConverseResponse {
-    return new ConverseResponse().fromBinary(bytes, options);
+  static fromBinary(
+    bytes: Uint8Array,
+    options?: Partial<BinaryReadOptions>
+  ): ConverseResponse {
+    return new ConverseResponse().fromBinary(bytes, options)
   }
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ConverseResponse {
-    return new ConverseResponse().fromJson(jsonValue, options);
+  static fromJson(
+    jsonValue: JsonValue,
+    options?: Partial<JsonReadOptions>
+  ): ConverseResponse {
+    return new ConverseResponse().fromJson(jsonValue, options)
   }
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ConverseResponse {
-    return new ConverseResponse().fromJsonString(jsonString, options);
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>
+  ): ConverseResponse {
+    return new ConverseResponse().fromJsonString(jsonString, options)
   }
 
-  static equals(a: ConverseResponse | PlainMessage<ConverseResponse> | undefined, b: ConverseResponse | PlainMessage<ConverseResponse> | undefined): boolean {
-    return proto3.util.equals(ConverseResponse, a, b);
+  static equals(
+    a: ConverseResponse | PlainMessage<ConverseResponse> | undefined,
+    b: ConverseResponse | PlainMessage<ConverseResponse> | undefined
+  ): boolean {
+    return proto3.util.equals(ConverseResponse, a, b)
   }
 }
 
@@ -184,33 +239,45 @@ export class IntroduceRequest extends Message<IntroduceRequest> {
   /**
    * @generated from field: string name = 1;
    */
-  name = "";
+  name = ''
 
   constructor(data?: PartialMessage<IntroduceRequest>) {
-    super();
-    proto3.util.initPartial(data, this);
+    super()
+    proto3.util.initPartial(data, this)
   }
 
-  static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "buf.connect.demo.eliza.v1.IntroduceRequest";
+  static readonly runtime: typeof proto3 = proto3
+  static readonly typeName = 'buf.connect.demo.eliza.v1.IntroduceRequest'
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-  ]);
+    { no: 1, name: 'name', kind: 'scalar', T: 9 /* ScalarType.STRING */ }
+  ])
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): IntroduceRequest {
-    return new IntroduceRequest().fromBinary(bytes, options);
+  static fromBinary(
+    bytes: Uint8Array,
+    options?: Partial<BinaryReadOptions>
+  ): IntroduceRequest {
+    return new IntroduceRequest().fromBinary(bytes, options)
   }
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): IntroduceRequest {
-    return new IntroduceRequest().fromJson(jsonValue, options);
+  static fromJson(
+    jsonValue: JsonValue,
+    options?: Partial<JsonReadOptions>
+  ): IntroduceRequest {
+    return new IntroduceRequest().fromJson(jsonValue, options)
   }
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): IntroduceRequest {
-    return new IntroduceRequest().fromJsonString(jsonString, options);
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>
+  ): IntroduceRequest {
+    return new IntroduceRequest().fromJsonString(jsonString, options)
   }
 
-  static equals(a: IntroduceRequest | PlainMessage<IntroduceRequest> | undefined, b: IntroduceRequest | PlainMessage<IntroduceRequest> | undefined): boolean {
-    return proto3.util.equals(IntroduceRequest, a, b);
+  static equals(
+    a: IntroduceRequest | PlainMessage<IntroduceRequest> | undefined,
+    b: IntroduceRequest | PlainMessage<IntroduceRequest> | undefined
+  ): boolean {
+    return proto3.util.equals(IntroduceRequest, a, b)
   }
 }
 
@@ -223,33 +290,44 @@ export class IntroduceResponse extends Message<IntroduceResponse> {
   /**
    * @generated from field: string sentence = 1;
    */
-  sentence = "";
+  sentence = ''
 
   constructor(data?: PartialMessage<IntroduceResponse>) {
-    super();
-    proto3.util.initPartial(data, this);
+    super()
+    proto3.util.initPartial(data, this)
   }
 
-  static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "buf.connect.demo.eliza.v1.IntroduceResponse";
+  static readonly runtime: typeof proto3 = proto3
+  static readonly typeName = 'buf.connect.demo.eliza.v1.IntroduceResponse'
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "sentence", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-  ]);
+    { no: 1, name: 'sentence', kind: 'scalar', T: 9 /* ScalarType.STRING */ }
+  ])
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): IntroduceResponse {
-    return new IntroduceResponse().fromBinary(bytes, options);
+  static fromBinary(
+    bytes: Uint8Array,
+    options?: Partial<BinaryReadOptions>
+  ): IntroduceResponse {
+    return new IntroduceResponse().fromBinary(bytes, options)
   }
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): IntroduceResponse {
-    return new IntroduceResponse().fromJson(jsonValue, options);
+  static fromJson(
+    jsonValue: JsonValue,
+    options?: Partial<JsonReadOptions>
+  ): IntroduceResponse {
+    return new IntroduceResponse().fromJson(jsonValue, options)
   }
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): IntroduceResponse {
-    return new IntroduceResponse().fromJsonString(jsonString, options);
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>
+  ): IntroduceResponse {
+    return new IntroduceResponse().fromJsonString(jsonString, options)
   }
 
-  static equals(a: IntroduceResponse | PlainMessage<IntroduceResponse> | undefined, b: IntroduceResponse | PlainMessage<IntroduceResponse> | undefined): boolean {
-    return proto3.util.equals(IntroduceResponse, a, b);
+  static equals(
+    a: IntroduceResponse | PlainMessage<IntroduceResponse> | undefined,
+    b: IntroduceResponse | PlainMessage<IntroduceResponse> | undefined
+  ): boolean {
+    return proto3.util.equals(IntroduceResponse, a, b)
   }
 }
-

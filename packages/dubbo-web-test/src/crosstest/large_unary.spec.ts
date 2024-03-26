@@ -12,33 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createCallbackClient, createPromiseClient } from "@apachedubbo/dubbo";
-import { TestService } from "../gen/grpc/testing/test_dubbo.js";
-import { describeTransports } from "../helpers/crosstestserver.js";
-import { SimpleRequest } from "../gen/grpc/testing/messages_pb.js";
+import { createCallbackClient, createPromiseClient } from '@apachedubbo/dubbo'
+import { TestService } from '../gen/grpc/testing/test_dubbo.js'
+import { describeTransports } from '../helpers/crosstestserver.js'
+import { SimpleRequest } from '../gen/grpc/testing/messages_pb.js'
 
-describe("large_unary", function () {
+describe('large_unary', function () {
   describeTransports((transport) => {
     const request = new SimpleRequest({
       responseSize: 314159,
       payload: {
-        body: new Uint8Array(271828).fill(0),
-      },
-    });
-    it("with promise client", async function () {
-      const client = createPromiseClient(TestService, transport());
-      const response = await client.unaryCall(request);
-      expect(response.payload).toBeDefined();
-      expect(response.payload?.body.length).toEqual(request.responseSize);
-    });
-    it("with callback client", function (done) {
-      const client = createCallbackClient(TestService, transport());
+        body: new Uint8Array(271828).fill(0)
+      }
+    })
+    it('with promise client', async function () {
+      const client = createPromiseClient(TestService, transport())
+      const response = await client.unaryCall(request)
+      expect(response.payload).toBeDefined()
+      expect(response.payload?.body.length).toEqual(request.responseSize)
+    })
+    it('with callback client', function (done) {
+      const client = createCallbackClient(TestService, transport())
       client.unaryCall(request, (err, response) => {
-        expect(err).toBeUndefined();
-        expect(response.payload).toBeDefined();
-        expect(response.payload?.body.length).toEqual(request.responseSize);
-        done();
-      });
-    });
-  });
-});
+        expect(err).toBeUndefined()
+        expect(response.payload).toBeDefined()
+        expect(response.payload?.body.length).toEqual(request.responseSize)
+        done()
+      })
+    })
+  })
+})

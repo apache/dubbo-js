@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { JsonValue, MethodInfo } from "@bufbuild/protobuf";
+import type { JsonValue, MethodInfo } from '@bufbuild/protobuf'
 import {
   Message,
   MethodIdempotency,
   MethodKind,
-  protoBase64,
-} from "@bufbuild/protobuf";
-import { Code } from "../code.js";
-import { DubboError } from "../dubbo-error.js";
-import type { MethodImplSpec } from "../implementation.js";
-import { createHandlerContext } from "../implementation.js";
+  protoBase64
+} from '@bufbuild/protobuf'
+import { Code } from '../code.js'
+import { DubboError } from '../dubbo-error.js'
+import type { MethodImplSpec } from '../implementation.js'
+import { createHandlerContext } from '../implementation.js'
 import {
   contentTypeStreamJson,
   contentTypeStreamProto,
@@ -31,11 +31,11 @@ import {
   contentTypeUnaryProto,
   contentTypeUnaryRegExp,
   parseContentType,
-  parseEncodingQuery,
-} from "./content-type.js";
-import type { EndStreamResponse } from "./end-stream.js";
-import { createEndStreamSerialization, endStreamFlag } from "./end-stream.js";
-import { errorToJsonBytes } from "./error-json.js";
+  parseEncodingQuery
+} from './content-type.js'
+import type { EndStreamResponse } from './end-stream.js'
+import { createEndStreamSerialization, endStreamFlag } from './end-stream.js'
+import { errorToJsonBytes } from './error-json.js'
 import {
   headerContentType,
   headerStreamAcceptEncoding,
@@ -43,34 +43,34 @@ import {
   headerTimeout,
   headerUnaryAcceptEncoding,
   headerUnaryContentLength,
-  headerUnaryEncoding,
-} from "./headers.js";
-import { codeToHttpStatus } from "./http-status.js";
-import { parseTimeout } from "./parse-timeout.js";
+  headerUnaryEncoding
+} from './headers.js'
+import { codeToHttpStatus } from './http-status.js'
+import { parseTimeout } from './parse-timeout.js'
 import {
   paramBase64,
   paramCompression,
   paramEncoding,
-  paramMessage,
-} from "./query-params.js";
-import { trailerMux } from "./trailer-mux.js";
+  paramMessage
+} from './query-params.js'
+import { trailerMux } from './trailer-mux.js'
 import {
   requireProtocolVersionHeader,
-  requireProtocolVersionParam,
-} from "./version.js";
+  requireProtocolVersionParam
+} from './version.js'
 import {
   type Compression,
-  compressionNegotiate,
-} from "../protocol/compression.js";
+  compressionNegotiate
+} from '../protocol/compression.js'
 import {
   type MethodSerializationLookup,
   type Serialization,
-  createMethodSerializationLookup,
-} from "../protocol/serialization.js";
+  createMethodSerializationLookup
+} from '../protocol/serialization.js'
 import {
   type UniversalHandlerOptions,
-  validateUniversalHandlerOptions,
-} from "../protocol/universal-handler.js";
+  validateUniversalHandlerOptions
+} from '../protocol/universal-handler.js'
 import {
   type UniversalHandlerFn,
   type UniversalServerRequest,
@@ -78,8 +78,8 @@ import {
   assertByteStreamRequest,
   uResponseMethodNotAllowed,
   uResponseOk,
-  uResponseUnsupportedMediaType,
-} from "../protocol/universal.js";
+  uResponseUnsupportedMediaType
+} from '../protocol/universal.js'
 import {
   createAsyncIterable,
   pipe,
@@ -92,20 +92,20 @@ import {
   transformPrepend,
   transformSerializeEnvelope,
   transformSplitEnvelope,
-  untilFirst,
-} from "../protocol/async-iterable.js";
-import { contentTypeMatcher } from "../protocol/content-type-matcher.js";
-import { createMethodUrl } from "../protocol/create-method-url.js";
-import type { EnvelopedMessage } from "../protocol/envelope.js";
+  untilFirst
+} from '../protocol/async-iterable.js'
+import { contentTypeMatcher } from '../protocol/content-type-matcher.js'
+import { createMethodUrl } from '../protocol/create-method-url.js'
+import type { EnvelopedMessage } from '../protocol/envelope.js'
 import {
   invokeUnaryImplementation,
-  transformInvokeImplementation,
-} from "../protocol/invoke-implementation.js";
-import type { ProtocolHandlerFactory } from "../protocol/protocol-handler-factory.js";
+  transformInvokeImplementation
+} from '../protocol/invoke-implementation.js'
+import type { ProtocolHandlerFactory } from '../protocol/protocol-handler-factory.js'
 
-const protocolName = "connect";
-const methodPost = "POST";
-const methodGet = "GET";
+const protocolName = 'connect'
+const methodPost = 'POST'
+const methodGet = 'GET'
 
 /**
  * Create a factory that creates Connect handlers.
@@ -113,49 +113,49 @@ const methodGet = "GET";
 export function createHandlerFactory(
   options: Partial<UniversalHandlerOptions>
 ): ProtocolHandlerFactory {
-  const opt = validateUniversalHandlerOptions(options);
-  const endStreamSerialization = createEndStreamSerialization(opt.jsonOptions);
+  const opt = validateUniversalHandlerOptions(options)
+  const endStreamSerialization = createEndStreamSerialization(opt.jsonOptions)
 
   function fact(spec: MethodImplSpec) {
-    let h: UniversalHandlerFn;
-    let contentTypeRegExp: RegExp;
+    let h: UniversalHandlerFn
+    let contentTypeRegExp: RegExp
     const serialization = createMethodSerializationLookup(
       spec.method,
       opt.binaryOptions,
       opt.jsonOptions,
       opt
-    );
+    )
     switch (spec.kind) {
       case MethodKind.Unary:
-        contentTypeRegExp = contentTypeUnaryRegExp;
-        h = createUnaryHandler(opt, spec, serialization);
-        break;
+        contentTypeRegExp = contentTypeUnaryRegExp
+        h = createUnaryHandler(opt, spec, serialization)
+        break
       default:
-        contentTypeRegExp = contentTypeStreamRegExp;
+        contentTypeRegExp = contentTypeStreamRegExp
         h = createStreamHandler(
           opt,
           spec,
           serialization,
           endStreamSerialization
-        );
-        break;
+        )
+        break
     }
-    const allowedMethods = [methodPost];
+    const allowedMethods = [methodPost]
     if (spec.method.idempotency === MethodIdempotency.NoSideEffects) {
-      allowedMethods.push(methodGet);
+      allowedMethods.push(methodGet)
     }
     return Object.assign(h, {
       protocolNames: [protocolName],
       supportedContentType: contentTypeMatcher(contentTypeRegExp),
       allowedMethods,
-      requestPath: createMethodUrl("/", spec.service, spec.method),
+      requestPath: createMethodUrl('/', spec.service, spec.method),
       service: spec.service,
-      method: spec.method,
-    });
+      method: spec.method
+    })
   }
 
-  fact.protocolName = protocolName;
-  return fact;
+  fact.protocolName = protocolName
+  return fact
 }
 
 function createUnaryHandler<I extends Message<I>, O extends Message<O>>(
@@ -166,24 +166,24 @@ function createUnaryHandler<I extends Message<I>, O extends Message<O>>(
   return async function handle(
     req: UniversalServerRequest
   ): Promise<UniversalServerResponse> {
-    const isGet = req.method == methodGet;
+    const isGet = req.method == methodGet
     if (isGet && spec.method.idempotency != MethodIdempotency.NoSideEffects) {
-      return uResponseMethodNotAllowed;
+      return uResponseMethodNotAllowed
     }
-    const queryParams = new URL(req.url).searchParams;
+    const queryParams = new URL(req.url).searchParams
     const compressionRequested = isGet
       ? queryParams.get(paramCompression)
-      : req.header.get(headerUnaryEncoding);
+      : req.header.get(headerUnaryEncoding)
     const type = isGet
       ? parseEncodingQuery(queryParams.get(paramEncoding))
-      : parseContentType(req.header.get(headerContentType));
+      : parseContentType(req.header.get(headerContentType))
     if (type == undefined || type.stream) {
-      return uResponseUnsupportedMediaType;
+      return uResponseUnsupportedMediaType
     }
     const timeout = parseTimeout(
       req.header.get(headerTimeout),
       opt.maxTimeoutMs
-    );
+    )
     const context = createHandlerContext({
       ...spec,
       requestMethod: req.method,
@@ -195,92 +195,89 @@ function createUnaryHandler<I extends Message<I>, O extends Message<O>>(
       responseHeader: {
         [headerContentType]: type.binary
           ? contentTypeUnaryProto
-          : contentTypeUnaryJson,
-      },
-    });
+          : contentTypeUnaryJson
+      }
+    })
     const compression = compressionNegotiate(
       opt.acceptCompression,
       compressionRequested,
       req.header.get(headerUnaryAcceptEncoding),
       headerUnaryAcceptEncoding
-    );
-    let status = uResponseOk.status;
-    let body: Uint8Array;
+    )
+    let status = uResponseOk.status
+    let body: Uint8Array
     try {
       if (opt.requireConnectProtocolHeader) {
         if (isGet) {
-          requireProtocolVersionParam(queryParams);
+          requireProtocolVersionParam(queryParams)
         } else {
-          requireProtocolVersionHeader(req.header);
+          requireProtocolVersionHeader(req.header)
         }
       }
       // raise compression error to serialize it as a error response
       if (compression.error) {
-        throw compression.error;
+        throw compression.error
       }
       // raise timeout parsing error to serialize it as a trailer status
       if (timeout.error) {
-        throw timeout.error;
+        throw timeout.error
       }
-      let reqBody: Uint8Array | JsonValue;
+      let reqBody: Uint8Array | JsonValue
       if (isGet) {
         reqBody = await readUnaryMessageFromQuery(
           opt.readMaxBytes,
           compression.request,
           queryParams
-        );
+        )
       } else {
         reqBody = await readUnaryMessageFromBody(
           opt.readMaxBytes,
           compression.request,
           req
-        );
+        )
       }
       const input = parseUnaryMessage(
         spec.method,
         type.binary,
         serialization,
         reqBody
-      );
-      const output = await invokeUnaryImplementation(spec, context, input);
-      body = serialization.getO(type.binary).serialize(output);
+      )
+      const output = await invokeUnaryImplementation(spec, context, input)
+      body = serialization.getO(type.binary).serialize(output)
     } catch (e) {
-      let error: DubboError | undefined;
+      let error: DubboError | undefined
       if (e instanceof DubboError) {
-        error = e;
+        error = e
       } else {
         error = new DubboError(
-          "internal error",
+          'internal error',
           Code.Internal,
           undefined,
           undefined,
           e
-        );
+        )
       }
-      status = codeToHttpStatus(error.code);
-      context.responseHeader.set(headerContentType, contentTypeUnaryJson);
+      status = codeToHttpStatus(error.code)
+      context.responseHeader.set(headerContentType, contentTypeUnaryJson)
       error.metadata.forEach((value, key) => {
-        context.responseHeader.set(key, value);
-      });
-      body = errorToJsonBytes(error, opt.jsonOptions);
+        context.responseHeader.set(key, value)
+      })
+      body = errorToJsonBytes(error, opt.jsonOptions)
     } finally {
-      context.abort();
+      context.abort()
     }
     if (compression.response && body.byteLength >= opt.compressMinBytes) {
-      body = await compression.response.compress(body);
-      context.responseHeader.set(
-        headerUnaryEncoding,
-        compression.response.name
-      );
+      body = await compression.response.compress(body)
+      context.responseHeader.set(headerUnaryEncoding, compression.response.name)
     }
-    const header = trailerMux(context.responseHeader, context.responseTrailer);
-    header.set(headerUnaryContentLength, body.byteLength.toString(10));
+    const header = trailerMux(context.responseHeader, context.responseTrailer)
+    header.set(headerUnaryContentLength, body.byteLength.toString(10))
     return {
       status,
       body: createAsyncIterable([body]),
-      header,
-    };
-  };
+      header
+    }
+  }
 }
 
 async function readUnaryMessageFromBody(
@@ -289,7 +286,7 @@ async function readUnaryMessageFromBody(
   request: UniversalServerRequest
 ): Promise<Uint8Array | JsonValue> {
   if (
-    typeof request.body == "object" &&
+    typeof request.body == 'object' &&
     request.body !== null &&
     Symbol.asyncIterator in request.body
   ) {
@@ -297,13 +294,13 @@ async function readUnaryMessageFromBody(
       request.body,
       readMaxBytes,
       request.header.get(headerUnaryContentLength)
-    );
+    )
     if (compression) {
-      reqBytes = await compression.decompress(reqBytes, readMaxBytes);
+      reqBytes = await compression.decompress(reqBytes, readMaxBytes)
     }
-    return reqBytes;
+    return reqBytes
   }
-  return request.body;
+  return request.body
 }
 
 async function readUnaryMessageFromQuery(
@@ -311,18 +308,18 @@ async function readUnaryMessageFromQuery(
   compression: Compression | null,
   queryParams: URLSearchParams
 ): Promise<Uint8Array> {
-  const base64 = queryParams.get(paramBase64);
-  const message = queryParams.get(paramMessage) ?? "";
-  let decoded: Uint8Array;
-  if (base64 === "1") {
-    decoded = protoBase64.dec(message);
+  const base64 = queryParams.get(paramBase64)
+  const message = queryParams.get(paramMessage) ?? ''
+  let decoded: Uint8Array
+  if (base64 === '1') {
+    decoded = protoBase64.dec(message)
   } else {
-    decoded = new TextEncoder().encode(message);
+    decoded = new TextEncoder().encode(message)
   }
   if (compression) {
-    decoded = await compression.decompress(decoded, readMaxBytes);
+    decoded = await compression.decompress(decoded, readMaxBytes)
   }
-  return decoded;
+  return decoded
 }
 
 function parseUnaryMessage<I extends Message<I>, O extends Message<O>>(
@@ -332,18 +329,18 @@ function parseUnaryMessage<I extends Message<I>, O extends Message<O>>(
   input: Uint8Array | JsonValue
 ): I {
   if (input instanceof Uint8Array) {
-    return serialization.getI(useBinaryFormat).parse(input);
+    return serialization.getI(useBinaryFormat).parse(input)
   }
   if (useBinaryFormat) {
     throw new DubboError(
-      "received parsed JSON request body, but content-type indicates binary format",
+      'received parsed JSON request body, but content-type indicates binary format',
       Code.Internal
-    );
+    )
   }
   try {
-    return method.I.fromJson(input);
+    return method.I.fromJson(input)
   } catch (e) {
-    throw DubboError.from(e, Code.InvalidArgument);
+    throw DubboError.from(e, Code.InvalidArgument)
   }
 }
 
@@ -356,18 +353,18 @@ function createStreamHandler<I extends Message<I>, O extends Message<O>>(
   return async function handle(
     req: UniversalServerRequest
   ): Promise<UniversalServerResponse> {
-    assertByteStreamRequest(req);
-    const type = parseContentType(req.header.get(headerContentType));
+    assertByteStreamRequest(req)
+    const type = parseContentType(req.header.get(headerContentType))
     if (type == undefined || !type.stream) {
-      return uResponseUnsupportedMediaType;
+      return uResponseUnsupportedMediaType
     }
     if (req.method !== methodPost) {
-      return uResponseMethodNotAllowed;
+      return uResponseMethodNotAllowed
     }
     const timeout = parseTimeout(
       req.header.get(headerTimeout),
       opt.maxTimeoutMs
-    );
+    )
     const context = createHandlerContext({
       ...spec,
       requestMethod: req.method,
@@ -379,32 +376,32 @@ function createStreamHandler<I extends Message<I>, O extends Message<O>>(
       responseHeader: {
         [headerContentType]: type.binary
           ? contentTypeStreamProto
-          : contentTypeStreamJson,
-      },
-    });
+          : contentTypeStreamJson
+      }
+    })
     const compression = compressionNegotiate(
       opt.acceptCompression,
       req.header.get(headerStreamEncoding),
       req.header.get(headerStreamAcceptEncoding),
       headerStreamAcceptEncoding
-    );
+    )
     if (compression.response) {
       context.responseHeader.set(
         headerStreamEncoding,
         compression.response.name
-      );
+      )
     }
     const outputIt = pipe(
       req.body,
       transformPrepend<Uint8Array>(() => {
         if (opt.requireConnectProtocolHeader) {
-          requireProtocolVersionHeader(req.header);
+          requireProtocolVersionHeader(req.header)
         }
         // raise compression error to serialize it as the end stream response
-        if (compression.error) throw compression.error;
+        if (compression.error) throw compression.error
         // raise timeout parsing error to serialize it as a trailer status
-        if (timeout.error) throw timeout.error;
-        return undefined;
+        if (timeout.error) throw timeout.error
+        return undefined
       }),
       transformSplitEnvelope(opt.readMaxBytes),
       transformDecompressEnvelope(compression.request, opt.readMaxBytes),
@@ -417,36 +414,36 @@ function createStreamHandler<I extends Message<I>, O extends Message<O>>(
       transformInvokeImplementation<I, O>(spec, context),
       transformSerializeEnvelope(serialization.getO(type.binary)),
       transformCatchFinally<EnvelopedMessage>((e) => {
-        context.abort();
+        context.abort()
         const end: EndStreamResponse = {
-          metadata: context.responseTrailer,
-        };
+          metadata: context.responseTrailer
+        }
         if (e instanceof DubboError) {
-          end.error = e;
+          end.error = e
         } else if (e !== undefined) {
           end.error = new DubboError(
-            "internal error",
+            'internal error',
             Code.Internal,
             undefined,
             undefined,
             e
-          );
+          )
         }
         return {
           flags: endStreamFlag,
-          data: endStreamSerialization.serialize(end),
-        };
+          data: endStreamSerialization.serialize(end)
+        }
       }),
       transformCompressEnvelope(compression.response, opt.compressMinBytes),
       transformJoinEnvelopes()
-    );
+    )
     return {
       ...uResponseOk,
       // We wait for the first response body bytes before resolving, so that
       // implementations have a chance to add headers before an adapter commits
       // them to the wire.
       body: await untilFirst(outputIt),
-      header: context.responseHeader,
-    };
-  };
+      header: context.responseHeader
+    }
+  }
 }

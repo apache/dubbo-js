@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { Serialization } from "../protocol";
+import type { Serialization } from '../protocol'
 
 /**
  * trailerFlag indicates that the data in a EnvelopedMessage
@@ -20,7 +20,7 @@ import type { Serialization } from "../protocol";
  *
  * @private Internal code, does not follow semantic versioning.
  */
-export const trailerFlag = 0b10000000;
+export const trailerFlag = 0b10000000
 
 /**
  * Parse a gRPC-web trailer, a set of header fields separated by CRLF.
@@ -28,20 +28,20 @@ export const trailerFlag = 0b10000000;
  * @private Internal code, does not follow semantic versioning.
  */
 export function trailerParse(data: Uint8Array): Headers {
-  const headers = new Headers();
-  const lines = new TextDecoder().decode(data).split("\r\n");
+  const headers = new Headers()
+  const lines = new TextDecoder().decode(data).split('\r\n')
   for (const line of lines) {
-    if (line === "") {
-      continue;
+    if (line === '') {
+      continue
     }
-    const i = line.indexOf(":");
+    const i = line.indexOf(':')
     if (i > 0) {
-      const name = line.substring(0, i).trim();
-      const value = line.substring(i + 1).trim();
-      headers.append(name, value);
+      const name = line.substring(0, i).trim()
+      const value = line.substring(i + 1).trim()
+      headers.append(name, value)
     }
   }
-  return headers;
+  return headers
 }
 
 /**
@@ -50,11 +50,11 @@ export function trailerParse(data: Uint8Array): Headers {
  * @private Internal code, does not follow semantic versioning.
  */
 export function trailerSerialize(trailer: Headers): Uint8Array {
-  const lines: string[] = [];
+  const lines: string[] = []
   trailer.forEach((value, key) => {
-    lines.push(`${key}: ${value}\r\n`);
-  });
-  return new TextEncoder().encode(lines.join(""));
+    lines.push(`${key}: ${value}\r\n`)
+  })
+  return new TextEncoder().encode(lines.join(''))
 }
 
 /**
@@ -66,6 +66,6 @@ export function trailerSerialize(trailer: Headers): Uint8Array {
 export function createTrailerSerialization(): Serialization<Headers> {
   return {
     serialize: trailerSerialize,
-    parse: trailerParse,
-  };
+    parse: trailerParse
+  }
 }

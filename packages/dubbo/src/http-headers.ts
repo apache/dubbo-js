@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { BinaryReadOptions, MessageType } from "@bufbuild/protobuf";
-import { Message, protoBase64 } from "@bufbuild/protobuf";
-import { DubboError } from "./dubbo-error.js";
-import { Code } from "./code.js";
+import type { BinaryReadOptions, MessageType } from '@bufbuild/protobuf'
+import { Message, protoBase64 } from '@bufbuild/protobuf'
+import { DubboError } from './dubbo-error.js'
+import { Code } from './code.js'
 
 /**
  * Encode a single binary header value according to the Triple
@@ -29,15 +29,15 @@ import { Code } from "./code.js";
 export function encodeBinaryHeader(
   value: Uint8Array | ArrayBufferLike | Message | string
 ): string {
-  let bytes: Uint8Array;
+  let bytes: Uint8Array
   if (value instanceof Message) {
-    bytes = value.toBinary();
-  } else if (typeof value == "string") {
-    bytes = new TextEncoder().encode(value);
+    bytes = value.toBinary()
+  } else if (typeof value == 'string') {
+    bytes = new TextEncoder().encode(value)
   } else {
-    bytes = value instanceof Uint8Array ? value : new Uint8Array(value);
+    bytes = value instanceof Uint8Array ? value : new Uint8Array(value)
   }
-  return protoBase64.enc(bytes).replace(/=+$/, "");
+  return protoBase64.enc(bytes).replace(/=+$/, '')
 }
 
 /**
@@ -58,25 +58,25 @@ export function encodeBinaryHeader(
  * binary message data, it throws a DubboError with code
  * DataLoss.
  */
-export function decodeBinaryHeader(value: string): Uint8Array;
+export function decodeBinaryHeader(value: string): Uint8Array
 export function decodeBinaryHeader<T extends Message<T>>(
   value: string,
   type: MessageType<T>,
   options?: Partial<BinaryReadOptions>
-): T;
+): T
 export function decodeBinaryHeader<T extends Message<T>>(
   value: string,
   type?: MessageType<T>,
   options?: Partial<BinaryReadOptions>
 ): Uint8Array | T {
   try {
-    const bytes = protoBase64.dec(value);
+    const bytes = protoBase64.dec(value)
     if (type) {
-      return type.fromBinary(bytes, options);
+      return type.fromBinary(bytes, options)
     }
-    return bytes;
+    return bytes
   } catch (e) {
-    throw DubboError.from(e, Code.DataLoss);
+    throw DubboError.from(e, Code.DataLoss)
   }
 }
 
@@ -85,11 +85,11 @@ export function decodeBinaryHeader<T extends Message<T>>(
  * all inputs to a new Headers object.
  */
 export function appendHeaders(...headers: Headers[]): Headers {
-  const h = new Headers();
+  const h = new Headers()
   for (const e of headers) {
     e.forEach((value, key) => {
-      h.append(key, value);
-    });
+      h.append(key, value)
+    })
   }
-  return h;
+  return h
 }

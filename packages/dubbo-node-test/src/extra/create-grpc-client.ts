@@ -21,10 +21,10 @@ import type {
   MethodInfoServerStreaming,
   MethodInfoUnary,
   PartialMessage,
-  ServiceType,
-} from "@bufbuild/protobuf";
-import * as grpc from "@grpc/grpc-js";
-import { createGrpcServiceDefinition } from "./create-grpc-definition.js";
+  ServiceType
+} from '@bufbuild/protobuf'
+import * as grpc from '@grpc/grpc-js'
+import { createGrpcServiceDefinition } from './create-grpc-definition.js'
 
 // prettier-ignore
 /**
@@ -51,28 +51,28 @@ export function createGrpcClient<T extends ServiceType>(
   const grpcDefinitions = createGrpcServiceDefinition(
     service,
     options.binaryOptions
-  );
+  )
   const grpcClientCtor = grpc.makeGenericClientConstructor(
     grpcDefinitions,
     service.typeName
-  );
+  )
   const grpcClient = new grpcClientCtor(
     options.address,
     options.channelCredentials,
     options.clientOptions
-  ) as unknown;
-  return grpcClient as GrpcClient<T>;
+  ) as unknown
+  return grpcClient as GrpcClient<T>
 }
 
 export interface CreateGrpcClientOptions {
-  address: string;
-  channelCredentials: grpc.ChannelCredentials;
-  clientOptions?: grpc.ClientOptions;
+  address: string
+  channelCredentials: grpc.ChannelCredentials
+  clientOptions?: grpc.ClientOptions
 
   /**
    * Options for the binary wire format.
    */
-  binaryOptions?: Partial<BinaryReadOptions & BinaryWriteOptions>;
+  binaryOptions?: Partial<BinaryReadOptions & BinaryWriteOptions>
 }
 
 // prettier-ignore

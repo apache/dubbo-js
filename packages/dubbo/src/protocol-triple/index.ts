@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export { createHandlerFactory } from "./handler-factory.js";
-export { createTransport } from "./transport.js";
+export { createHandlerFactory } from './handler-factory.js'
+export { createTransport } from './transport.js'
 
 // All exports below are private — internal code that does not follow semantic
 // versioning.
@@ -21,24 +21,24 @@ export { createTransport } from "./transport.js";
 // following exports, we recommend that you do so with an exact version
 // constraint (no ~ or ^).
 
-export { codeFromHttpStatus, codeToHttpStatus } from "./http-status.js";
+export { codeFromHttpStatus, codeToHttpStatus } from './http-status.js'
 export {
   requestHeader,
-  requestHeaderWithCompression,
-} from "./request-header.js";
+  requestHeaderWithCompression
+} from './request-header.js'
 export {
   endStreamToJson,
   endStreamFromJson,
   endStreamFlag,
-  createEndStreamSerialization,
-} from "./end-stream.js";
-export type { EndStreamResponse } from "./end-stream.js";
+  createEndStreamSerialization
+} from './end-stream.js'
+export type { EndStreamResponse } from './end-stream.js'
 export {
   errorFromJson,
   errorFromJsonBytes,
   errorToJson,
-  errorToJsonBytes,
-} from "./error-json.js";
+  errorToJsonBytes
+} from './error-json.js'
 export {
   parseContentType,
   contentTypeUnaryProto,
@@ -47,18 +47,18 @@ export {
   contentTypeStreamJson,
   contentTypeRegExp,
   contentTypeUnaryRegExp,
-  contentTypeStreamRegExp,
-} from "./content-type.js";
-export { parseTimeout } from "./parse-timeout.js";
+  contentTypeStreamRegExp
+} from './content-type.js'
+export { parseTimeout } from './parse-timeout.js'
 export {
   validateResponse,
-  validateResponseWithCompression,
-} from "./validate-response.js";
-export { trailerMux, trailerDemux } from "./trailer-mux.js";
-export * from "./headers.js";
-export { transformConnectPostToGetRequest } from "./get-request.js";
-export { protocolVersion } from "./version.js";
-export { codeFromString } from "./code-string.js";
-export { codeToString } from "./code-string.js";
-export type { TripleClientServiceOptions } from './client-service-options.js';
-export type { ExpandHandlerOptions, ExpandHandler } from './expand-handler.js';
+  validateResponseWithCompression
+} from './validate-response.js'
+export { trailerMux, trailerDemux } from './trailer-mux.js'
+export * from './headers.js'
+export { transformConnectPostToGetRequest } from './get-request.js'
+export { protocolVersion } from './version.js'
+export { codeFromString } from './code-string.js'
+export { codeToString } from './code-string.js'
+export type { TripleClientServiceOptions } from './client-service-options.js'
+export type { ExpandHandlerOptions, ExpandHandler } from './expand-handler.js'

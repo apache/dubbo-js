@@ -18,8 +18,8 @@ import type {
   UniversalClientResponse,
   UniversalHandlerFn,
   UniversalServerRequest,
-  UniversalServerResponse,
-} from "./universal.js";
+  UniversalServerResponse
+} from './universal.js'
 
 /**
  * Create a universal client function, a minimal abstraction of an HTTP client,
@@ -29,19 +29,19 @@ export function createFetchClient(fetchFn: typeof fetch): UniversalClientFn {
   return async function fetchClient(
     request: UniversalClientRequest
   ): Promise<UniversalClientResponse> {
-    const res: Response = await fetchFn(universalClientRequestToFetch(request));
-    return universalClientResponseFromFetch(res);
-  };
+    const res: Response = await fetchFn(universalClientRequestToFetch(request))
+    return universalClientResponseFromFetch(res)
+  }
 }
 
 /**
  * FetchHandlerFn is a minimal abstraction of an HTTP handler with the fetch API
  * Request and Response types.
  */
-type FetchHandlerFn = (req: Request) => Promise<Response>;
+type FetchHandlerFn = (req: Request) => Promise<Response>
 
 interface FetchHandlerOptions {
-  httpVersion?: string;
+  httpVersion?: string
 }
 
 /**
@@ -52,23 +52,23 @@ export function createFetchHandler(
   options?: FetchHandlerOptions
 ): FetchHandlerFn {
   async function handleFetch(req: Request) {
-    const uReq = universalServerRequestFromFetch(req, options ?? {});
-    const uRes = await uHandler(uReq);
-    return universalServerResponseToFetch(uRes);
+    const uReq = universalServerRequestFromFetch(req, options ?? {})
+    const uRes = await uHandler(uReq)
+    return universalServerResponseToFetch(uRes)
   }
 
-  return Object.assign(handleFetch, uHandler);
+  return Object.assign(handleFetch, uHandler)
 }
 
 function universalClientRequestToFetch(req: UniversalClientRequest): Request {
   const body =
-    req.body === undefined ? null : iterableToReadableStream(req.body);
+    req.body === undefined ? null : iterableToReadableStream(req.body)
   return new Request(req.url, {
     method: req.method,
     headers: req.header,
     signal: req.signal,
-    body,
-  });
+    body
+  })
 }
 
 function universalClientResponseFromFetch(
@@ -78,8 +78,8 @@ function universalClientResponseFromFetch(
     status: res.status,
     header: res.headers,
     body: iterableFromReadableStream(res.body),
-    trailer: new Headers(),
-  };
+    trailer: new Headers()
+  }
 }
 
 function universalServerRequestFromFetch(
@@ -87,52 +87,52 @@ function universalServerRequestFromFetch(
   options: FetchHandlerOptions
 ): UniversalServerRequest {
   return {
-    httpVersion: options.httpVersion ?? "",
+    httpVersion: options.httpVersion ?? '',
     method: req.method,
     url: req.url,
     header: req.headers,
     body: iterableFromReadableStream(req.body),
-    signal: req.signal,
-  };
+    signal: req.signal
+  }
 }
 
 function universalServerResponseToFetch(
   res: UniversalServerResponse
 ): Response {
-  let body: ReadableStream<Uint8Array> | null = null;
+  let body: ReadableStream<Uint8Array> | null = null
   if (res.body !== undefined) {
-    body = iterableToReadableStream(res.body);
+    body = iterableToReadableStream(res.body)
   }
   return new Response(body, {
     status: res.status,
-    headers: res.header,
-  });
+    headers: res.header
+  })
 }
 
 function iterableToReadableStream(
   iterable: AsyncIterable<Uint8Array>
 ): ReadableStream<Uint8Array> {
-  const it = iterable[Symbol.asyncIterator]();
+  const it = iterable[Symbol.asyncIterator]()
   return new ReadableStream<Uint8Array>(<UnderlyingSource<Uint8Array>>{
     async pull(controller: ReadableByteStreamController) {
-      const r = await it.next();
+      const r = await it.next()
       if (r.done === true) {
-        controller.close();
-        return;
+        controller.close()
+        return
       }
-      controller.enqueue(r.value);
+      controller.enqueue(r.value)
     },
     async cancel(reason) {
       if (it.throw) {
         try {
-          await it.throw(reason);
+          await it.throw(reason)
         } catch {
           // iterator.throw on a generator function rethrows unless the
           // body catches and swallows.
         }
       }
-    },
-  });
+    }
+  })
 }
 
 function iterableFromReadableStream(
@@ -140,34 +140,34 @@ function iterableFromReadableStream(
 ): AsyncIterable<Uint8Array> {
   return {
     [Symbol.asyncIterator](): AsyncIterator<Uint8Array> {
-      const reader = body?.getReader();
+      const reader = body?.getReader()
       return {
         async next() {
           if (reader !== undefined) {
-            const r = await reader.read();
+            const r = await reader.read()
             if (r.done) {
               return {
                 done: true,
-                value: undefined,
-              };
+                value: undefined
+              }
             }
-            return r;
+            return r
           }
           return {
             done: true,
-            value: undefined,
-          };
+            value: undefined
+          }
         },
         async throw(e: unknown) {
           if (reader !== undefined) {
-            await reader.cancel(e);
+            await reader.cancel(e)
           }
           return {
             done: true,
-            value: undefined,
-          };
-        },
-      };
-    },
-  };
+            value: undefined
+          }
+        }
+      }
+    }
+  }
 }

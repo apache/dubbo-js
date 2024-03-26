@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export { createHandlerFactory } from "./handler-factory.js";
-export { createTransport } from "./transport.js";
+export { createHandlerFactory } from './handler-factory.js'
+export { createTransport } from './transport.js'
 
 // All exports below are private — internal code that does not follow semantic
 // versioning.
@@ -21,26 +21,26 @@ export { createTransport } from "./transport.js";
 // following exports, we recommend that you do so with an exact version
 // constraint (no ~ or ^).
 
-export { codeFromHttpStatus } from "./http-status.js";
+export { codeFromHttpStatus } from './http-status.js'
 export {
   requestHeader,
-  requestHeaderWithCompression,
-} from "./request-header.js";
+  requestHeaderWithCompression
+} from './request-header.js'
 export {
   parseContentType,
   contentTypeRegExp,
   contentTypeJson,
-  contentTypeProto,
-} from "./content-type.js";
-export { parseTimeout } from "./parse-timeout.js";
+  contentTypeProto
+} from './content-type.js'
+export { parseTimeout } from './parse-timeout.js'
 export {
   findTrailerError,
   setTrailerStatus,
-  grpcStatusOk,
-} from "./trailer-status.js";
+  grpcStatusOk
+} from './trailer-status.js'
 export {
   validateResponse,
-  validateResponseWithCompression,
-} from "./validate-response.js";
-export { validateTrailer } from "./validate-trailer.js";
-export * from "./headers.js";
+  validateResponseWithCompression
+} from './validate-response.js'
+export { validateTrailer } from './validate-trailer.js'
+export * from './headers.js'

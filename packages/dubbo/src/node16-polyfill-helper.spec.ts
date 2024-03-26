@@ -15,17 +15,17 @@
 import {
   ReadableStream as NodeReadableStream,
   TransformStream as NodeTransformStream,
-  WritableStream as NodeWritableStream,
-} from "stream/web";
-import { Headers as UndiciHeaders } from "undici";
+  WritableStream as NodeWritableStream
+} from 'stream/web'
+import { Headers as UndiciHeaders } from 'undici'
 
 /**
  * Make the Headers implementation of the fetch API available in the global
  * scope.
  */
 export function node16FetchHeadersPolyfill() {
-  if (typeof globalThis.Headers !== "function") {
-    globalThis.Headers = UndiciHeaders as unknown as typeof Headers;
+  if (typeof globalThis.Headers !== 'function') {
+    globalThis.Headers = UndiciHeaders as unknown as typeof Headers
   }
 }
 
@@ -36,16 +36,16 @@ export function node16FetchHeadersPolyfill() {
 export function node16WhatwgStreamPolyfill() {
   // node >= v16 has an implementation for WHATWG streams, but doesn't expose
   // them in the global scope, nor globalThis.
-  if (typeof globalThis.ReadableStream !== "function") {
+  if (typeof globalThis.ReadableStream !== 'function') {
     globalThis.ReadableStream =
-      NodeReadableStream as unknown as typeof ReadableStream;
+      NodeReadableStream as unknown as typeof ReadableStream
   }
-  if (typeof globalThis.WritableStream !== "function") {
+  if (typeof globalThis.WritableStream !== 'function') {
     globalThis.WritableStream =
-      NodeWritableStream as unknown as typeof WritableStream;
+      NodeWritableStream as unknown as typeof WritableStream
   }
-  if (typeof globalThis.TransformStream !== "function") {
+  if (typeof globalThis.TransformStream !== 'function') {
     globalThis.TransformStream =
-      NodeTransformStream as unknown as typeof TransformStream;
+      NodeTransformStream as unknown as typeof TransformStream
   }
 }

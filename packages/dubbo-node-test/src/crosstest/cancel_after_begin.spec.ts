@@ -12,54 +12,54 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code, DubboError, createPromiseClient } from "@apachedubbo/dubbo";
-import { TestService } from "../gen/grpc/testing/test_dubbo.js";
-import { PayloadType } from "../gen/grpc/testing/messages_pb.js";
-import { createTestServers } from "../helpers/testserver.js";
+import { Code, DubboError, createPromiseClient } from '@apachedubbo/dubbo'
+import { TestService } from '../gen/grpc/testing/test_dubbo.js'
+import { PayloadType } from '../gen/grpc/testing/messages_pb.js'
+import { createTestServers } from '../helpers/testserver.js'
 
-describe("cancel_after_begin", function () {
-  const servers = createTestServers();
-  beforeAll(async () => await servers.start());
+describe('cancel_after_begin', function () {
+  const servers = createTestServers()
+  beforeAll(async () => await servers.start())
 
   function expectError(err: unknown) {
-    expect(err).toBeInstanceOf(DubboError);
+    expect(err).toBeInstanceOf(DubboError)
     if (err instanceof DubboError) {
-      expect(err.code === Code.Canceled).toBeTrue();
+      expect(err.code === Code.Canceled).toBeTrue()
     }
   }
 
   servers.describeTransports((transport) => {
-    const servers = createTestServers();
-    beforeAll(async () => await servers.start());
-    it("with promise client", async function () {
-      const client = createPromiseClient(TestService, transport());
-      const controller = new AbortController();
+    const servers = createTestServers()
+    beforeAll(async () => await servers.start())
+    it('with promise client', async function () {
+      const client = createPromiseClient(TestService, transport())
+      const controller = new AbortController()
       async function* input() {
         yield {
           payload: {
             body: new Uint8Array(),
-            type: PayloadType.COMPRESSABLE,
-          },
-        };
-        await new Promise((resolve) => setTimeout(resolve, 1));
-        controller.abort();
+            type: PayloadType.COMPRESSABLE
+          }
+        }
+        await new Promise((resolve) => setTimeout(resolve, 1))
+        controller.abort()
         yield {
           payload: {
             body: new Uint8Array(),
-            type: PayloadType.COMPRESSABLE,
-          },
-        };
+            type: PayloadType.COMPRESSABLE
+          }
+        }
       }
       try {
         await client.streamingInputCall(input(), {
-          signal: controller.signal,
-        });
-        fail("expected error");
+          signal: controller.signal
+        })
+        fail('expected error')
       } catch (e) {
-        expectError(e);
+        expectError(e)
       }
-    });
-  });
+    })
+  })
 
-  afterAll(async () => await servers.stop());
-});
+  afterAll(async () => await servers.stop())
+})

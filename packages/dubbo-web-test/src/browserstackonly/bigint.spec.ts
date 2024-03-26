@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { proto3, ScalarType } from "@bufbuild/protobuf";
+import { proto3, ScalarType } from '@bufbuild/protobuf'
 
-describe("bigint", () => {
-  it("survives binary roundtrip", () => {
-    const M = proto3.makeMessageType("M", [
-      { no: 1, name: "f", kind: "scalar", T: ScalarType.INT64 },
-    ]);
-    expect(String(M.fromBinary(new M({ f: "3409819015" }).toBinary()).f)).toBe(
-      "3409819015"
-    );
-  });
-});
+describe('bigint', () => {
+  it('survives binary roundtrip', () => {
+    const M = proto3.makeMessageType('M', [
+      { no: 1, name: 'f', kind: 'scalar', T: ScalarType.INT64 }
+    ])
+    expect(String(M.fromBinary(new M({ f: '3409819015' }).toBinary()).f)).toBe(
+      '3409819015'
+    )
+  })
+})

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code } from "../code.js";
-import { DubboError } from "../dubbo-error.js";
+import { Code } from '../code.js'
+import { DubboError } from '../dubbo-error.js'
 
 /**
  * Parse a Connect Timeout (Deadline) header.
@@ -27,28 +27,28 @@ export function parseTimeout(
   | { timeoutMs?: number; error?: undefined }
   | { timeoutMs?: number; error: DubboError } {
   if (value === null) {
-    return {};
+    return {}
   }
-  const results = /^\d{1,10}$/.exec(value);
+  const results = /^\d{1,10}$/.exec(value)
   if (results === null) {
     return {
       error: new DubboError(
         `protocol error: invalid connect timeout value: ${value}`,
         Code.InvalidArgument
-      ),
-    };
+      )
+    }
   }
-  const timeoutMs = parseInt(results[0]);
+  const timeoutMs = parseInt(results[0])
   if (timeoutMs > maxTimeoutMs) {
     return {
       timeoutMs: timeoutMs,
       error: new DubboError(
         `timeout ${timeoutMs}ms must be <= ${maxTimeoutMs}`,
         Code.InvalidArgument
-      ),
-    };
+      )
+    }
   }
   return {
-    timeoutMs: parseInt(results[0]),
-  };
+    timeoutMs: parseInt(results[0])
+  }
 }

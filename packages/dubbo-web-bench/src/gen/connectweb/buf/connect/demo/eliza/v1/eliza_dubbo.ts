@@ -16,8 +16,15 @@
 // @generated from file buf/connect/demo/eliza/v1/eliza.proto (package buf.connect.demo.eliza.v1, syntax proto3)
 /* eslint-disable */
 
-import { ConverseRequest, ConverseResponse, IntroduceRequest, IntroduceResponse, SayRequest, SayResponse } from "./eliza_pb.js";
-import { MethodKind } from "@bufbuild/protobuf";
+import {
+  ConverseRequest,
+  ConverseResponse,
+  IntroduceRequest,
+  IntroduceResponse,
+  SayRequest,
+  SayResponse
+} from './eliza_pb.js'
+import { MethodKind } from '@bufbuild/protobuf'
 
 /**
  * ElizaService provides a way to talk to the ELIZA, which is a port of
@@ -30,7 +37,7 @@ import { MethodKind } from "@bufbuild/protobuf";
  * @generated from service buf.connect.demo.eliza.v1.ElizaService
  */
 export const ElizaService = {
-  typeName: "buf.connect.demo.eliza.v1.ElizaService",
+  typeName: 'buf.connect.demo.eliza.v1.ElizaService',
   methods: {
     /**
      * Say is a unary request demo. This method should allow for a one sentence
@@ -39,10 +46,10 @@ export const ElizaService = {
      * @generated from rpc buf.connect.demo.eliza.v1.ElizaService.Say
      */
     say: {
-      name: "Say",
+      name: 'Say',
       I: SayRequest,
       O: SayResponse,
-      kind: MethodKind.Unary,
+      kind: MethodKind.Unary
     },
     /**
      * Converse is a bi-directional streaming request demo. This method should allow for
@@ -51,10 +58,10 @@ export const ElizaService = {
      * @generated from rpc buf.connect.demo.eliza.v1.ElizaService.Converse
      */
     converse: {
-      name: "Converse",
+      name: 'Converse',
       I: ConverseRequest,
       O: ConverseResponse,
-      kind: MethodKind.BiDiStreaming,
+      kind: MethodKind.BiDiStreaming
     },
     /**
      * Introduce is a server-streaming request demo.  This method allows for a single request that will return a series
@@ -63,11 +70,10 @@ export const ElizaService = {
      * @generated from rpc buf.connect.demo.eliza.v1.ElizaService.Introduce
      */
     introduce: {
-      name: "Introduce",
+      name: 'Introduce',
       I: IntroduceRequest,
       O: IntroduceResponse,
-      kind: MethodKind.ServerStreaming,
-    },
+      kind: MethodKind.ServerStreaming
+    }
   }
-} as const;
-
+} as const

@@ -12,34 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { JsonValue } from "@bufbuild/protobuf";
+import type { JsonValue } from '@bufbuild/protobuf'
 
 /**
  * A minimal abstraction of an HTTP client.
  */
 export type UniversalClientFn = (
   request: UniversalClientRequest
-) => Promise<UniversalClientResponse>;
+) => Promise<UniversalClientResponse>
 
 /**
  * A minimal abstraction of an HTTP request on the client side.
  */
 export interface UniversalClientRequest {
-  url: string;
-  method: string;
-  header: Headers;
-  body?: AsyncIterable<Uint8Array>;
-  signal?: AbortSignal;
+  url: string
+  method: string
+  header: Headers
+  body?: AsyncIterable<Uint8Array>
+  signal?: AbortSignal
 }
 
 /**
  * A minimal abstraction of an HTTP request on the client side.
  */
 export interface UniversalClientResponse {
-  status: number;
-  header: Headers;
-  body: AsyncIterable<Uint8Array>;
-  trailer: Headers;
+  status: number
+  header: Headers
+  body: AsyncIterable<Uint8Array>
+  trailer: Headers
 }
 
 /**
@@ -47,34 +47,34 @@ export interface UniversalClientResponse {
  */
 export type UniversalHandlerFn = (
   request: UniversalServerRequest
-) => Promise<UniversalServerResponse>;
+) => Promise<UniversalServerResponse>
 
 /**
  * A minimal abstraction of an HTTP request on the server side.
  */
 export interface UniversalServerRequest {
-  httpVersion: string;
-  url: string;
-  method: string;
-  header: Headers;
+  httpVersion: string
+  url: string
+  method: string
+  header: Headers
   /**
    * Many server frameworks parse request bodies with the mime type
    * application/json automatically. We accept a JSON value as an
    * alternative to a byte stream here so that this situation can be
    * handled efficiently.
    */
-  body: AsyncIterable<Uint8Array> | JsonValue;
-  signal: AbortSignal;
+  body: AsyncIterable<Uint8Array> | JsonValue
+  signal: AbortSignal
 }
 
 /**
  * A minimal abstraction of an HTTP response on the server side.
  */
 export interface UniversalServerResponse {
-  status: number;
-  header?: Headers;
-  body?: AsyncIterable<Uint8Array>;
-  trailer?: Headers;
+  status: number
+  header?: Headers
+  body?: AsyncIterable<Uint8Array>
+  trailer?: Headers
 }
 
 /**
@@ -92,17 +92,17 @@ export interface UniversalServerResponse {
  */
 export function assertByteStreamRequest(
   req: UniversalServerRequest
-): asserts req is Omit<UniversalServerRequest, "body"> & {
-  body: AsyncIterable<Uint8Array>;
+): asserts req is Omit<UniversalServerRequest, 'body'> & {
+  body: AsyncIterable<Uint8Array>
 } {
   if (
-    typeof req.body == "object" &&
+    typeof req.body == 'object' &&
     req.body !== null &&
     Symbol.asyncIterator in req.body
   ) {
-    return;
+    return
   }
-  throw new Error("byte stream required, but received JSON");
+  throw new Error('byte stream required, but received JSON')
 }
 
 /**
@@ -111,16 +111,16 @@ export function assertByteStreamRequest(
  * @private Internal code, does not follow semantic versioning.
  */
 export const uResponseOk: Readonly<UniversalServerResponse> = {
-  status: 200,
-};
+  status: 200
+}
 /**
  * HTTP 404 Not Found
  *
  * @private Internal code, does not follow semantic versioning.
  */
 export const uResponseNotFound: Readonly<UniversalServerResponse> = {
-  status: 404,
-};
+  status: 404
+}
 /**
  * HTTP 415 Unsupported Media Type
  *
@@ -128,21 +128,21 @@ export const uResponseNotFound: Readonly<UniversalServerResponse> = {
  */
 export const uResponseUnsupportedMediaType: Readonly<UniversalServerResponse> =
   {
-    status: 415,
-  };
+    status: 415
+  }
 /**
  * HTTP 405 Method Not Allowed
  *
  * @private Internal code, does not follow semantic versioning.
  */
 export const uResponseMethodNotAllowed: Readonly<UniversalServerResponse> = {
-  status: 405,
-};
+  status: 405
+}
 /**
  * HTTP 505 Version Not Supported
  *
  * @private Internal code, does not follow semantic versioning.
  */
 export const uResponseVersionNotSupported: Readonly<UniversalServerResponse> = {
-  status: 505,
-};
+  status: 505
+}

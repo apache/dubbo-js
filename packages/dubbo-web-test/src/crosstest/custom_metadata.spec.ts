@@ -16,87 +16,87 @@ import {
   decodeBinaryHeader,
   encodeBinaryHeader,
   createCallbackClient,
-  createPromiseClient,
-} from "@apachedubbo/dubbo";
-import { TestService } from "../gen/grpc/testing/test_dubbo.js";
-import { describeTransports } from "../helpers/crosstestserver.js";
+  createPromiseClient
+} from '@apachedubbo/dubbo'
+import { TestService } from '../gen/grpc/testing/test_dubbo.js'
+import { describeTransports } from '../helpers/crosstestserver.js'
 import {
   SimpleRequest,
-  SimpleResponse,
-} from "../gen/grpc/testing/messages_pb.js";
-import { interop } from "../helpers/interop.js";
+  SimpleResponse
+} from '../gen/grpc/testing/messages_pb.js'
+import { interop } from '../helpers/interop.js'
 
-describe("custom_metadata", function () {
+describe('custom_metadata', function () {
   describeTransports((transport) => {
-    const size = 314159;
-    const binaryValue = new Uint8Array([0xab, 0xab, 0xab]);
+    const size = 314159
+    const binaryValue = new Uint8Array([0xab, 0xab, 0xab])
     const requestHeaders = {
-      [interop.leadingMetadataKey]: "test_initial_metadata_value",
-      [interop.trailingMetadataKey]: encodeBinaryHeader(binaryValue),
-    };
+      [interop.leadingMetadataKey]: 'test_initial_metadata_value',
+      [interop.trailingMetadataKey]: encodeBinaryHeader(binaryValue)
+    }
     const request = new SimpleRequest({
       responseSize: size,
       payload: {
-        body: new Uint8Array(271828).fill(0),
-      },
-    });
+        body: new Uint8Array(271828).fill(0)
+      }
+    })
     function expectResponseSize(response: SimpleResponse) {
-      expect(response.payload).toBeDefined();
-      expect(response.payload?.body.length).toEqual(size);
+      expect(response.payload).toBeDefined()
+      expect(response.payload?.body.length).toEqual(size)
     }
     function expectResponseHeaders(responseHeaders: Headers | undefined) {
-      const want = requestHeaders[interop.leadingMetadataKey];
-      const got = responseHeaders?.get(interop.leadingMetadataKey);
-      expect(got).toBe(want);
+      const want = requestHeaders[interop.leadingMetadataKey]
+      const got = responseHeaders?.get(interop.leadingMetadataKey)
+      expect(got).toBe(want)
     }
     function expectResponseTrailers(responseTrailers: Headers | undefined) {
-      const gotRaw = responseTrailers?.get(interop.trailingMetadataKey);
-      expect(gotRaw).toBeDefined();
-      expect(gotRaw).not.toBeNull();
+      const gotRaw = responseTrailers?.get(interop.trailingMetadataKey)
+      expect(gotRaw).toBeDefined()
+      expect(gotRaw).not.toBeNull()
       if (gotRaw != null) {
-        expect(decodeBinaryHeader(gotRaw)).toEqual(binaryValue);
+        expect(decodeBinaryHeader(gotRaw)).toEqual(binaryValue)
       }
     }
-    it("with promise client", async function () {
-      const client = createPromiseClient(TestService, transport());
-      let responseHeaders: Headers | undefined;
-      let responseTrailers: Headers | undefined;
+    it('with promise client', async function () {
+      const client = createPromiseClient(TestService, transport())
+      let responseHeaders: Headers | undefined
+      let responseTrailers: Headers | undefined
       const response = await client.unaryCall(request, {
         headers: requestHeaders,
         onHeader(header) {
-          responseHeaders = header;
+          responseHeaders = header
         },
         onTrailer(trailer) {
-          responseTrailers = trailer;
-        },
-      });
-      expectResponseSize(response);
-      expectResponseHeaders(responseHeaders);
-      expectResponseTrailers(responseTrailers);
-    });
-    it("with callback client", function (done) {
-      const client = createCallbackClient(TestService, transport());
-      let responseHeaders: Headers | undefined;
-      let responseTrailers: Headers | undefined;
+          responseTrailers = trailer
+        }
+      })
+      expectResponseSize(response)
+      expectResponseHeaders(responseHeaders)
+      expectResponseTrailers(responseTrailers)
+    })
+    it('with callback client', function (done) {
+      const client = createCallbackClient(TestService, transport())
+      let responseHeaders: Headers | undefined
+      let responseTrailers: Headers | undefined
       client.unaryCall(
         request,
         (err, response) => {
-          expect(err).toBeUndefined();
-          expectResponseSize(response);
-          expectResponseHeaders(responseHeaders);
-          expectResponseTrailers(responseTrailers);
-          done();
+          expect(err).toBeUndefined()
+          expectResponseSize(response)
+          expectResponseHeaders(responseHeaders)
+          expectResponseTrailers(responseTrailers)
+          done()
         },
         {
           headers: requestHeaders,
           onHeader(header) {
-            responseHeaders = header;
+            responseHeaders = header
           },
           onTrailer(trailer) {
-            responseTrailers = trailer;
-          },
+            responseTrailers = trailer
+          }
         }
-      );
-    });
-  });
-});
+      )
+    })
+  })
+})

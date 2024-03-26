@@ -16,65 +16,65 @@ import {
   Code,
   DubboError,
   createCallbackClient,
-  createPromiseClient,
-} from "@apachedubbo/dubbo";
-import { TestService } from "../gen/grpc/testing/test_dubbo.js";
-import { Empty } from "../gen/grpc/testing/empty_pb.js";
-import { createTestServers } from "../helpers/testserver.js";
+  createPromiseClient
+} from '@apachedubbo/dubbo'
+import { TestService } from '../gen/grpc/testing/test_dubbo.js'
+import { Empty } from '../gen/grpc/testing/empty_pb.js'
+import { createTestServers } from '../helpers/testserver.js'
 
-describe("unimplemented_server_streaming_method", function () {
-  const servers = createTestServers();
-  beforeAll(async () => await servers.start());
+describe('unimplemented_server_streaming_method', function () {
+  const servers = createTestServers()
+  beforeAll(async () => await servers.start())
 
   servers.describeTransports((transport, transportName) => {
-    it("with promise client", async function () {
-      const client = createPromiseClient(TestService, transport());
-      const request = new Empty();
+    it('with promise client', async function () {
+      const client = createPromiseClient(TestService, transport())
+      const request = new Empty()
       try {
         for await (const response of client.unimplementedStreamingOutputCall(
           request
         )) {
-          fail(`expecting no response, got: ${response.toJsonString()}`);
+          fail(`expecting no response, got: ${response.toJsonString()}`)
         }
-        fail("expected to catch an error");
+        fail('expected to catch an error')
       } catch (e) {
-        expect(e).toBeInstanceOf(DubboError);
-        expect(DubboError.from(e).code).toBe(Code.Unimplemented);
-        if (transportName.includes("against grpc-go")) {
+        expect(e).toBeInstanceOf(DubboError)
+        expect(DubboError.from(e).code).toBe(Code.Unimplemented)
+        if (transportName.includes('against grpc-go')) {
           expect(DubboError.from(e).message).toBe(
-            "[unimplemented] method UnimplementedStreamingOutputCall not implemented"
-          );
+            '[unimplemented] method UnimplementedStreamingOutputCall not implemented'
+          )
         } else {
           expect(DubboError.from(e).message).toBe(
-            "[unimplemented] grpc.testing.TestService.UnimplementedStreamingOutputCall is not implemented"
-          );
+            '[unimplemented] grpc.testing.TestService.UnimplementedStreamingOutputCall is not implemented'
+          )
         }
       }
-    });
-    it("with callback client", function (done) {
-      const client = createCallbackClient(TestService, transport());
-      const request = new Empty();
+    })
+    it('with callback client', function (done) {
+      const client = createCallbackClient(TestService, transport())
+      const request = new Empty()
       client.unimplementedStreamingOutputCall(
         request,
         (response) => {
-          fail(`expecting no response, got: ${response.toJsonString()}`);
+          fail(`expecting no response, got: ${response.toJsonString()}`)
         },
         (err: DubboError | undefined) => {
-          expect(err?.code).toBe(Code.Unimplemented);
-          if (transportName.includes("against grpc-go")) {
+          expect(err?.code).toBe(Code.Unimplemented)
+          if (transportName.includes('against grpc-go')) {
             expect(err?.message).toBe(
-              "[unimplemented] method UnimplementedStreamingOutputCall not implemented"
-            );
+              '[unimplemented] method UnimplementedStreamingOutputCall not implemented'
+            )
           } else {
             expect(err?.message).toBe(
-              "[unimplemented] grpc.testing.TestService.UnimplementedStreamingOutputCall is not implemented"
-            );
+              '[unimplemented] grpc.testing.TestService.UnimplementedStreamingOutputCall is not implemented'
+            )
           }
-          done();
+          done()
         }
-      );
-    });
-  });
+      )
+    })
+  })
 
-  afterAll(async () => await servers.stop());
-});
+  afterAll(async () => await servers.stop())
+})

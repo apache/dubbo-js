@@ -15,65 +15,65 @@
 import {
   parseContentType,
   contentTypeJson,
-  contentTypeProto,
-} from "./content-type.js";
+  contentTypeProto
+} from './content-type.js'
 
-describe("parseContentType()", function () {
-  it("should parse", function () {
+describe('parseContentType()', function () {
+  it('should parse', function () {
     expect(parseContentType(contentTypeProto)).toEqual({
       text: false,
-      binary: true,
-    });
+      binary: true
+    })
     expect(parseContentType(contentTypeJson)).toEqual({
       text: false,
-      binary: false,
-    });
-    expect(parseContentType("application/grpc-web")).toEqual({
+      binary: false
+    })
+    expect(parseContentType('application/grpc-web')).toEqual({
       text: false,
-      binary: true,
-    });
-    expect(parseContentType("application/grpc-WEB")).toEqual({
+      binary: true
+    })
+    expect(parseContentType('application/grpc-WEB')).toEqual({
       text: false,
-      binary: true,
-    });
-    expect(parseContentType("application/grpc-web+proto")).toEqual({
+      binary: true
+    })
+    expect(parseContentType('application/grpc-web+proto')).toEqual({
       text: false,
-      binary: true,
-    });
-    expect(parseContentType("application/grpc-web+json")).toEqual({
+      binary: true
+    })
+    expect(parseContentType('application/grpc-web+json')).toEqual({
       text: false,
-      binary: false,
-    });
-    expect(parseContentType("application/grpc-web+json;charset=utf8")).toEqual({
+      binary: false
+    })
+    expect(parseContentType('application/grpc-web+json;charset=utf8')).toEqual({
       text: false,
-      binary: false,
-    });
+      binary: false
+    })
     expect(
-      parseContentType("application/grpc-web+json; charset=utf-8")
-    ).toEqual({ text: false, binary: false });
-    expect(parseContentType("application/grpc-web-text")).toEqual({
+      parseContentType('application/grpc-web+json; charset=utf-8')
+    ).toEqual({ text: false, binary: false })
+    expect(parseContentType('application/grpc-web-text')).toEqual({
       text: true,
-      binary: true,
-    });
-    expect(parseContentType("application/grpc-web-text+proto")).toEqual({
+      binary: true
+    })
+    expect(parseContentType('application/grpc-web-text+proto')).toEqual({
       text: true,
-      binary: true,
-    });
-    expect(parseContentType("application/grpc-web-text+json")).toEqual({
+      binary: true
+    })
+    expect(parseContentType('application/grpc-web-text+json')).toEqual({
       text: true,
-      binary: false,
-    });
+      binary: false
+    })
     expect(
-      parseContentType("application/grpc-web-text+json;charset=utf8")
-    ).toEqual({ text: true, binary: false });
+      parseContentType('application/grpc-web-text+json;charset=utf8')
+    ).toEqual({ text: true, binary: false })
     expect(
-      parseContentType("application/grpc-web-text+json; charset=utf-8")
-    ).toEqual({ text: true, binary: false });
-    expect(parseContentType("application/octet-stream")).toBeUndefined();
+      parseContentType('application/grpc-web-text+json; charset=utf-8')
+    ).toEqual({ text: true, binary: false })
+    expect(parseContentType('application/octet-stream')).toBeUndefined()
     expect(
-      parseContentType("application/grpc-web+json;charset=iso-8859-1")
-    ).toBeUndefined();
-    expect(parseContentType("application/grpc-web+thrift")).toBeUndefined();
-    expect(parseContentType("application/connect+thrift")).toBeUndefined();
-  });
-});
+      parseContentType('application/grpc-web+json;charset=iso-8859-1')
+    ).toBeUndefined()
+    expect(parseContentType('application/grpc-web+thrift')).toBeUndefined()
+    expect(parseContentType('application/connect+thrift')).toBeUndefined()
+  })
+})

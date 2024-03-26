@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createDubboRouter } from "@apachedubbo/dubbo";
-import type { DubboRouter, DubboRouterOptions } from "@apachedubbo/dubbo";
-import type { UniversalHandler } from "@apachedubbo/dubbo/protocol";
-import type { ExpandHandler } from "@apachedubbo/dubbo/protocol-triple";
+import { createDubboRouter } from '@apachedubbo/dubbo'
+import type { DubboRouter, DubboRouterOptions } from '@apachedubbo/dubbo'
+import type { UniversalHandler } from '@apachedubbo/dubbo/protocol'
+import type { ExpandHandler } from '@apachedubbo/dubbo/protocol-triple'
 import {
   compressionBrotli,
   compressionGzip,
   universalRequestFromNodeRequest,
-  universalResponseToNodeResponse,
-} from "@apachedubbo/dubbo-node";
-import type { NextApiRequest, NextApiResponse, PageConfig } from "next";
-import type { JsonValue } from "@bufbuild/protobuf";
+  universalResponseToNodeResponse
+} from '@apachedubbo/dubbo-node'
+import type { NextApiRequest, NextApiResponse, PageConfig } from 'next'
+import type { JsonValue } from '@bufbuild/protobuf'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NextApiHandler<T = any> = (
   req: NextApiRequest,
   res: NextApiResponse<T>
-) => unknown | Promise<unknown>;
+) => unknown | Promise<unknown>
 
 interface NextJsApiRouterOptions extends DubboRouterOptions {
   /**
@@ -47,7 +47,7 @@ interface NextJsApiRouterOptions extends DubboRouterOptions {
    *
    * Then pass this function here.
    */
-  routes: (router: DubboRouter) => void;
+  routes: (router: DubboRouter) => void
 
   /**
    * Serve all handlers under this prefix. For example, the prefix "/something"
@@ -55,7 +55,7 @@ interface NextJsApiRouterOptions extends DubboRouterOptions {
    *
    * This is `/api` by default for Next.js.
    */
-  prefix?: string;
+  prefix?: string
 }
 
 /**
@@ -63,36 +63,46 @@ interface NextJsApiRouterOptions extends DubboRouterOptions {
  */
 export function nextJsApiRouter(options: NextJsApiRouterOptions): ApiRoute {
   if (options.acceptCompression === undefined) {
-    options.acceptCompression = [compressionGzip, compressionBrotli];
+    options.acceptCompression = [compressionGzip, compressionBrotli]
   }
-  const router = createDubboRouter(options);
-  options.routes(router);
-  const prefix = options.prefix ?? "/api";
-  const paths = new Map<string, UniversalHandler & ExpandHandler>();
+  const router = createDubboRouter(options)
+  options.routes(router)
+  const prefix = options.prefix ?? '/api'
+  const paths = new Map<string, UniversalHandler & ExpandHandler>()
   for (const uHandler of router.handlers) {
-    paths.set(prefix + uHandler.requestPath + uHandler.serviceVersion + uHandler.serviceGroup, uHandler);
+    paths.set(
+      prefix +
+        uHandler.requestPath +
+        uHandler.serviceVersion +
+        uHandler.serviceGroup,
+      uHandler
+    )
   }
 
   async function handler(req: NextApiRequest, res: NextApiResponse) {
     // Strip the query parameter when matching paths.
-    const requestPath = req.url?.split("?", 2)[0] ?? "";
-    const uHandler = paths.get(requestPath + (req.headers['tri-service-version'] ?? "") + (req.headers['tri-service-group'] ?? ""));
+    const requestPath = req.url?.split('?', 2)[0] ?? ''
+    const uHandler = paths.get(
+      requestPath +
+        (req.headers['tri-service-version'] ?? '') +
+        (req.headers['tri-service-group'] ?? '')
+    )
     if (!uHandler) {
-      res.writeHead(404);
-      res.end();
-      return;
+      res.writeHead(404)
+      res.end()
+      return
     }
     try {
       const uRes = await uHandler(
         universalRequestFromNodeRequest(req, req.body as JsonValue | undefined)
-      );
-      await universalResponseToNodeResponse(uRes, res);
+      )
+      await universalResponseToNodeResponse(uRes, res)
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(
         `handler for rpc ${uHandler.method.name} of ${uHandler.service.typeName} failed`,
         e
-      );
+      )
     }
   }
 
@@ -100,13 +110,13 @@ export function nextJsApiRouter(options: NextJsApiRouterOptions): ApiRoute {
     handler,
     config: {
       api: {
-        bodyParser: false,
-      },
-    },
-  };
+        bodyParser: false
+      }
+    }
+  }
 }
 
 interface ApiRoute {
-  handler: NextApiHandler;
-  config: PageConfig;
+  handler: NextApiHandler
+  config: PageConfig
 }

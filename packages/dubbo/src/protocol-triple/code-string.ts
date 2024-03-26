@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code } from "../code.js";
+import { Code } from '../code.js'
 
 /**
  * codeToString returns the string representation of a Code.
@@ -20,17 +20,17 @@ import { Code } from "../code.js";
  * @private Internal code, does not follow semantic versioning.
  */
 export function codeToString(value: Code): string {
-  const name = Code[value] as string | undefined;
-  if (typeof name != "string") {
-    return value.toString();
+  const name = Code[value] as string | undefined
+  if (typeof name != 'string') {
+    return value.toString()
   }
   return (
     name[0].toLowerCase() +
-    name.substring(1).replace(/[A-Z]/g, (c) => "_" + c.toLowerCase())
-  );
+    name.substring(1).replace(/[A-Z]/g, (c) => '_' + c.toLowerCase())
+  )
 }
 
-let stringToCode: Record<string, Code> | undefined;
+let stringToCode: Record<string, Code> | undefined
 
 /**
  * codeFromString parses the string representation of a Code in snake_case.
@@ -42,13 +42,13 @@ let stringToCode: Record<string, Code> | undefined;
  */
 export function codeFromString(value: string): Code | undefined {
   if (!stringToCode) {
-    stringToCode = {};
+    stringToCode = {}
     for (const value of Object.values(Code)) {
-      if (typeof value == "string") {
-        continue;
+      if (typeof value == 'string') {
+        continue
       }
-      stringToCode[codeToString(value)] = value;
+      stringToCode[codeToString(value)] = value
     }
   }
-  return stringToCode[value];
+  return stringToCode[value]
 }

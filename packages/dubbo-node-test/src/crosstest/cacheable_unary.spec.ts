@@ -12,53 +12,53 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createCallbackClient, createPromiseClient } from "@apachedubbo/dubbo";
-import { TestService } from "../gen/grpc/testing/test_dubbo.js";
-import { SimpleRequest } from "../gen/grpc/testing/messages_pb.js";
-import { createTestServers } from "../helpers/testserver.js";
+import { createCallbackClient, createPromiseClient } from '@apachedubbo/dubbo'
+import { TestService } from '../gen/grpc/testing/test_dubbo.js'
+import { SimpleRequest } from '../gen/grpc/testing/messages_pb.js'
+import { createTestServers } from '../helpers/testserver.js'
 
 function ensureGetRequest(header: Headers) {
-  expect(header.has("request-protocol")).toBeTrue();
-  if (header.get("request-protocol") === "connect") {
-    expect(header.has("get-request")).toBeTrue();
+  expect(header.has('request-protocol')).toBeTrue()
+  if (header.get('request-protocol') === 'connect') {
+    expect(header.has('get-request')).toBeTrue()
   }
 }
 
-describe("cacheable_unary", function () {
-  const servers = createTestServers();
-  beforeAll(async () => await servers.start());
+describe('cacheable_unary', function () {
+  const servers = createTestServers()
+  beforeAll(async () => await servers.start())
 
   servers.describeTransports((transportFactory) => {
     const request = new SimpleRequest({
       responseSize: 1024,
       payload: {
-        body: new Uint8Array(1024).fill(0),
-      },
-    });
-    it("with promise client", async function () {
-      const transport = transportFactory({ useHttpGet: true });
-      const client = createPromiseClient(TestService, transport);
+        body: new Uint8Array(1024).fill(0)
+      }
+    })
+    it('with promise client', async function () {
+      const transport = transportFactory({ useHttpGet: true })
+      const client = createPromiseClient(TestService, transport)
       const response = await client.cacheableUnaryCall(request, {
-        onHeader: ensureGetRequest,
-      });
-      expect(response.payload).toBeDefined();
-      expect(response.payload?.body.length).toEqual(request.responseSize);
-    });
-    it("with callback client", function (done) {
-      const transport = transportFactory({ useHttpGet: true });
-      const client = createCallbackClient(TestService, transport);
+        onHeader: ensureGetRequest
+      })
+      expect(response.payload).toBeDefined()
+      expect(response.payload?.body.length).toEqual(request.responseSize)
+    })
+    it('with callback client', function (done) {
+      const transport = transportFactory({ useHttpGet: true })
+      const client = createCallbackClient(TestService, transport)
       client.cacheableUnaryCall(
         request,
         (err, response) => {
-          expect(err).toBeUndefined();
-          expect(response.payload).toBeDefined();
-          expect(response.payload?.body.length).toEqual(request.responseSize);
-          done();
+          expect(err).toBeUndefined()
+          expect(response.payload).toBeDefined()
+          expect(response.payload?.body.length).toEqual(request.responseSize)
+          done()
         },
         { onHeader: ensureGetRequest }
-      );
-    });
-  });
+      )
+    })
+  })
 
-  afterAll(async () => await servers.stop());
-});
+  afterAll(async () => await servers.stop())
+})

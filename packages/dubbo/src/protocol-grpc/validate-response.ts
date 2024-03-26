@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { codeFromHttpStatus } from "./http-status.js";
-import { DubboError } from "../dubbo-error.js";
-import { findTrailerError } from "./trailer-status.js";
-import { Code } from "../code.js";
-import { headerEncoding, headerGrpcStatus } from "./headers.js";
-import type { Compression } from "../protocol/compression.js";
+import { codeFromHttpStatus } from './http-status.js'
+import { DubboError } from '../dubbo-error.js'
+import { findTrailerError } from './trailer-status.js'
+import { Code } from '../code.js'
+import { headerEncoding, headerGrpcStatus } from './headers.js'
+import type { Compression } from '../protocol/compression.js'
 
 /**
  * Validates response status and header for the gRPC protocol.
@@ -35,17 +35,13 @@ export function validateResponse(
   headers: Headers
 ): { foundStatus: boolean } {
   if (status != 200) {
-    throw new DubboError(
-      `HTTP ${status}`,
-      codeFromHttpStatus(status),
-      headers
-    );
+    throw new DubboError(`HTTP ${status}`, codeFromHttpStatus(status), headers)
   }
-  const err = findTrailerError(headers);
+  const err = findTrailerError(headers)
   if (err) {
-    throw err;
+    throw err
   }
-  return { foundStatus: headers.has(headerGrpcStatus) };
+  return { foundStatus: headers.has(headerGrpcStatus) }
 }
 
 /**
@@ -64,21 +60,21 @@ export function validateResponseWithCompression(
   status: number,
   headers: Headers
 ): { foundStatus: boolean; compression: Compression | undefined } {
-  const { foundStatus } = validateResponse(status, headers);
-  let compression: Compression | undefined;
-  const encoding = headers.get(headerEncoding);
-  if (encoding !== null && encoding.toLowerCase() !== "identity") {
-    compression = acceptCompression.find((c) => c.name === encoding);
+  const { foundStatus } = validateResponse(status, headers)
+  let compression: Compression | undefined
+  const encoding = headers.get(headerEncoding)
+  if (encoding !== null && encoding.toLowerCase() !== 'identity') {
+    compression = acceptCompression.find((c) => c.name === encoding)
     if (!compression) {
       throw new DubboError(
         `unsupported response encoding "${encoding}"`,
         Code.InvalidArgument,
         headers
-      );
+      )
     }
   }
   return {
     foundStatus,
-    compression,
-  };
+    compression
+  }
 }

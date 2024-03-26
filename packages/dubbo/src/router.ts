@@ -12,26 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { MethodInfo, ServiceType } from "@bufbuild/protobuf";
-import { DubboError } from "./dubbo-error.js";
-import { Code } from "./code.js";
+import type { MethodInfo, ServiceType } from '@bufbuild/protobuf'
+import { DubboError } from './dubbo-error.js'
+import { Code } from './code.js'
 import {
   createMethodImplSpec,
-  createServiceImplSpec,
-} from "./implementation.js";
-import type { MethodImpl, ServiceImpl } from "./implementation.js";
-import { createHandlerFactory as handlerFactoryGrpcWeb } from "./protocol-grpc-web/handler-factory.js";
-import { createHandlerFactory as handlerFactoryGrpc } from "./protocol-grpc/handler-factory.js";
-import { createHandlerFactory as handlerFactoryTriple } from "./protocol-triple/handler-factory.js";
-import type { ExpandHandlerOptions, ExpandHandler } from './protocol-triple/expand-handler.js';
+  createServiceImplSpec
+} from './implementation.js'
+import type { MethodImpl, ServiceImpl } from './implementation.js'
+import { createHandlerFactory as handlerFactoryGrpcWeb } from './protocol-grpc-web/handler-factory.js'
+import { createHandlerFactory as handlerFactoryGrpc } from './protocol-grpc/handler-factory.js'
+import { createHandlerFactory as handlerFactoryTriple } from './protocol-triple/handler-factory.js'
+import type {
+  ExpandHandlerOptions,
+  ExpandHandler
+} from './protocol-triple/expand-handler.js'
 import {
   type UniversalHandler,
   type UniversalHandlerOptions,
   createUniversalMethodHandler,
   createUniversalServiceHandlers,
-  validateUniversalHandlerOptions,
-} from "./protocol/universal-handler.js";
-import type { ProtocolHandlerFactory } from "./protocol/protocol-handler-factory.js";
+  validateUniversalHandlerOptions
+} from './protocol/universal-handler.js'
+import type { ProtocolHandlerFactory } from './protocol/protocol-handler-factory.js'
 
 /**
  * DubboRouter is your single registration point for RPCs.
@@ -50,18 +53,18 @@ import type { ProtocolHandlerFactory } from "./protocol/protocol-handler-factory
  * from @apachedubbo/dubbo-node, or from @apachedubbo/dubbo-fastify.
  */
 export interface DubboRouter {
-  readonly handlers: Array<UniversalHandler & ExpandHandler>;
+  readonly handlers: Array<UniversalHandler & ExpandHandler>
   service<T extends ServiceType>(
     service: T,
     implementation: Partial<ServiceImpl<T>>,
     options?: Partial<UniversalHandlerOptions & ExpandHandlerOptions>
-  ): this;
+  ): this
   rpc<M extends MethodInfo>(
     service: ServiceType,
     method: M,
     impl: MethodImpl<M>,
     options?: Partial<UniversalHandlerOptions & ExpandHandlerOptions>
-  ): this;
+  ): this
 }
 
 /**
@@ -79,7 +82,7 @@ export interface DubboRouterOptions extends Partial<UniversalHandlerOptions> {
    * Note that gRPC is typically served with TLS over HTTP/2 and requires access
    * to HTTP trailers.
    */
-  grpc?: boolean;
+  grpc?: boolean
 
   /**
    * Enable the gRPC-web protocol and make your API available to all gRPC-web
@@ -94,7 +97,7 @@ export interface DubboRouterOptions extends Partial<UniversalHandlerOptions> {
    * trailers. Note that bidi streaming requires HTTP/2, and web browsers may
    * not support all streaming types.
    */
-  grpcWeb?: boolean;
+  grpcWeb?: boolean
 
   /**
    * Enable the Triple protocol and make your API available to all Triple
@@ -107,7 +110,7 @@ export interface DubboRouterOptions extends Partial<UniversalHandlerOptions> {
    * trailers. Note that bidi streaming requires HTTP/2, and web browsers may
    * not support all streaming types.
    */
-  triple?: boolean;
+  triple?: boolean
 }
 
 /**
@@ -116,39 +119,42 @@ export interface DubboRouterOptions extends Partial<UniversalHandlerOptions> {
 export function createDubboRouter(
   routerOptions?: DubboRouterOptions
 ): DubboRouter {
-  const base = whichProtocols(routerOptions);
-  const handlers: Array<UniversalHandler & ExpandHandler> = [];
+  const base = whichProtocols(routerOptions)
+  const handlers: Array<UniversalHandler & ExpandHandler> = []
   return {
     handlers,
     service(service, implementation, options) {
-      const { protocols } = whichProtocols(options, base);
+      const { protocols } = whichProtocols(options, base)
       handlers.push(
-        ...(createUniversalServiceHandlers(
+        ...createUniversalServiceHandlers(
           createServiceImplSpec(service, implementation),
           protocols
-        )).map((item: UniversalHandler): UniversalHandler & ExpandHandler => {
-            return Object.assign(item, {
-              serviceVersion: options?.serviceVersion ?? '',
-              serviceGroup: options?.serviceGroup ?? ''
-            })
+        ).map((item: UniversalHandler): UniversalHandler & ExpandHandler => {
+          return Object.assign(item, {
+            serviceVersion: options?.serviceVersion ?? '',
+            serviceGroup: options?.serviceGroup ?? ''
+          })
         })
-      );
-      return this;
+      )
+      return this
     },
     rpc(service, method, implementation, options) {
-      const { protocols } = whichProtocols(options, base);
+      const { protocols } = whichProtocols(options, base)
       handlers.push(
-        Object.assign(createUniversalMethodHandler(
-          createMethodImplSpec(service, method, implementation),
-          protocols
-        ), {
-          serviceVersion: options?.serviceVersion ?? '',
-          serviceGroup: options?.serviceGroup ?? ''
-        })
-      );
-      return this;
-    },
-  };
+        Object.assign(
+          createUniversalMethodHandler(
+            createMethodImplSpec(service, method, implementation),
+            protocols
+          ),
+          {
+            serviceVersion: options?.serviceVersion ?? '',
+            serviceGroup: options?.serviceGroup ?? ''
+          }
+        )
+      )
+      return this
+    }
+  }
 }
 
 function whichProtocols(
@@ -156,36 +162,36 @@ function whichProtocols(
   base?: { options: DubboRouterOptions; protocols: ProtocolHandlerFactory[] }
 ): { options: DubboRouterOptions; protocols: ProtocolHandlerFactory[] } {
   if (base && !options) {
-    return base;
+    return base
   }
   const opt: DubboRouterOptions = base
     ? {
         ...validateUniversalHandlerOptions(base.options),
-        ...options,
+        ...options
       }
     : {
         ...options,
-        ...validateUniversalHandlerOptions(options ?? {}),
-      };
+        ...validateUniversalHandlerOptions(options ?? {})
+      }
 
-  const protocols: ProtocolHandlerFactory[] = [];
+  const protocols: ProtocolHandlerFactory[] = []
   if (options?.grpc !== false) {
-    protocols.push(handlerFactoryGrpc(opt));
+    protocols.push(handlerFactoryGrpc(opt))
   }
   if (options?.grpcWeb !== false) {
-    protocols.push(handlerFactoryGrpcWeb(opt));
+    protocols.push(handlerFactoryGrpcWeb(opt))
   }
   if (options?.triple !== false) {
-    protocols.push(handlerFactoryTriple(opt));
+    protocols.push(handlerFactoryTriple(opt))
   }
   if (protocols.length === 0) {
     throw new DubboError(
-      "cannot create handler, all protocols are disabled",
+      'cannot create handler, all protocols are disabled',
       Code.InvalidArgument
-    );
+    )
   }
   return {
     options: opt,
-    protocols,
-  };
+    protocols
+  }
 }

@@ -100,5 +100,5 @@ export enum Code {
   /**
    * Request isn't authenticated.
    */
-  Unauthenticated = 16,
+  Unauthenticated = 16
 }

@@ -16,55 +16,55 @@ import {
   Code,
   DubboError,
   createCallbackClient,
-  createPromiseClient,
-} from "@apachedubbo/dubbo";
-import { TestService } from "../gen/grpc/testing/test_dubbo.js";
-import { describeTransports } from "../helpers/crosstestserver.js";
+  createPromiseClient
+} from '@apachedubbo/dubbo'
+import { TestService } from '../gen/grpc/testing/test_dubbo.js'
+import { describeTransports } from '../helpers/crosstestserver.js'
 import {
   ErrorDetail,
-  StreamingOutputCallRequest,
-} from "../gen/grpc/testing/messages_pb.js";
-import { interop } from "../helpers/interop.js";
+  StreamingOutputCallRequest
+} from '../gen/grpc/testing/messages_pb.js'
+import { interop } from '../helpers/interop.js'
 
-describe("fail_server_streaming", () => {
+describe('fail_server_streaming', () => {
   function expectError(err: unknown) {
-    expect(err).toBeInstanceOf(DubboError);
+    expect(err).toBeInstanceOf(DubboError)
     if (err instanceof DubboError) {
-      expect(err.code).toEqual(Code.ResourceExhausted);
-      expect(err.rawMessage).toEqual(interop.nonASCIIErrMsg);
-      const details = err.findDetails(ErrorDetail);
-      expect(details).toEqual([interop.errorDetail]);
+      expect(err.code).toEqual(Code.ResourceExhausted)
+      expect(err.rawMessage).toEqual(interop.nonASCIIErrMsg)
+      const details = err.findDetails(ErrorDetail)
+      expect(details).toEqual([interop.errorDetail])
     }
   }
-  const request = new StreamingOutputCallRequest();
+  const request = new StreamingOutputCallRequest()
   describeTransports((transport) => {
-    it("with promise client", async function () {
-      const client = createPromiseClient(TestService, transport());
+    it('with promise client', async function () {
+      const client = createPromiseClient(TestService, transport())
       try {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for await (const response of client.failStreamingOutputCall(request)) {
           expect(response)
-            .withContext("did not expect any response message")
-            .toBeUndefined();
+            .withContext('did not expect any response message')
+            .toBeUndefined()
         }
       } catch (e) {
-        expectError(e);
+        expectError(e)
       }
-    });
-    it("with callback client", function (done) {
-      const client = createCallbackClient(TestService, transport());
+    })
+    it('with callback client', function (done) {
+      const client = createCallbackClient(TestService, transport())
       client.failStreamingOutputCall(
         request,
         (response) => {
           expect(response)
-            .withContext("did not expect any response message")
-            .toBeUndefined();
+            .withContext('did not expect any response message')
+            .toBeUndefined()
         },
         (err: DubboError | undefined) => {
-          expectError(err);
-          done();
+          expectError(err)
+          done()
         }
-      );
-    });
-  });
-});
+      )
+    })
+  })
+})

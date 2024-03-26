@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Code } from "./code.js";
+import { Code } from './code.js'
 import type {
   AnyMessage,
   IMessageTypeRegistry,
   JsonValue,
-  MessageType,
-} from "@bufbuild/protobuf";
-import { createRegistry, Message } from "@bufbuild/protobuf";
-import { codeToString } from "./protocol-triple/code-string.js";
+  MessageType
+} from '@bufbuild/protobuf'
+import { createRegistry, Message } from '@bufbuild/protobuf'
+import { codeToString } from './protocol-triple/code-string.js'
 
 /**
  * DubboError captures four pieces of information: a Code, an error
@@ -39,12 +39,12 @@ export class DubboError extends Error {
   /**
    * The Code for this error.
    */
-  readonly code: Code;
+  readonly code: Code
 
   /**
    * A union of response headers and trailers associated with this error.
    */
-  readonly metadata: Headers;
+  readonly metadata: Headers
 
   /**
    * When an error is parsed from the wire, incoming error details are stored
@@ -53,7 +53,7 @@ export class DubboError extends Error {
    * When an error is constructed to be sent over the wire, outgoing error
    * details are stored in this property as well.
    */
-  details: (Message | IncomingDetail)[];
+  details: (Message | IncomingDetail)[]
 
   /**
    * The error message, but without a status code in front.
@@ -61,16 +61,16 @@ export class DubboError extends Error {
    * For example, a new `DubboError("hello", Code.NotFound)` will have
    * the message `[not found] hello`, and the rawMessage `hello`.
    */
-  readonly rawMessage: string;
+  readonly rawMessage: string
 
-  override name = "DubboError";
+  override name = 'DubboError'
 
   /**
    * The underlying cause of this error.  In cases where the actual cause is
    * elided with the error message, the cause is specified here so that we don't
    * leak the underlying error, but instead make it available for logging.
    */
-  cause: unknown | undefined;
+  cause: unknown | undefined
 
   /**
    * Create a new DubboError.
@@ -86,14 +86,14 @@ export class DubboError extends Error {
     outgoingDetails?: Message[],
     cause?: unknown
   ) {
-    super(createMessage(message, code));
+    super(createMessage(message, code))
     // see https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-2.html#example
-    Object.setPrototypeOf(this, new.target.prototype);
-    this.rawMessage = message;
-    this.code = code;
-    this.metadata = new Headers(metadata ?? {});
-    this.details = outgoingDetails ?? [];
-    this.cause = cause;
+    Object.setPrototypeOf(this, new.target.prototype)
+    this.rawMessage = message
+    this.code = code
+    this.metadata = new Headers(metadata ?? {})
+    this.details = outgoingDetails ?? []
+    this.cause = cause
   }
 
   /**
@@ -108,18 +108,18 @@ export class DubboError extends Error {
    */
   static from(reason: unknown, code = Code.Unknown): DubboError {
     if (reason instanceof DubboError) {
-      return reason;
+      return reason
     }
     if (reason instanceof Error) {
-      if (reason.name == "AbortError") {
+      if (reason.name == 'AbortError') {
         // Fetch requests can only be canceled with an AbortController.
         // We detect that condition by looking at the name of the raised
         // error object, and translate to the appropriate status code.
-        return new DubboError(reason.message, Code.Canceled);
+        return new DubboError(reason.message, Code.Canceled)
       }
-      return new DubboError(reason.message, code);
+      return new DubboError(reason.message, code)
     }
-    return new DubboError(String(reason), code);
+    return new DubboError(String(reason), code)
   }
 
   /**
@@ -130,30 +130,30 @@ export class DubboError extends Error {
    * messages. Any decoding errors are ignored, and the detail will simply be
    * omitted from the list.
    */
-  findDetails<T extends Message<T>>(type: MessageType<T>): T[];
-  findDetails(registry: IMessageTypeRegistry): AnyMessage[];
+  findDetails<T extends Message<T>>(type: MessageType<T>): T[]
+  findDetails(registry: IMessageTypeRegistry): AnyMessage[]
   findDetails(
     typeOrRegistry: MessageType | IMessageTypeRegistry
   ): AnyMessage[] {
     const registry =
-      "typeName" in typeOrRegistry
+      'typeName' in typeOrRegistry
         ? {
             findMessage: (typeName: string): MessageType | undefined =>
-              typeName === typeOrRegistry.typeName ? typeOrRegistry : undefined,
+              typeName === typeOrRegistry.typeName ? typeOrRegistry : undefined
           }
-        : typeOrRegistry;
-    const details: AnyMessage[] = [];
+        : typeOrRegistry
+    const details: AnyMessage[] = []
     for (const data of this.details) {
       if (data instanceof Message) {
         if (registry.findMessage(data.getType().typeName)) {
-          details.push(data);
+          details.push(data)
         }
-        continue;
+        continue
       }
-      const type = registry.findMessage(data.type);
+      const type = registry.findMessage(data.type)
       if (type) {
         try {
-          details.push(type.fromBinary(data.value));
+          details.push(type.fromBinary(data.value))
         } catch (_) {
           // We silently give up if we are unable to parse the detail, because
           // that appears to be the least worst behavior.
@@ -163,7 +163,7 @@ export class DubboError extends Error {
         }
       }
     }
-    return details;
+    return details
   }
 }
 
@@ -172,7 +172,7 @@ export class DubboError extends Error {
  * optional JSON representation in the "debug" key, and stores a type name
  * instead of a type URL.
  */
-type IncomingDetail = { type: string; value: Uint8Array; debug?: JsonValue };
+type IncomingDetail = { type: string; value: Uint8Array; debug?: JsonValue }
 
 /**
  * Retrieve error details from a DubboError. On the wire, error details are
@@ -187,7 +187,7 @@ type IncomingDetail = { type: string; value: Uint8Array; debug?: JsonValue };
 export function dubboErrorDetails<T extends Message<T>>(
   error: DubboError,
   type: MessageType<T>
-): T[];
+): T[]
 /**
  * @deprecated use DubboError.findDetails() instead
  */
@@ -195,14 +195,14 @@ export function dubboErrorDetails(
   error: DubboError,
   type: MessageType,
   ...moreTypes: MessageType[]
-): AnyMessage[];
+): AnyMessage[]
 /**
  * @deprecated use DubboError.findDetails() instead
  */
 export function dubboErrorDetails(
   error: DubboError,
   registry: IMessageTypeRegistry
-): AnyMessage[];
+): AnyMessage[]
 /**
  * @deprecated use DubboError.findDetails() instead
  */
@@ -212,21 +212,21 @@ export function dubboErrorDetails(
   ...moreTypes: MessageType[]
 ): AnyMessage[] {
   const types: MessageType[] =
-    "typeName" in typeOrRegistry ? [typeOrRegistry, ...moreTypes] : [];
+    'typeName' in typeOrRegistry ? [typeOrRegistry, ...moreTypes] : []
   const registry =
-    "typeName" in typeOrRegistry ? createRegistry(...types) : typeOrRegistry;
-  const details: AnyMessage[] = [];
+    'typeName' in typeOrRegistry ? createRegistry(...types) : typeOrRegistry
+  const details: AnyMessage[] = []
   for (const data of error.details) {
     if (data instanceof Message) {
       if (registry.findMessage(data.getType().typeName)) {
-        details.push(data);
+        details.push(data)
       }
-      continue;
+      continue
     }
-    const type = registry.findMessage(data.type);
+    const type = registry.findMessage(data.type)
     if (type) {
       try {
-        details.push(type.fromBinary(data.value));
+        details.push(type.fromBinary(data.value))
       } catch (_) {
         // We silently give up if we are unable to parse the detail, because
         // that appears to be the least worst behavior.
@@ -236,7 +236,7 @@ export function dubboErrorDetails(
       }
     }
   }
-  return details;
+  return details
 }
 
 /**
@@ -245,7 +245,7 @@ export function dubboErrorDetails(
 function createMessage(message: string, code: Code) {
   return message.length
     ? `[${codeToString(code)}] ${message}`
-    : `[${codeToString(code)}]`;
+    : `[${codeToString(code)}]`
 }
 
 /**
@@ -265,16 +265,16 @@ export function dubboErrorFromReason(
   code = Code.Unknown
 ): DubboError {
   if (reason instanceof DubboError) {
-    return reason;
+    return reason
   }
   if (reason instanceof Error) {
-    if (reason.name == "AbortError") {
+    if (reason.name == 'AbortError') {
       // Fetch requests can only be canceled with an AbortController.
       // We detect that condition by looking at the name of the raised
       // error object, and translate to the appropriate status code.
-      return new DubboError(reason.message, Code.Canceled);
+      return new DubboError(reason.message, Code.Canceled)
     }
-    return new DubboError(reason.message, code);
+    return new DubboError(reason.message, code)
   }
-  return new DubboError(String(reason), code);
+  return new DubboError(String(reason), code)
 }

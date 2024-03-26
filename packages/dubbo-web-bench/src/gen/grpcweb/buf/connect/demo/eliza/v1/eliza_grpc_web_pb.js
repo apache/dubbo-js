@@ -10,21 +10,18 @@
 // 	protoc              v0.0.0
 // source: buf/connect/demo/eliza/v1/eliza.proto
 
-
 /* eslint-disable */
 // @ts-nocheck
 
+const grpc = {}
+grpc.web = require('grpc-web')
 
-
-const grpc = {};
-grpc.web = require('grpc-web');
-
-const proto = {};
-proto.buf = {};
-proto.buf.connect = {};
-proto.buf.connect.demo = {};
-proto.buf.connect.demo.eliza = {};
-proto.buf.connect.demo.eliza.v1 = require('./eliza_pb.js');
+const proto = {}
+proto.buf = {}
+proto.buf.connect = {}
+proto.buf.connect.demo = {}
+proto.buf.connect.demo.eliza = {}
+proto.buf.connect.demo.eliza.v1 = require('./eliza_pb.js')
 
 /**
  * @param {string} hostname
@@ -34,23 +31,24 @@ proto.buf.connect.demo.eliza.v1 = require('./eliza_pb.js');
  * @struct
  * @final
  */
-proto.buf.connect.demo.eliza.v1.ElizaServiceClient =
-    function(hostname, credentials, options) {
-  if (!options) options = {};
-  options.format = 'binary';
+proto.buf.connect.demo.eliza.v1.ElizaServiceClient = function (
+  hostname,
+  credentials,
+  options
+) {
+  if (!options) options = {}
+  options.format = 'binary'
 
   /**
    * @private @const {!grpc.web.GrpcWebClientBase} The client
    */
-  this.client_ = new grpc.web.GrpcWebClientBase(options);
+  this.client_ = new grpc.web.GrpcWebClientBase(options)
 
   /**
    * @private @const {string} The hostname
    */
-  this.hostname_ = hostname.replace(/\/+$/, '');
-
-};
-
+  this.hostname_ = hostname.replace(/\/+$/, '')
+}
 
 /**
  * @param {string} hostname
@@ -60,23 +58,24 @@ proto.buf.connect.demo.eliza.v1.ElizaServiceClient =
  * @struct
  * @final
  */
-proto.buf.connect.demo.eliza.v1.ElizaServicePromiseClient =
-    function(hostname, credentials, options) {
-  if (!options) options = {};
-  options.format = 'binary';
+proto.buf.connect.demo.eliza.v1.ElizaServicePromiseClient = function (
+  hostname,
+  credentials,
+  options
+) {
+  if (!options) options = {}
+  options.format = 'binary'
 
   /**
    * @private @const {!grpc.web.GrpcWebClientBase} The client
    */
-  this.client_ = new grpc.web.GrpcWebClientBase(options);
+  this.client_ = new grpc.web.GrpcWebClientBase(options)
 
   /**
    * @private @const {string} The hostname
    */
-  this.hostname_ = hostname.replace(/\/+$/, '');
-
-};
-
+  this.hostname_ = hostname.replace(/\/+$/, '')
+}
 
 /**
  * @const
@@ -93,12 +92,11 @@ const methodDescriptor_ElizaService_Say = new grpc.web.MethodDescriptor(
    * @param {!proto.buf.connect.demo.eliza.v1.SayRequest} request
    * @return {!Uint8Array}
    */
-  function(request) {
-    return request.serializeBinary();
+  function (request) {
+    return request.serializeBinary()
   },
   proto.buf.connect.demo.eliza.v1.SayResponse.deserializeBinary
-);
-
+)
 
 /**
  * @param {!proto.buf.connect.demo.eliza.v1.SayRequest} request The
@@ -110,16 +108,19 @@ const methodDescriptor_ElizaService_Say = new grpc.web.MethodDescriptor(
  * @return {!grpc.web.ClientReadableStream<!proto.buf.connect.demo.eliza.v1.SayResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.buf.connect.demo.eliza.v1.ElizaServiceClient.prototype.say =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/buf.connect.demo.eliza.v1.ElizaService/Say',
-      request,
-      metadata || {},
-      methodDescriptor_ElizaService_Say,
-      callback);
-};
-
+proto.buf.connect.demo.eliza.v1.ElizaServiceClient.prototype.say = function (
+  request,
+  metadata,
+  callback
+) {
+  return this.client_.rpcCall(
+    this.hostname_ + '/buf.connect.demo.eliza.v1.ElizaService/Say',
+    request,
+    metadata || {},
+    methodDescriptor_ElizaService_Say,
+    callback
+  )
+}
 
 /**
  * @param {!proto.buf.connect.demo.eliza.v1.SayRequest} request The
@@ -130,14 +131,14 @@ proto.buf.connect.demo.eliza.v1.ElizaServiceClient.prototype.say =
  *     Promise that resolves to the response
  */
 proto.buf.connect.demo.eliza.v1.ElizaServicePromiseClient.prototype.say =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/buf.connect.demo.eliza.v1.ElizaService/Say',
+  function (request, metadata) {
+    return this.client_.unaryCall(
+      this.hostname_ + '/buf.connect.demo.eliza.v1.ElizaService/Say',
       request,
       metadata || {},
-      methodDescriptor_ElizaService_Say);
-};
-
+      methodDescriptor_ElizaService_Say
+    )
+  }
 
 /**
  * @const
@@ -154,12 +155,11 @@ const methodDescriptor_ElizaService_Introduce = new grpc.web.MethodDescriptor(
    * @param {!proto.buf.connect.demo.eliza.v1.IntroduceRequest} request
    * @return {!Uint8Array}
    */
-  function(request) {
-    return request.serializeBinary();
+  function (request) {
+    return request.serializeBinary()
   },
   proto.buf.connect.demo.eliza.v1.IntroduceResponse.deserializeBinary
-);
-
+)
 
 /**
  * @param {!proto.buf.connect.demo.eliza.v1.IntroduceRequest} request The request proto
@@ -169,14 +169,14 @@ const methodDescriptor_ElizaService_Introduce = new grpc.web.MethodDescriptor(
  *     The XHR Node Readable Stream
  */
 proto.buf.connect.demo.eliza.v1.ElizaServiceClient.prototype.introduce =
-    function(request, metadata) {
-  return this.client_.serverStreaming(this.hostname_ +
-      '/buf.connect.demo.eliza.v1.ElizaService/Introduce',
+  function (request, metadata) {
+    return this.client_.serverStreaming(
+      this.hostname_ + '/buf.connect.demo.eliza.v1.ElizaService/Introduce',
       request,
       metadata || {},
-      methodDescriptor_ElizaService_Introduce);
-};
-
+      methodDescriptor_ElizaService_Introduce
+    )
+  }
 
 /**
  * @param {!proto.buf.connect.demo.eliza.v1.IntroduceRequest} request The request proto
@@ -186,14 +186,13 @@ proto.buf.connect.demo.eliza.v1.ElizaServiceClient.prototype.introduce =
  *     The XHR Node Readable Stream
  */
 proto.buf.connect.demo.eliza.v1.ElizaServicePromiseClient.prototype.introduce =
-    function(request, metadata) {
-  return this.client_.serverStreaming(this.hostname_ +
-      '/buf.connect.demo.eliza.v1.ElizaService/Introduce',
+  function (request, metadata) {
+    return this.client_.serverStreaming(
+      this.hostname_ + '/buf.connect.demo.eliza.v1.ElizaService/Introduce',
       request,
       metadata || {},
-      methodDescriptor_ElizaService_Introduce);
-};
+      methodDescriptor_ElizaService_Introduce
+    )
+  }
 
-
-module.exports = proto.buf.connect.demo.eliza.v1;
-
+module.exports = proto.buf.connect.demo.eliza.v1

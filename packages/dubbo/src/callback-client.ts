@@ -17,16 +17,16 @@ import type {
   MethodInfoServerStreaming,
   MethodInfoUnary,
   PartialMessage,
-  ServiceType,
-} from "@bufbuild/protobuf";
-import { Message, MethodKind } from "@bufbuild/protobuf";
-import { DubboError } from "./dubbo-error.js";
-import type { Transport } from "./transport.js";
-import { Code } from "./code.js";
-import { makeAnyClient } from "./any-client.js";
-import type { CallOptions } from "./call-options.js";
-import { createAsyncIterable } from "./protocol/async-iterable.js";
-import type { TripleClientServiceOptions } from './protocol-triple/client-service-options.js';
+  ServiceType
+} from '@bufbuild/protobuf'
+import { Message, MethodKind } from '@bufbuild/protobuf'
+import { DubboError } from './dubbo-error.js'
+import type { Transport } from './transport.js'
+import { Code } from './code.js'
+import { makeAnyClient } from './any-client.js'
+import type { CallOptions } from './call-options.js'
+import { createAsyncIterable } from './protocol/async-iterable.js'
+import type { TripleClientServiceOptions } from './protocol-triple/client-service-options.js'
 
 // prettier-ignore
 /**
@@ -53,7 +53,7 @@ export type CallbackClient<T extends ServiceType> = {
   : never;
 };
 
-type CancelFn = () => void;
+type CancelFn = () => void
 
 /**
  * Create a CallbackClient for the given service, invoking RPCs through the
@@ -67,13 +67,13 @@ export function createCallbackClient<T extends ServiceType>(
   return makeAnyClient(service, (method) => {
     switch (method.kind) {
       case MethodKind.Unary:
-        return createUnaryFn(transport, service, method, serviceOptions);
+        return createUnaryFn(transport, service, method, serviceOptions)
       case MethodKind.ServerStreaming:
-        return createServerStreamingFn(transport, service, method);
+        return createServerStreamingFn(transport, service, method)
       default:
-        return null;
+        return null
     }
-  }) as CallbackClient<T>;
+  }) as CallbackClient<T>
 }
 
 /**
@@ -83,7 +83,7 @@ type UnaryFn<I extends Message<I>, O extends Message<O>> = (
   request: PartialMessage<I>,
   callback: (error: DubboError | undefined, response: O) => void,
   options?: CallOptions
-) => CancelFn;
+) => CancelFn
 
 function createUnaryFn<I extends Message<I>, O extends Message<O>>(
   transport: Transport,
@@ -92,8 +92,8 @@ function createUnaryFn<I extends Message<I>, O extends Message<O>>(
   serviceOptions?: TripleClientServiceOptions
 ): UnaryFn<I, O> {
   return function (requestMessage, callback, options) {
-    const abort = new AbortController();
-    options = wrapSignal(abort, options);
+    const abort = new AbortController()
+    options = wrapSignal(abort, options)
     transport
       .unary(
         service,
@@ -106,21 +106,21 @@ function createUnaryFn<I extends Message<I>, O extends Message<O>>(
       )
       .then(
         (response) => {
-          options?.onHeader?.(response.header);
-          options?.onTrailer?.(response.trailer);
-          callback(undefined, response.message);
+          options?.onHeader?.(response.header)
+          options?.onTrailer?.(response.trailer)
+          callback(undefined, response.message)
         },
         (reason) => {
-          const err = DubboError.from(reason, Code.Internal);
+          const err = DubboError.from(reason, Code.Internal)
           if (err.code === Code.Canceled && abort.signal.aborted) {
             // As documented, discard Canceled errors if canceled by the user.
-            return;
+            return
           }
-          callback(err, new method.O());
+          callback(err, new method.O())
         }
-      );
-    return () => abort.abort();
-  };
+      )
+    return () => abort.abort()
+  }
 }
 
 /**
@@ -132,7 +132,7 @@ type ServerStreamingFn<I extends Message<I>, O extends Message<O>> = (
   onResponse: (response: O) => void,
   onClose: (error: DubboError | undefined) => void,
   options?: CallOptions
-) => CancelFn;
+) => CancelFn
 
 function createServerStreamingFn<I extends Message<I>, O extends Message<O>>(
   transport: Transport,
@@ -140,11 +140,10 @@ function createServerStreamingFn<I extends Message<I>, O extends Message<O>>(
   method: MethodInfo<I, O>
 ): ServerStreamingFn<I, O> {
   return function (input, onResponse, onClose, options) {
-    const abort = new AbortController();
-    const inputMessage =
-      input instanceof method.I ? input : new method.I(input);
+    const abort = new AbortController()
+    const inputMessage = input instanceof method.I ? input : new method.I(input)
     async function run() {
-      options = wrapSignal(abort, options);
+      options = wrapSignal(abort, options)
       const response = await transport.stream(
         service,
         method,
@@ -152,26 +151,26 @@ function createServerStreamingFn<I extends Message<I>, O extends Message<O>>(
         options.timeoutMs,
         options.headers,
         createAsyncIterable([inputMessage])
-      );
-      options.onHeader?.(response.header);
+      )
+      options.onHeader?.(response.header)
       for await (const message of response.message) {
-        onResponse(message);
+        onResponse(message)
       }
-      options.onTrailer?.(response.trailer);
-      onClose(undefined);
+      options.onTrailer?.(response.trailer)
+      onClose(undefined)
     }
     run().catch((reason) => {
-      const err = DubboError.from(reason, Code.Internal);
+      const err = DubboError.from(reason, Code.Internal)
       if (err.code === Code.Canceled && abort.signal.aborted) {
         // As documented, discard Canceled errors if canceled by the user,
         // but do invoke the close-callback.
-        onClose(undefined);
+        onClose(undefined)
       } else {
-        onClose(err);
+        onClose(err)
       }
-    });
-    return () => abort.abort();
-  };
+    })
+    return () => abort.abort()
+  }
 }
 
 function wrapSignal(
@@ -179,10 +178,10 @@ function wrapSignal(
   options: CallOptions | undefined
 ): CallOptions {
   if (options?.signal) {
-    options.signal.addEventListener("abort", () => abort.abort());
+    options.signal.addEventListener('abort', () => abort.abort())
     if (options.signal.aborted) {
-      abort.abort();
+      abort.abort()
     }
   }
-  return { ...options, signal: abort.signal };
+  return { ...options, signal: abort.signal }
 }

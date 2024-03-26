@@ -12,35 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { CallOptions } from "@apachedubbo/dubbo";
+import type { CallOptions } from '@apachedubbo/dubbo'
 import {
   Code,
   DubboError,
   createCallbackClient,
-  createPromiseClient,
-} from "@apachedubbo/dubbo";
-import { TestService } from "../gen/grpc/testing/test_dubbo.js";
-import { describeTransports } from "../helpers/crosstestserver.js";
-import { StreamingOutputCallRequest } from "../gen/grpc/testing/messages_pb.js";
+  createPromiseClient
+} from '@apachedubbo/dubbo'
+import { TestService } from '../gen/grpc/testing/test_dubbo.js'
+import { describeTransports } from '../helpers/crosstestserver.js'
+import { StreamingOutputCallRequest } from '../gen/grpc/testing/messages_pb.js'
 
-describe("timeout_on_sleeping_server", function () {
+describe('timeout_on_sleeping_server', function () {
   const request = new StreamingOutputCallRequest({
     payload: {
-      body: new Uint8Array(271828).fill(0),
+      body: new Uint8Array(271828).fill(0)
     },
     responseParameters: [
       {
         size: 31415,
-        intervalUs: 50 * 1000, // 50ms
-      },
-    ],
-  });
+        intervalUs: 50 * 1000 // 50ms
+      }
+    ]
+  })
   const options: CallOptions = {
-    timeoutMs: 5,
-  };
+    timeoutMs: 5
+  }
   describeTransports((transport) => {
-    it("with promise client", async function () {
-      const client = createPromiseClient(TestService, transport());
+    it('with promise client', async function () {
+      const client = createPromiseClient(TestService, transport())
       try {
         for await (const response of client.streamingOutputCall(
           request,
@@ -48,29 +48,29 @@ describe("timeout_on_sleeping_server", function () {
         )) {
           fail(
             `expecting no response from sleeping server, got: ${response.toJsonString()}`
-          );
+          )
         }
-        fail("expected to catch an error");
+        fail('expected to catch an error')
       } catch (e) {
-        expect(e).toBeInstanceOf(DubboError);
-        expect(DubboError.from(e).code).toBe(Code.DeadlineExceeded);
+        expect(e).toBeInstanceOf(DubboError)
+        expect(DubboError.from(e).code).toBe(Code.DeadlineExceeded)
       }
-    });
-    it("with callback client", function (done) {
-      const client = createCallbackClient(TestService, transport());
+    })
+    it('with callback client', function (done) {
+      const client = createCallbackClient(TestService, transport())
       client.streamingOutputCall(
         request,
         (response) => {
           fail(
             `expecting no response from sleeping server, got: ${response.toJsonString()}`
-          );
+          )
         },
         (err: DubboError | undefined) => {
-          expect(err?.code).toBe(Code.DeadlineExceeded);
-          done();
+          expect(err?.code).toBe(Code.DeadlineExceeded)
+          done()
         },
         options
-      );
-    });
-  });
-});
+      )
+    })
+  })
+})

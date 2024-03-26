@@ -16,16 +16,16 @@ import type {
   BinaryReadOptions,
   BinaryWriteOptions,
   JsonReadOptions,
-  JsonWriteOptions,
-} from "@bufbuild/protobuf";
-import type { Interceptor, Transport } from "@apachedubbo/dubbo";
-import type { Compression } from "@apachedubbo/dubbo/protocol";
-import { createTransport } from "@apachedubbo/dubbo/protocol-triple";
+  JsonWriteOptions
+} from '@bufbuild/protobuf'
+import type { Interceptor, Transport } from '@apachedubbo/dubbo'
+import type { Compression } from '@apachedubbo/dubbo/protocol'
+import { createTransport } from '@apachedubbo/dubbo/protocol-triple'
 import {
   type DeprecatedNodeTransportOptions,
   type NodeTransportOptions,
-  validateNodeTransportOptions,
-} from "./node-transport-options.js";
+  validateNodeTransportOptions
+} from './node-transport-options.js'
 
 /**
  * Options used to configure the Dubbo transport.
@@ -44,29 +44,29 @@ type DubboTransportOptions = NodeTransportOptions &
      * This will make a `POST /my-api/my_package.MyService/Foo` to
      * `example.com` via HTTPS.
      */
-    baseUrl: string;
+    baseUrl: string
 
     /**
      * By default, dubbo-node clients use the binary format.
      */
-    useBinaryFormat?: boolean;
+    useBinaryFormat?: boolean
 
     /**
      * Interceptors that should be applied to all calls running through
      * this transport. See the Interceptor type for details.
      */
-    interceptors?: Interceptor[];
+    interceptors?: Interceptor[]
 
     /**
      * Options for the JSON format.
      * By default, unknown fields are ignored.
      */
-    jsonOptions?: Partial<JsonReadOptions & JsonWriteOptions>;
+    jsonOptions?: Partial<JsonReadOptions & JsonWriteOptions>
 
     /**
      * Options for the binary wire format.
      */
-    binaryOptions?: Partial<BinaryReadOptions & BinaryWriteOptions>;
+    binaryOptions?: Partial<BinaryReadOptions & BinaryWriteOptions>
 
     /**
      * Compression algorithms available to a client. Clients ask servers to
@@ -81,7 +81,7 @@ type DubboTransportOptions = NodeTransportOptions &
      * (Brotli) are accepted. To opt out of response compression, pass an
      * empty array.
      */
-    acceptCompression?: Compression[];
+    acceptCompression?: Compression[]
 
     /**
      * Configures the client to use the specified algorithm to compress request
@@ -90,7 +90,7 @@ type DubboTransportOptions = NodeTransportOptions &
      * Because some servers don't support compression, clients default to sending
      * uncompressed requests.
      */
-    sendCompression?: Compression;
+    sendCompression?: Compression
 
     /**
      * Sets a minimum size threshold for compression: Messages that are smaller
@@ -99,7 +99,7 @@ type DubboTransportOptions = NodeTransportOptions &
      * The default value is 1 kibibyte, because the CPU cost of compressing very
      * small messages usually isn't worth the small reduction in network I/O.
      */
-    compressMinBytes?: number;
+    compressMinBytes?: number
 
     /**
      * Limits the performance impact of pathologically large messages sent by the
@@ -108,21 +108,21 @@ type DubboTransportOptions = NodeTransportOptions &
      *
      * The default limit is the maximum supported value of ~4GiB.
      */
-    readMaxBytes?: number;
+    readMaxBytes?: number
 
     /**
      * Prevents sending messages too large for the server to handle.
      *
      * The default limit is the maximum supported value of ~4GiB.
      */
-    writeMaxBytes?: number;
+    writeMaxBytes?: number
 
     /**
      * Controls whether or not Dubbo GET requests should be used when
      * available, on side-effect free methods. Defaults to false.
      */
-    useHttpGet?: boolean;
-  };
+    useHttpGet?: boolean
+  }
 
 /**
  * Create a Transport for the Dubbo protocol using the Node.js `http`, `http2`,
@@ -131,5 +131,5 @@ type DubboTransportOptions = NodeTransportOptions &
 export function createDubboTransport(
   options: DubboTransportOptions
 ): Transport {
-  return createTransport(validateNodeTransportOptions(options));
+  return createTransport(validateNodeTransportOptions(options))
 }

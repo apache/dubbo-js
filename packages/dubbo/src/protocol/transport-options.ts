@@ -16,11 +16,11 @@ import type {
   BinaryReadOptions,
   BinaryWriteOptions,
   JsonReadOptions,
-  JsonWriteOptions,
-} from "@bufbuild/protobuf";
-import type { UniversalClientFn } from "./universal.js";
-import type { Interceptor } from "../interceptor.js";
-import type { Compression } from "./compression.js";
+  JsonWriteOptions
+} from '@bufbuild/protobuf'
+import type { UniversalClientFn } from './universal.js'
+import type { Interceptor } from '../interceptor.js'
+import type { Compression } from './compression.js'
 
 /**
  * @private Internal code, does not follow semantic versioning.
@@ -29,7 +29,7 @@ export interface CommonTransportOptions {
   /**
    * The HTTP client to use.
    */
-  httpClient: UniversalClientFn;
+  httpClient: UniversalClientFn
 
   /**
    * Base URI for all HTTP requests.
@@ -41,30 +41,30 @@ export interface CommonTransportOptions {
    * This will make a `POST /my-api/my_package.MyService/Foo` to
    * `example.com` via HTTPS.
    */
-  baseUrl: string;
+  baseUrl: string
 
   /**
    * By default, clients use the binary format for gRPC-web, because
    * not all gRPC-web implementations support JSON.
    */
-  useBinaryFormat: boolean;
+  useBinaryFormat: boolean
 
   /**
    * Interceptors that should be applied to all calls running through
    * this transport. See the Interceptor type for details.
    */
-  interceptors: Interceptor[];
+  interceptors: Interceptor[]
 
   /**
    * Options for the JSON format.
    * By default, unknown fields are ignored.
    */
-  jsonOptions?: Partial<JsonReadOptions & JsonWriteOptions>;
+  jsonOptions?: Partial<JsonReadOptions & JsonWriteOptions>
 
   /**
    * Options for the binary wire format.
    */
-  binaryOptions?: Partial<BinaryReadOptions & BinaryWriteOptions>;
+  binaryOptions?: Partial<BinaryReadOptions & BinaryWriteOptions>
 
   /**
    * Compression algorithms available to a client. Clients ask servers to
@@ -79,7 +79,7 @@ export interface CommonTransportOptions {
    * (Brotli) are accepted. To opt out of response compression, pass an
    * empty array.
    */
-  acceptCompression: Compression[];
+  acceptCompression: Compression[]
 
   /**
    * Configures the client to use the specified algorithm to compress request
@@ -88,7 +88,7 @@ export interface CommonTransportOptions {
    * Because some servers don't support compression, clients default to sending
    * uncompressed requests.
    */
-  sendCompression: Compression | null;
+  sendCompression: Compression | null
 
   /**
    * Sets a minimum size threshold for compression: Messages that are smaller
@@ -97,7 +97,7 @@ export interface CommonTransportOptions {
    * The default value is 1 kibibyte, because the CPU cost of compressing very
    * small messages usually isn't worth the small reduction in network I/O.
    */
-  compressMinBytes: number;
+  compressMinBytes: number
 
   /**
    * Limits the performance impact of pathologically large messages sent by the
@@ -106,18 +106,18 @@ export interface CommonTransportOptions {
    *
    * The default limit is the maximum supported value of ~4GiB.
    */
-  readMaxBytes: number;
+  readMaxBytes: number
 
   /**
    * Prevents sending messages too large for the server to handle.
    *
    * The default limit is the maximum supported value of ~4GiB.
    */
-  writeMaxBytes: number;
+  writeMaxBytes: number
 
   /**
    * Controls whether or not Connect GET requests should be used when
    * available, on side-effect free methods. Defaults to false.
    */
-  useHttpGet?: boolean;
+  useHttpGet?: boolean
 }

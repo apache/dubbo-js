@@ -20,10 +20,10 @@
  * @private Internal code, does not follow semantic versioning.
  */
 export const contentTypeRegExp =
-  /^application\/grpc-web(-text)?(?:\+(?:(json)(?:; ?charset=utf-?8)?|proto))?$/i;
+  /^application\/grpc-web(-text)?(?:\+(?:(json)(?:; ?charset=utf-?8)?|proto))?$/i
 
-export const contentTypeProto = "application/grpc-web+proto";
-export const contentTypeJson = "application/grpc-web+json";
+export const contentTypeProto = 'application/grpc-web+proto'
+export const contentTypeJson = 'application/grpc-web+json'
 
 /**
  * Parse a gRPC-web Content-Type header value.
@@ -33,11 +33,11 @@ export const contentTypeJson = "application/grpc-web+json";
 export function parseContentType(
   contentType: string | null
 ): { text: boolean; binary: boolean } | undefined {
-  const match = contentType?.match(contentTypeRegExp);
+  const match = contentType?.match(contentTypeRegExp)
   if (!match) {
-    return undefined;
+    return undefined
   }
-  const text = !!match[1];
-  const binary = !match[2];
-  return { text, binary };
+  const text = !!match[1]
+  const binary = !match[2]
+  return { text, binary }
 }

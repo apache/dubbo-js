@@ -15,8 +15,8 @@
 /**
  * @private Internal code, does not follow semantic versioning.
  */
-export const paramProtocolVersion = "triple";
-export const paramEncoding = "encoding";
-export const paramCompression = "compression";
-export const paramBase64 = "base64";
-export const paramMessage = "message";
+export const paramProtocolVersion = 'triple'
+export const paramEncoding = 'encoding'
+export const paramCompression = 'compression'
+export const paramBase64 = 'base64'
+export const paramMessage = 'message'

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { DubboError } from "../dubbo-error.js";
-import { Code } from "../code.js";
+import { DubboError } from '../dubbo-error.js'
+import { Code } from '../code.js'
 
 /**
  * compressedFlag indicates that the data in a EnvelopedMessage is
@@ -22,7 +22,7 @@ import { Code } from "../code.js";
  *
  * @private Internal code, does not follow semantic versioning.
  */
-export const compressedFlag = 0b00000001;
+export const compressedFlag = 0b00000001
 
 /**
  * Compression provides methods to compress and decompress data with
@@ -32,12 +32,12 @@ export interface Compression {
   /**
    * The name of the compression algorithm.
    */
-  name: string;
+  name: string
 
   /**
    * Compress a chunk of data.
    */
-  compress: (bytes: Uint8Array) => Promise<Uint8Array>;
+  compress: (bytes: Uint8Array) => Promise<Uint8Array>
 
   /**
    * Decompress a chunk of data.
@@ -45,7 +45,7 @@ export interface Compression {
    * Raises a DubboError with Code.InvalidArgument if the decompressed
    * size exceeds readMaxBytes.
    */
-  decompress: (bytes: Uint8Array, readMaxBytes: number) => Promise<Uint8Array>;
+  decompress: (bytes: Uint8Array, readMaxBytes: number) => Promise<Uint8Array>
 }
 
 /**
@@ -63,45 +63,45 @@ export function compressionNegotiate(
   accepted: string | null, // e.g. the value of the Grpc-Accept-Encoding header
   headerNameAcceptEncoding: string // e.g. the name of the Grpc-Accept-Encoding header
 ): {
-  request: Compression | null;
-  response: Compression | null;
-  error?: DubboError;
+  request: Compression | null
+  response: Compression | null
+  error?: DubboError
 } {
-  let request = null;
-  let response = null;
-  let error = undefined;
-  if (requested !== null && requested !== "identity") {
-    const found = available.find((c) => c.name === requested);
+  let request = null
+  let response = null
+  let error = undefined
+  if (requested !== null && requested !== 'identity') {
+    const found = available.find((c) => c.name === requested)
     if (found) {
-      request = found;
+      request = found
     } else {
       // To comply with https://github.com/grpc/grpc/blob/master/doc/compression.md
       // and the Triple protocol, we return code "unimplemented" and specify
       // acceptable compression(s).
-      const acceptable = available.map((c) => c.name).join(",");
+      const acceptable = available.map((c) => c.name).join(',')
       error = new DubboError(
         `unknown compression "${requested}": supported encodings are ${acceptable}`,
         Code.Unimplemented,
         {
-          [headerNameAcceptEncoding]: acceptable,
+          [headerNameAcceptEncoding]: acceptable
         }
-      );
+      )
     }
   }
-  if (accepted === null || accepted === "") {
+  if (accepted === null || accepted === '') {
     // Support asymmetric compression. This logic follows
     // https://github.com/grpc/grpc/blob/master/doc/compression.md and common
     // sense.
-    response = request;
+    response = request
   } else {
-    const acceptNames = accepted.split(",").map((n) => n.trim());
+    const acceptNames = accepted.split(',').map((n) => n.trim())
     for (const name of acceptNames) {
-      const found = available.find((c) => c.name === name);
+      const found = available.find((c) => c.name === name)
       if (found) {
-        response = found;
-        break;
+        response = found
+        break
       }
     }
   }
-  return { request, response, error };
+  return { request, response, error }
 }

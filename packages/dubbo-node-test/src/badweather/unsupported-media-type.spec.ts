@@ -12,82 +12,82 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { TestService } from "../gen/grpc/testing/test_dubbo.js";
-import { createTestServers } from "../helpers/testserver.js";
-import { createMethodUrl } from "@apachedubbo/dubbo/protocol";
-import { http2Request } from "../helpers/http2-request.js";
+import { TestService } from '../gen/grpc/testing/test_dubbo.js'
+import { createTestServers } from '../helpers/testserver.js'
+import { createMethodUrl } from '@apachedubbo/dubbo/protocol'
+import { http2Request } from '../helpers/http2-request.js'
 
-describe("unsupported media type", () => {
-  const servers = createTestServers();
-  beforeAll(async () => await servers.start());
+describe('unsupported media type', () => {
+  const servers = createTestServers()
+  beforeAll(async () => await servers.start())
 
   servers.describeServers(
-    ["@apachedubbo/dubbo-node (h2c)"],
+    ['@apachedubbo/dubbo-node (h2c)'],
     (server, serverName) => {
-      const rejectUnauthorized = true; // TODO set up cert for go server correctly
+      const rejectUnauthorized = true // TODO set up cert for go server correctly
 
-      describe("unary method", function () {
-        it("should raise HTTP 415 Unsupported Media Type for text/csv", async () => {
+      describe('unary method', function () {
+        it('should raise HTTP 415 Unsupported Media Type for text/csv', async () => {
           const res = await http2Request({
             url: createMethodUrl(
               server.getUrl(),
               TestService,
               TestService.methods.unaryCall
             ),
-            method: "POST",
-            ctype: "text/csv",
-            rejectUnauthorized,
-          });
-          expect(res.status).toBe(415);
-          expect(res.body.byteLength).toBe(0);
-        });
-        it("should raise HTTP 415 Unsupported Media Type for Connect streaming type", async () => {
+            method: 'POST',
+            ctype: 'text/csv',
+            rejectUnauthorized
+          })
+          expect(res.status).toBe(415)
+          expect(res.body.byteLength).toBe(0)
+        })
+        it('should raise HTTP 415 Unsupported Media Type for Connect streaming type', async () => {
           const res = await http2Request({
             url: createMethodUrl(
               server.getUrl(),
               TestService,
               TestService.methods.unaryCall
             ),
-            method: "POST",
-            ctype: "application/connect+proto",
-            rejectUnauthorized,
-          });
-          expect(res.status).toBe(415);
-          expect(res.body.byteLength).toBe(0);
-        });
-      });
-      describe("streaming method", function () {
-        it("should raise HTTP 415 Unsupported Media Type for text/csv", async () => {
+            method: 'POST',
+            ctype: 'application/connect+proto',
+            rejectUnauthorized
+          })
+          expect(res.status).toBe(415)
+          expect(res.body.byteLength).toBe(0)
+        })
+      })
+      describe('streaming method', function () {
+        it('should raise HTTP 415 Unsupported Media Type for text/csv', async () => {
           const res = await http2Request({
             url: createMethodUrl(
               server.getUrl(),
               TestService,
               TestService.methods.streamingInputCall
             ),
-            method: "POST",
-            ctype: "text/csv",
-            rejectUnauthorized,
-          });
-          expect(res.status).toBe(415);
-          expect(res.body.byteLength).toBe(0);
-        });
-        it("should raise HTTP 415 Unsupported Media Type for Connect unary type", async () => {
+            method: 'POST',
+            ctype: 'text/csv',
+            rejectUnauthorized
+          })
+          expect(res.status).toBe(415)
+          expect(res.body.byteLength).toBe(0)
+        })
+        it('should raise HTTP 415 Unsupported Media Type for Connect unary type', async () => {
           const res = await http2Request({
             url: createMethodUrl(
               server.getUrl(),
               TestService,
               TestService.methods.streamingInputCall
             ),
-            method: "POST",
-            ctype: "application/proto",
-            rejectUnauthorized,
-          });
-          expect(res.status).toBe(415);
-          expect(res.body.byteLength).toBe(0);
-        });
-      });
+            method: 'POST',
+            ctype: 'application/proto',
+            rejectUnauthorized
+          })
+          expect(res.status).toBe(415)
+          expect(res.body.byteLength).toBe(0)
+        })
+      })
     }
-  );
+  )
 
-  afterAll(async () => await servers.stop());
-});
+  afterAll(async () => await servers.stop())
+})
